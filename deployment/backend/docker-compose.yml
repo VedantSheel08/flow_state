@@ -1,0 +1,23 @@
+# Run on a single always-on Linux VM (2 vCPU / 4 GiB suggested). From the repo root:
+#   cp deployment/backend/.env.example deployment/backend/.env   # then edit
+#   docker compose -f deployment/backend/docker-compose.yml --env-file deployment/backend/.env up -d --build
+services:
+  api:
+    build: { context: ../.., dockerfile: deployment/backend/Dockerfile }
+    restart: unless-stopped
+    environment:
+      FLOWSTATE_ALLOWED_ORIGINS: ${FLOWSTATE_ALLOWED_ORIGINS:-https://flowstate.nyc,https://www.flowstate.nyc}
+      FLOWSTATE_ACCESS_TOKEN: ${FLOWSTATE_ACCESS_TOKEN:-}
+      FLOWSTATE_MAX_WS_CLIENTS: ${FLOWSTATE_MAX_WS_CLIENTS:-25}
+    volumes: [runs:/var/lib/flowstate/runs]
+    mem_limit: 3g
+    cpus: 1.75
+    expose: ["8000"]            # private; only Caddy is published
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [api]
+    ports: ["80:80", "443:443"]
+    environment: { API_DOMAIN: "${API_DOMAIN:?set API_DOMAIN, e.g. api.flowstate.nyc}" }
+    volumes: [./Caddyfile:/etc/caddy/Caddyfile:ro, caddy_data:/data]
+volumes: { runs: {}, caddy_data: {} }
