@@ -30,6 +30,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from ..sim.signals import retime_net
 from ..sumo_env import binary
 
 PED = "pedestrian"
@@ -355,7 +356,10 @@ def build_network(spec: NetworkSpec, out_dir: Path) -> Path:
         *_COMMON,
         "-o", str(net_path),
     ])
+    # netconvert only supplies the phase structure; engineer cycle, splits, clearances and offsets (sim/signals.py)
+    signals = retime_net(net_path)
     layout = build_layout(spec, records, net_path)
+    layout["signals"] = signals
     (out_dir / f"{spec.id}.city.json").write_text(json.dumps(layout, separators=(",", ":")), encoding="utf-8")
     _write_bus_stops(spec, layout, out_dir / f"{spec.id}.stops.add.xml")
     return net_path

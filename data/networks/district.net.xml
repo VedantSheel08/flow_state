@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-10-16T19:15:14.435923-05:00 by Eclipse SUMO netconvert 1.28.0
+<!-- generated on 2026-10-16T23:21:26.214788-05:00 by Eclipse SUMO netconvert 1.28.0
 <netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <node-files value="..\data\networks\_district\plain.nod.xml"/>
-        <edge-files value="..\data\networks\_district\plain.edg.xml"/>
-        <connection-files value="..\data\networks\_district\plain.con.xml"/>
+        <node-files value="D:\SUMA test-wt\signals\data\networks\_district\plain.nod.xml"/>
+        <edge-files value="D:\SUMA test-wt\signals\data\networks\_district\plain.edg.xml"/>
+        <connection-files value="D:\SUMA test-wt\signals\data\networks\_district\plain.con.xml"/>
     </input>
 
     <output>
-        <output-file value="..\data\networks\district.net.xml"/>
+        <output-file value="D:\SUMA test-wt\signals\data\networks\district.net.xml"/>
         <output.street-names value="true"/>
     </output>
 
@@ -2371,139 +2371,148 @@
         <lane id="queen_w4_3" index="3" disallow="all" speed="13.89" length="147.00" width="3.10" shape="-13.00,321.55 -160.00,321.55"/>
     </edge>
 
-    <tlLogic id="n0_1" type="static" programID="0" offset="0">
-        <phase duration="28" state="rrrrgGGgrrrrgGGgGrGr"/>
-        <phase duration="5"  state="rrrrgGGgrrrrgGGgrrrr"/>
-        <phase duration="4"  state="rrrryyygrrrryyygrrrr"/>
-        <phase duration="8"  state="rrrrrrrGrrrrrrrGrrrr"/>
-        <phase duration="4"  state="rrrrrrryrrrrrrryrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="28" state="gGggrrrrgGggrrrrrGrG"/>
-        <phase duration="5"  state="gGggrrrrgGggrrrrrrrr"/>
-        <phase duration="4"  state="yyyyrrrryyyyrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n0_1" type="static" programID="0" offset="1">
+        <phase duration="29" state="rrrrgGGgrrrrgGGgGrGr" name="walk"/>
+        <phase duration="2" state="rrrrgGGgrrrrgGGgrrrr" name="ped-clear"/>
+        <phase duration="4" state="rrrryyygrrrryyygrrrr" name="yellow"/>
+        <phase duration="8" state="rrrrrrrGrrrrrrrGrrrr" name="left"/>
+        <phase duration="3" state="rrrrrrryrrrrrrryrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="12" state="gGggrrrrgGggrrrrrGrG" name="walk"/>
+        <phase duration="14" state="gGggrrrrgGggrrrrrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="yyyyrrrryyyyrrrrrrrr" name="yellow"/>
+        <phase duration="2.5" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n0_2" type="static" programID="0" offset="0">
-        <phase duration="28" state="rrrrgGGgrrrrgGGgGrGr"/>
-        <phase duration="5"  state="rrrrgGGgrrrrgGGgrrrr"/>
-        <phase duration="4"  state="rrrryyygrrrryyygrrrr"/>
-        <phase duration="8"  state="rrrrrrrGrrrrrrrGrrrr"/>
-        <phase duration="4"  state="rrrrrrryrrrrrrryrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="28" state="gGggrrrrgGggrrrrrGrG"/>
-        <phase duration="5"  state="gGggrrrrgGggrrrrrrrr"/>
-        <phase duration="4"  state="yyyyrrrryyyyrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n0_2" type="static" programID="0" offset="12">
+        <phase duration="29" state="rrrrgGGgrrrrgGGgGrGr" name="walk"/>
+        <phase duration="2" state="rrrrgGGgrrrrgGGgrrrr" name="ped-clear"/>
+        <phase duration="4" state="rrrryyygrrrryyygrrrr" name="yellow"/>
+        <phase duration="8" state="rrrrrrrGrrrrrrrGrrrr" name="left"/>
+        <phase duration="3" state="rrrrrrryrrrrrrryrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="12" state="gGggrrrrgGggrrrrrGrG" name="walk"/>
+        <phase duration="14" state="gGggrrrrgGggrrrrrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="yyyyrrrryyyyrrrrrrrr" name="yellow"/>
+        <phase duration="2.5" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n1_0" type="static" programID="0" offset="0">
-        <phase duration="28" state="ggGGgrrrrrrggGGgrrrrrrrGrG"/>
-        <phase duration="5"  state="ggGGgrrrrrrggGGgrrrrrrrrrr"/>
-        <phase duration="4"  state="yyyygrrrrrryyyygrrrrrrrrrr"/>
-        <phase duration="8"  state="rrrrGrrrrrrrrrrGrrrrrrrrrr"/>
-        <phase duration="4"  state="rrrryrrrrrrrrrryrrrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="28" state="rrrrrgGggGgrrrrrgGggGgGrGr"/>
-        <phase duration="5"  state="rrrrrgGggGgrrrrrgGggGgrrrr"/>
-        <phase duration="4"  state="rrrrryyyyyyrrrrryyyyyyrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n1_0" type="static" programID="0" offset="8">
+        <phase duration="16" state="ggGGgrrrrrrggGGgrrrrrrrGrG" name="walk"/>
+        <phase duration="5" state="ggGGgrrrrrrggGGgrrrrrrrrrr" name="ped-clear"/>
+        <phase duration="4" state="yyyygrrrrrryyyygrrrrrrrrrr" name="yellow"/>
+        <phase duration="8" state="rrrrGrrrrrrrrrrGrrrrrrrrrr" name="left"/>
+        <phase duration="3" state="rrrryrrrrrrrrrryrrrrrrrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="15" state="rrrrrrrrrrrrrrrrgGggGgGrGr" name="walk"/>
+        <phase duration="3.5" state="rrrrrrrrrrrrrrrryyyyyyGrGr" name="yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrrrrGrGr" name="all-red"/>
+        <phase duration="1.5" state="rrrrrgGggGgrrrrrrrrrrrGrGr" name="green"/>
+        <phase duration="14" state="rrrrrgGggGgrrrrrrrrrrrrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="rrrrryyyyyyrrrrrrrrrrrrrrr" name="yellow"/>
+        <phase duration="2.5" state="rrrrrrrrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n1_1" type="static" programID="0" offset="0">
-        <phase duration="22" state="gGGgrrrrgGGgrrrrrGrG"/>
-        <phase duration="5"  state="gGGgrrrrgGGgrrrrrrrr"/>
-        <phase duration="4"  state="yyygrrrryyygrrrrrrrr"/>
-        <phase duration="8"  state="rrrGrrrrrrrGrrrrrrrr"/>
-        <phase duration="4"  state="rrryrrrrrrryrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="22" state="rrrrgGGgrrrrgGGgGrGr"/>
-        <phase duration="5"  state="rrrrgGGgrrrrgGGgrrrr"/>
-        <phase duration="4"  state="rrrryyygrrrryyygrrrr"/>
-        <phase duration="8"  state="rrrrrrrGrrrrrrrGrrrr"/>
-        <phase duration="4"  state="rrrrrrryrrrrrrryrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n1_1" type="static" programID="0" offset="9">
+        <phase duration="9" state="gGGgrrrrgGGgrrrrrGrG" name="walk"/>
+        <phase duration="14" state="gGGgrrrrgGGgrrrrrrrr" name="ped-clear"/>
+        <phase duration="4" state="yyygrrrryyygrrrrrrrr" name="yellow"/>
+        <phase duration="8" state="rrrGrrrrrrrGrrrrrrrr" name="left"/>
+        <phase duration="3" state="rrryrrrrrrryrrrrrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="9" state="rrrrgGGgrrrrgGGgGrGr" name="walk"/>
+        <phase duration="14" state="rrrrgGGgrrrrgGGgrrrr" name="ped-clear"/>
+        <phase duration="4" state="rrrryyygrrrryyygrrrr" name="yellow"/>
+        <phase duration="8" state="rrrrrrrGrrrrrrrGrrrr" name="left"/>
+        <phase duration="3" state="rrrrrrryrrrrrrryrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n1_2" type="static" programID="0" offset="0">
-        <phase duration="22" state="gGGgrrrrgGGgrrrrrGrG"/>
-        <phase duration="5"  state="gGGgrrrrgGGgrrrrrrrr"/>
-        <phase duration="4"  state="yyygrrrryyygrrrrrrrr"/>
-        <phase duration="8"  state="rrrGrrrrrrrGrrrrrrrr"/>
-        <phase duration="4"  state="rrryrrrrrrryrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="22" state="rrrrgGGgrrrrgGGgGrGr"/>
-        <phase duration="5"  state="rrrrgGGgrrrrgGGgrrrr"/>
-        <phase duration="4"  state="rrrryyygrrrryyygrrrr"/>
-        <phase duration="8"  state="rrrrrrrGrrrrrrrGrrrr"/>
-        <phase duration="4"  state="rrrrrrryrrrrrrryrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n1_2" type="static" programID="0" offset="60">
+        <phase duration="9" state="gGGgrrrrgGGgrrrrrGrG" name="walk"/>
+        <phase duration="14" state="gGGgrrrrgGGgrrrrrrrr" name="ped-clear"/>
+        <phase duration="4" state="yyygrrrryyygrrrrrrrr" name="yellow"/>
+        <phase duration="8" state="rrrGrrrrrrrGrrrrrrrr" name="left"/>
+        <phase duration="3" state="rrryrrrrrrryrrrrrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="9" state="rrrrgGGgrrrrgGGgGrGr" name="walk"/>
+        <phase duration="14" state="rrrrgGGgrrrrgGGgrrrr" name="ped-clear"/>
+        <phase duration="4" state="rrrryyygrrrryyygrrrr" name="yellow"/>
+        <phase duration="8" state="rrrrrrrGrrrrrrrGrrrr" name="left"/>
+        <phase duration="3" state="rrrrrrryrrrrrrryrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n1_3" type="static" programID="0" offset="0">
-        <phase duration="28" state="gGGgrrrrgGGgrrrrrGrG"/>
-        <phase duration="5"  state="gGGgrrrrgGGgrrrrrrrr"/>
-        <phase duration="4"  state="yyygrrrryyygrrrrrrrr"/>
-        <phase duration="8"  state="rrrGrrrrrrrGrrrrrrrr"/>
-        <phase duration="4"  state="rrryrrrrrrryrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="28" state="rrrrgGggrrrrgGggGrGr"/>
-        <phase duration="5"  state="rrrrgGggrrrrgGggrrrr"/>
-        <phase duration="4"  state="rrrryyyyrrrryyyyrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n1_3" type="static" programID="0" offset="62">
+        <phase duration="29" state="gGGgrrrrgGGgrrrrrGrG" name="walk"/>
+        <phase duration="2" state="gGGgrrrrgGGgrrrrrrrr" name="ped-clear"/>
+        <phase duration="4" state="yyygrrrryyygrrrrrrrr" name="yellow"/>
+        <phase duration="8" state="rrrGrrrrrrrGrrrrrrrr" name="left"/>
+        <phase duration="3" state="rrryrrrrrrryrrrrrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="12" state="rrrrgGggrrrrgGggGrGr" name="walk"/>
+        <phase duration="14" state="rrrrgGggrrrrgGggrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="rrrryyyyrrrryyyyrrrr" name="yellow"/>
+        <phase duration="2.5" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n2_0" type="static" programID="0" offset="0">
-        <phase duration="34" state="gGggGgrrrrrrgGggGgrrrrrrrGrG"/>
-        <phase duration="5"  state="gGggGgrrrrrrgGggGgrrrrrrrrrr"/>
-        <phase duration="4"  state="yyyyyyrrrrrryyyyyyrrrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="34" state="rrrrrrgGggGgrrrrrrgGggGgGrGr"/>
-        <phase duration="5"  state="rrrrrrgGggGgrrrrrrgGggGgrrrr"/>
-        <phase duration="4"  state="rrrrrryyyyyyrrrrrryyyyyyrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n2_0" type="static" programID="0" offset="34">
+        <phase duration="8.5" state="gGggGgrrrrrrgGggGgrrrrrrrGrG" name="walk"/>
+        <phase duration="6" state="gGggGgrrrrrrgGggGgrrrrrrrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="yyyyyyrrrrrryyyyyyrrrrrrrrrr" name="yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="8.5" state="rrrrrrgGggGgrrrrrrgGggGgGrGr" name="walk"/>
+        <phase duration="6" state="rrrrrrgGggGgrrrrrrgGggGgrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="rrrrrryyyyyyrrrrrryyyyyyrrrr" name="yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n2_1" type="static" programID="0" offset="0">
-        <phase duration="28" state="rrrrrrggGGgrrrrrrggGGgGrGr"/>
-        <phase duration="5"  state="rrrrrrggGGgrrrrrrggGGgrrrr"/>
-        <phase duration="4"  state="rrrrrryyyygrrrrrryyyygrrrr"/>
-        <phase duration="8"  state="rrrrrrrrrrGrrrrrrrrrrGrrrr"/>
-        <phase duration="4"  state="rrrrrrrrrryrrrrrrrrrryrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="28" state="gGggGgrrrrrgGggGgrrrrrrGrG"/>
-        <phase duration="5"  state="gGggGgrrrrrgGggGgrrrrrrrrr"/>
-        <phase duration="4"  state="yyyyyyrrrrryyyyyyrrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n2_1" type="static" programID="0" offset="47">
+        <phase duration="16" state="rrrrrrggGGgrrrrrrggGGgGrGr" name="walk"/>
+        <phase duration="5" state="rrrrrrggGGgrrrrrrggGGgrrrr" name="ped-clear"/>
+        <phase duration="4" state="rrrrrryyyygrrrrrryyyygrrrr" name="yellow"/>
+        <phase duration="8" state="rrrrrrrrrrGrrrrrrrrrrGrrrr" name="left"/>
+        <phase duration="3" state="rrrrrrrrrryrrrrrrrrrryrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="15" state="rrrrrrrrrrrgGggGgrrrrrrGrG" name="walk"/>
+        <phase duration="3.5" state="rrrrrrrrrrryyyyyyrrrrrrGrG" name="yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrrrrrGrG" name="all-red"/>
+        <phase duration="1.5" state="gGggGgrrrrrrrrrrrrrrrrrGrG" name="green"/>
+        <phase duration="14" state="gGggGgrrrrrrrrrrrrrrrrrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="yyyyyyrrrrrrrrrrrrrrrrrrrr" name="yellow"/>
+        <phase duration="2.5" state="rrrrrrrrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n2_2" type="static" programID="0" offset="0">
-        <phase duration="28" state="rrrrrrggGGgrrrrrrggGGgGrGr"/>
-        <phase duration="5"  state="rrrrrrggGGgrrrrrrggGGgrrrr"/>
-        <phase duration="4"  state="rrrrrryyyygrrrrrryyyygrrrr"/>
-        <phase duration="8"  state="rrrrrrrrrrGrrrrrrrrrrGrrrr"/>
-        <phase duration="4"  state="rrrrrrrrrryrrrrrrrrrryrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="28" state="gGggGgrrrrrgGggGgrrrrrrGrG"/>
-        <phase duration="5"  state="gGggGgrrrrrgGggGgrrrrrrrrr"/>
-        <phase duration="4"  state="yyyyyyrrrrryyyyyyrrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n2_2" type="static" programID="0" offset="68">
+        <phase duration="16" state="rrrrrrggGGgrrrrrrggGGgGrGr" name="walk"/>
+        <phase duration="5" state="rrrrrrggGGgrrrrrrggGGgrrrr" name="ped-clear"/>
+        <phase duration="4" state="rrrrrryyyygrrrrrryyyygrrrr" name="yellow"/>
+        <phase duration="8" state="rrrrrrrrrrGrrrrrrrrrrGrrrr" name="left"/>
+        <phase duration="3" state="rrrrrrrrrryrrrrrrrrrryrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="15" state="rrrrrrrrrrrgGggGgrrrrrrGrG" name="walk"/>
+        <phase duration="3.5" state="rrrrrrrrrrryyyyyyrrrrrrGrG" name="yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrrrrrGrG" name="all-red"/>
+        <phase duration="1.5" state="gGggGgrrrrrrrrrrrrrrrrrGrG" name="green"/>
+        <phase duration="14" state="gGggGgrrrrrrrrrrrrrrrrrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="yyyyyyrrrrrrrrrrrrrrrrrrrr" name="yellow"/>
+        <phase duration="2.5" state="rrrrrrrrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n3_1" type="static" programID="0" offset="0">
-        <phase duration="28" state="rrrrgGGgrrrrgGGgGrGr"/>
-        <phase duration="5"  state="rrrrgGGgrrrrgGGgrrrr"/>
-        <phase duration="4"  state="rrrryyygrrrryyygrrrr"/>
-        <phase duration="8"  state="rrrrrrrGrrrrrrrGrrrr"/>
-        <phase duration="4"  state="rrrrrrryrrrrrrryrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="28" state="gGggrrrrgGggrrrrrGrG"/>
-        <phase duration="5"  state="gGggrrrrgGggrrrrrrrr"/>
-        <phase duration="4"  state="yyyyrrrryyyyrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n3_1" type="static" programID="0" offset="3">
+        <phase duration="29" state="rrrrgGGgrrrrgGGgGrGr" name="walk"/>
+        <phase duration="2" state="rrrrgGGgrrrrgGGgrrrr" name="ped-clear"/>
+        <phase duration="4" state="rrrryyygrrrryyygrrrr" name="yellow"/>
+        <phase duration="8" state="rrrrrrrGrrrrrrrGrrrr" name="left"/>
+        <phase duration="3" state="rrrrrrryrrrrrrryrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="12" state="gGggrrrrgGggrrrrrGrG" name="walk"/>
+        <phase duration="14" state="gGggrrrrgGggrrrrrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="yyyyrrrryyyyrrrrrrrr" name="yellow"/>
+        <phase duration="2.5" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
-    <tlLogic id="n3_2" type="static" programID="0" offset="0">
-        <phase duration="28" state="rrrrgGGgrrrrgGGgGrGr"/>
-        <phase duration="5"  state="rrrrgGGgrrrrgGGgrrrr"/>
-        <phase duration="4"  state="rrrryyygrrrryyygrrrr"/>
-        <phase duration="8"  state="rrrrrrrGrrrrrrrGrrrr"/>
-        <phase duration="4"  state="rrrrrrryrrrrrrryrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="28" state="gGggrrrrgGggrrrrrGrG"/>
-        <phase duration="5"  state="gGggrrrrgGggrrrrrrrr"/>
-        <phase duration="4"  state="yyyyrrrryyyyrrrrrrrr"/>
-        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    <tlLogic id="n3_2" type="static" programID="0" offset="66">
+        <phase duration="29" state="rrrrgGGgrrrrgGGgGrGr" name="walk"/>
+        <phase duration="2" state="rrrrgGGgrrrrgGGgrrrr" name="ped-clear"/>
+        <phase duration="4" state="rrrryyygrrrryyygrrrr" name="yellow"/>
+        <phase duration="8" state="rrrrrrrGrrrrrrrGrrrr" name="left"/>
+        <phase duration="3" state="rrrrrrryrrrrrrryrrrr" name="left-yellow"/>
+        <phase duration="2" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
+        <phase duration="12" state="gGggrrrrgGggrrrrrGrG" name="walk"/>
+        <phase duration="14" state="gGggrrrrgGggrrrrrrrr" name="ped-clear"/>
+        <phase duration="3.5" state="yyyyrrrryyyyrrrrrrrr" name="yellow"/>
+        <phase duration="2.5" state="rrrrrrrrrrrrrrrrrrrr" name="all-red"/>
     </tlLogic>
 
     <junction id="fe0" type="dead_end" x="760.00" y="0.00" incLanes="front_e4_0 front_e4_1 front_e4_2" intLanes="" shape="760.00,0.00 760.00,-7.80 760.00,0.00"/>
