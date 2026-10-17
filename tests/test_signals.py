@@ -18,6 +18,12 @@ from helpers import make_engine, run_until
 NETS = ("district", "district_bike")
 
 
+def junction(ns_name: str, ew_name: str, net_id: str = "district") -> str:
+    """Junction id by its street names, e.g. ("John Street", "King Street West")."""
+    city = json.loads((NETWORKS_DIR / f"{net_id}.city.json").read_text(encoding="utf-8"))
+    return next(k for k, j in city["junctions"].items() if j["name"] == f"{ns_name} & {ew_name}")
+
+
 # ---------------------------------------------------------------------------
 # Formulas and phase classification (pure functions)
 # ---------------------------------------------------------------------------
@@ -173,7 +179,11 @@ def test_pedestrians_get_a_walk_and_a_full_clearance_before_conflicting_traffic(
         if not any(green):
             continue
         conflicts = [i for t, i, frm in approach if t == tid and frm in crossed]
-        assert conflicts, (tid, idx)
+        if not conflicts:
+            # the far side of a one-way street: nothing approaches over this crosswalk, only turning traffic
+            # leaves across it, and turning traffic yields to pedestrians
+            assert all(frm not in crossed for t, _, frm in approach if t == tid), (tid, idx)
+            continue
         start = next(k for k in range(n) if green[k] and not green[k - 1])  # first phase of a walk run
         k, walk = start, 0.0
         while green[k % n]:
@@ -194,7 +204,8 @@ def test_cycle_length_and_splits_follow_the_intersection_type():
     designs = S.read_signal_designs(NETWORKS_DIR / "district.net.xml")
     programs = read_programs("district")
     kinds = {t: d.kind for t, d in designs.items()}
-    assert set(kinds.values()) == {"arterial_arterial", "arterial_collector", "arterial_local", "collector_collector"}
+    # downtown Toronto between Peter and Simcoe: the north-south streets are collectors and locals
+    assert set(kinds.values()) == {"arterial_collector", "arterial_local", "collector_collector"}
     for t, kind in kinds.items():
         cycle = sum(p[0] for p in programs[t][1])
         assert cycle == (40 if kind == "collector_collector" else 80), (t, kind, cycle)
@@ -208,23 +219,32 @@ def test_cycle_length_and_splits_follow_the_intersection_type():
     art_local = next(t for t, k in kinds.items() if k == "arterial_local" and designs[t].streets["ew"][1] == 3)
     assert served_time(art_local, "ew") > 1.3 * served_time(art_local, "ns")
     assert served_time(art_local, "ns") >= 20  # 7 s walk + clearance across a 20 m arterial
-    aa = next(t for t, k in kinds.items() if k == "arterial_arterial")
-    assert abs(served_time(aa, "ew") - served_time(aa, "ns")) <= 4
-    # arterial protected lefts exist at arterial x arterial; the collector-only signal has none
-    assert any(n == "left" for _, _, n in programs[aa][1])
-    assert not any(n == "left" for _, _, n in programs["n2_0"][1])
+    # King (arterial, left bays) x John (collector): the arterial gets protected lefts and the larger share
+    kj = junction("John Street", "King Street West")
+    assert kinds[kj] == "arterial_collector"
+    assert any(n == "left" for _, _, n in programs[kj][1])
+    assert served_time(kj, "ew") > served_time(kj, "ns")
+    # the collector-only signal (Peter/Blue Jays Way x Wellington) has no protected lefts
+    assert not any(n == "left" for _, _, n in programs[junction("Blue Jays Way", "Wellington Street West")][1])
 
 
 def test_collector_directions_are_split_so_permissive_lefts_cannot_deadlock():
     designs = S.read_signal_designs(NETWORKS_DIR / "district.net.xml")
-    d = designs["n2_1"]  # King (arterial) x Church (collector)
-    assert d.kind == "arterial_collector"
-    church = [i for i, l in d.links.items() if l.axis == "ns"]
-    for _, state, _ in read_programs("district")["n2_1"][1]:
-        served = {d.links[i].sign for i in church if state[i] in "Gg"}
-        assert len(served) <= 1, state  # never both directions at once
-    both = {sign for _, state, _ in read_programs("district")["n2_1"][1] for i in church if state[i] in "Gg" for sign in [d.links[i].sign]}
-    assert both == {1, -1}  # but both are served
+    programs = read_programs("district")
+    for tid, d in designs.items():
+        if d.kind != "arterial_collector":
+            continue
+        minor = [i for i, l in d.links.items() if l.axis == "ns"]
+        for _, state, _ in programs[tid][1]:
+            # opposing permissive lefts on the one-lane collector are never green together
+            lefts = {d.links[i].sign for i in minor if state[i] in "Gg" and d.links[i].dir in "lL"}
+            assert lefts != {1, -1}, (tid, state)
+    # across the one-way Adelaide only southbound John can turn left, so both directions run together (no split)
+    ja = junction("John Street", "Adelaide Street West")
+    d = designs[ja]
+    john = [i for i, l in d.links.items() if l.axis == "ns"]
+    together = [{d.links[i].sign for i in john if state[i] in "Gg"} for _, state, _ in programs[ja][1]]
+    assert {1, -1} in together
 
 
 @pytest.mark.parametrize("net_id", NETS)
@@ -234,11 +254,12 @@ def test_corridor_offsets_are_engineered_and_reduce_waiting(net_id):
     summary = layout["signals"]
     assert {s["offset"] for s in summary["signals"].values()} == {offset for offset, _ in programs.values()}
     assert len({o for o, _ in programs.values()}) >= 6  # not the old all-zero pattern
-    arterial = [summary["corridors"][n] for n in ("King Street", "Queen Street", "Main Street")]
+    arterial = [summary["corridors"][n] for n in ("King Street West", "Queen Street West", "Front Street West", "Adelaide Street West", "Richmond Street West")]
     legs = [l for c in arterial for l in c["legs"]]
     # waiting of through traffic (in the design model, 85 % of the limit, one platoon per 2 s) roughly halves ...
     assert sum(l["waitSec"] for l in legs) < 0.7 * sum(l["waitSecNoOffsets"] for l in legs)
-    assert sum(l["stops"] for l in legs) < 0.7 * sum(l["stopsNoOffsets"] for l in legs)
+    # (stops fall less than waiting: downtown blocks are only 100-170 m long, too short for full platoon progression)
+    assert sum(l["stops"] for l in legs) < 0.85 * sum(l["stopsNoOffsets"] for l in legs)
     # ... and no direction is sacrificed for the other
     for leg in legs:
         assert leg["waitSec"] < leg["waitSecNoOffsets"]
@@ -252,7 +273,8 @@ def test_sumo_executes_the_plan_with_its_offsets_and_durations():
     eng = make_engine("rush_hour", 3, {"duration": 5, "pedestrians": False}, "sigplan")
     eng.start()
     programs = read_programs(eng.network_id)
-    watch = ("n1_1", "n2_1", "n2_0", "n0_2")
+    watch = tuple(junction(a, b) for a, b in (("John Street", "King Street West"), ("Peter Street", "Queen Street West"),
+                                                ("Blue Jays Way", "Wellington Street West"), ("Simcoe Street", "Adelaide Street West")))
     changes = {t: [] for t in watch}
     last = {t: None for t in watch}
     try:
@@ -310,10 +332,11 @@ def test_rush_hour_is_busy_but_never_gridlocks():
 
         run_until(eng, 15 * 60, watch)
         assert eng.teleports == 0
-        assert peak_active >= 120  # visible traffic in a 600 m x 500 m district
+        assert peak_active >= 120  # visible traffic in a 520 m x 680 m slice of downtown
         assert max(h["queued"] for h in eng.metrics.history) >= 40  # real queues at the signals
         assert eng.metrics.completed >= 400
-        assert eng.demand.throttle > 0.5 and eng.demand.deferred < 0.1 * eng.demand.counter  # the guardrail did not choke demand
+        # the guardrail did not choke demand (downtown's north-south streets are one-lane collectors, so some is held back)
+        assert eng.demand.throttle > 0.5 and eng.demand.deferred < 0.15 * eng.demand.counter
     finally:
         eng.close()
 
@@ -339,10 +362,10 @@ def test_gateways_are_weighted_by_street_class():
         dem = eng.demand
         counts = {}
         for _ in range(6000):
-            e = dem._side_edge("W", True)
+            e = dem._side_edge("E", True)  # east: Front/King/Richmond/Queen, Wellington and Pearl enter here
             cls = eng.net.edges[e].cls
             counts[cls] = counts.get(cls, 0) + 1
-        per_edge = {c: counts[c] / sum(1 for e in eng.net.entries["W"] if eng.net.edges[e].cls == c) for c in counts}
+        per_edge = {c: counts[c] / sum(1 for e in eng.net.entries["E"] if eng.net.edges[e].cls == c) for c in counts}
         assert per_edge["arterial"] > 2.5 * per_edge["collector"] > 0
         assert per_edge["collector"] > 1.5 * per_edge["local"]
     finally:

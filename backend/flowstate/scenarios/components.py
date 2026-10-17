@@ -38,8 +38,11 @@ def run_length(sc: "Scenario") -> float:
     return sc.duration or 600.0
 
 
-def pick_edge(rng: random.Random, net: "NetInfo", sc: "Scenario", requested: str = "random", min_lanes: int = 1, classes: tuple[str, ...] = ()) -> str:
+def pick_edge(rng: random.Random, net: "NetInfo", sc: "Scenario", requested: str = "random", min_lanes: int = 1, classes: tuple[str, ...] = (),
+              min_length: float = 0.0) -> str:
     cands = [e for e in net.block_edges(min_lanes, classes) if e not in sc.reserved and e not in sc.protected]
+    if requested in (None, "", "random") and min_length:
+        cands = [e for e in cands if net.edges[e].length >= min_length] or cands
     if requested and requested != "random":
         seg = net.street_segment(requested) if requested in net.edges else []
         main = [e for e in seg if net.edges[e].part != "bay" and e in cands]
@@ -126,7 +129,8 @@ def divert_from_closure(eng: "Engine", edge: str) -> int:
 
     Drivers who merely pass through are re-routed (SUMO's travel times already price the closure in). Drivers whose
     *destination* is on the closed block cannot be: they would wait at the barrier for good and block everyone behind
-    them, so they head for the nearest open block instead.
+    them, so they head for the nearest open block instead. So do drivers boxed in by one-way streets and turn bans,
+    for whom every way to their destination runs over the closed block (a block nearby, else the nearest map exit).
     """
     net, T = eng.net, eng.T
     seg = set(net.street_segment(edge))
@@ -134,6 +138,7 @@ def divert_from_closure(eng: "Engine", edge: str) -> int:
     ex, ey = net.node_pos[net.edges[edge].to]
     open_blocks = sorted((e for e in net.block_edges(1) if e not in closed),
                          key=lambda e: math.dist(net.node_pos[net.edges[e].to], (ex, ey)))
+    exits = sorted(net.exit_edges, key=lambda e: math.dist(net.node_pos[net.edges[e].to], (ex, ey)))
     moved = 0
     for vid in list(eng.vehicles):
         if vid in eng.tracked or base_type(eng.vtype.get(vid, "")) in ("wreck", "bus"):
@@ -146,8 +151,11 @@ def divert_from_closure(eng: "Engine", edge: str) -> int:
             if route[-1] not in seg:
                 T.vehicle.rerouteTraveltime(vid)
                 moved += 1
-                continue
-            for alt in open_blocks[:6]:
+                r2, i2 = T.vehicle.getRoute(vid), T.vehicle.getRouteIndex(vid)
+                if not seg.intersection(r2[i2 + 1:]):
+                    continue
+                # boxed in (one-way streets, turn bans): no way to the destination that avoids the closure
+            for alt in open_blocks[:6] + exits:
                 try:
                     T.vehicle.changeTarget(vid, alt)
                     moved += 1
@@ -462,7 +470,8 @@ class Accident(Component):
 
     def instantiate(self, rng, sc, net) -> None:
         D = run_length(sc)
-        self.edge = pick_edge(rng, net, sc, self.location)
+        # wrecks plus up to two responding units parked behind them need a block of ~60 m (short downtown blocks are skipped)
+        self.edge = pick_edge(rng, net, sc, self.location, min_length=62.0)
         self.severity = self.sev_req if self.sev_req != "random" else rng.choices(list(SEVERITIES), weights=[0.45, 0.35, 0.2])[0]
         cfg = SEVERITIES[self.severity]
         car = [net.lanes[l].index for l in net.car_lanes(self.edge)]
@@ -477,6 +486,9 @@ class Accident(Component):
         self.car_lanes = car
         L = net.edges[self.edge].length
         self.pos = rng.uniform(0.3, 0.7) * max(30.0, L - 30)
+        # short downtown blocks: leave room behind the wreck(s) for the responding units to park nose-to-tail
+        room = 22.0 + (6.5 if self.severity == "severe" else 0.0) + (12.0 if self.severity != "minor" else 0.0)
+        self.pos = min(max(self.pos, room), max(room, L - 14.0)) if L > room + 14.0 else self.pos
         # a crash late in a short run would never clear: start early enough that 150 s remain before 85 % of the run
         self.t_start = min(D * rng.uniform(*self.window), max(0.05 * D, 0.85 * D - 150.0))
         # clearance is drawn in real-world minutes, then scaled to the run so the whole story (crash, response,
@@ -848,9 +860,12 @@ class Pursuit(Component):
         self.rng = rng
         self.t0 = D * rng.uniform(0.04, 0.1)
         cands = [e for e in net.block_edges(1) if e not in sc.reserved and e not in sc.protected]
-        self.origin = rng.choice(cands)
-        self.cands = cands
         self.station = poi_edges(net, "police")
+        # the theft is reported away from the division, so the first unit has to give chase
+        hq = net.node_pos[net.edges[self.station[0]].to] if self.station else None
+        away = [e for e in cands if hq is None or math.dist(net.node_pos[net.edges[e].to], hq) > 250]
+        self.origin = rng.choice(away or cands)
+        self.cands = cands
         self.retarget_every = rng.uniform(20, 35)
         self.unit_delays = sorted(rng.uniform(8, 40) for _ in range(self.units))
         self.unit_origins = [self.station[0] if k == 0 and self.station else rng.choice(cands) for k in range(self.units)]

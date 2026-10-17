@@ -407,7 +407,8 @@ def _split_items(d: SignalDesign, items: list[tuple[str, str]]) -> list[tuple[st
     served = [d.links[i] for i in d.links if i < len(green) and green[i] in "Gg"]
     plus = {l.index for l in served if l.sign > 0}
     minus = {l.index for l in served if l.sign < 0}
-    if not plus or not minus or not any(l.dir in "lL" for l in served):
+    # the deadlock needs left-turners on both sides; across a one-way street only one direction can turn left
+    if not plus or not minus or not (any(l.dir in "lL" for l in served if l.sign > 0) and any(l.dir in "lL" for l in served if l.sign < 0)):
         return None
     out: list[tuple[str, str]] = [(GREEN, _set(green, minus, "r"))]
     a_yellow = "".join("y" if i in plus and green[i] in "Gg" else ("r" if i in d.links else green[i]) for i in range(len(green)))
@@ -616,6 +617,8 @@ def optimize_offsets(designs: dict[str, SignalDesign], programs: dict[str, Signa
     for c in corridors:
         v = c.speed * PROGRESSION_FACTOR
         for sign, order in ((1, list(range(len(c.nodes)))), (-1, list(range(len(c.nodes) - 1, -1, -1)))):
+            if not all((c.axis, sign) in programs[n].windows for n in c.nodes):
+                continue  # one-way street: no through traffic in this direction
             legs.append((c, [c.nodes[i] for i in order], [int(round(abs(c.pos[i] - c.pos[order[0]]) / v)) for i in order], sign))
     memo: dict[tuple, tuple[float, float]] = {}
 

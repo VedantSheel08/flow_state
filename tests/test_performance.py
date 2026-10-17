@@ -41,7 +41,7 @@ def test_prepared_identity_changes_for_seed_config_and_same_size_input(networks,
     assert key(params={"duration": 10}) != original
     path = tmp_path / "district.city.json"
     content = path.read_text(encoding="utf-8")
-    path.write_text(content.replace("Riverside", "RiversidX"), encoding="utf-8")
+    path.write_text(content.replace("King West", "King Wesx"), encoding="utf-8")
     assert key() != original
 
 

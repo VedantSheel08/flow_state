@@ -67,13 +67,19 @@ def test_accident_blocks_valid_lanes_and_reopens(severity, seed):
             state["wreck_lanes"] = {T.vehicle.getLaneIndex(w) for w in wrecks}
             assert {T.vehicle.getRoadID(w) for w in wrecks} == {acc.edge}
             tail = {li: min(T.vehicle.getLanePosition(w) - T.vehicle.getLength(w) for w in wrecks if T.vehicle.getLaneIndex(w) == li) for li in state["wreck_lanes"]}
+            was_behind, now_behind = state.get("behind", {}), {}
+            state["behind"] = now_behind
             for li, rear in tail.items():
                 for v in T.lane.getLastStepVehicleIDs(f"{acc.edge}_{li}"):
                     if v in wrecks or v.startswith(("resp", "amb", "police")):
                         continue
                     # ahead of the wreck and still inside the wreck's own corridor (a car that has already slid over into
-                    # the free lane is indexed in the blocked lane until its centre crosses the boundary)
-                    if T.vehicle.getLanePosition(v) > rear + 0.5 and abs(T.vehicle.getLateralLanePosition(v)) < 0.6:
+                    # the free lane is indexed in the blocked lane until its centre crosses the boundary). Only a car that was
+                    # behind the wreck in this lane at the previous step counts: on a short one-way block a car may pass in
+                    # the free lane and then move back over in front of the wreck to make its turn.
+                    if T.vehicle.getLanePosition(v) < rear:
+                        now_behind.setdefault(li, set()).add(v)
+                    elif v in was_behind.get(li, set()) and T.vehicle.getLanePosition(v) > rear + 0.5 and abs(T.vehicle.getLateralLanePosition(v)) < 0.6:
                         state["through"].add(v)
             if acc.closed:
                 for li in acc.car_lanes:
@@ -196,8 +202,9 @@ def test_ambulance_drives_around_a_closed_street():
     from flowstate.network.info import load_net_info
 
     net = load_net_info(str(NETWORKS_DIR / "district.net.xml"), "district")
+    stations = set(poi_edges(net, "hospital")) | set(poi_edges(net, "police"))  # their frontage is never closed
     block = next(e for e in mid if net.edges[e].part != "bay" and net.edges[e].kind == "street"
-                 and not set(net.street_segment(e)) & set(poi_edges(net, "hospital")))
+                 and not set(net.street_segment(e)) & stations)
     sc = custom_scenario(lambda: [EmergencyDispatch(1), Construction(location=block, closure="full")], {"duration": 10})
     a = run_audit(sc, seed, label="amb_closure")
     ems = a.results["ems"][0]
