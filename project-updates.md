@@ -13,8 +13,20 @@
 
 # Issues
 - senarios dont really show ex car crash will work but wont show on map, severe weather wont show like rain on the map (fixed) (partially tested)
-  - car crash just shows 4 cars together looks a bit weird
+  - car crash just shows 4 cars together looks a bit weird (fixed on krishna-updates: wrecks spun askew + skid marks, fluid stain, debris)
 - the map is good however the intersections are a repetitive structure, we should try to add even diagonals curves roundabounts etc.
 - ui improvements needed
 - dragging map pretty unresponsive
 - issue with emergency vehicles overtaking system is that they cant actually overtake cuz the roads are all one lanes but its implemented if we make roads 2 lanes in places
+
+# Krishna (krishna-updates branch)
+
+- new **Results** tab: FlowState vs fixed-time using Vedant's real recorded SUMO evaluation (held-out seeds 3000-3009, 5 traffic patterns, standard + over-saturated demand)
+    - headline tiles, per-pattern chart with 95% intervals, every-run scatter, full table, controllers + safety limits
+    - only says "clear improvement" when the interval doesn't cross zero; shows losses too (rush-hour ramp, more teleports under stress)
+    - data is copied from `task/rl-signal-control` (commit 109108e) by `frontend/scripts/extract_controller_results.py` - rerun it if Vedant updates the evaluation
+    - **live mode ready**: if the server has Vedant's `/api/rl` router, a "Run a fresh comparison" panel appears (fixed-time vs FlowState on new random seeds, live progress). Without it, the tab just shows the recorded results, so nothing breaks before the merge
+    - tested against Vedant's branch running locally (not merged): all 5 patterns x 3 fresh seeds ran in ~15 s, 8% less waiting / 14% smaller peak queues, rush-hour ramp still worse
+    - needs `numpy scipy gymnasium` on the server for comparisons (torch only if the RL policy ever passes its gate)
+- crash scenes look like crashes now (frontend renderer only, backend untouched)
+- UI/design polish: Krishna doing this in Claude Design
