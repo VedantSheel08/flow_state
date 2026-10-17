@@ -15,7 +15,7 @@
 on the server (no secrets). Server config is not changed by `deploy.sh`.
 
 Access limits (in `backend/flowstate/api/app.py`, env-tunable in the unit file): 30 writes/min and 6 run
-starts/min per client IP (429), 4 WebSocket viewers per IP and 25 total, runs capped at 15 min,
+starts/min per client IP (429), 12 WebSocket viewers per IP and 40 total (code default is 4/25; raised on the server by the drop-in `ws-limits.conf` -> `/etc/systemd/system/flowstate.service.d/`, so multiple tabs/teammates behind one IP work), runs capped at 15 min,
 one comparison job at a time, WebSocket/CORS origin allowlist. Origin checks are not authentication;
 the limits are what bound abuse. Any visitor can still control the one shared live run.
 
