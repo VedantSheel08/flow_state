@@ -18,6 +18,8 @@ export function secs(v: number | null | undefined): string {
   return `${v.toFixed(v < 10 ? 1 : 0)} s`
 }
 
+export const WEATHER_LABEL: Record<string, string> = { light_rain: 'Light rain', heavy_rain: 'Heavy rain', snow: 'Snow', fog: 'Dense fog', clear: 'Clear' }
+
 export const HEADING: Record<string, string> = { N: 'Northbound', S: 'Southbound', E: 'Eastbound', W: 'Westbound' }
 
 export function cn(...xs: (string | false | null | undefined)[]): string {

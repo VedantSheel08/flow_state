@@ -37,6 +37,25 @@ def test_same_seed_reproduces_inputs(sid):
     assert a.describe()["markers"] == b.describe()["markers"]
 
 
+MAP_KINDS = {"accident": {"point"}, "ambulance": {"point"}, "pursuit": {"point"}, "construction": {"zone"}, "stadium": {"zone"},
+             "school": {"zone", "point"}, "transit": {"route"}, "bike_lanes": {"route"}, "weather": {"weather"}}
+
+
+@pytest.mark.parametrize("sid", list(CATALOG))
+def test_overlays_place_every_scenario_on_the_map(sid):
+    for seed in (1, 7, 42):
+        sc, net = instance(sid, seed)
+        ovs = sc.describe()["overlays"]
+        assert MAP_KINDS.get(sid, set()) <= {o["kind"] for o in ovs}
+        if sid not in ("rush_hour",):
+            assert ovs
+        for o in ovs:
+            assert all(e in net.edges for e in o["edges"])
+            if o["kind"] in ("point", "zone", "route"):
+                assert o["edges"]
+        assert len({o["id"] for o in ovs}) == len(ovs)
+
+
 @pytest.mark.parametrize("sid", ["accident", "ambulance", "construction", "rush_hour", "pursuit", "disruption", "stadium"])
 def test_different_seeds_give_different_situations(sid):
     seen = {str(instance(sid, s)[0].describe()["briefing"]) for s in range(1, 9)}

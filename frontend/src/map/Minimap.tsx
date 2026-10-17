@@ -4,11 +4,13 @@
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Tip } from '../components/ui'
+import { frames } from '../lib/frames'
 import { cn } from '../lib/format'
 import { useStore } from '../lib/store'
 import type { Camera } from './camera'
 import type { Pt } from './geom'
 import { mapApi } from './MapView'
+import { phaseAt, placeOverlays, toneColor, type PlacedOverlay } from './overlays'
 import type { Scene } from './scene'
 
 const W = 184
@@ -48,6 +50,42 @@ function projection(scene: Scene) {
 }
 
 const pathOf = (pts: Pt[], p: ReturnType<typeof projection>) => pts.map((q, i) => `${i ? 'L' : 'M'}${p.sx(q[0]).toFixed(1)} ${p.sy(q[1]).toFixed(1)}`).join('')
+
+/** Scenario footprints in the inset: tinted zones and lines, a dot per scene (pulsing while live). */
+function OverlayMarks({ placed, proj }: { placed: PlacedOverlay[]; proj: ReturnType<typeof projection> }) {
+  const [t, setT] = useState(0)
+  useEffect(() => {
+    const iv = setInterval(() => setT(isFinite(frames.renderT) ? Math.floor(frames.renderT) : 0), 1000)
+    return () => clearInterval(iv)
+  }, [])
+  const paths = useMemo(() => placed.map((p) => p.segs.map((s) => pathOf(s.pts, proj)).join('')), [placed, proj])
+  return (
+    <g pointerEvents="none">
+      {placed.map((p, i) => {
+        const phase = phaseAt(p.o, t)
+        if (phase === 'done' || p.o.kind === 'point') return null
+        return <path key={p.o.id} d={paths[i]} stroke={toneColor(p.o)} strokeOpacity={phase === 'planned' ? 0.35 : 0.8} strokeWidth={p.o.kind === 'route' ? 2 : 4} fill="none" strokeLinecap="round" />
+      })}
+      {placed.map((p) => {
+        const phase = phaseAt(p.o, t)
+        if (phase === 'done' || p.o.kind !== 'point') return null
+        const [cx, cy] = [proj.sx(p.x), proj.sy(p.y)]
+        const col = toneColor(p.o)
+        return (
+          <g key={p.o.id}>
+            {phase === 'active' && (
+              <circle cx={cx} cy={cy} r={5} fill="none" stroke={col} strokeWidth={1.5}>
+                <animate attributeName="r" values="5;11" dur="1.6s" repeatCount="indefinite" />
+                <animate attributeName="stroke-opacity" values="0.8;0" dur="1.6s" repeatCount="indefinite" />
+              </circle>
+            )}
+            <circle cx={cx} cy={cy} r={4.2} fill={phase === 'active' ? col : '#FFFFFF'} stroke={col} strokeWidth={1.6} strokeDasharray={phase === 'planned' ? '2 1.5' : undefined} />
+          </g>
+        )
+      })}
+    </g>
+  )
+}
 
 export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { readonly current: Camera }; scaleBar: { px: number; label: string } }) {
   const [open, setOpen] = useState(true)
@@ -101,10 +139,21 @@ export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { r
     return () => cancelAnimationFrame(raf)
   }, [camRef, proj, open, H])
 
+  const run = useStore((s) => s.run)
+  const scenes = useMemo(() => (run && run.network === scene.id ? placeOverlays(scene, run.overlays) : []), [run, scene])
+
   const onClick = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const wx = x0 + (e.clientX - rect.left - PAD) / k
     const wy = y1 - (e.clientY - rect.top - PAD) / k
+    // a scenario dot (within a few inset pixels) wins over the nearest intersection
+    const t = isFinite(frames.renderT) ? frames.renderT : 0
+    const dot = scenes.find((p) => p.o.kind === 'point' && phaseAt(p.o, t) !== 'done' && Math.hypot(p.x - wx, p.y - wy) * k < 7)
+    if (dot) {
+      useStore.getState().set({ follow: false })
+      mapApi.current?.focus(dot.x, dot.y, Math.max(camRef.current.scale, 5))
+      return
+    }
     let best: { id: string; d: number } | null = null
     for (const j of scene.junctions) {
       const d = Math.hypot(j.x - wx, j.y - wy)
@@ -192,6 +241,7 @@ export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { r
               </g>
             )
           })}
+          <OverlayMarks placed={scenes} proj={proj} />
           <rect ref={viewRef} fill="rgba(37,99,235,0.07)" stroke="#2563EB" strokeWidth={1.3} rx={2} />
         </svg>
       )}

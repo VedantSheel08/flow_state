@@ -5,6 +5,7 @@ import type { PersonView, VehicleView } from '../lib/frames'
 import type { Layers } from '../lib/store'
 import type { Incident, Tracked } from '../lib/types'
 import { Camera } from './camera'
+import { drawOverlayPins, drawOverlayZones, type OverlayHit, type PlacedOverlay, type Rect } from './overlays'
 import { along, hash, offset, polyLength, slice, strip, type Pt } from './geom'
 import type { Scene } from './scene'
 import { CODE_TO_TYPE, DIMS, LIGHTBAR, busLineFor, cargoFor, dotSprite, markerSprite, paintFor, personSprite, spriteBucket, spriteFor, type VType } from './vehicles'
@@ -75,7 +76,15 @@ export interface RenderState {
   busLines: { id: string; color: string }[]
   now: number
   pick: boolean
+  /** scenario footprints for this run, and the sim time that decides which are live */
+  overlays: PlacedOverlay[]
+  t: number
+  /** screen area clear of floating panels, where off-screen indicators may sit */
+  safe: Rect
 }
+
+/** Click targets of the scenario pins drawn in the latest frame. */
+export let overlayHits: OverlayHit[] = []
 
 /** Draws one frame; returns how many vehicles were drawn (inside the view after culling). */
 export function render(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera, st: RenderState, dpr: number): number {
@@ -109,6 +118,7 @@ export function render(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera,
   }
 
   // ---- incidents ------------------------------------------------------
+  drawOverlayZones(ctx, st.overlays, st.t, px, st.now)
   for (const inc of st.incidents) if (!inc.cleared) drawIncident(ctx, scene, inc, s, st.now)
 
   // ---- selected route -------------------------------------------------
@@ -177,6 +187,7 @@ export function render(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera,
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   ctx.drawImage(vignette(W, H), 0, 0, W, H)
   drawTrackedTags(ctx, cam, st)
+  overlayHits = drawOverlayPins(ctx, cam, st.overlays, st.t, st.now, st.safe)
   return visible
 }
 
@@ -805,7 +816,8 @@ function drawIncident(ctx: CanvasRenderingContext2D, scene: Scene, inc: Incident
   const u = inc.pos
   for (const ln of lanes) {
     const seg = slice(ln.pts, Math.max(0, u - 3), Math.min(L, u + inc.length + 4))
-    const poly = strip(seg, ln.w)
+    // never thinner than a few pixels, so the blockage reads at overview zoom
+    const poly = strip(seg, Math.max(ln.w, 6 / s))
     ctx.fillStyle = `rgba(239,68,68,${0.12 + 0.06 * Math.sin(now / 300)})`
     ctx.beginPath()
     poly.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])))

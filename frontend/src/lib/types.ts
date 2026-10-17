@@ -41,6 +41,21 @@ export interface Marker {
   kind: string
 }
 
+/** Where a scenario component acts on the map; edges are resolved against the scene. */
+export interface Overlay {
+  id: string
+  kind: 'point' | 'zone' | 'route' | 'weather'
+  tone: 'incident' | 'emergency' | 'demand' | 'transit' | 'environment' | string
+  label: string
+  edges: string[]
+  pos?: number | null
+  tStart?: number | null
+  tEnd?: number | null
+  color?: string | null
+  condition?: string | null
+  detail?: string | null
+}
+
 /** GET /api/congestion-presets (backend-performance contract, version 1). */
 export interface CongestionPreset {
   id: string
@@ -68,6 +83,8 @@ export interface RunInfo {
   duration: number | null
   briefing: BriefingItem[]
   markers: Marker[]
+  /** absent on backends that predate map overlays */
+  overlays?: Overlay[]
   signalMode: string
   spec: ScenarioSpec
   created: number

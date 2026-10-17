@@ -2,14 +2,13 @@ import { CloudRain, Pause, Play, Repeat, Shuffle, Square } from 'lucide-react'
 import { memo, useEffect, useRef, useState } from 'react'
 import { control, endRun, newVariation, reproduce, setSpeed } from '../lib/actions'
 import { frames } from '../lib/frames'
-import { clock, cn } from '../lib/format'
+import { WEATHER_LABEL, clock, cn } from '../lib/format'
 import { useStore } from '../lib/store'
 import type { Marker } from '../lib/types'
 import { ICONS } from './ScenarioRail'
 import { Button, Segmented, Tip } from './ui'
 
 const SPEEDS = [1, 2, 4, 8, 16]
-const WEATHER_LABEL: Record<string, string> = { light_rain: 'Light rain', heavy_rain: 'Heavy rain', snow: 'Snow', fog: 'Dense fog', clear: 'Clear' }
 const MARK: Record<string, string> = { incident: '#DC2626', emergency: '#2563EB', demand: '#D97706', transit: '#7C3AED', event: '#475467' }
 
 function useSimClock() {
