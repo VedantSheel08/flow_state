@@ -44,6 +44,8 @@ def common(demand: int = 1500, duration: int = 10, bikes: int = 5, preemption: b
     if preemption is not None:
         out.append(ParamSpec(key="preemption", label="Emergency pre-emption", type="bool", default=preemption, group=S,
                              description="Hold or advance signals for approaching emergency vehicles (never skips amber, all-red or walk clearance)."))
+        out.append(ParamSpec(key="yield_to_ev", label="Drivers yield to sirens", type="bool", default=True, group=S,
+                             description="Drivers near a unit with its lights on move out of its lane, slow down beside it and hold back at the junction it is entering."))
     return out
 
 
@@ -99,7 +101,7 @@ def _accident(sc: Scenario) -> Recipe:
     params=[*common(1600, 10, preemption=True),
             ParamSpec(key="calls", label="Calls", type="int", default=2, min=1, max=4, step=1)],
     measures=["Response time vs. free-flow", "Signal pre-emptions"],
-    assumptions=["Ambulances use SUMO's bluelight device: other drivers yield and red lights may be passed slowly.", "Free-flow time assumes 125 % of the posted limit."],
+    assumptions=["Ambulances use SUMO's bluelight device and red lights may be passed slowly; nearby drivers clear its lane, slow beside it and hold at the junction it enters.", "Free-flow time assumes 125 % of the posted limit."],
 ))
 def _ambulance(sc: Scenario) -> Recipe:
     p = sc.params

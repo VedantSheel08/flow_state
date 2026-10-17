@@ -10,7 +10,7 @@
     - i think vedant set up rate limits and stuff on another branch so will hold off making public for now
 
 # Issues
-police waits for cars + lights (working on this rn)
+police waits for cars + lights (fixed: drivers clear the lane / slow / hold at junctions for units with lights on, pre-emption looks further ahead and steps through to the serving phase; ambulance response 2.08x -> ~1.5x free-flow)
 senarios dont really show ex car crash will work but wont show on map, severe weather wont show like rain on the map (fixed)
   - car crash just shows 4 cars together looks a bit weird
 the map is good however the intersections are a repetitive structure, we should try to add even diagonals curves roundabounts etc.

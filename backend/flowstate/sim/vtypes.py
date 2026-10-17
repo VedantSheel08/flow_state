@@ -12,6 +12,10 @@ Behaviour uses models built into SUMO:
   ``normc(mean, dev, min, max)``; drivers do not all target the limit.
 * **Emergency vehicles** — ``vClass=emergency`` with SUMO's *bluelight*
   device: surrounding drivers yield and the vehicle may cautiously pass red.
+  With its lights off a unit switches to its ``@quiet`` variant, which stops
+  at red lights and keeps to the limit.
+  ``sim/emergency.py`` adds lane clearing, slowing and junction holds around
+  it, and ``sim/signals.py`` pre-empts the signals ahead.
 
 Each run draws ``PROFILES`` driver profiles per class from bounded normal
 distributions using the run seed (``Class@k`` type ids), so two drivers of the
@@ -27,6 +31,7 @@ from pathlib import Path
 from typing import Any
 
 PROFILES = 8
+QUIET = "@quiet"  # emergency type variant used once a unit's lights are off: obeys red lights like any driver
 
 
 @dataclass
@@ -154,6 +159,10 @@ def build_vtypes(seed: int, cond: Conditions | None = None) -> tuple[str, dict[s
                 lines.append(f"  <vType {body}>{inner}</vType>")
             else:
                 lines.append(f"  <vType {body}/>")
+            if t.vclass == "emergency":
+                quiet = {k: v for k, v in attrs.items() if k not in ("jmDriveAfterRedTime", "jmDriveRedSpeed")}
+                quiet.update({"id": f"{tid}{QUIET}", "speedFactor": "normc(1,0.05,0.9,1.1)"})
+                lines.append("  <vType " + " ".join(f'{k}="{v}"' for k, v in quiet.items()) + "/>")
         profiles[t.id] = ids
     ped_sf = _scale_speed_factor("normc(1,0.15,0.6,1.4)", min(1.0, 0.5 + cond.speed / 2))
     lines.append(f'  <vType id="walker" vClass="pedestrian" length="0.3" width="0.55" maxSpeed="1.6" speedFactor="{ped_sf}"/>')
