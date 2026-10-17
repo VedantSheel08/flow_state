@@ -1,6 +1,6 @@
 import { CloudRain, Pause, Play, Repeat, Shuffle, Square } from 'lucide-react'
 import { memo, useEffect, useRef, useState } from 'react'
-import { control, newVariation, reproduce, setSpeed } from '../lib/actions'
+import { control, endRun, newVariation, reproduce, setSpeed } from '../lib/actions'
 import { frames } from '../lib/frames'
 import { clock, cn } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -112,6 +112,12 @@ export function RunBar() {
   return (
     <div className="glass pointer-events-auto absolute inset-x-3 bottom-3 z-10 flex h-[56px] items-center gap-3 rounded-xl px-2.5">
       <div className="flex items-center gap-1">
+        <Tip label="End run · saved to Run history">
+          <Button variant="danger" size="sm" className="mr-1 gap-1.5" aria-label="End run" onClick={() => endRun()} disabled={state === 'starting'}>
+            <Square size={10} fill="currentColor" />
+            End
+          </Button>
+        </Tip>
         {state === 'finished' ? (
           <Tip label="Run again with the same seed">
             <Button variant="primary" size="icon" aria-label="Reproduce run" onClick={() => reproduce()}>
@@ -133,11 +139,6 @@ export function RunBar() {
         <Tip label="New variation · new seed (N)">
           <Button variant="ghost" size="icon" aria-label="New variation" onClick={() => newVariation()} disabled={state === 'starting'}>
             <Shuffle size={15} />
-          </Button>
-        </Tip>
-        <Tip label="Stop simulation">
-          <Button variant="ghost" size="icon" aria-label="Stop" onClick={() => control('stop')} disabled={state === 'starting' || state === 'finished'}>
-            <Square size={13} />
           </Button>
         </Tip>
       </div>

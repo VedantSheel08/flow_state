@@ -39,6 +39,16 @@ export async function control(action: 'pause' | 'resume' | 'stop', ) {
   }
 }
 
+/** Stop the run; the backend saves it (with partial results) to the run history. */
+export async function endRun() {
+  try {
+    await api.control('stop')
+    useStore.getState().toast('info', 'Run ended · saved to Run history')
+  } catch (e) {
+    useStore.getState().toast('error', e instanceof ApiError ? e.message : String(e))
+  }
+}
+
 export async function setSpeed(speed: number) {
   frames.speed = speed
   try {
