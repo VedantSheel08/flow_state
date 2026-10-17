@@ -17,3 +17,4 @@
 - the map is good however the intersections are a repetitive structure, we should try to add even diagonals curves roundabounts etc.
 - ui improvements needed
 - dragging map pretty unresponsive
+- issue with emergency vehicles overtaking system is that they cant actually overtake cuz the roads are all one lanes but its implemented if we make roads 2 lanes in places
