@@ -1,0 +1,14 @@
+### Project changes
+
+- moving configurations to a popup
+- creating reasonable preset configurations for each senario
+- made the overview map draggable to anywhere
+    - when an event happens at an intersection map dot will be pinned and start pulsing (not tested yet)
+- created a devpost
+- senarious will show on map ex rain will cover map and car crashs will show
+
+# Issues
+police waits for cars + lights
+senarios dont really show ex car crash will work but wont show on map, severe weather wont show like rain on the map (fixed)
+  - car crash just shows 4 cars together looks a bit weird
+the map is good however the intersections are a repetitive structure, we should try to add even diagonals curves roundabounts etc.
