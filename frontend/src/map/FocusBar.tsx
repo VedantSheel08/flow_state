@@ -117,9 +117,9 @@ export function FocusBar({ scene, junctions }: { scene: Scene; junctions: NavJun
             ) : (
               <SignalCompass states={states} control={j?.control ?? ''} />
             )}
-            <span className="min-w-0 flex-1 leading-none">
-              <span className="block truncate text-[13px] font-semibold tracking-[-0.01em] text-ink">{network ? 'Full network' : j ? shortName(j.name) : '—'}</span>
-              <span className="mt-[3px] block truncate text-[11px] text-ink-3">
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[13px] font-semibold leading-4 tracking-[-0.01em] text-ink">{network ? 'Full network' : j ? shortName(j.name) : '—'}</span>
+              <span className="block truncate text-[11px] leading-[14px] text-ink-3">
                 {following
                   ? `Following vehicle ${following}`
                   : detached

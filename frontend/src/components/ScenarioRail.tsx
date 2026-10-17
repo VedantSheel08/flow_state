@@ -51,7 +51,7 @@ export function ScenarioRail() {
           </Button>
         </Tip>
         <div className="my-2 h-px w-7 bg-black/[0.08]" />
-        <ul className="scroll-y flex min-h-0 flex-1 flex-col items-center gap-1 [scrollbar-gutter:auto]">
+        <ul className="scroll-y flex min-h-0 w-full flex-1 flex-col items-center gap-1 [scrollbar-gutter:auto]! [scrollbar-width:none]!">
           {scenarios.map((s) => {
             const Icon = ICONS[s.id] ?? Gauge
             const active = s.id === scenarioId
