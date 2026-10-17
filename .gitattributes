@@ -1,0 +1,2 @@
+# Keep reviewable patch files portable; blank context lines contain one space.
+*.patch text eol=lf -whitespace
