@@ -27,6 +27,10 @@
     - only says "clear improvement" when the interval doesn't cross zero; shows losses too (rush-hour ramp, more teleports under stress)
     - data is copied from `task/rl-signal-control` (commit 109108e) by `frontend/scripts/extract_controller_results.py` - rerun it if Vedant updates the evaluation
     - **live mode ready**: if the server has Vedant's `/api/rl` router, a "Run a fresh comparison" panel appears (fixed-time vs FlowState on new random seeds, live progress). Without it, the tab just shows the recorded results, so nothing breaks before the merge
+- **Claude Design redesign applied** (canvas "FlowState Dashboard Redesign"): new tokens (caption grey now passes contrast, verdict red no longer looks like fixed-time orange), underline header tabs, calmer map floats, and the Results tab rebuilt to the design (hero, 10-second version, live states, scatter). Tab order follows Colton's change (Results last)
+    - not built from the design: per-pattern progress chips and a Cancel button while a live run is going (the /api/rl API has neither); the Simulation rail/run bar got the new tokens only, not a restructure
+- merge check: `krishna-updates` and `task/rl-signal-control` both merge into `main` with no conflicts
+- `demo-script.md`: shot list for the backup demo recording
     - tested against Vedant's branch running locally (not merged): all 5 patterns x 3 fresh seeds ran in ~15 s, 8% less waiting / 14% smaller peak queues, rush-hour ramp still worse
     - needs `numpy scipy gymnasium` on the server for comparisons (torch only if the RL policy ever passes its gate)
 - crash scenes look like crashes now (frontend renderer only, backend untouched)
