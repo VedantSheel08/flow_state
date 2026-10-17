@@ -1,0 +1,616 @@
+{
+  "light": {
+    "nativeCollisionRecords": 0,
+    "uniquePairs": 0,
+    "byType": {},
+    "records": []
+  },
+  "normal": {
+    "nativeCollisionRecords": 1,
+    "uniquePairs": 1,
+    "byType": {
+      "collision": 1
+    },
+    "records": [
+      {
+        "time": "467.00",
+        "type": "collision",
+        "lane": "queen_e1b_2",
+        "pos": "20.83",
+        "collider": "v189",
+        "victim": "v190",
+        "colliderType": "sedan@5",
+        "victimType": "truck@7",
+        "colliderSpeed": "7.62",
+        "victimSpeed": "0.00",
+        "colliderFront": "162.83,315.38",
+        "colliderBack": "158.08,315.38",
+        "victimFront": "170.84,313.23",
+        "victimBack": "162.24,313.23",
+        "connections": [],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.02,
+        "geometryEvidence": "near contact; rounded coordinates are inconclusive"
+      }
+    ]
+  },
+  "rush_hour": {
+    "nativeCollisionRecords": 6,
+    "uniquePairs": 6,
+    "byType": {
+      "junction": 6
+    },
+    "records": [
+      {
+        "time": "234.50",
+        "type": "junction",
+        "lane": ":n2_2_1_0",
+        "pos": "4.76",
+        "collider": "v41",
+        "victim": "v117",
+        "colliderType": "bike@3",
+        "victimType": "sedan@3",
+        "colliderSpeed": "2.87",
+        "victimSpeed": "0.84",
+        "colliderFront": "396.27,335.14",
+        "colliderBack": "396.27,336.89",
+        "victimFront": "397.16,334.03",
+        "victimBack": "398.23,338.62",
+        "connections": [
+          {
+            "from": "church_s1",
+            "to": "church_s2",
+            "fromLane": "1",
+            "toLane": "1",
+            "via": ":n2_2_1_0",
+            "tl": "n2_2",
+            "linkIndex": "1",
+            "dir": "s",
+            "state": "o"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.1178,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "302.25",
+        "type": "junction",
+        "lane": ":n2_2_33_0",
+        "pos": "10.75",
+        "collider": "v94",
+        "victim": "v144",
+        "colliderType": "pickup@6",
+        "victimType": "hatch@7",
+        "colliderSpeed": "5.25",
+        "victimSpeed": "0.00",
+        "colliderFront": "400.82,331.33",
+        "colliderBack": "398.95,326.08",
+        "victimFront": "399.07,330.62",
+        "victimBack": "398.53,334.73",
+        "connections": [
+          {
+            "from": ":n2_2_21",
+            "to": "church_n3",
+            "fromLane": "0",
+            "toLane": "2",
+            "via": ":n2_2_33_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.4026,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "306.25",
+        "type": "junction",
+        "lane": ":n2_2_33_0",
+        "pos": "10.83",
+        "collider": "v138",
+        "victim": "v144",
+        "colliderType": "sedan@0",
+        "victimType": "hatch@7",
+        "colliderSpeed": "4.07",
+        "victimSpeed": "0.00",
+        "colliderFront": "400.83,331.41",
+        "colliderBack": "399.39,326.90",
+        "victimFront": "399.07,330.62",
+        "victimBack": "398.53,334.73",
+        "connections": [
+          {
+            "from": ":n2_2_21",
+            "to": "church_n3",
+            "fromLane": "0",
+            "toLane": "2",
+            "via": ":n2_2_33_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.2845,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "312.25",
+        "type": "junction",
+        "lane": ":n2_2_33_0",
+        "pos": "12.42",
+        "collider": "v242",
+        "victim": "v144",
+        "colliderType": "sedan@0",
+        "victimType": "hatch@7",
+        "colliderSpeed": "9.49",
+        "victimSpeed": "0.00",
+        "colliderFront": "401.29,332.95",
+        "colliderBack": "400.08,328.34",
+        "victimFront": "399.07,330.62",
+        "victimBack": "398.53,334.73",
+        "connections": [
+          {
+            "from": ":n2_2_21",
+            "to": "church_n3",
+            "fromLane": "0",
+            "toLane": "2",
+            "via": ":n2_2_33_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.1837,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "393.00",
+        "type": "junction",
+        "lane": ":n2_2_33_0",
+        "pos": "10.88",
+        "collider": "v169",
+        "victim": "v144",
+        "colliderType": "sedan@6",
+        "victimType": "hatch@7",
+        "colliderSpeed": "5.07",
+        "victimSpeed": "0.00",
+        "colliderFront": "400.85,331.46",
+        "colliderBack": "399.42,326.95",
+        "victimFront": "399.07,330.62",
+        "victimBack": "398.53,334.73",
+        "connections": [
+          {
+            "from": ":n2_2_21",
+            "to": "church_n3",
+            "fromLane": "0",
+            "toLane": "2",
+            "via": ":n2_2_33_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.2787,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "395.75",
+        "type": "junction",
+        "lane": ":n2_2_33_0",
+        "pos": "11.43",
+        "collider": "v264",
+        "victim": "v144",
+        "colliderType": "sedan@2",
+        "victimType": "hatch@7",
+        "colliderSpeed": "5.04",
+        "victimSpeed": "0.00",
+        "colliderFront": "400.97,332.00",
+        "colliderBack": "399.63,327.45",
+        "victimFront": "399.07,330.62",
+        "victimBack": "398.53,334.73",
+        "connections": [
+          {
+            "from": ":n2_2_21",
+            "to": "church_n3",
+            "fromLane": "0",
+            "toLane": "2",
+            "via": ":n2_2_33_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.2964,
+        "geometryEvidence": "body overlap"
+      }
+    ]
+  },
+  "severe": {
+    "nativeCollisionRecords": 9,
+    "uniquePairs": 9,
+    "byType": {
+      "junction": 9
+    },
+    "records": [
+      {
+        "time": "360.50",
+        "type": "junction",
+        "lane": ":queen_e0_x_0_2",
+        "pos": "2.94",
+        "collider": "v771",
+        "victim": "v716",
+        "colliderType": "hatch@4",
+        "victimType": "hatch@7",
+        "colliderSpeed": "11.84",
+        "victimSpeed": "0.00",
+        "colliderFront": "-56.13,318.26",
+        "colliderBack": "-59.21,315.06",
+        "victimFront": "-53.99,315.25",
+        "victimBack": "-58.00,315.25",
+        "connections": [
+          {
+            "from": "queen_e0",
+            "to": "queen_e0b",
+            "fromLane": "2",
+            "toLane": "3",
+            "via": ":queen_e0_x_0_2",
+            "dir": "s",
+            "state": "M"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.7587,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "368.00",
+        "type": "junction",
+        "lane": ":n1_3_17_0",
+        "pos": "9.79",
+        "collider": "v751",
+        "victim": "v281",
+        "colliderType": "suv@4",
+        "victimType": "van@4",
+        "colliderSpeed": "5.50",
+        "victimSpeed": "0.00",
+        "colliderFront": "210.62,479.13",
+        "colliderBack": "206.04,480.68",
+        "victimFront": "209.58,480.93",
+        "victimBack": "214.93,481.61",
+        "connections": [
+          {
+            "from": ":n1_3_3",
+            "to": "college_e2",
+            "fromLane": "0",
+            "toLane": "1",
+            "via": ":n1_3_17_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.5116,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "371.25",
+        "type": "junction",
+        "lane": ":n1_3_17_0",
+        "pos": "9.14",
+        "collider": "v758",
+        "victim": "v281",
+        "colliderType": "suv@3",
+        "victimType": "van@4",
+        "colliderSpeed": "4.79",
+        "victimSpeed": "0.00",
+        "colliderFront": "209.98,479.26",
+        "colliderBack": "205.45,480.96",
+        "victimFront": "209.58,480.93",
+        "victimBack": "214.93,481.61",
+        "connections": [
+          {
+            "from": ":n1_3_3",
+            "to": "college_e2",
+            "fromLane": "0",
+            "toLane": "1",
+            "via": ":n1_3_17_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.4453,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "378.75",
+        "type": "junction",
+        "lane": ":n2_0_5_0",
+        "pos": "6.21",
+        "collider": "v253",
+        "victim": "v375",
+        "colliderType": "pickup@5",
+        "victimType": "suv@4",
+        "colliderSpeed": "0.00",
+        "victimSpeed": "0.31",
+        "colliderFront": "399.05,8.66",
+        "colliderBack": "398.33,14.19",
+        "victimFront": "401.28,10.16",
+        "victimBack": "399.79,5.57",
+        "connections": [
+          {
+            "from": "church_s3",
+            "to": "front_e3",
+            "fromLane": "2",
+            "toLane": "2",
+            "via": ":n2_0_5_0",
+            "tl": "n2_0",
+            "linkIndex": "5",
+            "dir": "l",
+            "state": "o"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.243,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "380.25",
+        "type": "junction",
+        "lane": ":n0_1_23_0",
+        "pos": "9.37",
+        "collider": "v622",
+        "victim": "v429",
+        "colliderType": "pickup@2",
+        "victimType": "hatch@0",
+        "colliderSpeed": "4.25",
+        "victimSpeed": "0.00",
+        "colliderFront": "0.78,170.20",
+        "colliderBack": "-1.19,164.98",
+        "victimFront": "-0.90,169.40",
+        "victimBack": "-1.48,173.50",
+        "connections": [
+          {
+            "from": ":n0_1_15",
+            "to": "elm_n2",
+            "fromLane": "0",
+            "toLane": "1",
+            "via": ":n0_1_23_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.5117,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "429.00",
+        "type": "junction",
+        "lane": ":n2_1_15_0",
+        "pos": "17.58",
+        "collider": "v242",
+        "victim": "v639",
+        "colliderType": "sedan@3",
+        "victimType": "bike@6",
+        "colliderSpeed": "4.60",
+        "victimSpeed": "0.00",
+        "colliderFront": "401.70,157.68",
+        "colliderBack": "401.70,152.93",
+        "victimFront": "401.53,159.21",
+        "victimBack": "402.26,157.61",
+        "connections": [
+          {
+            "from": "church_n1",
+            "to": "church_n2",
+            "fromLane": "2",
+            "toLane": "2",
+            "via": ":n2_1_15_0",
+            "tl": "n2_1",
+            "linkIndex": "15",
+            "dir": "s",
+            "state": "o"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.2049,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "469.75",
+        "type": "junction",
+        "lane": ":n2_2_27_0",
+        "pos": "10.26",
+        "collider": "v477",
+        "victim": "v351",
+        "colliderType": "pickup@7",
+        "victimType": "truck@2",
+        "colliderSpeed": "4.70",
+        "victimSpeed": "0.00",
+        "colliderFront": "399.29,309.14",
+        "colliderBack": "401.27,314.35",
+        "victimFront": "400.93,309.38",
+        "victimBack": "401.68,300.83",
+        "connections": [
+          {
+            "from": ":n2_2_10",
+            "to": "church_s2",
+            "fromLane": "0",
+            "toLane": "2",
+            "via": ":n2_2_27_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.5422,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "473.00",
+        "type": "junction",
+        "lane": ":n2_2_27_0",
+        "pos": "10.38",
+        "collider": "v495",
+        "victim": "v351",
+        "colliderType": "sedan@6",
+        "victimType": "truck@2",
+        "colliderSpeed": "4.90",
+        "victimSpeed": "0.00",
+        "colliderFront": "399.27,309.03",
+        "colliderBack": "400.82,313.50",
+        "victimFront": "400.93,309.38",
+        "victimBack": "401.68,300.83",
+        "connections": [
+          {
+            "from": ":n2_2_10",
+            "to": "church_s2",
+            "fromLane": "0",
+            "toLane": "2",
+            "via": ":n2_2_27_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.5798,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "475.75",
+        "type": "junction",
+        "lane": ":n2_2_27_0",
+        "pos": "10.97",
+        "collider": "v519",
+        "victim": "v351",
+        "colliderType": "suv@1",
+        "victimType": "truck@2",
+        "colliderSpeed": "4.89",
+        "victimSpeed": "0.00",
+        "colliderFront": "399.14,308.45",
+        "colliderBack": "400.59,313.07",
+        "victimFront": "400.93,309.38",
+        "victimBack": "401.68,300.83",
+        "connections": [
+          {
+            "from": ":n2_2_10",
+            "to": "church_s2",
+            "fromLane": "0",
+            "toLane": "2",
+            "via": ":n2_2_27_0",
+            "dir": "l",
+            "state": "m"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.701,
+        "geometryEvidence": "body overlap"
+      }
+    ]
+  },
+  "gridlock_stress": {
+    "nativeCollisionRecords": 3,
+    "uniquePairs": 3,
+    "byType": {
+      "junction": 3
+    },
+    "records": [
+      {
+        "time": "363.75",
+        "type": "junction",
+        "lane": ":n2_0_5_0",
+        "pos": "5.27",
+        "collider": "v599",
+        "victim": "v182",
+        "colliderType": "hatch@6",
+        "victimType": "truck@1",
+        "colliderSpeed": "0.64",
+        "victimSpeed": "1.50",
+        "colliderFront": "398.82,9.56",
+        "colliderBack": "398.35,13.68",
+        "victimFront": "401.58,12.30",
+        "victimBack": "398.99,4.21",
+        "connections": [
+          {
+            "from": "church_s3",
+            "to": "front_e3",
+            "fromLane": "2",
+            "toLane": "2",
+            "via": ":n2_0_5_0",
+            "tl": "n2_0",
+            "linkIndex": "5",
+            "dir": "l",
+            "state": "o"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.2637,
+        "geometryEvidence": "body overlap"
+      },
+      {
+        "time": "365.50",
+        "type": "junction",
+        "lane": ":n2_1_6_1",
+        "pos": "13.33",
+        "collider": "v484",
+        "victim": "v242",
+        "colliderType": "truck@6",
+        "victimType": "sedan@3",
+        "colliderSpeed": "1.36",
+        "victimSpeed": "0.22",
+        "colliderFront": "403.31,173.36",
+        "colliderBack": "410.13,168.73",
+        "victimFront": "401.70,174.60",
+        "victimBack": "401.70,169.85",
+        "connections": [
+          {
+            "from": "king_w1b",
+            "to": "church_n2",
+            "fromLane": "1",
+            "toLane": "2",
+            "via": ":n2_1_6_1",
+            "tl": "n2_1",
+            "linkIndex": "7",
+            "dir": "r",
+            "state": "o"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.0121,
+        "geometryEvidence": "near contact; rounded coordinates are inconclusive"
+      },
+      {
+        "time": "377.25",
+        "type": "junction",
+        "lane": ":n3_2_15_0",
+        "pos": "10.35",
+        "collider": "v801",
+        "victim": "v118",
+        "colliderType": "truck@3",
+        "victimType": "suv@2",
+        "colliderSpeed": "0.00",
+        "victimSpeed": "5.98",
+        "colliderFront": "596.45,321.94",
+        "colliderBack": "588.75,318.57",
+        "victimFront": "597.06,322.79",
+        "victimBack": "599.23,318.47",
+        "connections": [
+          {
+            "from": "queen_e3b",
+            "to": "park_n3",
+            "fromLane": "3",
+            "toLane": "1",
+            "via": ":n3_2_15_0",
+            "tl": "n3_2",
+            "linkIndex": "15",
+            "dir": "l",
+            "state": "o"
+          }
+        ],
+        "roadUsers": "vehicle conflict (includes bicycles)",
+        "reconstructedOverlapMeters": 0.074,
+        "geometryEvidence": "body overlap"
+      }
+    ]
+  }
+}

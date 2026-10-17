@@ -1,0 +1,1313 @@
+[
+  {
+    "name": "normal",
+    "seed": 42,
+    "edgeMode": "subscribe",
+    "backend": "traci",
+    "sumoVersion": "1.28.0",
+    "python": "3.12.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "params": {
+      "duration": 5,
+      "demand": 1600,
+      "traffic": 1.0,
+      "bike_share": 5,
+      "pedestrians": true,
+      "signals": "fixed",
+      "period": "am",
+      "peak": 1.2,
+      "variability": 0.5
+    },
+    "networkSHA256": "6402518427055408e59581f77b44151bc2cffdb2309eadb88624df498cc75f28",
+    "stepLength": 0.25,
+    "warmup": 180.0,
+    "observation": 300,
+    "timings": {
+      "validationSeconds": 0.000216199998249067,
+      "networkColdSeconds": 0.36491270000260556,
+      "constructorSeconds": 0.0005318000003171619,
+      "sumoInitSeconds": 1.28540029999931,
+      "instantiate": 0.00015219999841065146,
+      "demandSeconds": 0.5653537999351101,
+      "on_step": 0.03675840006326325,
+      "signalSeconds": 0.00520170006348053,
+      "sumoStepSeconds": 42.46580620005261,
+      "_poll_edges": 0.06513209996046498,
+      "_read_state": 2.81717810012924,
+      "_sample": 0.2625250999844866
+    },
+    "phases": {
+      "warmup": {
+        "seconds": 12.769176600046194,
+        "steps": 720,
+        "departed": 81,
+        "arrived": 22,
+        "stepsPerSecond": 56.38578136646613
+      },
+      "observation": {
+        "seconds": 34.18743949999043,
+        "steps": 1200,
+        "departed": 148,
+        "arrived": 136,
+        "stepsPerSecond": 35.10061056196782
+      }
+    },
+    "cpuSeconds": 26.03125,
+    "childCpuSeconds": 21.734375,
+    "frameBuildSeconds": 0.002093120999998064,
+    "frameJsonSeconds": 0.0016717059999973572,
+    "frameBytes": 5337,
+    "websocketTransmission": "not included; see transport benchmark",
+    "samples": [
+      {
+        "t": -179.75,
+        "vehicles": 0,
+        "persons": 1,
+        "halted": 0,
+        "approachQueued": 0,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 1.46875,
+          "rssBytes": 63807488,
+          "peakRssBytes": 63807488,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 0.484375,
+            "rssBytes": 31096832,
+            "peakRssBytes": 31096832
+          }
+        }
+      },
+      {
+        "t": -170.0,
+        "vehicles": 3,
+        "persons": 3,
+        "halted": 0,
+        "approachQueued": 0,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 1.6875,
+          "rssBytes": 63860736,
+          "peakRssBytes": 63860736,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 0.65625,
+            "rssBytes": 32968704,
+            "peakRssBytes": 32968704
+          }
+        }
+      },
+      {
+        "t": -160.0,
+        "vehicles": 6,
+        "persons": 6,
+        "halted": 0,
+        "approachQueued": 0,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 1.953125,
+          "rssBytes": 63885312,
+          "peakRssBytes": 63885312,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 0.8125,
+            "rssBytes": 33832960,
+            "peakRssBytes": 33832960
+          }
+        }
+      },
+      {
+        "t": -150.0,
+        "vehicles": 14,
+        "persons": 6,
+        "halted": 3,
+        "approachQueued": 3,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 2.15625,
+          "rssBytes": 63918080,
+          "peakRssBytes": 63918080,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 1.046875,
+            "rssBytes": 33886208,
+            "peakRssBytes": 33886208
+          }
+        }
+      },
+      {
+        "t": -140.0,
+        "vehicles": 18,
+        "persons": 8,
+        "halted": 4,
+        "approachQueued": 4,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 2.453125,
+          "rssBytes": 63926272,
+          "peakRssBytes": 63926272,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 1.25,
+            "rssBytes": 33898496,
+            "peakRssBytes": 33898496
+          }
+        }
+      },
+      {
+        "t": -130.0,
+        "vehicles": 23,
+        "persons": 10,
+        "halted": 7,
+        "approachQueued": 5,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 2.828125,
+          "rssBytes": 63979520,
+          "peakRssBytes": 63979520,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 1.4375,
+            "rssBytes": 33898496,
+            "peakRssBytes": 33898496
+          }
+        }
+      },
+      {
+        "t": -120.0,
+        "vehicles": 26,
+        "persons": 11,
+        "halted": 3,
+        "approachQueued": 3,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 3.109375,
+          "rssBytes": 64012288,
+          "peakRssBytes": 64012288,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 1.75,
+            "rssBytes": 33923072,
+            "peakRssBytes": 33923072
+          }
+        }
+      },
+      {
+        "t": -110.0,
+        "vehicles": 28,
+        "persons": 14,
+        "halted": 5,
+        "approachQueued": 4,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 3.453125,
+          "rssBytes": 64028672,
+          "peakRssBytes": 64028672,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 2.015625,
+            "rssBytes": 33943552,
+            "peakRssBytes": 33943552
+          }
+        }
+      },
+      {
+        "t": -100.0,
+        "vehicles": 31,
+        "persons": 17,
+        "halted": 9,
+        "approachQueued": 9,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 3.84375,
+          "rssBytes": 64045056,
+          "peakRssBytes": 64045056,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 2.296875,
+            "rssBytes": 34025472,
+            "peakRssBytes": 34025472
+          }
+        }
+      },
+      {
+        "t": -90.0,
+        "vehicles": 36,
+        "persons": 20,
+        "halted": 16,
+        "approachQueued": 16,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 4.21875,
+          "rssBytes": 64065536,
+          "peakRssBytes": 64065536,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 2.625,
+            "rssBytes": 34074624,
+            "peakRssBytes": 34074624
+          }
+        }
+      },
+      {
+        "t": -80.0,
+        "vehicles": 41,
+        "persons": 21,
+        "halted": 3,
+        "approachQueued": 2,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 4.703125,
+          "rssBytes": 64086016,
+          "peakRssBytes": 64086016,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 2.953125,
+            "rssBytes": 34152448,
+            "peakRssBytes": 34152448
+          }
+        }
+      },
+      {
+        "t": -70.0,
+        "vehicles": 45,
+        "persons": 24,
+        "halted": 3,
+        "approachQueued": 4,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 5.21875,
+          "rssBytes": 64139264,
+          "peakRssBytes": 64139264,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 3.21875,
+            "rssBytes": 34287616,
+            "peakRssBytes": 34287616
+          }
+        }
+      },
+      {
+        "t": -60.0,
+        "vehicles": 44,
+        "persons": 25,
+        "halted": 13,
+        "approachQueued": 13,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 5.65625,
+          "rssBytes": 64151552,
+          "peakRssBytes": 64151552,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 3.578125,
+            "rssBytes": 34304000,
+            "peakRssBytes": 34304000
+          }
+        }
+      },
+      {
+        "t": -50.0,
+        "vehicles": 47,
+        "persons": 29,
+        "halted": 19,
+        "approachQueued": 17,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 6.15625,
+          "rssBytes": 64172032,
+          "peakRssBytes": 64172032,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 3.953125,
+            "rssBytes": 34304000,
+            "peakRssBytes": 34304000
+          }
+        }
+      },
+      {
+        "t": -40.0,
+        "vehicles": 49,
+        "persons": 30,
+        "halted": 22,
+        "approachQueued": 22,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 6.640625,
+          "rssBytes": 64188416,
+          "peakRssBytes": 64188416,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 4.3125,
+            "rssBytes": 34406400,
+            "peakRssBytes": 34406400
+          }
+        }
+      },
+      {
+        "t": -30.0,
+        "vehicles": 55,
+        "persons": 30,
+        "halted": 3,
+        "approachQueued": 3,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 7.109375,
+          "rssBytes": 64217088,
+          "peakRssBytes": 64217088,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 4.734375,
+            "rssBytes": 34500608,
+            "peakRssBytes": 34500608
+          }
+        }
+      },
+      {
+        "t": -20.0,
+        "vehicles": 56,
+        "persons": 32,
+        "halted": 8,
+        "approachQueued": 6,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 7.640625,
+          "rssBytes": 64237568,
+          "peakRssBytes": 64237568,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 5.15625,
+            "rssBytes": 34521088,
+            "peakRssBytes": 34521088
+          }
+        }
+      },
+      {
+        "t": -10.0,
+        "vehicles": 57,
+        "persons": 34,
+        "halted": 18,
+        "approachQueued": 17,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 8.140625,
+          "rssBytes": 64245760,
+          "peakRssBytes": 64245760,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 5.609375,
+            "rssBytes": 34562048,
+            "peakRssBytes": 34562048
+          }
+        }
+      },
+      {
+        "t": 0.0,
+        "vehicles": 59,
+        "persons": 37,
+        "halted": 26,
+        "approachQueued": 27,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 8.65625,
+          "rssBytes": 64266240,
+          "peakRssBytes": 64266240,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 6.09375,
+            "rssBytes": 34590720,
+            "peakRssBytes": 34590720
+          }
+        }
+      },
+      {
+        "t": 10.0,
+        "vehicles": 57,
+        "persons": 40,
+        "halted": 5,
+        "approachQueued": 5,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 9.171875,
+          "rssBytes": 64294912,
+          "peakRssBytes": 64294912,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 6.59375,
+            "rssBytes": 34734080,
+            "peakRssBytes": 34734080
+          }
+        }
+      },
+      {
+        "t": 20.0,
+        "vehicles": 53,
+        "persons": 38,
+        "halted": 9,
+        "approachQueued": 7,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 9.703125,
+          "rssBytes": 64315392,
+          "peakRssBytes": 64315392,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 7.078125,
+            "rssBytes": 34750464,
+            "peakRssBytes": 34750464
+          }
+        }
+      },
+      {
+        "t": 30.0,
+        "vehicles": 55,
+        "persons": 39,
+        "halted": 18,
+        "approachQueued": 19,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 10.28125,
+          "rssBytes": 64364544,
+          "peakRssBytes": 64364544,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 7.421875,
+            "rssBytes": 34750464,
+            "peakRssBytes": 34750464
+          }
+        }
+      },
+      {
+        "t": 40.0,
+        "vehicles": 59,
+        "persons": 39,
+        "halted": 28,
+        "approachQueued": 27,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 10.8125,
+          "rssBytes": 64393216,
+          "peakRssBytes": 64393216,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 7.84375,
+            "rssBytes": 34750464,
+            "peakRssBytes": 34750464
+          }
+        }
+      },
+      {
+        "t": 50.0,
+        "vehicles": 62,
+        "persons": 41,
+        "halted": 23,
+        "approachQueued": 23,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 11.453125,
+          "rssBytes": 64442368,
+          "peakRssBytes": 64442368,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 8.21875,
+            "rssBytes": 34787328,
+            "peakRssBytes": 34787328
+          }
+        }
+      },
+      {
+        "t": 60.0,
+        "vehicles": 62,
+        "persons": 43,
+        "halted": 8,
+        "approachQueued": 7,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 12.046875,
+          "rssBytes": 64479232,
+          "peakRssBytes": 64479232,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 8.71875,
+            "rssBytes": 34807808,
+            "peakRssBytes": 34807808
+          }
+        }
+      },
+      {
+        "t": 70.0,
+        "vehicles": 64,
+        "persons": 46,
+        "halted": 14,
+        "approachQueued": 11,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 12.671875,
+          "rssBytes": 64532480,
+          "peakRssBytes": 64532480,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 9.125,
+            "rssBytes": 34824192,
+            "peakRssBytes": 34824192
+          }
+        }
+      },
+      {
+        "t": 80.0,
+        "vehicles": 69,
+        "persons": 48,
+        "halted": 29,
+        "approachQueued": 26,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 13.21875,
+          "rssBytes": 64581632,
+          "peakRssBytes": 64581632,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 9.640625,
+            "rssBytes": 34824192,
+            "peakRssBytes": 34824192
+          }
+        }
+      },
+      {
+        "t": 90.0,
+        "vehicles": 72,
+        "persons": 51,
+        "halted": 34,
+        "approachQueued": 34,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 13.828125,
+          "rssBytes": 64626688,
+          "peakRssBytes": 64626688,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 10.078125,
+            "rssBytes": 34889728,
+            "peakRssBytes": 34889728
+          }
+        }
+      },
+      {
+        "t": 100.0,
+        "vehicles": 75,
+        "persons": 50,
+        "halted": 4,
+        "approachQueued": 3,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 14.484375,
+          "rssBytes": 64929792,
+          "peakRssBytes": 64929792,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 10.609375,
+            "rssBytes": 34893824,
+            "peakRssBytes": 34893824
+          }
+        }
+      },
+      {
+        "t": 110.0,
+        "vehicles": 80,
+        "persons": 52,
+        "halted": 12,
+        "approachQueued": 9,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 15.046875,
+          "rssBytes": 64970752,
+          "peakRssBytes": 64970752,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 11.28125,
+            "rssBytes": 34955264,
+            "peakRssBytes": 34955264
+          }
+        }
+      },
+      {
+        "t": 120.0,
+        "vehicles": 85,
+        "persons": 52,
+        "halted": 27,
+        "approachQueued": 24,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 15.765625,
+          "rssBytes": 65019904,
+          "peakRssBytes": 65019904,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 11.78125,
+            "rssBytes": 34983936,
+            "peakRssBytes": 34983936
+          }
+        }
+      },
+      {
+        "t": 130.0,
+        "vehicles": 84,
+        "persons": 52,
+        "halted": 36,
+        "approachQueued": 34,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 16.40625,
+          "rssBytes": 65040384,
+          "peakRssBytes": 65040384,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 12.3125,
+            "rssBytes": 34992128,
+            "peakRssBytes": 34992128
+          }
+        }
+      },
+      {
+        "t": 140.0,
+        "vehicles": 89,
+        "persons": 55,
+        "halted": 36,
+        "approachQueued": 34,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 17.0,
+          "rssBytes": 65093632,
+          "peakRssBytes": 65093632,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 12.953125,
+            "rssBytes": 35008512,
+            "peakRssBytes": 35008512
+          }
+        }
+      },
+      {
+        "t": 150.0,
+        "vehicles": 83,
+        "persons": 56,
+        "halted": 18,
+        "approachQueued": 13,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 17.640625,
+          "rssBytes": 65220608,
+          "peakRssBytes": 65220608,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 13.546875,
+            "rssBytes": 34967552,
+            "peakRssBytes": 35016704
+          }
+        }
+      },
+      {
+        "t": 160.0,
+        "vehicles": 85,
+        "persons": 60,
+        "halted": 21,
+        "approachQueued": 20,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 18.28125,
+          "rssBytes": 65277952,
+          "peakRssBytes": 65277952,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 14.21875,
+            "rssBytes": 34967552,
+            "peakRssBytes": 35016704
+          }
+        }
+      },
+      {
+        "t": 170.0,
+        "vehicles": 84,
+        "persons": 63,
+        "halted": 27,
+        "approachQueued": 25,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 18.921875,
+          "rssBytes": 65314816,
+          "peakRssBytes": 65314816,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 14.8125,
+            "rssBytes": 35016704,
+            "peakRssBytes": 35016704
+          }
+        }
+      },
+      {
+        "t": 180.0,
+        "vehicles": 79,
+        "persons": 64,
+        "halted": 39,
+        "approachQueued": 38,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 19.515625,
+          "rssBytes": 65355776,
+          "peakRssBytes": 65355776,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 15.421875,
+            "rssBytes": 35016704,
+            "peakRssBytes": 35016704
+          }
+        }
+      },
+      {
+        "t": 190.0,
+        "vehicles": 78,
+        "persons": 64,
+        "halted": 14,
+        "approachQueued": 10,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 20.171875,
+          "rssBytes": 65404928,
+          "peakRssBytes": 65404928,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 16.046875,
+            "rssBytes": 35016704,
+            "peakRssBytes": 35016704
+          }
+        }
+      },
+      {
+        "t": 200.0,
+        "vehicles": 66,
+        "persons": 70,
+        "halted": 18,
+        "approachQueued": 16,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 20.8125,
+          "rssBytes": 65429504,
+          "peakRssBytes": 65429504,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 16.546875,
+            "rssBytes": 35016704,
+            "peakRssBytes": 35016704
+          }
+        }
+      },
+      {
+        "t": 210.0,
+        "vehicles": 71,
+        "persons": 70,
+        "halted": 34,
+        "approachQueued": 35,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 21.40625,
+          "rssBytes": 65462272,
+          "peakRssBytes": 65462272,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 17.09375,
+            "rssBytes": 35065856,
+            "peakRssBytes": 35065856
+          }
+        }
+      },
+      {
+        "t": 220.0,
+        "vehicles": 69,
+        "persons": 69,
+        "halted": 39,
+        "approachQueued": 39,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 22.046875,
+          "rssBytes": 65511424,
+          "peakRssBytes": 65511424,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 17.578125,
+            "rssBytes": 35065856,
+            "peakRssBytes": 35065856
+          }
+        }
+      },
+      {
+        "t": 230.0,
+        "vehicles": 73,
+        "persons": 71,
+        "halted": 26,
+        "approachQueued": 24,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 22.671875,
+          "rssBytes": 65548288,
+          "peakRssBytes": 65548288,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 18.078125,
+            "rssBytes": 35065856,
+            "peakRssBytes": 35065856
+          }
+        }
+      },
+      {
+        "t": 240.0,
+        "vehicles": 74,
+        "persons": 72,
+        "halted": 15,
+        "approachQueued": 8,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 23.296875,
+          "rssBytes": 65585152,
+          "peakRssBytes": 65585152,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 18.65625,
+            "rssBytes": 35065856,
+            "peakRssBytes": 35065856
+          }
+        }
+      },
+      {
+        "t": 250.0,
+        "vehicles": 75,
+        "persons": 71,
+        "halted": 14,
+        "approachQueued": 12,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 23.875,
+          "rssBytes": 65712128,
+          "peakRssBytes": 65712128,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 19.34375,
+            "rssBytes": 35065856,
+            "peakRssBytes": 35065856
+          }
+        }
+      },
+      {
+        "t": 260.0,
+        "vehicles": 74,
+        "persons": 71,
+        "halted": 30,
+        "approachQueued": 29,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 24.515625,
+          "rssBytes": 65761280,
+          "peakRssBytes": 65761280,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 19.96875,
+            "rssBytes": 35074048,
+            "peakRssBytes": 35074048
+          }
+        }
+      },
+      {
+        "t": 270.0,
+        "vehicles": 75,
+        "persons": 71,
+        "halted": 42,
+        "approachQueued": 41,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 25.140625,
+          "rssBytes": 65798144,
+          "peakRssBytes": 65798144,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 20.5,
+            "rssBytes": 35074048,
+            "peakRssBytes": 35074048
+          }
+        }
+      },
+      {
+        "t": 280.0,
+        "vehicles": 69,
+        "persons": 74,
+        "halted": 4,
+        "approachQueued": 3,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 25.78125,
+          "rssBytes": 65835008,
+          "peakRssBytes": 65835008,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 21.046875,
+            "rssBytes": 35074048,
+            "peakRssBytes": 35074048
+          }
+        }
+      },
+      {
+        "t": 290.0,
+        "vehicles": 69,
+        "persons": 73,
+        "halted": 11,
+        "approachQueued": 8,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 26.40625,
+          "rssBytes": 65867776,
+          "peakRssBytes": 65867776,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 21.625,
+            "rssBytes": 35090432,
+            "peakRssBytes": 35090432
+          }
+        }
+      },
+      {
+        "t": 300.0,
+        "vehicles": 71,
+        "persons": 76,
+        "halted": 26,
+        "approachQueued": 24,
+        "pending": 0,
+        "resources": {
+          "pid": 16376,
+          "available": true,
+          "cpuSeconds": 26.984375,
+          "rssBytes": 65921024,
+          "peakRssBytes": 65921024,
+          "child": {
+            "pid": 7464,
+            "available": true,
+            "cpuSeconds": 22.21875,
+            "rssBytes": 35090432,
+            "peakRssBytes": 35090432
+          }
+        }
+      }
+    ],
+    "invalidRouteIDs": [],
+    "trajectorySHA256": "c17dfb0ef45edb19990315bfc8a8bae6b818d65d62363e9d60a504ac4f39402f",
+    "engineResults": {
+      "t": 300.0,
+      "metrics": {
+        "departed": 229,
+        "completed": 158,
+        "byMode": {
+          "bike": {
+            "trips": 5,
+            "travelTime": 228.2,
+            "timeLoss": 81.3,
+            "waiting": 23.5,
+            "speed": 13.3
+          },
+          "car": {
+            "trips": 148,
+            "travelTime": 127.0,
+            "timeLoss": 64.6,
+            "waiting": 19.9,
+            "speed": 21.1
+          },
+          "truck": {
+            "trips": 5,
+            "travelTime": 116.6,
+            "timeLoss": 64.1,
+            "waiting": 21.1,
+            "speed": 20.1
+          }
+        },
+        "junctionMaxQueue": {
+          "n1_2": 12,
+          "n1_1": 11,
+          "n3_1": 9,
+          "n2_1": 6,
+          "n2_2": 6,
+          "n0_1": 6
+        }
+      },
+      "last": {
+        "t": 300.0,
+        "active": 71,
+        "activeByMode": {
+          "bike": 4,
+          "car": 64,
+          "truck": 3
+        },
+        "persons": 76,
+        "completed": 158,
+        "throughput": 1632,
+        "travelTime": 131.2,
+        "timeLoss": 68.5,
+        "waiting": 21.4,
+        "meanSpeed": 19.0,
+        "queued": 24,
+        "maxQueue": 6,
+        "pending": 0,
+        "teleports": 0,
+        "overall": {
+          "trips": 153,
+          "travelTime": 126.7,
+          "timeLoss": 64.6,
+          "waiting": 19.9,
+          "speed": 21.0
+        },
+        "modes": {
+          "bike": {
+            "trips": 5,
+            "travelTime": 228.2,
+            "timeLoss": 81.3,
+            "waiting": 23.5,
+            "speed": 13.3
+          },
+          "car": {
+            "trips": 148,
+            "travelTime": 127.0,
+            "timeLoss": 64.6,
+            "waiting": 19.9,
+            "speed": 21.1
+          },
+          "truck": {
+            "trips": 5,
+            "travelTime": 116.6,
+            "timeLoss": 64.1,
+            "waiting": 21.1,
+            "speed": 20.1
+          }
+        }
+      },
+      "teleports": 0,
+      "collisions": 2,
+      "safety": {
+        "junctionChecks": true,
+        "collisionRecordObservations": 1,
+        "collisionEpisodes": 1,
+        "uniqueCollisionPairs": 1,
+        "recordObservationsByType": {
+          "collision": 1
+        },
+        "examples": [
+          {
+            "t": 287.25,
+            "type": "collision",
+            "collider": "v189",
+            "victim": "v190",
+            "lane": "queen_e1b_2",
+            "colliderType": "sedan@5",
+            "victimType": "truck@7",
+            "colliderSpeed": 7.617605992942851,
+            "victimSpeed": 0.0016186927826135292
+          }
+        ],
+        "definition": "An episode starts when a pair/type is reported after an unreported step; not a count of unique physical crashes."
+      },
+      "signals": {
+        "mode": "fixed",
+        "preemptions": 0,
+        "tspExtensions": 0,
+        "tspSeconds": 0.0
+      },
+      "scenario": {
+        "peakQueued": 38,
+        "peakTimeLoss": 49.1
+      },
+      "tracked": [],
+      "incidents": []
+    },
+    "collisionEvents": 1,
+    "collisionEventsByType": {
+      "collision": 1
+    },
+    "collisionDetails": [
+      {
+        "time": "467.00",
+        "type": "collision",
+        "lane": "queen_e1b_2",
+        "pos": "20.83",
+        "collider": "v189",
+        "victim": "v190",
+        "colliderType": "sedan@5",
+        "victimType": "truck@7",
+        "colliderSpeed": "7.62",
+        "victimSpeed": "0.00",
+        "colliderFront": "162.83,315.38",
+        "colliderBack": "158.08,315.38",
+        "victimFront": "170.84,313.23",
+        "victimBack": "162.24,313.23"
+      }
+    ],
+    "uniqueCollisionPairs": 1,
+    "departDelayMeanSeconds": 0.07969432314410481,
+    "departDelayMaxSeconds": 3.25,
+    "sumoFinalSummary": {
+      "time": "479.75",
+      "loaded": "229",
+      "inserted": "229",
+      "running": "71",
+      "waiting": "0",
+      "ended": "158",
+      "arrived": "158",
+      "collisions": "1",
+      "teleports": "0",
+      "halting": "26",
+      "stopped": "0",
+      "meanWaitingTime": "0.08",
+      "meanTravelTime": "129.88",
+      "meanSpeed": "5.06",
+      "meanSpeedRelative": "0.40",
+      "discarded": "0",
+      "duration": "6"
+    }
+  }
+]

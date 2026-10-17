@@ -31,11 +31,13 @@ except ImportError:  # pragma: no cover
     libsumo = None
 
 from .. import sumo_env
-from ..network.info import NetInfo, load_net_info
+from ..network.info import NetInfo
+from ..performance.network_cache import load_network
 from ..scenarios.base import Scenario
 from .demand import DemandGenerator
 from .events import Event, EventLog
 from .metrics import Metrics
+from .safety import SafetyObservations
 from .signals import SignalManager, write_actuated_programs
 from .vtypes import EMERGENCY_TYPES, MODE_OF, TYPE_CODES, base_type, write_vtypes
 
@@ -115,7 +117,7 @@ class Engine:
         self.net_path = networks_dir / f"{self.network_id}.net.xml"
         if not self.net_path.exists():
             raise FileNotFoundError(f"network not built: {self.net_path} (run `python -m flowstate.cli build-network`)")
-        self.net: NetInfo = load_net_info(str(self.net_path), self.network_id)
+        self.net: NetInfo = load_network(str(self.net_path), self.network_id)
         self.work_dir = work_dir
         self.dt = config.step_length
         self.warmup = config.warmup
@@ -136,6 +138,7 @@ class Engine:
         self.tags: dict[str, str] = {}
         self.teleports = 0
         self.collisions = 0
+        self.safety = SafetyObservations()
         self.wall_ms = 0.0
         self._inc_ids = itertools.count(1)
         self._route_ids = itertools.count(1)
@@ -169,8 +172,9 @@ class Engine:
             "--time-to-teleport", "240", "--time-to-teleport.highways", "0",
             "--device.rerouting.probability", "0.35", "--device.rerouting.period", "45",
             "--device.rerouting.adaptation-interval", "10", "--device.rerouting.adaptation-weight", "0.0",
-            "--collision.action", "warn", "--collision.check-junctions", "false",
-            "--no-step-log", "true", "--no-warnings", "true", "--xml-validation", "never",
+            "--collision.action", "warn", "--collision.check-junctions", "true",
+            "--collision-output", str(self.work_dir / "collisions.xml"),
+            "--no-step-log", "true", "--no-warnings", "false", "--xml-validation", "never",
             "--error-log", str(self.work_dir / "sumo-errors.log"), "--default.speeddev", "0",
             "--max-depart-delay", "180", "--eager-insert", "false",
         ]
@@ -487,10 +491,11 @@ class Engine:
         if tele:
             self.teleports += tele
             ids = T.simulation.getStartingTeleportIDList()
-            self.emit("traffic", f"Gridlock: SUMO teleported {tele} blocked vehicle{'s' if tele > 1 else ''} ({', '.join(ids[:3])})", "warning")
+            self.emit("traffic", f"SUMO started teleporting {tele} vehicle{'s' if tele > 1 else ''} ({', '.join(ids[:3])}); inspect the native log for the cause", "warning")
         col = T.simulation.getCollidingVehiclesNumber()
         if col:
             self.collisions += col
+        self.safety.observe(t, T.simulation.getCollisions() if col else ())
         subs = T.vehicle.getAllSubscriptionResults()
         vehicles: dict[str, tuple] = {}
         for vid, r in subs.items():
@@ -651,6 +656,11 @@ class Engine:
             "last": {k: v for k, v in self.kpi.items() if k not in ("queues",)},
             "teleports": self.teleports,
             "collisions": self.collisions,
+            "safety": self.safety.summary(),
+            "demandAccounting": {"backgroundSubmitted": self.demand.counter,
+                                 "backgroundRouteFailures": self.demand.failed,
+                                 "pendingNow": len(self.T.simulation.getPendingVehicles()),
+                                 "note": "Submitted vehicles may still be pending or be discarded by SUMO; they are not departures. Legacy metrics include warm-up."},
             "signals": self.signals.summary(),
             "scenario": self.scenario.results(self),
             "tracked": [tr.to_dict() for tr in self.tracked.values()],

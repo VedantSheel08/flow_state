@@ -1,0 +1,43 @@
+Warning: No connection between edge 'king_w2b' and edge 'elm_s4' found.
+Warning: No connection between edge 'front_e3' and edge 'king_w4' found.
+Warning: Vehicle 'v17' performs emergency braking on lane ':n1_2_8_0' with decel=9.00, wished=4.71, severity=1.00, time=111.00.
+Warning: Vehicle 'v32' performs emergency braking on lane 'main_n3b_1' with decel=9.00, wished=4.71, severity=1.00, time=123.00.
+Warning: Vehicle 'v2' performs emergency braking on lane 'main_s3b_1' with decel=7.60, wished=4.19, severity=1.00, time=123.00.
+Warning: Vehicle 'v84' performs emergency braking on lane ':n0_1_21_0' with decel=8.80, wished=4.92, severity=1.00, time=148.00.
+Warning: Vehicle 'v39' performs emergency braking on lane ':n2_1_8_0' with decel=9.00, wished=4.71, severity=1.00, time=184.50.
+Warning: Vehicle 'v70' performs emergency braking on lane ':n1_1_4_0' with decel=8.60, wished=4.45, severity=1.00, time=229.25.
+Warning: Vehicle 'v59' performs emergency braking on lane 'king_w2b_1' with decel=7.00, wished=2.81, severity=1.00, time=230.00.
+Warning: Vehicle 'v41'; junction collision with vehicle 'v117', lane=':n2_2_1_0', gap=-1.00, latGap=0.00, time=234.50, stage=move.
+Warning: Vehicle 'v52' performs emergency braking on lane ':n1_2_12_0' with decel=8.60, wished=4.49, severity=1.00, time=238.00.
+Warning: Vehicle 'v168' performs emergency braking on lane 'elm_s2_1' with decel=9.00, wished=4.55, severity=1.00, time=264.00.
+Warning: Vehicle 'v191' performs emergency braking on lane 'front_e1_2' with decel=9.00, wished=4.55, severity=1.00, time=264.00.
+Warning: Vehicle 'v138' performs emergency braking on lane 'queen_e2b_3' with decel=9.00, wished=4.78, severity=1.00, time=289.00.
+Warning: Vehicle 'v94'; junction collision with vehicle 'v144', lane=':n2_2_33_0', gap=-1.00, latGap=0.00, time=302.25, stage=move.
+Warning: Vehicle 'v138'; junction collision with vehicle 'v144', lane=':n2_2_33_0', gap=-1.00, latGap=0.00, time=306.25, stage=move.
+Warning: Vehicle 'v242'; junction collision with vehicle 'v144', lane=':n2_2_33_0', gap=-1.00, latGap=0.00, time=312.25, stage=move.
+Warning: Vehicle 'v169' performs emergency braking on lane 'queen_e2b_3' with decel=9.00, wished=4.77, severity=1.00, time=313.00.
+Warning: Vehicle 'v169' performs emergency braking on lane 'queen_e2b_3' with decel=9.00, wished=4.77, severity=1.00, time=315.00.
+Warning: No connection between edge 'front_e0' and edge 'elm_s3' found.
+Warning: Vehicle 'v201' performs emergency braking on lane ':n1_0_26_0' with decel=8.80, wished=4.41, severity=1.00, time=325.75.
+Warning: Vehicle 'v243' performs emergency braking on lane ':n2_1_31_0' with decel=8.80, wished=4.18, severity=1.00, time=329.25.
+Warning: Vehicle 'v159' performs emergency braking on lane ':n1_2_19_0' with decel=9.00, wished=4.26, severity=1.00, time=334.00.
+Warning: No connection between edge 'main_n0' and edge 'elm_s1' found.
+Warning: Vehicle 'v151' performs emergency braking on lane ':main_n2_x_0_2' with decel=8.80, wished=4.55, severity=1.00, time=344.50.
+Warning: Vehicle 'v249' performs emergency braking on lane 'main_n2b_3' with decel=9.00, wished=4.71, severity=1.00, time=352.75.
+Warning: Vehicle 'v212' performs emergency braking on lane 'front_e1_2' with decel=9.00, wished=4.77, severity=1.00, time=354.00.
+Warning: Vehicle 'v281' performs emergency braking on lane 'park_s1_1' with decel=7.60, wished=4.17, severity=1.00, time=354.00.
+Warning: No connection between edge 'front_e2' and edge 'elm_s4' found.
+Warning: Vehicle 'v160' performs emergency braking on lane ':n3_2_9_0' with decel=8.80, wished=4.66, severity=1.00, time=361.50.
+Warning: Vehicle 'v169'; junction collision with vehicle 'v144', lane=':n2_2_33_0', gap=-1.00, latGap=0.00, time=393.00, stage=move.
+Warning: Vehicle 'v264'; junction collision with vehicle 'v144', lane=':n2_2_33_0', gap=-1.00, latGap=0.00, time=395.75, stage=move.
+Warning: Vehicle 'v435' performs emergency braking on lane 'main_s0b_3' with decel=9.00, wished=4.26, severity=1.00, time=405.00.
+Warning: Vehicle 'v200' performs emergency braking on lane ':n1_1_12_0' with decel=8.40, wished=3.91, severity=1.00, time=409.75.
+Warning: Vehicle 'v370' performs emergency braking on lane 'park_s1_1' with decel=7.00, wished=2.78, severity=1.00, time=422.50.
+Warning: Vehicle 'v341' performs emergency braking on lane 'park_s1_1' with decel=9.00, wished=4.55, severity=1.00, time=424.25.
+Warning: Vehicle 'v246' performs emergency braking on lane ':n1_1_0_0' with decel=8.80, wished=3.86, severity=1.00, time=454.50.
+Warning: Person 'p93' is jammed on edge ':n2_2_c0', time=460.50.
+Warning: Person 'p88' is jammed on edge ':n2_2_c0', time=460.75.
+Warning: Vehicle 'v336' performs emergency braking on lane 'king_e2b_1' with decel=7.00, wished=2.78, severity=1.00, time=474.75.
+Warning: Vehicle 'v353' performs emergency braking on lane 'main_s2b_1' with decel=9.00, wished=5.03, severity=1.00, time=477.00.
+Warning: Teleporting vehicle 'v95'; waited too long (yield), lane=':n2_2_14_0', time=477.00.
+Warning: Vehicle 'v95' ends teleporting on edge 'queen_e3', time=477.00.

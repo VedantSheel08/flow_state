@@ -29,6 +29,8 @@ from typing import Any, Callable
 
 from ..scenarios.catalog import create
 from ..sim.engine import Engine, RunConfig
+from ..performance.congestion import resolve
+from ..performance.identity import identity
 
 log = logging.getLogger(__name__)
 
@@ -242,13 +244,17 @@ class SimulationService:
         RUNS_DIR.mkdir(parents=True, exist_ok=True)
 
     # -- runs --------------------------------------------------------------
-    def start_run(self, scenario_id: str, params: dict[str, Any], seed: int | None, speed: float = 1.0) -> dict[str, Any]:
+    def start_run(self, scenario_id: str, params: dict[str, Any], seed: int | None, speed: float = 1.0, congestion: str | None = None) -> dict[str, Any]:
         seed = int(seed) if seed is not None else random.randint(1, 99999)
+        params, warmup, preset = resolve(params, congestion, scenario_id)
         scenario = create(scenario_id, params)  # raises ValueError on invalid params
-        config = RunConfig(scenario_id, scenario.params, seed, signal_mode=scenario.params.get("signals", "fixed"), label="live")
+        config = RunConfig(scenario_id, scenario.params, seed, signal_mode=scenario.params.get("signals", "fixed"), warmup=warmup, label="live")
         run_id = f"{time.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:4]}"
         engine = Engine(scenario, config, NETWORKS_DIR, WORK_DIR / "live")  # instantiates (draws) the scenario
-        info = {"id": run_id, **scenario.describe(), "signalMode": config.signal_mode, "spec": scenario.spec.model_dump(), "created": time.time()}
+        info = {"id": run_id, **scenario.describe(), "signalMode": config.signal_mode, "spec": scenario.spec.model_dump(), "created": time.time(),
+                "warmup": warmup, "congestion": congestion, "congestionPreset": preset}
+        info["reproducibility"] = identity(scenario_id, scenario.params, seed, NETWORKS_DIR,
+                                           warmup=warmup, backend=os.environ.get("FLOWSTATE_BACKEND", "libsumo"))
         with self._lock:
             self._stop_live()
             run = LiveRun(run_id, engine, info, self.bus, speed, self._save_run)
@@ -273,6 +279,7 @@ class SimulationService:
     def _write(self, info: dict[str, Any], results: dict[str, Any] | None) -> None:
         rec = {k: info[k] for k in ("id", "scenario", "title", "seed", "params", "network", "briefing", "signalMode", "created") if k in info}
         rec["results"] = results
+        rec.update({k: info[k] for k in ("warmup", "congestion", "congestionPreset", "reproducibility") if k in info})
         (RUNS_DIR / f"{info['id']}.json").write_text(json.dumps(rec, default=str), encoding="utf-8")
 
     def history(self, limit: int = 30) -> list[dict[str, Any]]:
@@ -295,7 +302,7 @@ class SimulationService:
             if run is None:
                 raise RuntimeError("no run to restart")
             info = run.info
-            return self.start_run(info["scenario"], info["params"], info["seed"], run.speed)
+            return self.start_run(info["scenario"], info["params"], info["seed"], run.speed, info.get("congestion"))
         if run is None:
             raise RuntimeError("no active run")
         if action == "pause":
@@ -349,6 +356,7 @@ class SimulationService:
     def start_compare(self, scenario_id: str, params: dict[str, Any], seed: int, key: str, values: list[Any]) -> dict[str, Any]:
         if len(values) != 2:
             raise ValueError("exactly two variant values are required")
+        params, _, _ = resolve(params, None, scenario_id)
         base = create(scenario_id, params)
         if key not in base.params:
             raise ValueError(f"'{key}' is not a parameter of {scenario_id}")

@@ -19,7 +19,7 @@ def headless(scenario_id: str, params: dict, seed: int, label: str = "cli", prog
     from .scenarios.catalog import create
     from .sim.engine import Engine, RunConfig
 
-    sc = create(scenario_id, params)
+    sc = create(scenario_id, {"duration": 5, **params})
     eng = Engine(sc, RunConfig(scenario_id, sc.params, seed, sc.params.get("signals", "fixed"), label=label), NETWORKS_DIR, WORK_DIR / label)
     events = []
     eng.events._listener = lambda e: events.append(e.to_dict())

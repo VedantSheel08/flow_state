@@ -20,6 +20,7 @@ from ..scenarios.catalog import list_specs
 from ..sim.engine import backend_name
 from ..sim.signals import SIGNAL_MODES
 from ..sim.vtypes import type_summary
+from ..performance.congestion import list_presets
 from .service import NETWORKS_DIR, SPEEDS, SimulationService
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -45,6 +46,7 @@ class RunRequest(BaseModel):
     params: dict[str, Any] = {}
     seed: int | None = None
     speed: float = 1.0
+    congestion: str | None = None
 
 
 class ControlRequest(BaseModel):
@@ -78,7 +80,17 @@ def health() -> dict[str, Any]:
 
 @app.get("/api/scenarios")
 def scenarios() -> list[dict[str, Any]]:
-    return list_specs()
+    specs = list_specs()
+    for spec in specs:
+        for param in spec["params"]:
+            if param["key"] == "duration":
+                param["default"] = 5
+    return specs
+
+
+@app.get("/api/congestion-presets")
+def congestion_presets() -> list[dict[str, Any]]:
+    return list_presets()
 
 
 @app.get("/api/vehicle-types")
@@ -97,7 +109,7 @@ def network(network_id: str) -> Response:
 
 @app.post("/api/runs")
 def start_run(req: RunRequest) -> dict[str, Any]:
-    return _guard(service.start_run, req.scenario, req.params, req.seed, req.speed)
+    return _guard(service.start_run, req.scenario, req.params, req.seed, req.speed, req.congestion)
 
 
 @app.get("/api/runs")

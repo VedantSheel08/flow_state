@@ -1,0 +1,10 @@
+{
+  "messages": 200,
+  "payloadBytes": 5969,
+  "compression": false,
+  "clients": 1,
+  "loopbackRoundTripMeanSeconds": 0.0006812670000181242,
+  "loopbackRoundTripP95Seconds": 0.000828100000944687,
+  "cpuSeconds": 0.125,
+  "limits": "Local echo RTT only; not WAN latency, browser rendering, or service fan-out."
+}

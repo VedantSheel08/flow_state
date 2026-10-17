@@ -1,0 +1,554 @@
+[
+  {
+    "repeat": 0,
+    "key": "3d796a2fd4d4cfe9f1d00f811cbb41f32f90fbaf46a75bb87e58fbb378939d23",
+    "prepareWallSeconds": 8.500370399997337,
+    "nativeInitAndWarmupSeconds": 6.072458300001017,
+    "claimWallSeconds": 1.151247499998135,
+    "continuation10SimSecondsWall": 0.7230821999983164,
+    "readyVehicles": 112,
+    "readyTrajectorySHA256": "9e2976c496b034bbddec4d38d5dcf59c3074d3aec8264f6574eb8b9b44ac6b61",
+    "laterTrajectorySHA256": "c694af96af1745ac0399ef00301588bd91e83035438faab0dfa9978e9c06b842",
+    "clockFrozenUntilAdvance": true,
+    "results": {
+      "t": 10.0,
+      "metrics": {
+        "departed": 147,
+        "completed": 35,
+        "byMode": {
+          "bike": {
+            "trips": 1,
+            "travelTime": 122.8,
+            "timeLoss": 31.7,
+            "waiting": 18.0,
+            "speed": 13.8
+          },
+          "car": {
+            "trips": 34,
+            "travelTime": 85.2,
+            "timeLoss": 34.0,
+            "waiting": 10.3,
+            "speed": 25.1
+          }
+        },
+        "junctionMaxQueue": {
+          "n1_2": 9,
+          "n2_1": 7,
+          "n1_1": 6,
+          "n2_0": 5,
+          "n3_2": 5,
+          "n1_3": 4
+        }
+      },
+      "last": {
+        "t": 10.0,
+        "active": 112,
+        "activeByMode": {
+          "car": 100,
+          "bike": 7,
+          "truck": 5
+        },
+        "persons": 49,
+        "completed": 35,
+        "throughput": null,
+        "travelTime": 85.2,
+        "timeLoss": 34.0,
+        "waiting": 10.3,
+        "meanSpeed": 23.6,
+        "queued": 15,
+        "maxQueue": 3,
+        "pending": 0,
+        "teleports": 0,
+        "overall": {
+          "trips": 34,
+          "travelTime": 85.2,
+          "timeLoss": 34.0,
+          "waiting": 10.3,
+          "speed": 25.1
+        },
+        "modes": {
+          "bike": {
+            "trips": 1,
+            "travelTime": 122.8,
+            "timeLoss": 31.7,
+            "waiting": 18.0,
+            "speed": 13.8
+          },
+          "car": {
+            "trips": 34,
+            "travelTime": 85.2,
+            "timeLoss": 34.0,
+            "waiting": 10.3,
+            "speed": 25.1
+          }
+        }
+      },
+      "teleports": 0,
+      "collisions": 0,
+      "safety": {
+        "junctionChecks": true,
+        "collisionRecordObservations": 0,
+        "collisionEpisodes": 0,
+        "uniqueCollisionPairs": 0,
+        "recordObservationsByType": {},
+        "examples": [],
+        "definition": "An episode starts when a pair/type is reported after an unreported step; not a count of unique physical crashes."
+      },
+      "demandAccounting": {
+        "backgroundSubmitted": 147,
+        "backgroundRouteFailures": 0,
+        "pendingNow": 0,
+        "note": "Submitted vehicles may still be pending or be discarded by SUMO; they are not departures. Legacy metrics include warm-up."
+      },
+      "signals": {
+        "mode": "fixed",
+        "preemptions": 0,
+        "tspExtensions": 0,
+        "tspSeconds": 0.0
+      },
+      "scenario": {
+        "peakQueued": 0,
+        "peakTimeLoss": null
+      },
+      "tracked": [],
+      "incidents": []
+    },
+    "manifest": {
+      "schema": 1,
+      "sumo": "1.28.0",
+      "backend": "libsumo",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.12.3",
+      "dependencies": {
+        "eclipse-sumo": "1.28.0",
+        "libsumo": "1.28.0",
+        "traci": "1.28.0",
+        "sumolib": "1.28.0",
+        "pydantic": "2.14.1"
+      },
+      "scenario": "rush_hour",
+      "params": {
+        "duration": 5,
+        "demand": 2800,
+        "traffic": 1.0,
+        "bike_share": 5,
+        "pedestrians": true,
+        "signals": "fixed",
+        "period": "am",
+        "peak": 2.0,
+        "variability": 0.5
+      },
+      "seed": 42,
+      "warmup": 180,
+      "stepLength": 0.25,
+      "networkFiles": {
+        "district.city.json": "2ee2bf0b6f6914e6fd02b14ca8d5b723efaa88ee05f4262e748f27b1fc650687",
+        "district.net.xml": "6402518427055408e59581f77b44151bc2cffdb2309eadb88624df498cc75f28",
+        "district.stops.add.xml": "327e390c93e57bf0ef5975d09fd0ea75a05e2d1014e663ac957d73e5cc7f3523"
+      },
+      "codeFiles": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "api/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "api/app.py": "4e8c941269caa02195ccb6ae4ac882b2f122773ee9b16cf6f03d39aff4cb7cd7",
+        "api/service.py": "cc1e90ca5bdc6c2637447038971e67c6958aaa81cc52050d02c231869061428a",
+        "cli.py": "017945655f38ee116ec0ee8250bee7aece9d30e7e786e23b32a56eecab7cd611",
+        "network/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "network/city.py": "af6fa165011cb94b2f314456504230174707110cd9448bf9358251a08a7227ca",
+        "network/geometry.py": "c0dfabcdf87e9601004193000d4bab1007d5b5899d8d47ee61b8dea5ba94cf5b",
+        "network/info.py": "c3b320c533b846257d6ae40b10bbbc3e51fa126902b85399b0c317f2c4279e88",
+        "performance/__init__.py": "0eef93a2ab7d42da2230c64414acc3d51005ceda4d7bd7eb4597b7816bdf04b7",
+        "performance/benchmark.py": "5a948a52d5c37aad99bd8dfede84758821746b46466a75a5cc9f4aff68517235",
+        "performance/collision_audit.py": "d23da81f899e4142ee74f229e0adaba7b507593898e14b9e60df3ecd70ecd73f",
+        "performance/congestion.py": "aabad0d9e5d9c0229c97a735d9c5c7cc8eee719cbac304aaf3711a55cc0c0cd4",
+        "performance/identity.py": "7eaa2fae83f10bd1881b259cc0c4a50c973f6191bd2af0c7dd1d1de4cd474f24",
+        "performance/network_cache.py": "9b27a93b2f445d245d16edd9a686f1fcba3480c0513c64b6a9325ae54ba928de",
+        "performance/prepared.py": "2221bab802d6d30cbc397d1f6fc4a557a7bc8b2fde9d942fa39e9d641fca62e2",
+        "performance/prepared_benchmark.py": "91baf7e2285ef353ba0e8b1110781b04cac479eaa08993214259f7ea5ff38ef1",
+        "performance/resources.py": "0fc6080dc9f835e0b204bc8a85ef4c643aadf6ef5dd66f972fa14167c594054c",
+        "performance/transport.py": "8953285f94faddc56d6a00f94f9ef3ed57d5abaad6ba4aee9cfa074253d313b0",
+        "scenarios/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "scenarios/base.py": "e67ec59611e1fb0b3d8022ea737263d1c47bd093ff70bb01e5a0ca6c75b059e8",
+        "scenarios/catalog.py": "770d14f9445025d0b49ed19ab7766ed578bd47bff788d3d82e7886eeddb51b45",
+        "scenarios/components.py": "7d25ba1efa4d796fd96aa7f43da4ba28cbd2a28406ff81a04e15c8a8f3841947",
+        "sim/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sim/demand.py": "73e1829058f0b4754c434341acb08a7aab6ba458f2e67eed0ca4b717001da5b8",
+        "sim/engine.py": "7ed5d028a198dcf33df94fe0db5689caa60f704f406b18ad17f16a370fecfb79",
+        "sim/events.py": "ebb62ed06c0e4c910afe1d1e3e71d899f76a4c82ce9456ee03c6293ae9d34bb8",
+        "sim/metrics.py": "da7da73b1b52bdc02eea80e2910812011d9e0c40d83502b4a0e10132c0d7f90d",
+        "sim/safety.py": "fa34e8795270c51267711ee4afdd0c3fcd2783d65f9e61e7cc2463c85b94ce05",
+        "sim/signals.py": "f0546fba86b4d2b3aab5343fceb1b6d11405bb5a242980c9ee1793cc9901075e",
+        "sim/vtypes.py": "69b3803609a968bc88275d1bb07692daeb1febe36f34e215e62b038be36881c7",
+        "sumo_env.py": "db5408a8fce2abc36bc4b2151193cfadb339ef4d79b12d91875a3d624ce3ec67"
+      },
+      "resourceFiles": {}
+    }
+  },
+  {
+    "repeat": 1,
+    "key": "3d796a2fd4d4cfe9f1d00f811cbb41f32f90fbaf46a75bb87e58fbb378939d23",
+    "prepareWallSeconds": 7.7500366999993275,
+    "nativeInitAndWarmupSeconds": 5.962803099999292,
+    "claimWallSeconds": 0.5441649999993388,
+    "continuation10SimSecondsWall": 0.6043685000004189,
+    "readyVehicles": 112,
+    "readyTrajectorySHA256": "9e2976c496b034bbddec4d38d5dcf59c3074d3aec8264f6574eb8b9b44ac6b61",
+    "laterTrajectorySHA256": "c694af96af1745ac0399ef00301588bd91e83035438faab0dfa9978e9c06b842",
+    "clockFrozenUntilAdvance": true,
+    "results": {
+      "t": 10.0,
+      "metrics": {
+        "departed": 147,
+        "completed": 35,
+        "byMode": {
+          "bike": {
+            "trips": 1,
+            "travelTime": 122.8,
+            "timeLoss": 31.7,
+            "waiting": 18.0,
+            "speed": 13.8
+          },
+          "car": {
+            "trips": 34,
+            "travelTime": 85.2,
+            "timeLoss": 34.0,
+            "waiting": 10.3,
+            "speed": 25.1
+          }
+        },
+        "junctionMaxQueue": {
+          "n1_2": 9,
+          "n2_1": 7,
+          "n1_1": 6,
+          "n2_0": 5,
+          "n3_2": 5,
+          "n1_3": 4
+        }
+      },
+      "last": {
+        "t": 10.0,
+        "active": 112,
+        "activeByMode": {
+          "car": 100,
+          "bike": 7,
+          "truck": 5
+        },
+        "persons": 49,
+        "completed": 35,
+        "throughput": null,
+        "travelTime": 85.2,
+        "timeLoss": 34.0,
+        "waiting": 10.3,
+        "meanSpeed": 23.6,
+        "queued": 15,
+        "maxQueue": 3,
+        "pending": 0,
+        "teleports": 0,
+        "overall": {
+          "trips": 34,
+          "travelTime": 85.2,
+          "timeLoss": 34.0,
+          "waiting": 10.3,
+          "speed": 25.1
+        },
+        "modes": {
+          "bike": {
+            "trips": 1,
+            "travelTime": 122.8,
+            "timeLoss": 31.7,
+            "waiting": 18.0,
+            "speed": 13.8
+          },
+          "car": {
+            "trips": 34,
+            "travelTime": 85.2,
+            "timeLoss": 34.0,
+            "waiting": 10.3,
+            "speed": 25.1
+          }
+        }
+      },
+      "teleports": 0,
+      "collisions": 0,
+      "safety": {
+        "junctionChecks": true,
+        "collisionRecordObservations": 0,
+        "collisionEpisodes": 0,
+        "uniqueCollisionPairs": 0,
+        "recordObservationsByType": {},
+        "examples": [],
+        "definition": "An episode starts when a pair/type is reported after an unreported step; not a count of unique physical crashes."
+      },
+      "demandAccounting": {
+        "backgroundSubmitted": 147,
+        "backgroundRouteFailures": 0,
+        "pendingNow": 0,
+        "note": "Submitted vehicles may still be pending or be discarded by SUMO; they are not departures. Legacy metrics include warm-up."
+      },
+      "signals": {
+        "mode": "fixed",
+        "preemptions": 0,
+        "tspExtensions": 0,
+        "tspSeconds": 0.0
+      },
+      "scenario": {
+        "peakQueued": 0,
+        "peakTimeLoss": null
+      },
+      "tracked": [],
+      "incidents": []
+    },
+    "manifest": {
+      "schema": 1,
+      "sumo": "1.28.0",
+      "backend": "libsumo",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.12.3",
+      "dependencies": {
+        "eclipse-sumo": "1.28.0",
+        "libsumo": "1.28.0",
+        "traci": "1.28.0",
+        "sumolib": "1.28.0",
+        "pydantic": "2.14.1"
+      },
+      "scenario": "rush_hour",
+      "params": {
+        "duration": 5,
+        "demand": 2800,
+        "traffic": 1.0,
+        "bike_share": 5,
+        "pedestrians": true,
+        "signals": "fixed",
+        "period": "am",
+        "peak": 2.0,
+        "variability": 0.5
+      },
+      "seed": 42,
+      "warmup": 180,
+      "stepLength": 0.25,
+      "networkFiles": {
+        "district.city.json": "2ee2bf0b6f6914e6fd02b14ca8d5b723efaa88ee05f4262e748f27b1fc650687",
+        "district.net.xml": "6402518427055408e59581f77b44151bc2cffdb2309eadb88624df498cc75f28",
+        "district.stops.add.xml": "327e390c93e57bf0ef5975d09fd0ea75a05e2d1014e663ac957d73e5cc7f3523"
+      },
+      "codeFiles": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "api/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "api/app.py": "4e8c941269caa02195ccb6ae4ac882b2f122773ee9b16cf6f03d39aff4cb7cd7",
+        "api/service.py": "cc1e90ca5bdc6c2637447038971e67c6958aaa81cc52050d02c231869061428a",
+        "cli.py": "017945655f38ee116ec0ee8250bee7aece9d30e7e786e23b32a56eecab7cd611",
+        "network/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "network/city.py": "af6fa165011cb94b2f314456504230174707110cd9448bf9358251a08a7227ca",
+        "network/geometry.py": "c0dfabcdf87e9601004193000d4bab1007d5b5899d8d47ee61b8dea5ba94cf5b",
+        "network/info.py": "c3b320c533b846257d6ae40b10bbbc3e51fa126902b85399b0c317f2c4279e88",
+        "performance/__init__.py": "0eef93a2ab7d42da2230c64414acc3d51005ceda4d7bd7eb4597b7816bdf04b7",
+        "performance/benchmark.py": "5a948a52d5c37aad99bd8dfede84758821746b46466a75a5cc9f4aff68517235",
+        "performance/collision_audit.py": "d23da81f899e4142ee74f229e0adaba7b507593898e14b9e60df3ecd70ecd73f",
+        "performance/congestion.py": "aabad0d9e5d9c0229c97a735d9c5c7cc8eee719cbac304aaf3711a55cc0c0cd4",
+        "performance/identity.py": "7eaa2fae83f10bd1881b259cc0c4a50c973f6191bd2af0c7dd1d1de4cd474f24",
+        "performance/network_cache.py": "9b27a93b2f445d245d16edd9a686f1fcba3480c0513c64b6a9325ae54ba928de",
+        "performance/prepared.py": "2221bab802d6d30cbc397d1f6fc4a557a7bc8b2fde9d942fa39e9d641fca62e2",
+        "performance/prepared_benchmark.py": "91baf7e2285ef353ba0e8b1110781b04cac479eaa08993214259f7ea5ff38ef1",
+        "performance/resources.py": "0fc6080dc9f835e0b204bc8a85ef4c643aadf6ef5dd66f972fa14167c594054c",
+        "performance/transport.py": "8953285f94faddc56d6a00f94f9ef3ed57d5abaad6ba4aee9cfa074253d313b0",
+        "scenarios/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "scenarios/base.py": "e67ec59611e1fb0b3d8022ea737263d1c47bd093ff70bb01e5a0ca6c75b059e8",
+        "scenarios/catalog.py": "770d14f9445025d0b49ed19ab7766ed578bd47bff788d3d82e7886eeddb51b45",
+        "scenarios/components.py": "7d25ba1efa4d796fd96aa7f43da4ba28cbd2a28406ff81a04e15c8a8f3841947",
+        "sim/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sim/demand.py": "73e1829058f0b4754c434341acb08a7aab6ba458f2e67eed0ca4b717001da5b8",
+        "sim/engine.py": "7ed5d028a198dcf33df94fe0db5689caa60f704f406b18ad17f16a370fecfb79",
+        "sim/events.py": "ebb62ed06c0e4c910afe1d1e3e71d899f76a4c82ce9456ee03c6293ae9d34bb8",
+        "sim/metrics.py": "da7da73b1b52bdc02eea80e2910812011d9e0c40d83502b4a0e10132c0d7f90d",
+        "sim/safety.py": "fa34e8795270c51267711ee4afdd0c3fcd2783d65f9e61e7cc2463c85b94ce05",
+        "sim/signals.py": "f0546fba86b4d2b3aab5343fceb1b6d11405bb5a242980c9ee1793cc9901075e",
+        "sim/vtypes.py": "69b3803609a968bc88275d1bb07692daeb1febe36f34e215e62b038be36881c7",
+        "sumo_env.py": "db5408a8fce2abc36bc4b2151193cfadb339ef4d79b12d91875a3d624ce3ec67"
+      },
+      "resourceFiles": {}
+    }
+  },
+  {
+    "repeat": 2,
+    "key": "3d796a2fd4d4cfe9f1d00f811cbb41f32f90fbaf46a75bb87e58fbb378939d23",
+    "prepareWallSeconds": 8.816009599999234,
+    "nativeInitAndWarmupSeconds": 6.926482499999111,
+    "claimWallSeconds": 0.566343999998935,
+    "continuation10SimSecondsWall": 0.6253002000012202,
+    "readyVehicles": 112,
+    "readyTrajectorySHA256": "9e2976c496b034bbddec4d38d5dcf59c3074d3aec8264f6574eb8b9b44ac6b61",
+    "laterTrajectorySHA256": "c694af96af1745ac0399ef00301588bd91e83035438faab0dfa9978e9c06b842",
+    "clockFrozenUntilAdvance": true,
+    "results": {
+      "t": 10.0,
+      "metrics": {
+        "departed": 147,
+        "completed": 35,
+        "byMode": {
+          "bike": {
+            "trips": 1,
+            "travelTime": 122.8,
+            "timeLoss": 31.7,
+            "waiting": 18.0,
+            "speed": 13.8
+          },
+          "car": {
+            "trips": 34,
+            "travelTime": 85.2,
+            "timeLoss": 34.0,
+            "waiting": 10.3,
+            "speed": 25.1
+          }
+        },
+        "junctionMaxQueue": {
+          "n1_2": 9,
+          "n2_1": 7,
+          "n1_1": 6,
+          "n2_0": 5,
+          "n3_2": 5,
+          "n1_3": 4
+        }
+      },
+      "last": {
+        "t": 10.0,
+        "active": 112,
+        "activeByMode": {
+          "car": 100,
+          "bike": 7,
+          "truck": 5
+        },
+        "persons": 49,
+        "completed": 35,
+        "throughput": null,
+        "travelTime": 85.2,
+        "timeLoss": 34.0,
+        "waiting": 10.3,
+        "meanSpeed": 23.6,
+        "queued": 15,
+        "maxQueue": 3,
+        "pending": 0,
+        "teleports": 0,
+        "overall": {
+          "trips": 34,
+          "travelTime": 85.2,
+          "timeLoss": 34.0,
+          "waiting": 10.3,
+          "speed": 25.1
+        },
+        "modes": {
+          "bike": {
+            "trips": 1,
+            "travelTime": 122.8,
+            "timeLoss": 31.7,
+            "waiting": 18.0,
+            "speed": 13.8
+          },
+          "car": {
+            "trips": 34,
+            "travelTime": 85.2,
+            "timeLoss": 34.0,
+            "waiting": 10.3,
+            "speed": 25.1
+          }
+        }
+      },
+      "teleports": 0,
+      "collisions": 0,
+      "safety": {
+        "junctionChecks": true,
+        "collisionRecordObservations": 0,
+        "collisionEpisodes": 0,
+        "uniqueCollisionPairs": 0,
+        "recordObservationsByType": {},
+        "examples": [],
+        "definition": "An episode starts when a pair/type is reported after an unreported step; not a count of unique physical crashes."
+      },
+      "demandAccounting": {
+        "backgroundSubmitted": 147,
+        "backgroundRouteFailures": 0,
+        "pendingNow": 0,
+        "note": "Submitted vehicles may still be pending or be discarded by SUMO; they are not departures. Legacy metrics include warm-up."
+      },
+      "signals": {
+        "mode": "fixed",
+        "preemptions": 0,
+        "tspExtensions": 0,
+        "tspSeconds": 0.0
+      },
+      "scenario": {
+        "peakQueued": 0,
+        "peakTimeLoss": null
+      },
+      "tracked": [],
+      "incidents": []
+    },
+    "manifest": {
+      "schema": 1,
+      "sumo": "1.28.0",
+      "backend": "libsumo",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.12.3",
+      "dependencies": {
+        "eclipse-sumo": "1.28.0",
+        "libsumo": "1.28.0",
+        "traci": "1.28.0",
+        "sumolib": "1.28.0",
+        "pydantic": "2.14.1"
+      },
+      "scenario": "rush_hour",
+      "params": {
+        "duration": 5,
+        "demand": 2800,
+        "traffic": 1.0,
+        "bike_share": 5,
+        "pedestrians": true,
+        "signals": "fixed",
+        "period": "am",
+        "peak": 2.0,
+        "variability": 0.5
+      },
+      "seed": 42,
+      "warmup": 180,
+      "stepLength": 0.25,
+      "networkFiles": {
+        "district.city.json": "2ee2bf0b6f6914e6fd02b14ca8d5b723efaa88ee05f4262e748f27b1fc650687",
+        "district.net.xml": "6402518427055408e59581f77b44151bc2cffdb2309eadb88624df498cc75f28",
+        "district.stops.add.xml": "327e390c93e57bf0ef5975d09fd0ea75a05e2d1014e663ac957d73e5cc7f3523"
+      },
+      "codeFiles": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "api/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "api/app.py": "4e8c941269caa02195ccb6ae4ac882b2f122773ee9b16cf6f03d39aff4cb7cd7",
+        "api/service.py": "cc1e90ca5bdc6c2637447038971e67c6958aaa81cc52050d02c231869061428a",
+        "cli.py": "017945655f38ee116ec0ee8250bee7aece9d30e7e786e23b32a56eecab7cd611",
+        "network/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "network/city.py": "af6fa165011cb94b2f314456504230174707110cd9448bf9358251a08a7227ca",
+        "network/geometry.py": "c0dfabcdf87e9601004193000d4bab1007d5b5899d8d47ee61b8dea5ba94cf5b",
+        "network/info.py": "c3b320c533b846257d6ae40b10bbbc3e51fa126902b85399b0c317f2c4279e88",
+        "performance/__init__.py": "0eef93a2ab7d42da2230c64414acc3d51005ceda4d7bd7eb4597b7816bdf04b7",
+        "performance/benchmark.py": "5a948a52d5c37aad99bd8dfede84758821746b46466a75a5cc9f4aff68517235",
+        "performance/collision_audit.py": "d23da81f899e4142ee74f229e0adaba7b507593898e14b9e60df3ecd70ecd73f",
+        "performance/congestion.py": "aabad0d9e5d9c0229c97a735d9c5c7cc8eee719cbac304aaf3711a55cc0c0cd4",
+        "performance/identity.py": "7eaa2fae83f10bd1881b259cc0c4a50c973f6191bd2af0c7dd1d1de4cd474f24",
+        "performance/network_cache.py": "9b27a93b2f445d245d16edd9a686f1fcba3480c0513c64b6a9325ae54ba928de",
+        "performance/prepared.py": "2221bab802d6d30cbc397d1f6fc4a557a7bc8b2fde9d942fa39e9d641fca62e2",
+        "performance/prepared_benchmark.py": "91baf7e2285ef353ba0e8b1110781b04cac479eaa08993214259f7ea5ff38ef1",
+        "performance/resources.py": "0fc6080dc9f835e0b204bc8a85ef4c643aadf6ef5dd66f972fa14167c594054c",
+        "performance/transport.py": "8953285f94faddc56d6a00f94f9ef3ed57d5abaad6ba4aee9cfa074253d313b0",
+        "scenarios/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "scenarios/base.py": "e67ec59611e1fb0b3d8022ea737263d1c47bd093ff70bb01e5a0ca6c75b059e8",
+        "scenarios/catalog.py": "770d14f9445025d0b49ed19ab7766ed578bd47bff788d3d82e7886eeddb51b45",
+        "scenarios/components.py": "7d25ba1efa4d796fd96aa7f43da4ba28cbd2a28406ff81a04e15c8a8f3841947",
+        "sim/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sim/demand.py": "73e1829058f0b4754c434341acb08a7aab6ba458f2e67eed0ca4b717001da5b8",
+        "sim/engine.py": "7ed5d028a198dcf33df94fe0db5689caa60f704f406b18ad17f16a370fecfb79",
+        "sim/events.py": "ebb62ed06c0e4c910afe1d1e3e71d899f76a4c82ce9456ee03c6293ae9d34bb8",
+        "sim/metrics.py": "da7da73b1b52bdc02eea80e2910812011d9e0c40d83502b4a0e10132c0d7f90d",
+        "sim/safety.py": "fa34e8795270c51267711ee4afdd0c3fcd2783d65f9e61e7cc2463c85b94ce05",
+        "sim/signals.py": "f0546fba86b4d2b3aab5343fceb1b6d11405bb5a242980c9ee1793cc9901075e",
+        "sim/vtypes.py": "69b3803609a968bc88275d1bb07692daeb1febe36f34e215e62b038be36881c7",
+        "sumo_env.py": "db5408a8fce2abc36bc4b2151193cfadb339ef4d79b12d91875a3d624ce3ec67"
+      },
+      "resourceFiles": {}
+    }
+  }
+]
