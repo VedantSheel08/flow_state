@@ -18,7 +18,7 @@ function ToolButton({ label, onClick, children, active }: { label: string; onCli
       <button
         aria-label={label}
         onClick={onClick}
-        className={`flex h-8 w-8 items-center justify-center rounded-lg text-ink-2 transition-colors hover:bg-black/[0.05] hover:text-ink ${active ? 'bg-accent-soft text-accent-strong' : ''}`}
+        className={`flex h-8 w-8 items-center justify-center rounded-lg text-ink-2 transition-colors hover:bg-black/[0.05] hover:text-ink ${active ? 'bg-ink text-on-ink hover:bg-ink/85 hover:text-on-ink' : ''}`}
       >
         {children}
       </button>

@@ -109,7 +109,7 @@ export function RunBar() {
   const Icon = ICONS[run.scenario]
   const weather = scen?.weather as string | undefined
   return (
-    <div className="glass pointer-events-auto absolute inset-x-3 bottom-3 z-10 flex h-[56px] items-center gap-3 rounded-xl px-2.5">
+    <div className="asphalt asphalt-float pointer-events-auto absolute inset-x-3 bottom-3 z-10 flex h-[56px] items-center gap-3 rounded-[18px] px-2.5">
       <div className="flex items-center gap-1">
         <Tip label="End run · saved to Run history">
           <Button variant="danger" size="sm" className="mr-1 gap-1.5" aria-label="End run" onClick={() => endRun()} disabled={state === 'starting'}>
@@ -141,7 +141,7 @@ export function RunBar() {
           </Button>
         </Tip>
       </div>
-      <div className="h-7 w-px bg-black/[0.08]" />
+      <div className="h-7 w-px bg-track" />
       <div className="hidden min-w-0 max-w-[230px] shrink items-center gap-2.5 lg:flex">
         {Icon && (
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-ink-2">
@@ -161,7 +161,7 @@ export function RunBar() {
           </span>
         </span>
       </div>
-      <div className="hidden h-7 w-px bg-black/[0.08] lg:block" />
+      <div className="hidden h-7 w-px bg-track lg:block" />
       <SimClock runId={run.id} running={running} dur={dur} />
       <Timeline markers={run.markers} dur={dur} />
       <div className="flex shrink-0 items-center gap-2">

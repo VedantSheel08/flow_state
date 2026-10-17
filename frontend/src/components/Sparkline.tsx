@@ -1,4 +1,4 @@
-export function Sparkline({ values, width = 64, height = 20, color = '#2563EB' }: { values: (number | null)[]; width?: number; height?: number; color?: string }) {
+export function Sparkline({ values, width = 64, height = 20, color = 'var(--color-ink-2)' }: { values: (number | null)[]; width?: number; height?: number; color?: string }) {
   const pts = values.map((v, i) => [i, v] as const).filter((p): p is readonly [number, number] => p[1] != null && isFinite(p[1]))
   if (pts.length < 2) return <svg width={width} height={height} />
   const xs = pts.map((p) => p[0])
@@ -13,8 +13,9 @@ export function Sparkline({ values, width = 64, height = 20, color = '#2563EB' }
   const area = `${d}L${sx(pts[pts.length - 1][0]).toFixed(1)},${height}L${sx(pts[0][0]).toFixed(1)},${height}Z`
   return (
     <svg width={width} height={height} className="block overflow-visible">
-      <path d={area} fill={color} opacity={0.08} />
-      <path d={d} fill="none" stroke={color} strokeWidth={1.4} strokeLinejoin="round" strokeLinecap="round" />
+      <path d={area} fill={color} opacity={0.06} />
+      <path d={d} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={sx(pts[pts.length - 1][0])} cy={sy(pts[pts.length - 1][1])} r={2} fill={color} />
     </svg>
   )
 }

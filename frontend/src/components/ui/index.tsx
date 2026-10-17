@@ -17,7 +17,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLBut
         size === 'sm' && 'h-7 px-2.5 text-[12px]',
         size === 'icon' && 'h-8 w-8',
         size === 'icon-sm' && 'h-7 w-7',
-        variant === 'primary' && 'bg-ink text-white shadow-[0_1px_2px_rgba(12,19,34,0.2),inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-[#1d2638]',
+        variant === 'primary' && 'bg-ink text-on-ink shadow-[0_1px_2px_rgba(12,19,34,0.2),inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-ink/85',
         variant === 'secondary' && 'bg-surface text-ink shadow-[inset_0_0_0_1px_var(--color-border-strong),0_1px_2px_rgba(12,19,34,0.04)] hover:bg-subtle active:bg-muted',
         variant === 'ghost' && 'text-ink-2 hover:bg-muted hover:text-ink',
         variant === 'danger' && 'border border-border-strong bg-surface text-bad hover:bg-bad-soft',
@@ -51,7 +51,7 @@ export function Switch({ checked, onChange, disabled, id }: { checked: boolean; 
       checked={checked}
       onCheckedChange={onChange}
       disabled={disabled}
-      className="relative h-[18px] w-[30px] shrink-0 rounded-full bg-border-strong transition-colors data-[state=checked]:bg-accent disabled:opacity-50"
+      className="relative h-[18px] w-[30px] shrink-0 rounded-full bg-border-strong transition-colors data-[state=checked]:bg-ink disabled:opacity-50"
     >
       <RSwitch.Thumb className="block h-[14px] w-[14px] translate-x-[2px] rounded-full bg-white shadow-xs transition-transform data-[state=checked]:translate-x-[14px]" />
     </RSwitch.Root>
@@ -71,9 +71,9 @@ export function Slider({ value, min, max, step, onChange, onCommit, disabled }: 
       onValueCommit={(v) => onCommit?.(v[0])}
     >
       <RSlider.Track className="relative h-[3px] grow rounded-full bg-border">
-        <RSlider.Range className="absolute h-full rounded-full bg-accent" />
+        <RSlider.Range className="absolute h-full rounded-full bg-ink" />
       </RSlider.Track>
-      <RSlider.Thumb className="block h-3.5 w-3.5 rounded-full border border-border-strong bg-white shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-accent/40" />
+      <RSlider.Thumb className="block h-3.5 w-3.5 rounded-full border border-border-strong bg-white shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-accent/40 active:scale-110 transition-[scale]" />
     </RSlider.Root>
   )
 }

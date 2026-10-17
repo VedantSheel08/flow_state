@@ -74,7 +74,7 @@ export function ScenarioRail() {
         <Tip label="Configure scenario" side="right">
           <Button size="icon" variant="ghost" className="relative" aria-label="Configure scenario" disabled={!spec} onClick={configure}>
             <SlidersHorizontal size={15} />
-            {edited && <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-accent" />}
+            {edited && <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-ink" />}
           </Button>
         </Tip>
         <Tip label={spec ? `Generate & run · ${spec.title}` : 'Generate & run'} side="right">
@@ -87,7 +87,7 @@ export function ScenarioRail() {
   }
 
   return (
-    <aside className="glass anim-fade absolute bottom-[80px] left-3 top-3 z-20 flex w-[248px] flex-col overflow-hidden rounded-xl" aria-label="Scenarios">
+    <aside className="glass anim-fade absolute bottom-[80px] left-3 top-3 z-20 flex w-[248px] flex-col overflow-hidden rounded-2xl" aria-label="Scenarios">
       <div className="flex items-center justify-between py-1.5 pl-3.5 pr-1.5">
         <h2 className="label-caps">Scenarios</h2>
         <Tip label="Collapse panel ( [ )" side="right">
@@ -128,13 +128,13 @@ export function ScenarioRail() {
         {spec && (
           <button
             onClick={configure}
-            className="group flex w-full items-center gap-2.5 rounded-lg border border-accent/30 bg-accent-soft px-2.5 py-2 text-left transition-colors hover:border-accent/60"
+            className="group flex w-full items-center gap-2.5 rounded-lg border border-border-strong bg-surface px-2.5 py-2 text-left shadow-xs transition-colors hover:border-ink-4"
           >
-            <SlidersHorizontal size={15} className="shrink-0 text-accent-strong" />
+            <SlidersHorizontal size={15} className="shrink-0 text-ink-2" />
             <span className="min-w-0 flex-1">
-              <span className="flex items-center gap-1.5 text-[12.5px] font-semibold text-accent-strong">
+              <span className="flex items-center gap-1.5 text-[12.5px] font-semibold text-ink">
                 Configure scenario
-                {edited && <span className="h-1.5 w-1.5 rounded-full bg-accent" title="Edited" />}
+                {edited && <span className="h-1.5 w-1.5 rounded-full bg-ink" title="Edited" />}
               </span>
               <span className="tnum block truncate text-[11px] text-ink-2">
                 {rate > 0 && `${num(rate, 0)} trips/h · `}

@@ -106,9 +106,9 @@ function LaunchCard({ launch }: { launch: Launch }) {
           {built && !warmDone && (
             <span className="mt-1.5 block h-[3px] overflow-hidden rounded-full bg-muted">
               {state === 'warming' ? (
-                <span className="block h-full rounded-full bg-accent transition-[width] duration-200" style={{ width: `${warmFrac * 100}%` }} />
+                <span className="block h-full rounded-full bg-ink transition-[width] duration-200" style={{ width: `${warmFrac * 100}%` }} />
               ) : (
-                <span className="indeterminate block h-full w-1/3 rounded-full bg-accent" />
+                <span className="indeterminate block h-full w-1/3 rounded-full bg-ink" />
               )}
             </span>
           )}
@@ -118,7 +118,7 @@ function LaunchCard({ launch }: { launch: Launch }) {
       </ol>
       {!built && (
         <span className="mt-2.5 block h-[3px] overflow-hidden rounded-full bg-muted">
-          <span className="indeterminate block h-full w-1/3 rounded-full bg-accent" />
+          <span className="indeterminate block h-full w-1/3 rounded-full bg-ink" />
         </span>
       )}
     </div>

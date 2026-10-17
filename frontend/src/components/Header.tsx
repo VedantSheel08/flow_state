@@ -1,13 +1,14 @@
 import { Expand, PanelLeft, PanelRight, Shrink } from 'lucide-react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useStore, type View } from '../lib/store'
 import { cn } from '../lib/format'
 import { Dot, Tip } from './ui'
 
 const TABS: { id: View; label: string }[] = [
   { id: 'simulate', label: 'Simulation' },
+  { id: 'results', label: 'Results' },
   { id: 'analyze', label: 'Analytics' },
   { id: 'runs', label: 'Run history' },
-  { id: 'results', label: 'Results' },
 ]
 
 export function Logo() {
@@ -36,6 +37,49 @@ function PanelToggle({ label, active, onClick, children }: { label: string; acti
   )
 }
 
+/** Segmented tab bar; the white thumb slides to the tab you pick. */
+function TabNav({ view, onChange }: { view: View; onChange: (v: View) => void }) {
+  const refs = useRef<Partial<Record<View, HTMLButtonElement | null>>>({})
+  const [thumb, setThumb] = useState<{ x: number; w: number } | null>(null)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = refs.current[view]
+      if (el) setThumb({ x: el.offsetLeft, w: el.offsetWidth })
+    }
+    measure()
+    document.fonts?.ready.then(measure)
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [view])
+  return (
+    <nav aria-label="Main" className="relative flex h-8 items-center gap-0.5 rounded-[10px] bg-track p-0.5">
+      {thumb && (
+        <span
+          aria-hidden
+          className="absolute left-0 top-0.5 h-7 rounded-lg bg-surface shadow-thumb transition-[translate,width] duration-[260ms] ease-[var(--ease-out-quint)] motion-reduce:transition-none"
+          style={{ translate: `${thumb.x}px 0`, width: thumb.w }}
+        />
+      )}
+      {TABS.map((t) => (
+        <button
+          key={t.id}
+          ref={(el) => {
+            refs.current[t.id] = el
+          }}
+          aria-current={view === t.id ? 'page' : undefined}
+          onClick={() => onChange(t.id)}
+          className={cn(
+            'relative inline-flex h-7 items-center rounded-lg px-3 text-[13px] font-medium transition-colors duration-150 ease-out',
+            view === t.id ? 'text-ink' : 'text-ink-3 hover:text-ink',
+          )}
+        >
+          {t.label}
+        </button>
+      ))}
+    </nav>
+  )
+}
+
 export function Header() {
   const view = useStore((s) => s.view)
   const set = useStore((s) => s.set)
@@ -48,27 +92,13 @@ export function Header() {
   const netTitle = networks[run?.network ?? 'district']?.title ?? 'Riverside District'
   const mapOnly = !panels.left && !panels.right
   return (
-    <header className="relative z-20 flex h-12 shrink-0 items-center gap-7 border-b border-border bg-surface pl-5 pr-4">
+    <header className="relative z-20 flex h-12 shrink-0 items-center gap-6 border-b border-border bg-surface pl-5 pr-4">
       <div className="flex shrink-0 items-center gap-2.5">
         <Logo />
         <span className="text-[14px] font-[650] tracking-[-0.01em] text-ink">FlowState</span>
         <span className="hidden h-[18px] items-center rounded-[6px] px-[7px] text-[10.5px] font-semibold text-ink-3 shadow-[inset_0_0_0_1px_var(--color-border-strong)] lg:inline-flex">SUMO twin</span>
       </div>
-      <nav aria-label="Main" className="flex gap-[22px] self-stretch">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            aria-current={view === t.id ? 'page' : undefined}
-            onClick={() => set({ view: t.id })}
-            className={cn(
-              'inline-flex h-12 items-center px-0.5 text-[13px] font-medium transition-[color,box-shadow] duration-150 ease-out',
-              view === t.id ? 'text-ink shadow-[inset_0_-2px_0_var(--color-ink)]' : 'text-ink-3 hover:text-ink-2',
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
-      </nav>
+      <TabNav view={view} onChange={(v) => set({ view: v })} />
       <div className="ml-auto flex items-center gap-2.5 text-[12px] text-ink-2">
         <span className="hidden text-ink-3 md:inline">{view === 'results' ? 'rl_grid · 2×2 signalised' : netTitle}</span>
         <Tip label={conn === 'open' ? `Connected to the simulation server (${health?.backend ?? 'TraCI'})` : 'Simulation server unreachable — retrying'}>

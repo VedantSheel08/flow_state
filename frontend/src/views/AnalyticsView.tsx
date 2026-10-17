@@ -1,15 +1,20 @@
-import { FlaskConical, Loader2 } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, FlaskConical, Loader2, Minus } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { PageHeader } from '../components/PageHeader'
 import { Badge, Button, Empty, Segmented } from '../components/ui'
 import { api } from '../lib/api'
 import { clock, cn, num, secs } from '../lib/format'
 import { useStore } from '../lib/store'
 import type { CompareJob, Kpi, ModeSummary, RunResults } from '../lib/types'
 
-// Validated categorical slots (dataviz reference palette, light mode)
-const SERIES = '#2a78d6'
-const SERIES_B = '#eb6834'
+// One run = one series, drawn in ink. Blue and orange stay reserved for
+// FlowState and fixed-time on the Results page.
+const LINE = '#0c1322'
+// A/B variants of a controlled comparison: baseline grey, variant ink.
+const SERIES = '#8a93a3'
+const SERIES_B = '#0c1322'
+const TIP_STYLE = { fontSize: 12, borderRadius: 10, border: 'none', background: '#0c1322', color: '#fff', boxShadow: '0 8px 24px -6px rgb(12 19 34 / .35)', padding: '8px 10px' }
 
 interface ChartDef {
   key: string
@@ -28,37 +33,41 @@ const CHARTS: ChartDef[] = [
   { key: 'queue', title: 'Stopped at approaches', unit: 'veh', get: (k) => k.queued, note: 'Halting vehicles on intersection approaches' },
 ]
 
+const compact = (v: number) => (Math.abs(v) >= 1000 ? `${(v / 1000).toFixed(v % 1000 ? 1 : 0)}k` : String(v))
+
 function TimeChart({ def, data, markers }: { def: ChartDef; data: Kpi[]; markers: { t: number; label: string }[] }) {
   const rows = useMemo(() => data.map((k) => ({ t: k.t, v: def.get(k) })), [data, def])
   const last = [...rows].reverse().find((r) => r.v != null)?.v ?? null
   return (
-    <div className="rounded-lg border border-border bg-surface p-4">
-      <div className="flex items-baseline justify-between">
-        <div>
+    <div className="rounded-xl border border-transparent bg-surface p-5 shadow-card">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
           <div className="text-[13px] font-semibold text-ink">{def.title}</div>
-          <div className="text-[11.5px] text-ink-3">{def.note}</div>
+          <div className="text-pretty text-[12px] leading-[1.45] text-ink-3">{def.note}</div>
         </div>
-        <div className="tnum text-[18px] font-semibold text-ink">
+        <div className="tnum shrink-0 text-[24px] font-[650] leading-none tracking-[-0.02em] text-ink">
           {num(last, def.unit === 'km/h' ? 1 : 0)}
-          <span className="ml-1 text-[11.5px] font-normal text-ink-3">{def.unit}</span>
+          <span className="ml-1 text-[12px] font-medium tracking-normal text-ink-3">{def.unit}</span>
         </div>
       </div>
-      <div className="mt-3 h-[150px]">
+      <div className="mt-4 h-[150px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={rows} margin={{ top: 4, right: 8, bottom: 0, left: -12 }}>
-            <CartesianGrid stroke="#EEF0F3" vertical={false} />
-            <XAxis dataKey="t" type="number" domain={['dataMin', 'dataMax']} tickFormatter={(t) => clock(t)} tick={{ fontSize: 11, fill: '#8A94A6' }} tickLine={false} axisLine={{ stroke: '#E4E7EC' }} minTickGap={40} />
-            <YAxis tick={{ fontSize: 11, fill: '#8A94A6' }} tickLine={false} axisLine={false} width={44} allowDecimals={false} />
+            <CartesianGrid stroke="#f1f3f6" vertical={false} />
+            <XAxis dataKey="t" type="number" domain={['dataMin', 'dataMax']} tickFormatter={(t) => clock(t)} tick={{ fontSize: 11, fill: '#687284' }} tickLine={false} axisLine={{ stroke: '#e6e8ec' }} minTickGap={40} />
+            <YAxis tick={{ fontSize: 11, fill: '#687284' }} tickLine={false} axisLine={false} width={48} allowDecimals={false} tickFormatter={compact} />
             {markers.map((m, i) => (
-              <ReferenceLine key={i} x={m.t} stroke="#D0D5DD" strokeDasharray="3 3" />
+              <ReferenceLine key={i} x={m.t} stroke="#8a93a3" strokeDasharray="5 5" />
             ))}
             <Tooltip
-              cursor={{ stroke: '#98A2B3', strokeWidth: 1 }}
-              contentStyle={{ fontSize: 12, borderRadius: 6, border: '1px solid #E4E7EC', boxShadow: '0 4px 12px rgba(16,24,40,.08)' }}
+              cursor={{ stroke: '#0c1322', strokeWidth: 1, strokeOpacity: 0.25 }}
+              contentStyle={TIP_STYLE}
+              labelStyle={{ color: '#c4cbd7', marginBottom: 2 }}
+              itemStyle={{ color: '#fff', padding: 0 }}
               labelFormatter={(t) => `Simulated ${clock(Number(t))}`}
               formatter={(v) => [`${num(Number(v), def.unit === 'km/h' ? 1 : 0)} ${def.unit}`, def.title]}
             />
-            <Line type="monotone" dataKey="v" stroke={SERIES} strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
+            <Line type="monotone" dataKey="v" stroke={LINE} strokeWidth={2} dot={false} activeDot={{ r: 4, stroke: '#fff', strokeWidth: 2, fill: LINE }} isAnimationActive={false} connectNulls />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -165,11 +174,11 @@ function Comparison() {
   const names = ((job as unknown as { names?: [string, string] })?.names ?? v?.names ?? ['A', 'B']) as [string, string]
   const done = job?.state === 'done' && job.variants[0] && job.variants[1]
   return (
-    <div className="rounded-lg border border-border bg-surface">
-      <div className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3">
+    <div className="rounded-xl border border-transparent bg-surface shadow-card">
+      <div className="flex flex-wrap items-center gap-3 border-b border-border px-5 py-4">
         <div className="mr-auto min-w-[260px] flex-1">
           <div className="flex items-center gap-1.5 text-[13px] font-semibold text-ink">
-            <FlaskConical size={14} className="text-ink-2" /> Controlled comparison
+            <FlaskConical size={15} className="text-ink-2" /> <span className="text-[15px]">Controlled comparison</span>
           </div>
           <div className="text-[11.5px] text-ink-3">
             Two headless SUMO runs of <span className="font-medium text-ink-2">{run.title}</span> with seed <span className="tnum font-medium text-ink-2">{run.seed}</span> — identical demand draws and events; only one setting differs.
@@ -181,7 +190,7 @@ function Comparison() {
           {job?.state === 'running' ? 'Running…' : 'Run comparison'}
         </Button>
       </div>
-      <div className="px-4 py-3">
+      <div className="px-5 py-4">
         {!job && <div className="py-4 text-[12px] text-ink-3">Runs both variants for the full scenario length (≈20–60 s of computation each, in parallel).</div>}
         {job && job.state === 'running' && (
           <div className="space-y-2 py-2">
@@ -221,7 +230,8 @@ function Comparison() {
                 if (a == null && b == null) return null
                 const delta = a != null && b != null ? b - a : null
                 const pct = a ? (delta! / a) * 100 : null
-                const good = delta == null || row.better === 'none' || Math.abs(delta) < 1e-9 ? null : row.better === 'lower' ? delta < 0 : delta > 0
+                const dir = delta == null || Math.abs(delta) < 1e-9 ? 0 : delta > 0 ? 1 : -1
+                const Arrow = dir > 0 ? ArrowUpRight : dir < 0 ? ArrowDownRight : Minus
                 return (
                   <tr key={row.label} className="border-b border-border last:border-0">
                     <td className="py-2 text-ink">{row.label}</td>
@@ -229,7 +239,8 @@ function Comparison() {
                     <td className="tnum py-2 text-right">{num(b, row.digits ?? 0)} {row.unit}</td>
                     <td className="py-2 text-right">
                       {delta == null ? '—' : (
-                        <Badge tone={good == null ? 'neutral' : good ? 'good' : 'bad'}>
+                        <Badge tone="neutral">
+                          <Arrow size={12} className="mr-0.5" />
                           {delta > 0 ? '+' : ''}
                           {num(delta, row.digits ?? 0)}
                           {pct != null && isFinite(pct) ? ` (${pct > 0 ? '+' : ''}${pct.toFixed(0)}%)` : ''}
@@ -242,7 +253,12 @@ function Comparison() {
             </tbody>
           </table>
         )}
-        {done && <div className="pt-2 text-[11px] text-ink-3">Single seed: differences include stochastic variation in how SUMO resolves interactions. Repeat with other seeds before drawing conclusions.</div>}
+        {done && (
+          <div className="mt-3 flex items-start gap-2 rounded-lg bg-subtle px-3 py-2.5 text-[12px] leading-[1.5] text-ink-2 shadow-[inset_0_0_0_1px_var(--color-track)]">
+            <span className="shrink-0 font-semibold text-ink">Single seed, no verdict.</span>
+            <span>Differences include random variation in how SUMO resolves interactions, so none is marked better or worse. The Results tab uses 50 paired runs for its verdicts.</span>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -263,30 +279,31 @@ export function AnalyticsView() {
   if (!run)
     return (
       <div className="flex flex-1 items-center justify-center">
-        <Empty title="No run to analyse">Start a scenario from the Simulation workspace. Charts fill from live SUMO measurements.</Empty>
+        <Empty title="No run to analyse yet">
+          Start a scenario in Simulation and its live measurements chart here.
+          <div className="mt-4">
+            <Button variant="primary" onClick={() => useStore.getState().set({ view: 'simulate' })}>
+              Open Simulation
+            </Button>
+          </div>
+        </Empty>
       </div>
     )
   return (
     <div className="scroll-y min-w-0 flex-1 bg-canvas">
-      <div className="mx-auto max-w-[1280px] px-6 py-5">
-        <div className="mb-4 flex items-end justify-between">
-          <div>
-            <div className="label-caps">Analytics</div>
-            <h1 className="mt-0.5 text-[20px] font-semibold tracking-[-0.01em] text-ink">{run.title}</h1>
-            <div className="mt-0.5 text-[12.5px] text-ink-2">
-              Seed <span className="tnum font-medium text-ink">{run.seed}</span> · {run.signalMode === 'actuated' ? 'actuated' : 'fixed-time'} signals · {clock(data[data.length - 1]?.t ?? 0)} of {clock(run.duration)} simulated
-            </div>
-          </div>
-          {results && <Badge tone="neutral">Run complete</Badge>}
-        </div>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mx-auto flex max-w-[1312px] flex-col gap-8 px-6 pb-16 pt-10 min-[1100px]:px-8">
+        <PageHeader title={run.title} right={results ? <Badge tone="neutral">Run complete</Badge> : <Badge tone="neutral">Live</Badge>}>
+          Seed <span className="tnum font-semibold text-ink">{run.seed}</span> with {run.signalMode === 'actuated' ? 'actuated' : 'fixed-time'} signals.{' '}
+          <span className="tnum">{clock(data[data.length - 1]?.t ?? 0)}</span> of <span className="tnum">{clock(run.duration)}</span> simulated. Dashed lines mark scenario events.
+        </PageHeader>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {CHARTS.map((c) => (
             <TimeChart key={c.key} def={c} data={data} markers={run.markers} />
           ))}
         </div>
-        <div className={cn('mt-3 grid grid-cols-1 gap-3 xl:grid-cols-[1fr_1.4fr]')}>
-          <div className="rounded-lg border border-border bg-surface p-4">
-            <div className="mb-2 text-[13px] font-semibold text-ink">Completed trips by mode</div>
+        <div className={cn('grid grid-cols-1 gap-4 xl:grid-cols-[1fr_1.4fr]')}>
+          <div className="rounded-xl border border-transparent bg-surface p-5 shadow-card">
+            <div className="mb-3 text-[15px] font-semibold text-ink">Completed trips by mode</div>
             <ModeTable modes={modes} />
             <div className="mt-2 text-[11px] text-ink-3">Cumulative since the scenario clock started. Trips still under way are not included.</div>
           </div>

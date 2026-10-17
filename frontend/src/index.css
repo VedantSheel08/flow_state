@@ -45,6 +45,55 @@
   --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
   --shadow-panel: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 12px -2px rgba(16, 24, 40, 0.06);
   --shadow-float: 0 0 0 1px rgb(12 19 34 / 0.08), 0 1px 2px rgb(12 19 34 / 0.06), 0 8px 24px -6px rgb(12 19 34 / 0.14);
+  --color-on-ink: #ffffff;
+  --color-asphalt: #101a2c;
+  --color-lane: rgb(255 255 255 / 0.2);
+  --ease-out-quint: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Asphalt: the one dark material, reserved for the Results hero and the
+   Simulation run bar. Re-scoping the tokens flips every utility inside it. */
+.asphalt {
+  --color-ink: #f4f6fa;
+  --color-ink-2: #c4cbd7;
+  --color-ink-3: #939eb1;
+  --color-ink-4: #5f6b80;
+  --color-on-ink: #0c1322;
+  --color-surface: #1b263a;
+  --color-subtle: #152034;
+  --color-muted: rgb(255 255 255 / 0.08);
+  --color-track: rgb(255 255 255 / 0.1);
+  --color-border: rgb(255 255 255 / 0.1);
+  --color-border-strong: rgb(255 255 255 / 0.16);
+  --color-good: #5fd391;
+  --color-good-soft: rgb(95 211 145 / 0.12);
+  --color-good-line: rgb(95 211 145 / 0.32);
+  --color-bad: #ff8b9c;
+  --color-bad-soft: rgb(255 139 156 / 0.12);
+  --color-bad-line: rgb(255 139 156 / 0.32);
+  --color-warn: #fdb35c;
+  --color-warn-soft: rgb(253 179 92 / 0.12);
+  --color-warn-line: rgb(253 179 92 / 0.32);
+  --shadow-thumb: 0 1px 2px rgb(0 0 0 / 0.3), 0 0 0 1px rgb(255 255 255 / 0.08);
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.3);
+  background-color: var(--color-asphalt);
+  color: var(--color-ink);
+  color-scheme: dark;
+}
+
+.asphalt-float {
+  background: rgb(16 26 44 / 0.96);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid transparent;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06), 0 2px 4px rgb(12 19 34 / 0.18), 0 12px 32px -8px rgb(12 19 34 / 0.45);
+}
+
+/* A dashed lane marking: the visual for "equal" and "zero" everywhere. */
+.lane-v {
+  background-image: linear-gradient(to bottom, var(--color-lane) 0 10px, transparent 10px 20px);
+  background-size: 2px 20px;
+  background-repeat: repeat-y;
 }
 
 html,
@@ -79,12 +128,23 @@ body {
   scrollbar-gutter: stable;
 }
 
+/* Section label. Sentence case: all-caps eyebrows read as template chrome. */
 .label-caps {
-  font-size: 10.5px;
+  font-size: 12px;
+  line-height: 1.4;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--color-ink-3);
+}
+
+/* Hero entrance: the one orchestrated motion moment in the app. */
+.grow-x {
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 900ms var(--ease-out-quint);
+}
+.grow-x[data-shown='true'] {
+  transform: scaleX(1);
 }
 
 /* Frosted floating surface used for everything that sits on the map. */
@@ -186,5 +246,13 @@ input[type='number']::-webkit-inner-spin-button {
   .indeterminate,
   .pulse {
     animation: none;
+  }
+  .grow-x {
+    transition: opacity 200ms ease-out;
+    transform: none;
+    opacity: 0;
+  }
+  .grow-x[data-shown='true'] {
+    opacity: 1;
   }
 }

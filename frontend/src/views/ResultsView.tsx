@@ -1,5 +1,5 @@
 import { BadgeCheck, ChevronDown, CircleCheck, CircleMinus, FlaskConical, Info, Loader2, Lock, Play, RotateCcw, ShieldCheck, Siren, TriangleAlert } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { api } from '../lib/api'
 import {
   METRICS,
@@ -51,11 +51,43 @@ const HERO_LABEL: Partial<Record<MetricKey, { what: string; per: string }>> = {
   throughput_vph: { what: 'more throughput', per: 'vehicles per hour' },
 }
 
+// ---- hero motion ------------------------------------------------------------
+const reduceMotion = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** True one frame after mount, so CSS transitions run from their start state. */
+function useShown() {
+  const [shown, setShown] = useState(false)
+  useEffect(() => {
+    const id = requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)))
+    return () => cancelAnimationFrame(id)
+  }, [])
+  return shown
+}
+
+/** Counts from 0 to target once, easing out; instant under reduced motion. */
+function useCountUp(target: number, ms = 900) {
+  const [v, setV] = useState(() => (reduceMotion() ? target : 0))
+  const raf = useRef(0)
+  useEffect(() => {
+    // reduced motion: the initial state is already the target (the hero remounts per dataset)
+    if (reduceMotion()) return
+    const t0 = performance.now()
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / ms)
+      setV(target * (1 - Math.pow(1 - p, 4)))
+      if (p < 1) raf.current = requestAnimationFrame(tick)
+    }
+    raf.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf.current)
+  }, [target, ms])
+  return v
+}
+
 // ---- small pieces ---------------------------------------------------------
 const card = 'rounded-[12px] border border-transparent bg-surface shadow-card'
 
 function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('text-[11px] font-semibold uppercase leading-[1.45] tracking-[0.05em] text-ink-3', className)}>{children}</div>
+  return <div className={cn('text-[12px] font-semibold leading-[1.4] text-ink-3', className)}>{children}</div>
 }
 
 function H2({ children, className }: { children: ReactNode; className?: string }) {
@@ -69,7 +101,7 @@ function Cap({ children, className }: { children: ReactNode; className?: string 
 const VTONE: Record<Verdict, string> = {
   better: 'bg-good-soft text-good shadow-[inset_0_0_0_1px_var(--color-good-line)]',
   worse: 'bg-bad-soft text-bad shadow-[inset_0_0_0_1px_var(--color-bad-line)]',
-  unclear: 'bg-muted text-ink-2 shadow-[inset_0_0_0_1px_#e1e4e9]',
+  unclear: 'bg-muted text-ink-2 shadow-[inset_0_0_0_1px_var(--color-border-strong)]',
 }
 
 function Pill({ tone, children }: { tone: Verdict | 'warn' | 'live'; children: ReactNode }) {
@@ -118,7 +150,8 @@ function Delta({ m, s, mark = false, className }: { m: MetricDef; s?: MetricStat
   )
 }
 
-function Bars({ m, base, fs, size = 'sm' }: { m: MetricDef; base: number; fs: number; size?: 'sm' | 'lg' }) {
+function Bars({ m, base, fs, size = 'sm', grow = false }: { m: MetricDef; base: number; fs: number; size?: 'sm' | 'lg'; grow?: boolean }) {
+  const shown = useShown()
   const max = Math.max(base, fs) * 1.087 || 1
   const rows: [ControllerId, string, number][] = [
     [BASE, size === 'lg' ? 'Fixed-time' : 'Fixed', base],
@@ -134,7 +167,11 @@ function Bars({ m, base, fs, size = 'sm' }: { m: MetricDef; base: number; fs: nu
             {label}
           </span>
           <div className={cn('min-w-0 flex-1 overflow-hidden rounded-full bg-muted', h)}>
-            <div className={cn('rounded-r-[4px]', h)} style={{ width: `${(v / max) * 100}%`, background: COLOR[c] }} />
+            <div
+              className={cn('rounded-r-[4px]', h, grow && 'grow-x')}
+              data-shown={grow ? shown : undefined}
+              style={{ width: `${(v / max) * 100}%`, background: COLOR[c], transitionDelay: grow && c === FS ? '120ms' : undefined }}
+            />
           </div>
           <span className={cn('tnum shrink-0 text-right', size === 'lg' ? 'w-16' : 'w-12', c === FS ? 'font-semibold text-ink' : 'text-ink-2')}>
             {num(scale(m, v), m.digits)}
@@ -207,14 +244,17 @@ function StrongestResult({ st, live }: { st: Story; live: boolean }) {
   const imp = fs.vs ? improvementPct(m, base.mean, fs.vs) : null
   const lbl = HERO_LABEL[k]!
   const ev = st.ev ? { m: METRICS[st.ev], fs: st.o[st.ev]!, base: st.b[st.ev]! } : null
+  const shown = useCountUp(fs.vs?.pct ?? 0)
   return (
-    <div className="flex min-w-0 flex-[999_1_540px] flex-col gap-5 px-9 py-8">
+    <div className="flex min-w-0 flex-[999_1_540px] flex-col gap-5 px-9 py-9">
       <div className="flex flex-wrap items-center gap-2.5">
         <Eyebrow>{live ? 'Strongest result in your run' : 'Strongest result'}</Eyebrow>
         <VerdictBadge v="better" />
       </div>
       <div className="flex flex-wrap items-end gap-5">
-        <div className="tnum text-[72px] font-[650] leading-none tracking-[-0.045em] text-ink min-[1280px]:text-[96px]">{signed(fs.vs?.pct ?? 0)}</div>
+        <div className="tnum text-[72px] font-[650] leading-none tracking-[-0.045em] text-ink min-[1280px]:text-[104px]" aria-label={signed(fs.vs?.pct ?? 0)}>
+          {signed(shown)}
+        </div>
         <div className="flex flex-col gap-0.5 pb-1.5">
           <div className="text-[22px] font-semibold leading-[1.27] tracking-[-0.015em]">{lbl.what}</div>
           <div className="tnum text-[14px] text-ink-2">
@@ -222,7 +262,7 @@ function StrongestResult({ st, live }: { st: Story; live: boolean }) {
           </div>
         </div>
       </div>
-      <Bars m={m} base={base.mean} fs={fs.mean} size="lg" />
+      <Bars m={m} base={base.mean} fs={fs.mean} size="lg" grow />
       <Cap className="tnum">
         Better in {fs.vs?.better} of {fs.vs?.paired} paired runs, worse in {fs.vs?.worse}.{imp && ` 95% interval: ${imp.lo.toFixed(1)}% to ${imp.hi.toFixed(1)}% better than fixed-time.`}
       </Cap>
@@ -243,7 +283,7 @@ function StrongestResult({ st, live }: { st: Story; live: boolean }) {
 function WhatStillHolds({ st }: { st: Story }) {
   const others = st.clear.map((k) => `${METRICS[k].label.toLowerCase()} was clearly ${METRICS[k].better === 'lower' ? 'lower' : 'higher'} (${signed(st.o[k]?.vs?.pct ?? 0)})`)
   return (
-    <div className="flex min-w-0 flex-[999_1_540px] flex-col gap-5 px-9 py-8">
+    <div className="flex min-w-0 flex-[999_1_540px] flex-col gap-5 px-9 py-9">
       <div className="flex flex-wrap items-center gap-2.5">
         <Eyebrow>What still holds</Eyebrow>
         <VerdictBadge v={st.wins.length ? 'better' : 'unclear'} />
@@ -277,7 +317,12 @@ function WhatStillHolds({ st }: { st: Story }) {
 }
 
 function SidePanel({ children }: { children: ReactNode }) {
-  return <div className="flex min-w-0 flex-[1_1_400px] flex-col gap-[22px] border-l border-track bg-subtle p-8">{children}</div>
+  return (
+    <div className="relative flex min-w-0 flex-[1_1_400px] flex-col gap-[22px] bg-white/[0.025] p-9">
+      <span aria-hidden className="lane-v absolute bottom-9 left-0 top-9 w-[2px]" />
+      {children}
+    </div>
+  )
 }
 
 function Step({ n, head, badge, children }: { n: number; head: string; badge?: ReactNode; children: ReactNode }) {
@@ -336,7 +381,7 @@ function TradeOff({ st }: { st: Story }) {
       <div className="tnum text-[22px] font-semibold leading-[1.27] tracking-[-0.015em]">
         {fmtVal(m, fs.mean, false)} vs {fmtVal(m, base.mean, false)} {k === 'teleports' ? 'gridlock teleports per run' : `${m.unit} ${m.label.toLowerCase()}`}
       </div>
-      <Bars m={m} base={base.mean} fs={fs.mean} />
+      <Bars m={m} base={base.mean} fs={fs.mean} grow />
       <div className="text-ink-2">
         {k === 'teleports' && 'SUMO removes vehicles stuck in gridlock. '}FlowState was worse in {fs.vs?.worse} of {fs.vs?.paired} runs, better in {fs.vs?.better}.
         {rest.length > 0 && ` ${joinAnd(rest.map((x) => `${METRICS[x].label.toLowerCase()} (${signed(st.o[x]?.vs?.pct ?? 0)})`)).replace(/^./, (c) => c.toUpperCase())} ${rest.length === 1 ? 'was' : 'were'} also clearly worse.`}
@@ -361,7 +406,7 @@ function Agreement({ st, rec }: { st: Story; rec: Story }) {
 function Hero({ st, live, rec }: { st: Story; live: boolean; rec: Story | null }) {
   const big = st.strongest && Math.abs(st.o[st.strongest]?.vs?.pct ?? 0) >= 5
   return (
-    <section className={cn(card, 'flex flex-wrap overflow-hidden rounded-[16px] shadow-hero')}>
+    <section className="asphalt flex flex-wrap overflow-hidden rounded-[18px] shadow-[0_1px_2px_rgba(12,19,34,0.12),0_18px_44px_-14px_rgba(12,19,34,0.45)]">
       {big ? <StrongestResult st={st} live={live} /> : <WhatStillHolds st={st} />}
       {st.tradeoffs.length > 0 && st.v('teleports') === 'worse' ? <TradeOff st={st} /> : live && rec ? <Agreement st={st} rec={rec} /> : <TenSeconds st={st} />}
     </section>
@@ -1119,9 +1164,9 @@ export function ResultsView() {
           <div className="flex min-w-0 flex-[999_1_560px] flex-col gap-2.5">
             <Eyebrow className={cn('flex items-center gap-2', isLive && 'text-flow-ink')}>
               <span className={cn('h-1.5 w-1.5 rounded-full', isLive ? 'bg-flow shadow-[0_0_0_3px_rgba(42,120,214,0.18)]' : 'bg-ink-3')} />
-              {isLive ? 'Results · Live SUMO comparison' : `Results · Recorded SUMO evaluation · ${st.runs} paired runs`}
+              {isLive ? 'Live SUMO comparison' : `Recorded SUMO evaluation, ${st.runs} paired runs`}
             </Eyebrow>
-            <h1 className="m-0 text-balance text-[32px] font-[650] leading-[1.19] tracking-[-0.02em]">FlowState vs fixed-time signals</h1>
+            <h1 className="m-0 text-balance text-[36px] font-[650] leading-[1.12] tracking-[-0.025em]">FlowState vs fixed-time signals</h1>
             <Summary d={d} st={st} live={isLive} />
           </div>
           <div className="flex flex-wrap justify-end gap-5">
@@ -1161,7 +1206,7 @@ export function ResultsView() {
         {isLive && job ? <Receipt job={job} onBack={() => setSource('recorded')} onRerun={rerun} /> : null}
 
         <div className={cn('-mt-4', running && 'opacity-[0.72] transition-opacity')}>
-          <Hero st={st} live={isLive} rec={rec} />
+          <Hero key={`${isLive ? 'live' : level}`} st={st} live={isLive} rec={rec} />
         </div>
 
         {info && !isLive && (

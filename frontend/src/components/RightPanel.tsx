@@ -176,11 +176,11 @@ function Overview() {
       <Section title="Network performance" right={<span className="text-[11px] text-ink-3">trailing 5 min</span>}>
         <div className="grid grid-cols-2 gap-x-5 divide-y-0">
           <Metric label="In network" value={num(k?.active)} series={ser((h) => h.active)} hint="Vehicles currently driving in SUMO (excluding pedestrians)" />
-          <Metric label="Mean speed" value={num(k?.meanSpeed, 1)} unit="km/h" series={ser((h) => h.meanSpeed)} color="#0E9384" hint="Space-mean speed of motor vehicles now in the network" />
-          <Metric label="Delay / trip" value={num(k?.timeLoss, 0)} unit="s" series={ser((h) => h.timeLoss)} color="#DC6803" hint="SUMO time loss of trips completed in the last 5 minutes" />
-          <Metric label="Travel time" value={num(k?.travelTime, 0)} unit="s" series={ser((h) => h.travelTime)} color="#475467" hint="Mean trip duration, trips completed in the last 5 minutes" />
-          <Metric label="Throughput" value={num(k?.throughput)} unit="veh/h" series={ser((h) => h.throughput)} color="#7A5AF8" hint="Completed trips per hour over the last 5 minutes" />
-          <Metric label="Queued" value={num(k?.queued)} unit="veh" series={ser((h) => h.queued)} color="#D92D20" hint="Halting vehicles on intersection approaches" />
+          <Metric label="Mean speed" value={num(k?.meanSpeed, 1)} unit="km/h" series={ser((h) => h.meanSpeed)} hint="Space-mean speed of motor vehicles now in the network" />
+          <Metric label="Delay / trip" value={num(k?.timeLoss, 0)} unit="s" series={ser((h) => h.timeLoss)} hint="SUMO time loss of trips completed in the last 5 minutes" />
+          <Metric label="Travel time" value={num(k?.travelTime, 0)} unit="s" series={ser((h) => h.travelTime)} hint="Mean trip duration, trips completed in the last 5 minutes" />
+          <Metric label="Throughput" value={num(k?.throughput)} unit="veh/h" series={ser((h) => h.throughput)} hint="Completed trips per hour over the last 5 minutes" />
+          <Metric label="Queued" value={num(k?.queued)} unit="veh" series={ser((h) => h.queued)} hint="Halting vehicles on intersection approaches" />
         </div>
         <div className="mt-2 grid grid-cols-3 gap-2 border-t border-border pt-2.5 text-[11.5px]">
           <div>
