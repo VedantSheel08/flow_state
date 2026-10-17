@@ -1,0 +1,106 @@
+{
+ "schemaVersion": 1,
+ "suite": "ambulance-preemption",
+ "scenario": "ambulance",
+ "params": {
+  "duration": 10,
+  "calls": 2
+ },
+ "warmup": 90.0,
+ "controllers": [
+  "fixed",
+  "fixed+preempt"
+ ],
+ "baseline": "fixed",
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "paramsHash": "eebaacafff44d38e",
+ "experiments": [
+  {
+   "id": "891cde45-839e-499a-b97d-67ed12c93e40",
+   "controller": "fixed",
+   "seed": 1,
+   "file": "experiments/891cde45-839e-499a-b97d-67ed12c93e40.json"
+  },
+  {
+   "id": "9621d1b8-7e59-4b97-a311-ad9defa02a05",
+   "controller": "fixed+preempt",
+   "seed": 1,
+   "file": "experiments/9621d1b8-7e59-4b97-a311-ad9defa02a05.json"
+  },
+  {
+   "id": "0ae2630a-db67-481d-97b8-bd9c987c39a6",
+   "controller": "fixed",
+   "seed": 2,
+   "file": "experiments/0ae2630a-db67-481d-97b8-bd9c987c39a6.json"
+  },
+  {
+   "id": "90aba9e7-9a5a-416a-8601-7cb7d08cb738",
+   "controller": "fixed+preempt",
+   "seed": 2,
+   "file": "experiments/90aba9e7-9a5a-416a-8601-7cb7d08cb738.json"
+  },
+  {
+   "id": "93920c4d-04be-4d2e-8026-1f295a1b8531",
+   "controller": "fixed",
+   "seed": 3,
+   "file": "experiments/93920c4d-04be-4d2e-8026-1f295a1b8531.json"
+  },
+  {
+   "id": "a071cbff-76d9-4a6d-a2c5-171a675569dd",
+   "controller": "fixed+preempt",
+   "seed": 3,
+   "file": "experiments/a071cbff-76d9-4a6d-a2c5-171a675569dd.json"
+  },
+  {
+   "id": "c5ae260b-5851-408a-bf45-32ada91fe54e",
+   "controller": "fixed",
+   "seed": 4,
+   "file": "experiments/c5ae260b-5851-408a-bf45-32ada91fe54e.json"
+  },
+  {
+   "id": "9112a4b8-c229-4ad7-807c-f0ab1f771862",
+   "controller": "fixed+preempt",
+   "seed": 4,
+   "file": "experiments/9112a4b8-c229-4ad7-807c-f0ab1f771862.json"
+  },
+  {
+   "id": "c7652a16-12f3-4901-8320-aa2b55d661ca",
+   "controller": "fixed",
+   "seed": 5,
+   "file": "experiments/c7652a16-12f3-4901-8320-aa2b55d661ca.json"
+  },
+  {
+   "id": "57229686-1bd6-4e12-af59-80865637d17f",
+   "controller": "fixed+preempt",
+   "seed": 5,
+   "file": "experiments/57229686-1bd6-4e12-af59-80865637d17f.json"
+  }
+ ],
+ "engine": {
+  "sumo": "SUMO 1.28.0",
+  "backend": "libsumo",
+  "stepLength": 0.25,
+  "revision": "05f3150",
+  "emissionClasses": [
+   "HBEFA3/Bus",
+   "HBEFA3/HDV_D_EU4",
+   "HBEFA3/LDV_D_EU4",
+   "HBEFA3/PC_G_EU4",
+   "Zero"
+  ],
+  "emissionModel": "HBEFA3"
+ },
+ "revision": "05f3150",
+ "wallSeconds": 91.9,
+ "storedIn": [
+  "sqlite"
+ ],
+ "reproduce": "python -m flowstate.experiments benchmark --suite ambulance-preemption --scenario ambulance --controllers fixed,fixed+preempt --seeds 1,2,3,4,5 --warmup 90.0 --params '{\"duration\": 10, \"calls\": 2}'",
+ "note": "Re-running with the same seeds on the same SUMO and code revision reproduces the SUMO outputs; wall times and experiment ids differ."
+}

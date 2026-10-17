@@ -1,0 +1,25 @@
+# docker compose --env-file .env up -d --build
+# Ports are published on the loopback interface only; put the Caddy service (or any TLS proxy) in front for public access.
+services:
+  backend:
+    build: { context: ../.., dockerfile: deploy/vultr/Dockerfile }
+    command: ["python", "-m", "flowstate.cli", "serve", "--host", "0.0.0.0", "--port", "8000"]
+    ports: ["127.0.0.1:8000:8000"]
+    env_file: .env          # FLOWSTATE_BACKEND, etc.; no secrets are needed by the live simulator
+    volumes: ["runs:/app/data/runs"]
+    restart: unless-stopped
+  experiments:
+    build: { context: ../.., dockerfile: deploy/vultr/Dockerfile }
+    command: ["python", "-m", "flowstate.experiments", "serve", "--host", "0.0.0.0", "--port", "8010"]
+    ports: ["127.0.0.1:8010:8010"]
+    env_file: .env          # FLOWSTATE_DATABASE_URL (Tiger Cloud), GEMINI_API_KEY: read here, never returned by any endpoint
+    volumes: ["experiments:/app/data/experiments", "benchmarks:/app/data/benchmarks", "work:/app/data/work"]
+    restart: unless-stopped
+  caddy:                    # optional TLS reverse proxy; needs DOMAIN in .env and ports 80/443 open
+    image: caddy:2
+    profiles: ["tls"]
+    ports: ["80:80", "443:443"]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data"]
+    depends_on: [backend, experiments]
+    restart: unless-stopped
+volumes: { runs: {}, experiments: {}, benchmarks: {}, work: {}, caddy_data: {} }

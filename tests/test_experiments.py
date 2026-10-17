@@ -347,3 +347,46 @@ def test_a_real_run_round_trips_through_real_postgres(runs, pg_url):
     finally:
         pg.delete_experiment(res.id)
         pg.close()
+
+
+def test_a_baseline_controller_switches_priority_features_off_even_when_the_scenario_defaults_them_on():
+    from flowstate.scenarios.catalog import create
+
+    assert create("ambulance", {}).params["preemption"] is True and create("transit", {}).params["tsp"] is True  # the scenarios' own defaults
+    for scenario, switch in (("ambulance", "preemption"), ("accident", "preemption"), ("transit", "tsp")):
+        off = controller_params(scenario, "fixed", {})
+        assert off[switch] is False and off["signals"] == "fixed", (scenario, off)
+        assert controller_params(scenario, "actuated", {})[switch] is False
+    assert controller_params("ambulance", "fixed+preempt", {})["preemption"] is True
+    assert controller_params("transit", "fixed+tsp", {})["tsp"] is True and controller_params("transit", "fixed+tsp", {})["preemption"] is False if "preemption" in {p.key for p in create("transit", {}).spec.params} else True
+    # a scenario without the switch is unaffected by "off", and refuses "on"
+    assert "preemption" not in controller_params("rush_hour", "fixed", {})
+
+
+def test_junction_discharge_and_mode_shares_are_measured_for_the_toronto_comparison(runs):
+    s = runs["fixed"].summary["extra"]
+    busy = s["busiestJunctions"]
+    assert 3 <= len(busy) <= 5 and busy[0]["vehPerHour"] >= busy[-1]["vehPerHour"] > 0
+    # an arterial junction in a 2500 trips/h rush discharges roughly its through demand: hundreds to ~2000 veh/h, never zero or absurd
+    assert 300 < busy[0]["vehPerHour"] < 3500 and busy[0]["name"].count("&") == 1
+    modes = s["tripsByMode"]
+    assert modes["car"] > 20 and sum(modes.values()) >= modes["car"]
+    # the discharge also exists as a time series per junction (sum over the window = what the summary reports)
+    cross = {}
+    for r in runs["fixed"].rows["junction_samples"]:
+        cross[r["tls_id"]] = cross.get(r["tls_id"], 0) + (r["crossings"] or 0)
+    top = max(cross, key=cross.get)
+    assert abs(cross[top] * 3600 / 300 - busy[0]["vehPerHour"]) <= 0.08 * busy[0]["vehPerHour"] + 12
+
+
+def test_benchmark_accepts_a_relative_output_directory(tmp_path, monkeypatch):
+    """Workers run in another working directory, so a relative --out must be made absolute (a real bug, found by the first batch run)."""
+    from flowstate.experiments import benchmark as bench
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "rel").mkdir()
+    # an unsupported controller is refused before anything runs, but only after the output path has been resolved
+    with pytest.raises(ValueError, match="no 'preemption' option"):
+        bench.run_benchmark("t", "rush_hour", ["fixed", "fixed+preempt"], [1], {"duration": 5}, out_dir=Path("rel/suite"))
+    out = (Path("rel/suite")).resolve()
+    assert out.is_absolute() and str(out).startswith(str(tmp_path.resolve()))

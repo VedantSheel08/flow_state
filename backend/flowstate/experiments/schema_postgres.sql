@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS junction_samples (
   sim_t double precision NOT NULL,
   tls_id text NOT NULL,
   queue integer NOT NULL,
-  vehicles integer,
+  crossings integer,
   phase integer,
   PRIMARY KEY (experiment_id, ts, tls_id),
   FOREIGN KEY (experiment_id) REFERENCES experiments(id) ON DELETE CASCADE

@@ -12,3 +12,13 @@ data/record.log
 data/shots/
 data/runs/
 archive/
+
+# experiment stores are regenerable artefacts (benchmark JSON is committed; the raw SQLite/WAL files are not)
+data/experiments/
+data/benchmarks/**/*.sqlite
+data/benchmarks/**/*.sqlite-wal
+data/benchmarks/**/*.sqlite-shm
+# superseded pre-v2-schema benchmark output
+data/benchmarks/v1/
+data/benchmarks/ambulance-preemption/
+data/benchmarks/rush-am-fixed-vs-actuated/

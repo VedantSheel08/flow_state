@@ -1,0 +1,105 @@
+{
+ "schemaVersion": 1,
+ "suite": "rush-am-fixed-vs-actuated",
+ "scenario": "rush_hour",
+ "params": {
+  "duration": 5
+ },
+ "warmup": 90.0,
+ "controllers": [
+  "fixed",
+  "actuated"
+ ],
+ "baseline": "fixed",
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "paramsHash": "bb187bb0eeaedeca",
+ "experiments": [
+  {
+   "id": "d29b6107-5399-45dd-983a-5fe0243703dd",
+   "controller": "fixed",
+   "seed": 1,
+   "file": "experiments/d29b6107-5399-45dd-983a-5fe0243703dd.json"
+  },
+  {
+   "id": "73b59d7c-1c5f-49cc-b6d5-315476140ff9",
+   "controller": "actuated",
+   "seed": 1,
+   "file": "experiments/73b59d7c-1c5f-49cc-b6d5-315476140ff9.json"
+  },
+  {
+   "id": "cf14f914-e561-4150-ac61-0ef155e4c26c",
+   "controller": "fixed",
+   "seed": 2,
+   "file": "experiments/cf14f914-e561-4150-ac61-0ef155e4c26c.json"
+  },
+  {
+   "id": "5d92f594-7da0-4602-bb6b-3fd016873538",
+   "controller": "actuated",
+   "seed": 2,
+   "file": "experiments/5d92f594-7da0-4602-bb6b-3fd016873538.json"
+  },
+  {
+   "id": "bd8ce72f-f825-47ee-bb5c-050746fed045",
+   "controller": "fixed",
+   "seed": 3,
+   "file": "experiments/bd8ce72f-f825-47ee-bb5c-050746fed045.json"
+  },
+  {
+   "id": "da55806a-c621-4542-b42d-f9982b2524f4",
+   "controller": "actuated",
+   "seed": 3,
+   "file": "experiments/da55806a-c621-4542-b42d-f9982b2524f4.json"
+  },
+  {
+   "id": "d0ec0047-b82e-4367-9465-b6f32a2609a0",
+   "controller": "fixed",
+   "seed": 4,
+   "file": "experiments/d0ec0047-b82e-4367-9465-b6f32a2609a0.json"
+  },
+  {
+   "id": "be7fb6b0-724c-4071-b9e5-f263a9afedc1",
+   "controller": "actuated",
+   "seed": 4,
+   "file": "experiments/be7fb6b0-724c-4071-b9e5-f263a9afedc1.json"
+  },
+  {
+   "id": "d1f74565-640f-4094-8c65-c65ee2934607",
+   "controller": "fixed",
+   "seed": 5,
+   "file": "experiments/d1f74565-640f-4094-8c65-c65ee2934607.json"
+  },
+  {
+   "id": "0ce05b17-32bb-45fa-8eda-4db65bfdfb8f",
+   "controller": "actuated",
+   "seed": 5,
+   "file": "experiments/0ce05b17-32bb-45fa-8eda-4db65bfdfb8f.json"
+  }
+ ],
+ "engine": {
+  "sumo": "SUMO 1.28.0",
+  "backend": "libsumo",
+  "stepLength": 0.25,
+  "revision": "05f3150",
+  "emissionClasses": [
+   "HBEFA3/Bus",
+   "HBEFA3/HDV_D_EU4",
+   "HBEFA3/LDV_D_EU4",
+   "HBEFA3/PC_G_EU4",
+   "Zero"
+  ],
+  "emissionModel": "HBEFA3"
+ },
+ "revision": "05f3150",
+ "wallSeconds": 112.9,
+ "storedIn": [
+  "sqlite"
+ ],
+ "reproduce": "python -m flowstate.experiments benchmark --suite rush-am-fixed-vs-actuated --scenario rush_hour --controllers fixed,actuated --seeds 1,2,3,4,5 --warmup 90.0 --params '{\"duration\": 5}'",
+ "note": "Re-running with the same seeds on the same SUMO and code revision reproduces the SUMO outputs; wall times and experiment ids differ."
+}

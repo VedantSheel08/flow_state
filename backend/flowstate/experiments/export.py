@@ -45,7 +45,7 @@ def export_experiment(store: ExperimentStore, experiment_id: str, *, kpi_step_s:
     occ = {(r["edge_id"], r["t0"]): r["value"] for r in store.edge_heatmap(experiment_id, "occupancy", heat_bucket_s, top=heat_top_edges)}
     cells = [{"edge": r["edge_id"], "t0": r["t0"], "halting": r["value"], "haltingPeak": r["peak"], "occupancy": occ.get((r["edge_id"], r["t0"])),
               "co2_mg_s": co2.get((r["edge_id"], r["t0"]))} for r in edges]
-    junctions = [{"tls": r["tls_id"], "t0": r["t0"], "queue": r["value"], "queuePeak": r["peak"]} for r in store.junction_heatmap(experiment_id, heat_bucket_s)]
+    junctions = [{"tls": r["tls_id"], "t0": r["t0"], "queue": r["value"], "queuePeak": r["peak"], "crossings": r["crossings"]} for r in store.junction_heatmap(experiment_id, heat_bucket_s)]
     events = store.signal_events(experiment_id, limit=max_events * 5)
     interesting = [e for e in events if e["kind"] != "phase"] + [e for e in events if e["kind"] == "phase"]
     safety = store.safety_events(experiment_id, limit=max_events)

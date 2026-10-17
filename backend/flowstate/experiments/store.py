@@ -219,7 +219,7 @@ class ExperimentStore:
 
     def junction_heatmap(self, experiment_id: str, bucket_s: float = 30.0) -> list[dict[str, Any]]:
         b = self._bucket("sim_t", float(bucket_s))
-        sql = (f"SELECT tls_id, {b} AS t0, AVG(queue) AS value, MAX(queue) AS peak FROM junction_samples "
+        sql = (f"SELECT tls_id, {b} AS t0, AVG(queue) AS value, MAX(queue) AS peak, SUM(crossings) AS crossings FROM junction_samples "
                f"WHERE experiment_id = {{p}} GROUP BY 1, 2 ORDER BY 2, 1")
         return self._run(sql, [experiment_id])
 
@@ -283,10 +283,14 @@ class ExperimentStore:
         if suite:
             where.append("e.suite = {p}")
             args.append(suite)
-        cols = ", ".join(f"s.{m} AS {m}" for m in SUMMARY_METRICS)
+        cols = ", ".join(f"s.{m} AS {m}" for m in SUMMARY_METRICS) + ", s.extra AS extra"
         sql = (f"SELECT e.id, e.controller, e.seed, e.params_hash, {cols} FROM experiments e JOIN experiment_summary s ON s.experiment_id = e.id "
                f"WHERE {' AND '.join(where)} ORDER BY e.controller, e.seed")
-        rows = self._run(sql, args)
+        rows = [self._decode("experiment_summary", r) for r in self._run(sql, args)]
+        for r in rows:  # scenario-specific numeric results (ambulance response time, ...) join the comparison as extra metrics
+            ex = r.get("extra") or {}
+            r["scenario_metrics"] = {k: float(v) for k, v in (ex.get("scenario") or {}).items() if isinstance(v, (int, float)) and not isinstance(v, bool)}
+            r["scenario_metrics"].update({f"signals.{k}": float(v) for k, v in (ex.get("signals") or {}).items() if isinstance(v, (int, float)) and not isinstance(v, bool)})
         if controllers:
             rows = [r for r in rows if r["controller"] in controllers or r["controller"] == baseline]
         by_ctrl: dict[str, list[dict[str, Any]]] = {}
@@ -297,6 +301,9 @@ class ExperimentStore:
         for ctrl, rs in by_ctrl.items():
             stats = {m: _mean_std([r[m] for r in rs if r[m] is not None]) for m in SUMMARY_METRICS}
             entry: dict[str, Any] = {"n": len(rs), "seeds": sorted({r["seed"] for r in rs}), "metrics": stats}
+            sm_keys = sorted({k for r in rs for k in r["scenario_metrics"]})
+            if sm_keys:
+                entry["scenarioMetrics"] = {k: _mean_std([r["scenario_metrics"][k] for r in rs if k in r["scenario_metrics"]]) for k in sm_keys}
             if ctrl != baseline:
                 paired = [(r, base_by_seed[(r["params_hash"], r["seed"])]) for r in rs if (r["params_hash"], r["seed"]) in base_by_seed]
                 entry["pairedWithBaseline"] = len(paired)
@@ -306,6 +313,11 @@ class ExperimentStore:
                     bases = [b[m] for c, b in paired if c[m] is not None and b[m] is not None]
                     if diffs:
                         entry["deltas"][m] = _paired(diffs, bases, BETTER.get(m, "lower"))
+                entry["scenarioDeltas"] = {}
+                for k in sm_keys:
+                    pr = [(c["scenario_metrics"][k], b["scenario_metrics"][k]) for c, b in paired if k in c["scenario_metrics"] and k in b["scenario_metrics"]]
+                    if pr:
+                        entry["scenarioDeltas"][k] = _paired([c - b for c, b in pr], [b for c, b in pr], "lower")
             out["controllers"][ctrl] = entry
         return out
 

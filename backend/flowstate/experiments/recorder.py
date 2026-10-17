@@ -33,13 +33,16 @@ SCHEMA_VERSION = 1
 JAM_SPACING_M = 7.5
 
 # A controller label maps to scenario parameters that exist in the scenario's own spec.
+# A controller label sets EVERY switch it governs, explicitly: some scenarios switch pre-emption or transit priority on by
+# default, so a baseline that only said "fixed" would silently run with them on (this was a real bug caught by a benchmark in
+# which "fixed" and "fixed+preempt" came out identical). A switch the scenario does not have is skipped when False.
 CONTROLLERS: dict[str, dict[str, Any]] = {
-    "fixed": {"signals": "fixed"},
-    "actuated": {"signals": "actuated"},
-    "fixed+preempt": {"signals": "fixed", "preemption": True},
-    "actuated+preempt": {"signals": "actuated", "preemption": True},
-    "fixed+tsp": {"signals": "fixed", "tsp": True},
-    "actuated+tsp": {"signals": "actuated", "tsp": True},
+    "fixed": {"signals": "fixed", "preemption": False, "tsp": False},
+    "actuated": {"signals": "actuated", "preemption": False, "tsp": False},
+    "fixed+preempt": {"signals": "fixed", "preemption": True, "tsp": False},
+    "actuated+preempt": {"signals": "actuated", "preemption": True, "tsp": False},
+    "fixed+tsp": {"signals": "fixed", "preemption": False, "tsp": True},
+    "actuated+tsp": {"signals": "actuated", "preemption": False, "tsp": True},
 }
 # parameters a controller sets: excluded from the hash that identifies the *situation* so controllers can be paired
 CONTROLLER_KEYS = ("signals", "preemption", "tsp")
@@ -226,6 +229,9 @@ def run_experiment(spec: ExperimentSpec, store: ExperimentStore | None = None, *
     seen_estop: set[str] = set()
     n_tele = n_estop = 0
     peak_q = 0
+    last_edge: dict[str, str] = {}
+    cross_acc = {t: 0 for t in net.tls_ids}  # vehicles that crossed each junction since the last spatial sample
+    cross_total = {t: 0 for t in net.tls_ids}
     pending_max = 0
     occ_samples: list[float] = []
     dens_samples: list[float] = []
@@ -303,6 +309,11 @@ def run_experiment(spec: ExperimentSpec, store: ExperimentStore | None = None, *
                         road = T.vehicle.getRoadID(vid)
                         idling = sp < 0.1 and not (T.vehicle.getStopState(vid) & 1)  # stationary and not at a planned stop
                         acc.add(road if road in edge_cap else None, sp, e, idling)
+                        prev = last_edge.get(vid)
+                        if prev is not None and prev != road and prev in net.edges and net.edges[prev].to in cross_acc:
+                            cross_acc[net.edges[prev].to] += 1  # left the approach of a signalised junction since the last sample
+                            cross_total[net.edges[prev].to] += 1
+                        last_edge[vid] = road
                         if sp < 0.1:
                             halted += 1
                         if mode in ("car", "truck", "bus"):
@@ -342,7 +353,8 @@ def run_experiment(spec: ExperimentSpec, store: ExperimentStore | None = None, *
                                                                  co2_mg_s=round(be.get("co2", 0.0), 2), fuel_mg_s=round(be.get("fuel", 0.0), 2)))
                         for tid, q in queues.items():
                             rows["junction_samples"].append(dict(experiment_id=exp_id, ts=stamp(t), sim_t=round(t, 2), tls_id=tid, queue=q,
-                                                                 vehicles=None, phase=eng.tls_phase.get(tid)))
+                                                                 crossings=cross_acc.get(tid, 0), phase=eng.tls_phase.get(tid)))
+                        cross_acc = {t: 0 for t in cross_acc}
                     if progress and int(t) % 10 == 0:
                         progress(min(1.0, t / duration))
             results = eng.results()
@@ -363,6 +375,7 @@ def run_experiment(spec: ExperimentSpec, store: ExperimentStore | None = None, *
     warm = spec.warmup
     trips: list[dict[str, Any]] = []
     obs_trips = []
+    window_modes: dict[str, int] = {}  # every trip that arrived in the observation window, by mode (bicycles included)
     tf = work / "tripinfo.xml"
     if tf.exists():
         for e in ET.parse(tf).getroot():
@@ -380,8 +393,10 @@ def run_experiment(spec: ExperimentSpec, store: ExperimentStore | None = None, *
             if rec["mode"] == "incident" or (e.get("id") or "").startswith("inc"):
                 continue
             trips.append(rec)
-            if finished and arrival >= warm and rec["mode"] in ("car", "truck", "bus"):
-                obs_trips.append(rec)
+            if finished and arrival >= warm:
+                window_modes[rec["mode"]] = window_modes.get(rec["mode"], 0) + 1
+                if rec["mode"] in ("car", "truck", "bus"):
+                    obs_trips.append(rec)
     rows["trip_results"] = trips
     cf = work / "collisions.xml"
     collisions = []
@@ -419,7 +434,8 @@ def run_experiment(spec: ExperimentSpec, store: ExperimentStore | None = None, *
         for k in ("co2_mg", "fuel_mg", "waiting_s", "duration_s"):
             m[k] += t[k] or 0.0
     summary["extra"] = {
-        "byMode": by_mode, "vehicleKm": km, "otherTotalsG": {k: acc.total_mg[k] / 1000.0 for k in ("co", "hc", "nox", "pmx")},
+        "byMode": by_mode, "tripsByMode": window_modes, "vehicleKm": km, "otherTotalsG": {k: acc.total_mg[k] / 1000.0 for k in ("co", "hc", "nox", "pmx")},
+        "busiestJunctions": [{"tls": t, "name": net.junction_name(t), "vehPerHour": round(n * 3600.0 / duration)} for t, n in sorted(cross_total.items(), key=lambda kv: -kv[1])[:5]],
         "scenario": results.get("scenario"), "signals": results.get("signals"), "collisionTypes": _count([c.get("type") for c in collisions]),
         "unfinishedTrips": sum(1 for t in trips if not t["finished"]), "teleportsEngine": results.get("teleports"), "demandProfile": "see experiments.params",
     }

@@ -40,7 +40,7 @@ def run_benchmark(suite: str, scenario: str, controllers: list[str], seeds: list
         controllers = [baseline, *controllers]
     for c in controllers:  # fail before running anything if a controller cannot be expressed for this scenario
         controller_params(scenario, c, params)
-    out = Path(out_dir) if out_dir else BENCH_DIR / suite
+    out = (Path(out_dir) if out_dir else BENCH_DIR / suite).resolve()  # absolute: the workers run in another working directory
     (out / "experiments").mkdir(parents=True, exist_ok=True)
     (out / "pairs").mkdir(exist_ok=True)
     local = SqliteStore(out / "experiments.sqlite")

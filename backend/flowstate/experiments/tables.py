@@ -150,7 +150,7 @@ JUNCTION_SAMPLES = Table(
         _c("sim_t", "real", True),
         _c("tls_id", "text", True),
         _c("queue", "int", True, "halting vehicles on the approaches"),
-        _c("vehicles", "int"),
+        _c("crossings", "int", False, "vehicles that crossed the junction since the previous sample (discharge; x3600/interval = veh/h)"),
         _c("phase", "int"),
     ],
     pk=("experiment_id", "ts", "tls_id"),

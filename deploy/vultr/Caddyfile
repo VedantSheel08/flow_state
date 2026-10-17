@@ -1,0 +1,8 @@
+{$DOMAIN} {
+	handle /api/experiments* {
+		reverse_proxy experiments:8010
+	}
+	handle {
+		reverse_proxy backend:8000
+	}
+}

@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 1,
+ "suite": "toronto-gridlock-preset",
+ "scenario": "rush_hour",
+ "params": {
+  "duration": 5,
+  "demand": 3200,
+  "traffic": 1.6,
+  "peak": 3.0
+ },
+ "warmup": 180.0,
+ "controllers": [
+  "fixed"
+ ],
+ "baseline": "fixed",
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "paramsHash": "b37299acc7ca65c7",
+ "experiments": [
+  {
+   "id": "560163f1-acb6-47e3-8f01-1782fa6cdf9f",
+   "controller": "fixed",
+   "seed": 1,
+   "file": "experiments/560163f1-acb6-47e3-8f01-1782fa6cdf9f.json"
+  },
+  {
+   "id": "9ceffd83-17a5-47ba-9932-729a596e5597",
+   "controller": "fixed",
+   "seed": 2,
+   "file": "experiments/9ceffd83-17a5-47ba-9932-729a596e5597.json"
+  },
+  {
+   "id": "d2094a87-40e4-4b0e-9d0c-e16987a1a971",
+   "controller": "fixed",
+   "seed": 3,
+   "file": "experiments/d2094a87-40e4-4b0e-9d0c-e16987a1a971.json"
+  }
+ ],
+ "engine": {
+  "sumo": "SUMO 1.28.0",
+  "backend": "libsumo",
+  "stepLength": 0.25,
+  "revision": "05f3150",
+  "emissionClasses": [
+   "HBEFA3/Bus",
+   "HBEFA3/HDV_D_EU4",
+   "HBEFA3/LDV_D_EU4",
+   "HBEFA3/PC_G_EU4",
+   "Zero"
+  ],
+  "emissionModel": "HBEFA3"
+ },
+ "revision": "05f3150",
+ "wallSeconds": 158.0,
+ "storedIn": [
+  "sqlite"
+ ],
+ "reproduce": "python -m flowstate.experiments benchmark --suite toronto-gridlock-preset --scenario rush_hour --controllers fixed --seeds 1,2,3 --warmup 180.0 --params '{\"duration\": 5, \"demand\": 3200, \"traffic\": 1.6, \"peak\": 3.0}'",
+ "note": "Re-running with the same seeds on the same SUMO and code revision reproduces the SUMO outputs; wall times and experiment ids differ."
+}
