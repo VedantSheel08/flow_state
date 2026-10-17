@@ -1,0 +1,3750 @@
+{
+ "collisions": [
+  {
+   "t": 202.75,
+   "collider": "v584",
+   "victim": "v467",
+   "ctype": "bike@0",
+   "vtype": "suv@3",
+   "cspeed": 2.5,
+   "vspeed": 0.78,
+   "kind": "junction",
+   "lane": ":n1_0_6_0",
+   "pos": 4.6,
+   "a": {
+    "lane": ":n1_0_6_0",
+    "speed": 2.5,
+    "type": "bike@0",
+    "wait": 0.0,
+    "route": [
+     "front_w2",
+     "front_w3",
+     "elm_n1"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 0
+   },
+   "b": {
+    "lane": ":n1_0_8_0",
+    "speed": 0.78,
+    "type": "suv@3",
+    "wait": 0.0,
+    "route": [
+     "front_w2",
+     "main_n1",
+     "main_n1b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 9
+   }
+  },
+  {
+   "t": 326.0,
+   "collider": "v524",
+   "victim": "p31",
+   "ctype": "bike@6",
+   "vtype": "walker",
+   "cspeed": 0.05,
+   "vspeed": 1.34,
+   "kind": "crossing",
+   "lane": ":n2_2_28_0",
+   "pos": 0.2,
+   "a": {
+    "lane": "queen_e3_1",
+    "speed": 0.09,
+    "type": "bike@6",
+    "wait": 0.8,
+    "route": [
+     "queen_e3",
+     "queen_e3b",
+     "queen_e4"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   },
+   "b": null
+  },
+  {
+   "t": 561.75,
+   "collider": "v1758",
+   "victim": "v225",
+   "ctype": "bike@2",
+   "vtype": "hatch@0",
+   "cspeed": 1.29,
+   "vspeed": 0.0,
+   "kind": "junction",
+   "lane": ":n2_2_11_0",
+   "pos": 12.3,
+   "a": {
+    "lane": ":n2_2_11_0",
+    "speed": 1.29,
+    "type": "bike@2",
+    "wait": 0.0,
+    "route": [
+     "church_n2",
+     "queen_e3",
+     "queen_e3b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 1
+   },
+   "b": {
+    "lane": ":n2_2_19_0",
+    "speed": 0.0,
+    "type": "hatch@0",
+    "wait": 0.8,
+    "route": [
+     "queen_e2b",
+     "queen_e3",
+     "queen_e3b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   }
+  },
+  {
+   "t": 728.0,
+   "collider": "v225",
+   "victim": "p136",
+   "ctype": "hatch@0",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.39,
+   "kind": "crossing",
+   "lane": ":n2_2_19_0",
+   "pos": 2.3,
+   "a": {
+    "lane": ":n2_2_19_0",
+    "speed": 0.0,
+    "type": "hatch@0",
+    "wait": 128.0,
+    "route": [
+     "queen_e2b",
+     "queen_e3",
+     "queen_e3b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   },
+   "b": null
+  }
+ ],
+ "teleports": [
+  {
+   "t": 333.25,
+   "veh": "v95",
+   "wait": 240.0,
+   "lane": "park_n1_1",
+   "leader": "v1123",
+   "leaderGap": 34.8,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "van@7",
+   "route": [
+    "park_n1",
+    "park_n2",
+    "queen_e4"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 412.0,
+   "veh": "v167",
+   "wait": 240.0,
+   "lane": "church_n2_2",
+   "leader": "v1022",
+   "leaderGap": 28.9,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "hatch@3",
+   "route": [
+    "church_n2",
+    "queen_w2",
+    "queen_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 423.5,
+   "veh": "v10",
+   "wait": 240.0,
+   "lane": "king_w2_2",
+   "leader": "v1212",
+   "leaderGap": 109.6,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 46.1,
+   "tlsState": "r",
+   "type": "sedan@7",
+   "route": [
+    "king_w2",
+    "king_w2b",
+    "king_w3"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 430.75,
+   "veh": "v148",
+   "wait": 240.0,
+   "lane": "king_w1b_1",
+   "leader": "v721",
+   "leaderGap": 24.7,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "suv@7",
+   "route": [
+    "king_w1b",
+    "king_w2",
+    "king_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 434.25,
+   "veh": "v314",
+   "wait": 240.0,
+   "lane": "king_w2b_1",
+   "leader": "v359",
+   "leaderGap": 18.2,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "suv@7",
+   "route": [
+    "king_w2b",
+    "main_n2",
+    "main_n2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 442.25,
+   "veh": "v403",
+   "wait": 240.0,
+   "lane": "king_w1_1",
+   "leader": "v528",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 50.4,
+   "tlsState": "r",
+   "type": "suv@4",
+   "route": [
+    "king_w1",
+    "king_w1b",
+    "king_w2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 446.0,
+   "veh": "v88",
+   "wait": 240.0,
+   "lane": "king_w2_1",
+   "leader": "v254",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 42.4,
+   "tlsState": "g",
+   "type": "bike@3",
+   "route": [
+    "king_w2",
+    "king_w2b",
+    "main_n2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 447.25,
+   "veh": "v330",
+   "wait": 240.0,
+   "lane": "king_w2_1",
+   "leader": "v254",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 44.4,
+   "tlsState": "g",
+   "type": "hatch@6",
+   "route": [
+    "king_w2",
+    "king_w2b",
+    "main_n2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 457.0,
+   "veh": "v186",
+   "wait": 240.0,
+   "lane": "king_e3b_3",
+   "leader": "v1165",
+   "leaderGap": 24.9,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "hatch@1",
+   "route": [
+    "king_e3b",
+    "park_n2",
+    "queen_w1"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 458.0,
+   "veh": "v281",
+   "wait": 240.0,
+   "lane": "queen_w1b_1",
+   "leader": "v1237",
+   "leaderGap": 28.8,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "suv@6",
+   "route": [
+    "queen_w1b",
+    "queen_w2",
+    "queen_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 464.25,
+   "veh": "v515",
+   "wait": 240.0,
+   "lane": "king_e3_2",
+   "leader": "v450",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 46.2,
+   "tlsState": "r",
+   "type": "suv@0",
+   "route": [
+    "king_e3",
+    "king_e3b",
+    "park_n2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 464.75,
+   "veh": "v819",
+   "wait": 240.0,
+   "lane": "front_e3_2",
+   "leader": "v861",
+   "leaderGap": 19.9,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 151.7,
+   "tlsState": "g",
+   "type": "suv@3",
+   "route": [
+    "front_e3",
+    "park_n1",
+    "king_w1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 466.25,
+   "veh": "v644",
+   "wait": 240.0,
+   "lane": "main_s0b_1",
+   "leader": "v1351",
+   "leaderGap": 23.6,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@3",
+   "route": [
+    "main_s0b",
+    "main_s1",
+    "main_s1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 466.5,
+   "veh": "v748",
+   "wait": 240.0,
+   "lane": "queen_e2b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@7",
+   "route": [
+    "queen_e2b",
+    "queen_e3",
+    "queen_e3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 466.5,
+   "veh": "v639",
+   "wait": 240.0,
+   "lane": "queen_w0b_3",
+   "leader": "v1125",
+   "leaderGap": 27.6,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "suv@4",
+   "route": [
+    "queen_w0b",
+    "park_s2",
+    "king_e4"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 468.25,
+   "veh": "v444",
+   "wait": 240.0,
+   "lane": "queen_e2b_1",
+   "leader": "v1070",
+   "leaderGap": 17.1,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@4",
+   "route": [
+    "queen_e2b",
+    "church_s2",
+    "king_w2"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 470.25,
+   "veh": "v439",
+   "wait": 240.0,
+   "lane": "queen_w1b_3",
+   "leader": "v1070",
+   "leaderGap": 28.3,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "sedan@5",
+   "route": [
+    "queen_w1b",
+    "church_s2",
+    "king_e3"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 472.0,
+   "veh": "v745",
+   "wait": 240.0,
+   "lane": "queen_w1_1",
+   "leader": "v687",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 47.6,
+   "tlsState": "r",
+   "type": "sedan@4",
+   "route": [
+    "queen_w1",
+    "queen_w1b",
+    "queen_w2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 476.75,
+   "veh": "v243",
+   "wait": 240.0,
+   "lane": "king_w2_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 102.6,
+   "tlsState": "r",
+   "type": "suv@6",
+   "route": [
+    "king_w2",
+    "king_w2b",
+    "king_w3"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 478.0,
+   "veh": "v708",
+   "wait": 240.0,
+   "lane": "queen_e2_1",
+   "leader": "v652",
+   "leaderGap": 0.1,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 48.7,
+   "tlsState": "r",
+   "type": "sedan@6",
+   "route": [
+    "queen_e2",
+    "queen_e2b",
+    "church_s2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 480.0,
+   "veh": "v695",
+   "wait": 240.0,
+   "lane": "queen_w1_2",
+   "leader": "v685",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 47.5,
+   "tlsState": "r",
+   "type": "sedan@5",
+   "route": [
+    "queen_w1",
+    "queen_w1b",
+    "church_s2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 482.25,
+   "veh": "v176",
+   "wait": 240.0,
+   "lane": "church_s2_2",
+   "leader": "v525",
+   "leaderGap": 19.2,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "sedan@3",
+   "route": [
+    "church_s2",
+    "king_w2",
+    "king_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 487.5,
+   "veh": "v422",
+   "wait": 240.0,
+   "lane": "church_n1_1",
+   "leader": "v525",
+   "leaderGap": 39.4,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "bike@3",
+   "route": [
+    "church_n1",
+    "king_w2",
+    "king_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 495.75,
+   "veh": "v980",
+   "wait": 240.0,
+   "lane": "main_n0b_1",
+   "leader": "v374",
+   "leaderGap": 30.5,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@1",
+   "route": [
+    "main_n0b",
+    "main_n1",
+    "main_n1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 506.75,
+   "veh": "v1034",
+   "wait": 240.0,
+   "lane": "elm_n3_1",
+   "leader": "v1256",
+   "leaderGap": 14.8,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 186.3,
+   "tlsState": "r",
+   "type": "sedan@2",
+   "route": [
+    "elm_n3",
+    "college_e1",
+    "main_s1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 507.25,
+   "veh": "v873",
+   "wait": 240.0,
+   "lane": "queen_e0b_1",
+   "leader": "v1015",
+   "leaderGap": 25.2,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "pickup@6",
+   "route": [
+    "queen_e0b",
+    "queen_e1",
+    "queen_e1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 507.5,
+   "veh": "v409",
+   "wait": 240.0,
+   "lane": "front_e1_2",
+   "leader": "v1160",
+   "leaderGap": 33.0,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "sedan@0",
+   "route": [
+    "front_e1",
+    "main_n1",
+    "main_n1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 509.5,
+   "veh": "v1088",
+   "wait": 240.0,
+   "lane": "king_w1b_2",
+   "leader": "v261",
+   "leaderGap": 31.0,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 0.8,
+   "tlsState": "y",
+   "type": "sedan@1",
+   "route": [
+    "king_w1b",
+    "king_w2",
+    "king_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 512.75,
+   "veh": "v924",
+   "wait": 240.0,
+   "lane": "queen_e1b_2",
+   "leader": "v782",
+   "leaderGap": 141.8,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 7.6,
+   "tlsState": "r",
+   "type": "sedan@3",
+   "route": [
+    "queen_e1b",
+    "queen_e2",
+    "queen_e2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 512.75,
+   "veh": "v645",
+   "wait": 240.0,
+   "lane": "church_s1_2",
+   "leader": "v1237",
+   "leaderGap": 18.9,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "van@3",
+   "route": [
+    "church_s1",
+    "queen_w2",
+    "queen_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 513.25,
+   "veh": "v851",
+   "wait": 240.0,
+   "lane": "park_s1_1",
+   "leader": "v1125",
+   "leaderGap": 37.2,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "pickup@3",
+   "route": [
+    "park_s1",
+    "park_s2",
+    "king_e4"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 518.5,
+   "veh": "v1024",
+   "wait": 240.0,
+   "lane": "king_w0b_1",
+   "leader": "v938",
+   "leaderGap": 20.8,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "sedan@6",
+   "route": [
+    "king_w0b",
+    "king_w1",
+    "king_w1b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 519.75,
+   "veh": "v77",
+   "wait": 240.0,
+   "lane": "queen_w2b_3",
+   "leader": "v1283",
+   "leaderGap": 35.0,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@4",
+   "route": [
+    "queen_w2b",
+    "main_s2",
+    "main_s2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 523.5,
+   "veh": "v1004",
+   "wait": 240.0,
+   "lane": "king_e0b_2",
+   "leader": "v1749",
+   "leaderGap": 23.1,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "van@4",
+   "route": [
+    "king_e0b",
+    "king_e1",
+    "king_e1b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 524.25,
+   "veh": "v1014",
+   "wait": 240.0,
+   "lane": "main_s1b_2",
+   "leader": "v1283",
+   "leaderGap": 37.0,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 0.5,
+   "tlsState": "G",
+   "type": "suv@7",
+   "route": [
+    "main_s1b",
+    "main_s2",
+    "main_s2b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 524.5,
+   "veh": "v635",
+   "wait": 240.0,
+   "lane": "queen_e3b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 3.5,
+   "tlsState": "G",
+   "type": "van@2",
+   "route": [
+    "queen_e3b",
+    "queen_e4"
+   ],
+   "cause": "wrong lane"
+  },
+  {
+   "t": 525.25,
+   "veh": "v963",
+   "wait": 240.0,
+   "lane": "queen_e3b_1",
+   "leader": "v1125",
+   "leaderGap": 17.5,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "hatch@4",
+   "route": [
+    "queen_e3b",
+    "park_s2",
+    "king_w1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 530.25,
+   "veh": "v575",
+   "wait": 240.0,
+   "lane": "queen_e3b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 22.7,
+   "tlsState": "G",
+   "type": "suv@5",
+   "route": [
+    "queen_e3b",
+    "queen_e4"
+   ],
+   "cause": "wrong lane"
+  },
+  {
+   "t": 530.25,
+   "veh": "v360",
+   "wait": 240.0,
+   "lane": "queen_w2_2",
+   "leader": "v230",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 39.9,
+   "tlsState": "r",
+   "type": "sedan@5",
+   "route": [
+    "queen_w2",
+    "queen_w2b",
+    "main_s2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 531.75,
+   "veh": "v558",
+   "wait": 240.0,
+   "lane": "front_w2_2",
+   "leader": "v1446",
+   "leaderGap": 18.1,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "truck@3",
+   "route": [
+    "front_w2",
+    "main_n1",
+    "main_n1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 533.0,
+   "veh": "v483",
+   "wait": 240.0,
+   "lane": "queen_w1b_2",
+   "leader": "v1022",
+   "leaderGap": 25.2,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "suv@6",
+   "route": [
+    "queen_w1b",
+    "queen_w2",
+    "queen_w2b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 535.25,
+   "veh": "v292",
+   "wait": 240.0,
+   "lane": "church_n1_2",
+   "leader": "v261",
+   "leaderGap": 34.9,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "hatch@2",
+   "route": [
+    "church_n1",
+    "king_w2",
+    "king_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 535.75,
+   "veh": "v1111",
+   "wait": 240.0,
+   "lane": "queen_w0b_2",
+   "leader": "v1143",
+   "leaderGap": 22.0,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "truck@0",
+   "route": [
+    "queen_w0b",
+    "queen_w1",
+    "queen_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 547.0,
+   "veh": "v416",
+   "wait": 240.0,
+   "lane": "king_e1b_3",
+   "leader": "v358",
+   "leaderGap": 30.9,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@7",
+   "route": [
+    "king_e1b",
+    "main_n2",
+    "main_n2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 550.5,
+   "veh": "v870",
+   "wait": 240.0,
+   "lane": "front_e2_2",
+   "leader": "v1772",
+   "leaderGap": 20.0,
+   "injunction": false,
+   "nextTls": "n2_0",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "truck@6",
+   "route": [
+    "front_e2",
+    "church_n1",
+    "king_w2"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 556.0,
+   "veh": "v497",
+   "wait": 240.0,
+   "lane": "king_e1_2",
+   "leader": "v87",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 43.9,
+   "tlsState": "r",
+   "type": "sedan@1",
+   "route": [
+    "king_e1",
+    "king_e1b",
+    "main_n2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 558.5,
+   "veh": "v1213",
+   "wait": 240.0,
+   "lane": "front_w0_2",
+   "leader": "v861",
+   "leaderGap": 14.4,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 146.0,
+   "tlsState": "y",
+   "type": "suv@7",
+   "route": [
+    "front_w0",
+    "park_n1",
+    "king_e4"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 561.0,
+   "veh": "v1238",
+   "wait": 240.0,
+   "lane": "main_n0b_2",
+   "leader": "v1590",
+   "leaderGap": 25.8,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "suv@1",
+   "route": [
+    "main_n0b",
+    "main_n1",
+    "main_n1b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 565.5,
+   "veh": "v126",
+   "wait": 240.0,
+   "lane": "park_n2_1",
+   "leader": "v1143",
+   "leaderGap": 29.7,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "sedan@5",
+   "route": [
+    "park_n2",
+    "queen_w1",
+    "queen_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 567.25,
+   "veh": "v356",
+   "wait": 240.0,
+   "lane": "queen_e1b_1",
+   "leader": "v1179",
+   "leaderGap": 41.7,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "pickup@5",
+   "route": [
+    "queen_e1b",
+    "queen_e2",
+    "queen_e2b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 570.5,
+   "veh": "v190",
+   "wait": 240.0,
+   "lane": "elm_s2_1",
+   "leader": "v1749",
+   "leaderGap": 30.5,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "sedan@6",
+   "route": [
+    "elm_s2",
+    "king_e1",
+    "king_e1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 572.25,
+   "veh": "v469",
+   "wait": 240.0,
+   "lane": "park_s2_1",
+   "leader": "v938",
+   "leaderGap": 12.8,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "hatch@2",
+   "route": [
+    "park_s2",
+    "king_w1",
+    "king_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 573.5,
+   "veh": "v1172",
+   "wait": 240.0,
+   "lane": "park_n1_1",
+   "leader": "v938",
+   "leaderGap": 29.4,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 0.7,
+   "tlsState": "r",
+   "type": "pickup@2",
+   "route": [
+    "park_n1",
+    "king_w1",
+    "king_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 574.0,
+   "veh": "v1293",
+   "wait": 240.0,
+   "lane": "main_s0b_2",
+   "leader": "v1731",
+   "leaderGap": 21.1,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "hatch@3",
+   "route": [
+    "main_s0b",
+    "main_s1",
+    "main_s1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 575.25,
+   "veh": "v767",
+   "wait": 240.0,
+   "lane": "queen_e1_1",
+   "leader": "v952",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 43.2,
+   "tlsState": "G",
+   "type": "sedan@3",
+   "route": [
+    "queen_e1",
+    "queen_e1b",
+    "queen_e2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 581.5,
+   "veh": "v22",
+   "wait": 240.0,
+   "lane": "king_e2b_2",
+   "leader": "v1183",
+   "leaderGap": 33.6,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "suv@4",
+   "route": [
+    "king_e2b",
+    "king_e3",
+    "king_e3b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 589.0,
+   "veh": "v991",
+   "wait": 240.0,
+   "lane": "college_w2_1",
+   "leader": "v1351",
+   "leaderGap": 33.6,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "sedan@0",
+   "route": [
+    "college_w2",
+    "main_s1",
+    "main_s1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 590.25,
+   "veh": "v813",
+   "wait": 240.0,
+   "lane": "college_w1_1",
+   "leader": "v534",
+   "leaderGap": 21.8,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 153.5,
+   "tlsState": "g",
+   "type": "hatch@4",
+   "route": [
+    "college_w1",
+    "church_s1",
+    "queen_w2"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 590.75,
+   "veh": "v319",
+   "wait": 240.0,
+   "lane": "queen_w2b_2",
+   "leader": "v1885",
+   "leaderGap": 34.2,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@7",
+   "route": [
+    "queen_w2b",
+    "queen_w3",
+    "queen_w3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 604.5,
+   "veh": "v1298",
+   "wait": 240.0,
+   "lane": "church_s1_1",
+   "leader": "v1285",
+   "leaderGap": 8.6,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "bike@7",
+   "route": [
+    "church_s1",
+    "queen_w2",
+    "queen_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 605.0,
+   "veh": "v621",
+   "wait": 240.0,
+   "lane": "queen_w3b_3",
+   "leader": "v565",
+   "leaderGap": 30.4,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@3",
+   "route": [
+    "queen_w3b",
+    "elm_s2",
+    "king_e1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 607.5,
+   "veh": "v737",
+   "wait": 240.0,
+   "lane": "church_s3_2",
+   "leader": "v1574",
+   "leaderGap": 17.6,
+   "injunction": false,
+   "nextTls": "n2_0",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "truck@4",
+   "route": [
+    "church_s3",
+    "front_w2",
+    "main_n1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 607.75,
+   "veh": "v1037",
+   "wait": 240.0,
+   "lane": "king_e2b_3",
+   "leader": "v1975",
+   "leaderGap": 28.3,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@2",
+   "route": [
+    "king_e2b",
+    "church_n2",
+    "queen_w2"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 608.25,
+   "veh": "v791",
+   "wait": 240.0,
+   "lane": "elm_n2_1",
+   "leader": "v216",
+   "leaderGap": 11.0,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "hatch@0",
+   "route": [
+    "elm_n2",
+    "queen_e1",
+    "queen_e1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 616.0,
+   "veh": "v1459",
+   "wait": 240.0,
+   "lane": "college_e2_1",
+   "leader": "v534",
+   "leaderGap": 14.6,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 147.8,
+   "tlsState": "r",
+   "type": "van@5",
+   "route": [
+    "college_e2",
+    "church_s1",
+    "queen_w2"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 617.75,
+   "veh": "v101",
+   "wait": 240.0,
+   "lane": "queen_w3_2",
+   "leader": "v949",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 48.7,
+   "tlsState": "r",
+   "type": "pickup@6",
+   "route": [
+    "queen_w3",
+    "queen_w3b",
+    "elm_s2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 627.75,
+   "veh": "v1495",
+   "wait": 240.0,
+   "lane": "queen_w0b_1",
+   "leader": "v1586",
+   "leaderGap": 24.5,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@2",
+   "route": [
+    "queen_w0b",
+    "queen_w1",
+    "queen_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 630.0,
+   "veh": "v1532",
+   "wait": 240.0,
+   "lane": "elm_s3_1",
+   "leader": "v1521",
+   "leaderGap": 20.2,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 193.5,
+   "tlsState": "r",
+   "type": "sedan@2",
+   "route": [
+    "elm_s3",
+    "front_e1",
+    "main_s4"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 631.75,
+   "veh": "v1498",
+   "wait": 240.0,
+   "lane": "front_e0_2",
+   "leader": "v1521",
+   "leaderGap": 20.5,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 194.1,
+   "tlsState": "r",
+   "type": "sedan@7",
+   "route": [
+    "front_e0",
+    "front_e1",
+    "main_n1"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 633.5,
+   "veh": "v1504",
+   "wait": 240.0,
+   "lane": "church_s0_2",
+   "leader": "v534",
+   "leaderGap": 21.5,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 154.1,
+   "tlsState": "r",
+   "type": "hatch@2",
+   "route": [
+    "church_s0",
+    "church_s1",
+    "queen_e3"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 633.5,
+   "veh": "v221",
+   "wait": 240.0,
+   "lane": "main_n2b_3",
+   "leader": "v1885",
+   "leaderGap": 31.9,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "sedan@7",
+   "route": [
+    "main_n2b",
+    "queen_w3",
+    "queen_w3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 633.5,
+   "veh": "v828",
+   "wait": 240.0,
+   "lane": "elm_s1_1",
+   "leader": "v1424",
+   "leaderGap": 33.4,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "suv@2",
+   "route": [
+    "elm_s1",
+    "queen_e1",
+    "queen_e1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 634.25,
+   "veh": "v420",
+   "wait": 240.0,
+   "lane": "elm_n1_1",
+   "leader": "v1511",
+   "leaderGap": 37.2,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "bike@2",
+   "route": [
+    "elm_n1",
+    "elm_n2",
+    "queen_w4"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 644.0,
+   "veh": "v506",
+   "wait": 240.0,
+   "lane": "college_e1_1",
+   "leader": "v1351",
+   "leaderGap": 16.8,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "hatch@4",
+   "route": [
+    "college_e1",
+    "main_s1",
+    "main_s1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 647.5,
+   "veh": "v1570",
+   "wait": 240.0,
+   "lane": "king_e2_2",
+   "leader": "v620",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 46.7,
+   "tlsState": "r",
+   "type": "sedan@5",
+   "route": [
+    "king_e2",
+    "king_e2b",
+    "church_n2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 651.5,
+   "veh": "v1199",
+   "wait": 240.0,
+   "lane": "college_w3_1",
+   "leader": "v1530",
+   "leaderGap": 18.9,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 152.1,
+   "tlsState": "r",
+   "type": "sedan@4",
+   "route": [
+    "college_w3",
+    "elm_s1",
+    "elm_s2"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 652.0,
+   "veh": "v1544",
+   "wait": 240.0,
+   "lane": "park_n3_1",
+   "leader": "v1707",
+   "leaderGap": 19.4,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 349.7,
+   "tlsState": "r",
+   "type": "van@0",
+   "route": [
+    "park_n3",
+    "college_w1",
+    "church_s1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 658.25,
+   "veh": "v1240",
+   "wait": 240.0,
+   "lane": "main_s3b_3",
+   "leader": "v1834",
+   "leaderGap": 30.9,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@2",
+   "route": [
+    "main_s3b",
+    "front_e2",
+    "church_n1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 659.5,
+   "veh": "v301",
+   "wait": 240.0,
+   "lane": "church_n2_2",
+   "leader": "v225",
+   "leaderGap": 11.4,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "pickup@5",
+   "route": [
+    "church_n2",
+    "queen_e3",
+    "queen_e3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 668.5,
+   "veh": "v480",
+   "wait": 240.0,
+   "lane": "king_w3b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 2.7,
+   "tlsState": "G",
+   "type": "hatch@2",
+   "route": [
+    "king_w3b",
+    "king_w4"
+   ],
+   "cause": "wrong lane"
+  },
+  {
+   "t": 668.75,
+   "veh": "v256",
+   "wait": 295.2,
+   "lane": "king_w3b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 15.9,
+   "tlsState": "G",
+   "type": "van@7",
+   "route": [
+    "king_w3b",
+    "king_w4"
+   ],
+   "cause": "wrong lane"
+  },
+  {
+   "t": 669.0,
+   "veh": "v460",
+   "wait": 288.8,
+   "lane": "king_w3b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 23.5,
+   "tlsState": "G",
+   "type": "sedan@7",
+   "route": [
+    "king_w3b",
+    "king_w4"
+   ],
+   "cause": "wrong lane"
+  },
+  {
+   "t": 671.0,
+   "veh": "v714",
+   "wait": 240.0,
+   "lane": "king_w3b_1",
+   "leader": "v1511",
+   "leaderGap": 14.3,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "suv@6",
+   "route": [
+    "king_w3b",
+    "elm_n2",
+    "queen_e1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 671.0,
+   "veh": "v518",
+   "wait": 240.0,
+   "lane": "king_w1b_1",
+   "leader": "v422",
+   "leaderGap": 29.0,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 0.9,
+   "tlsState": "y",
+   "type": "sedan@0",
+   "route": [
+    "king_w1b",
+    "king_w2",
+    "king_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 673.75,
+   "veh": "v484",
+   "wait": 240.0,
+   "lane": "king_w3b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 35.0,
+   "tlsState": "G",
+   "type": "van@7",
+   "route": [
+    "king_w3b",
+    "king_w4"
+   ],
+   "cause": "wrong lane"
+  },
+  {
+   "t": 674.5,
+   "veh": "v1212",
+   "wait": 240.0,
+   "lane": "king_w3b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 43.2,
+   "tlsState": "G",
+   "type": "suv@6",
+   "route": [
+    "king_w3b",
+    "king_w4"
+   ],
+   "cause": "wrong lane"
+  },
+  {
+   "t": 683.25,
+   "veh": "v1679",
+   "wait": 240.0,
+   "lane": "front_w3_2",
+   "leader": "v1407",
+   "leaderGap": 10.7,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 146.0,
+   "tlsState": "r",
+   "type": "hatch@5",
+   "route": [
+    "front_w3",
+    "elm_n1",
+    "king_e1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 683.75,
+   "veh": "v1557",
+   "wait": 240.0,
+   "lane": "main_s1b_1",
+   "leader": "v446",
+   "leaderGap": 36.6,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 0.4,
+   "tlsState": "G",
+   "type": "truck@5",
+   "route": [
+    "main_s1b",
+    "main_s2",
+    "main_s2b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 684.25,
+   "veh": "v10",
+   "wait": 240.0,
+   "lane": "king_w3_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 51.3,
+   "tlsState": "G",
+   "type": "sedan@7",
+   "route": [
+    "king_w3",
+    "king_w3b",
+    "king_w4"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 684.5,
+   "veh": "v1127",
+   "wait": 240.0,
+   "lane": "king_w1_1",
+   "leader": "v528",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 49.7,
+   "tlsState": "r",
+   "type": "suv@1",
+   "route": [
+    "king_w1",
+    "king_w1b",
+    "king_w2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 687.75,
+   "veh": "v910",
+   "wait": 240.0,
+   "lane": "king_w3_1",
+   "leader": "v818",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 50.1,
+   "tlsState": "y",
+   "type": "hatch@2",
+   "route": [
+    "king_w3",
+    "king_w3b",
+    "king_w4"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 688.25,
+   "veh": "v401",
+   "wait": 240.0,
+   "lane": "king_w2b_1",
+   "leader": "v1661",
+   "leaderGap": 39.9,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 0.5,
+   "tlsState": "G",
+   "type": "sedan@3",
+   "route": [
+    "king_w2b",
+    "king_w3",
+    "king_w3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 697.25,
+   "veh": "v502",
+   "wait": 240.0,
+   "lane": "king_e3b_3",
+   "leader": "v1165",
+   "leaderGap": 24.2,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 0.3,
+   "tlsState": "G",
+   "type": "sedan@7",
+   "route": [
+    "king_e3b",
+    "park_n2",
+    "queen_w1"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 698.25,
+   "veh": "v718",
+   "wait": 240.0,
+   "lane": "queen_w1b_1",
+   "leader": "v1285",
+   "leaderGap": 20.0,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 0.9,
+   "tlsState": "y",
+   "type": "suv@1",
+   "route": [
+    "queen_w1b",
+    "queen_w2",
+    "queen_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 700.25,
+   "veh": "v1773",
+   "wait": 240.0,
+   "lane": "church_n0_2",
+   "leader": "v657",
+   "leaderGap": 30.2,
+   "injunction": false,
+   "nextTls": "n2_0",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@4",
+   "route": [
+    "church_n0",
+    "church_n1",
+    "king_w2"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 703.5,
+   "veh": "v453",
+   "wait": 240.0,
+   "lane": "main_n2b_1",
+   "leader": "v1271",
+   "leaderGap": 13.3,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "hatch@3",
+   "route": [
+    "main_n2b",
+    "queen_e2",
+    "queen_e2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 703.75,
+   "veh": "v844",
+   "wait": 301.8,
+   "lane": "elm_n1_1",
+   "leader": "v584",
+   "leaderGap": -3.9,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "hatch@6",
+   "route": [
+    "elm_n1",
+    "king_e1",
+    "king_e1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 710.5,
+   "veh": "v996",
+   "wait": 240.0,
+   "lane": "queen_w1b_3",
+   "leader": "v1070",
+   "leaderGap": 29.2,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 0.8,
+   "tlsState": "y",
+   "type": "suv@7",
+   "route": [
+    "queen_w1b",
+    "church_s2",
+    "king_e3"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 710.75,
+   "veh": "v866",
+   "wait": 240.0,
+   "lane": "front_e3_2",
+   "leader": "v861",
+   "leaderGap": 19.4,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 151.7,
+   "tlsState": "G",
+   "type": "suv@4",
+   "route": [
+    "front_e3",
+    "park_n1",
+    "park_n2"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 711.25,
+   "veh": "v154",
+   "wait": 240.0,
+   "lane": "main_n2b_2",
+   "leader": "v1714",
+   "leaderGap": 58.1,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 14.3,
+   "tlsState": "r",
+   "type": "sedan@5",
+   "route": [
+    "main_n2b",
+    "main_n3",
+    "main_n3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 714.5,
+   "veh": "v683",
+   "wait": 240.0,
+   "lane": "main_s0b_1",
+   "leader": "v1351",
+   "leaderGap": 29.5,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@0",
+   "route": [
+    "main_s0b",
+    "main_s1",
+    "main_s1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 716.75,
+   "veh": "v923",
+   "wait": 240.0,
+   "lane": "queen_w1_1",
+   "leader": "v687",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 47.9,
+   "tlsState": "r",
+   "type": "hatch@7",
+   "route": [
+    "queen_w1",
+    "queen_w1b",
+    "queen_w2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 716.75,
+   "veh": "v717",
+   "wait": 240.0,
+   "lane": "queen_w0b_3",
+   "leader": "v200",
+   "leaderGap": 26.8,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "truck@0",
+   "route": [
+    "queen_w0b",
+    "park_s2",
+    "king_e4"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 721.25,
+   "veh": "v912",
+   "wait": 240.0,
+   "lane": "main_s1b_3",
+   "leader": "v924",
+   "leaderGap": 36.0,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@0",
+   "route": [
+    "main_s1b",
+    "queen_e2",
+    "queen_e2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 722.5,
+   "veh": "v1639",
+   "wait": 240.0,
+   "lane": "church_s2_2",
+   "leader": "v1221",
+   "leaderGap": 30.2,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 0.3,
+   "tlsState": "y",
+   "type": "suv@4",
+   "route": [
+    "church_s2",
+    "king_e3",
+    "king_e3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 724.25,
+   "veh": "v142",
+   "wait": 240.0,
+   "lane": "queen_e2b_1",
+   "leader": "v225",
+   "leaderGap": 20.5,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@6",
+   "route": [
+    "queen_e2b",
+    "queen_e3",
+    "queen_e3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 731.25,
+   "veh": "v971",
+   "wait": 240.0,
+   "lane": "main_n1b_2",
+   "leader": "v358",
+   "leaderGap": 33.3,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "suv@7",
+   "route": [
+    "main_n1b",
+    "main_n2",
+    "main_n2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 736.75,
+   "veh": "v358",
+   "wait": 240.0,
+   "lane": ":n1_1_9_1",
+   "leader": "v314",
+   "leaderGap": 0.0,
+   "injunction": true,
+   "nextTls": "n1_2",
+   "tlsDist": 122.2,
+   "tlsState": "r",
+   "type": "sedan@5",
+   "route": [
+    "main_n1b",
+    "main_n2",
+    "main_n2b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 739.75,
+   "veh": "v1931",
+   "wait": 240.0,
+   "lane": "park_s3_1",
+   "leader": "v1746",
+   "leaderGap": 18.8,
+   "injunction": false,
+   "nextTls": "n2_0",
+   "tlsDist": 192.9,
+   "tlsState": "r",
+   "type": "van@4",
+   "route": [
+    "park_s3",
+    "front_w1",
+    "church_n1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 741.5,
+   "veh": "v467",
+   "wait": 240.0,
+   "lane": "main_n1_1",
+   "leader": "v325",
+   "leaderGap": 5.4,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 49.6,
+   "tlsState": "r",
+   "type": "suv@3",
+   "route": [
+    "main_n1",
+    "main_n1b",
+    "main_n2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 742.75,
+   "veh": "v1000",
+   "wait": 240.0,
+   "lane": "main_n0b_1",
+   "leader": "v1446",
+   "leaderGap": 27.0,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "pickup@3",
+   "route": [
+    "main_n0b",
+    "main_n1",
+    "main_n1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 747.75,
+   "veh": "v1669",
+   "wait": 240.0,
+   "lane": "front_e1_2",
+   "leader": "v1590",
+   "leaderGap": 30.1,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 0.9,
+   "tlsState": "g",
+   "type": "sedan@2",
+   "route": [
+    "front_e1",
+    "main_n1",
+    "main_n1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 752.5,
+   "veh": "v1827",
+   "wait": 240.0,
+   "lane": "king_e0b_1",
+   "leader": "v1807",
+   "leaderGap": 25.1,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "hatch@6",
+   "route": [
+    "king_e0b",
+    "king_e1",
+    "king_e1b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 753.5,
+   "veh": "v933",
+   "wait": 240.0,
+   "lane": "queen_e0b_1",
+   "leader": "v565",
+   "leaderGap": 18.6,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@4",
+   "route": [
+    "queen_e0b",
+    "elm_s2",
+    "king_w4"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 755.25,
+   "veh": "v530",
+   "wait": 240.0,
+   "lane": "king_w1b_2",
+   "leader": "v2302",
+   "leaderGap": 24.6,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@1",
+   "route": [
+    "king_w1b",
+    "king_w2",
+    "king_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 755.5,
+   "veh": "v1158",
+   "wait": 240.0,
+   "lane": "elm_n3_1",
+   "leader": "v1378",
+   "leaderGap": 13.4,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 186.3,
+   "tlsState": "r",
+   "type": "pickup@2",
+   "route": [
+    "elm_n3",
+    "college_e1",
+    "main_s1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 755.5,
+   "veh": "v1830",
+   "wait": 240.0,
+   "lane": "church_s1_2",
+   "leader": "v1285",
+   "leaderGap": 10.7,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "hatch@1",
+   "route": [
+    "church_s1",
+    "queen_w2",
+    "queen_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 760.0,
+   "veh": "v247",
+   "wait": 240.0,
+   "lane": "queen_w2b_3",
+   "leader": "v2979",
+   "leaderGap": 38.4,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 0.9,
+   "tlsState": "r",
+   "type": "sedan@7",
+   "route": [
+    "queen_w2b",
+    "main_s2",
+    "main_s2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 762.25,
+   "veh": "v1278",
+   "wait": 240.0,
+   "lane": "queen_e1b_2",
+   "leader": "v924",
+   "leaderGap": 38.4,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "hatch@6",
+   "route": [
+    "queen_e1b",
+    "queen_e2",
+    "queen_e2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 765.0,
+   "veh": "v1048",
+   "wait": 240.0,
+   "lane": "king_w0b_1",
+   "leader": "v1165",
+   "leaderGap": 13.0,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "suv@2",
+   "route": [
+    "king_w0b",
+    "park_n2",
+    "park_n3"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 768.5,
+   "veh": "v1280",
+   "wait": 240.0,
+   "lane": "king_w1_2",
+   "leader": "v1217",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 45.7,
+   "tlsState": "r",
+   "type": "sedan@2",
+   "route": [
+    "king_w1",
+    "king_w1b",
+    "king_w2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 769.5,
+   "veh": "v608",
+   "wait": 240.0,
+   "lane": "main_s1b_2",
+   "leader": "v2979",
+   "leaderGap": 41.1,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "sedan@2",
+   "route": [
+    "main_s1b",
+    "main_s2",
+    "main_s2b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 772.0,
+   "veh": "v1019",
+   "wait": 240.0,
+   "lane": "king_e0b_2",
+   "leader": "v1749",
+   "leaderGap": 24.6,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@0",
+   "route": [
+    "king_e0b",
+    "king_e1",
+    "king_e1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 772.5,
+   "veh": "v2030",
+   "wait": 240.0,
+   "lane": "king_w0b_2",
+   "leader": "v1024",
+   "leaderGap": 26.0,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "van@7",
+   "route": [
+    "king_w0b",
+    "king_w1",
+    "king_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 772.5,
+   "veh": "v1105",
+   "wait": 240.0,
+   "lane": "queen_w2_2",
+   "leader": "v230",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 39.4,
+   "tlsState": "r",
+   "type": "hatch@4",
+   "route": [
+    "queen_w2",
+    "queen_w2b",
+    "main_s2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 773.25,
+   "veh": "v1226",
+   "wait": 240.0,
+   "lane": "queen_w1b_2",
+   "leader": "v1022",
+   "leaderGap": 25.7,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 0.2,
+   "tlsState": "G",
+   "type": "pickup@7",
+   "route": [
+    "queen_w1b",
+    "queen_w2",
+    "queen_w2b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 781.25,
+   "veh": "v876",
+   "wait": 240.0,
+   "lane": "king_w2b_3",
+   "leader": "v2445",
+   "leaderGap": 32.7,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "sedan@2",
+   "route": [
+    "king_w2b",
+    "main_s3",
+    "main_s3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 784.0,
+   "veh": "v1182",
+   "wait": 240.0,
+   "lane": "queen_w0b_2",
+   "leader": "v1143",
+   "leaderGap": 23.0,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@0",
+   "route": [
+    "queen_w0b",
+    "queen_w1",
+    "queen_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 784.75,
+   "veh": "v2001",
+   "wait": 240.0,
+   "lane": "church_n3_2",
+   "leader": "v1329",
+   "leaderGap": 24.2,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 191.7,
+   "tlsState": "r",
+   "type": "pickup@3",
+   "route": [
+    "church_n3",
+    "college_w2",
+    "main_s1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 784.75,
+   "veh": "v748",
+   "wait": 240.0,
+   "lane": "queen_e3b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 11.3,
+   "tlsState": "r",
+   "type": "sedan@7",
+   "route": [
+    "queen_e3b",
+    "queen_e4"
+   ],
+   "cause": "wrong lane"
+  },
+  {
+   "t": 786.0,
+   "veh": "v702",
+   "wait": 240.0,
+   "lane": "queen_e3_1",
+   "leader": "v682",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 49.5,
+   "tlsState": "r",
+   "type": "suv@7",
+   "route": [
+    "queen_e3",
+    "queen_e3b",
+    "park_s2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 787.25,
+   "veh": "v517",
+   "wait": 240.0,
+   "lane": "king_e1b_3",
+   "leader": "v358",
+   "leaderGap": 38.0,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@2",
+   "route": [
+    "king_e1b",
+    "main_n2",
+    "main_n2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 788.0,
+   "veh": "v141",
+   "wait": 240.0,
+   "lane": "church_n1_2",
+   "leader": "v2302",
+   "leaderGap": 29.0,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@0",
+   "route": [
+    "church_n1",
+    "king_w2",
+    "king_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 789.75,
+   "veh": "v477",
+   "wait": 240.0,
+   "lane": "church_s2_1",
+   "leader": "v422",
+   "leaderGap": 17.5,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "bike@6",
+   "route": [
+    "church_s2",
+    "king_w2",
+    "king_w2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 790.75,
+   "veh": "v1933",
+   "wait": 240.0,
+   "lane": "front_e2_2",
+   "leader": "v2656",
+   "leaderGap": 28.0,
+   "injunction": false,
+   "nextTls": "n2_0",
+   "tlsDist": 0.9,
+   "tlsState": "r",
+   "type": "truck@2",
+   "route": [
+    "front_e2",
+    "front_e3",
+    "park_n1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 798.5,
+   "veh": "v763",
+   "wait": 240.0,
+   "lane": "front_w1_2",
+   "leader": "v657",
+   "leaderGap": 21.6,
+   "injunction": false,
+   "nextTls": "n2_0",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "suv@1",
+   "route": [
+    "front_w1",
+    "church_n1",
+    "king_e3"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 805.0,
+   "veh": "v2173",
+   "wait": 240.0,
+   "lane": "queen_e0b_2",
+   "leader": "v828",
+   "leaderGap": 23.8,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "van@3",
+   "route": [
+    "queen_e0b",
+    "queen_e1",
+    "queen_e1b"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 805.75,
+   "veh": "v1300",
+   "wait": 240.0,
+   "lane": "park_n2_1",
+   "leader": "v1143",
+   "leaderGap": 29.8,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 0.9,
+   "tlsState": "g",
+   "type": "sedan@6",
+   "route": [
+    "park_n2",
+    "queen_w1",
+    "queen_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 806.75,
+   "veh": "v1541",
+   "wait": 240.0,
+   "lane": "front_w0_2",
+   "leader": "v861",
+   "leaderGap": 14.6,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 146.0,
+   "tlsState": "r",
+   "type": "sedan@0",
+   "route": [
+    "front_w0",
+    "park_n1",
+    "park_n2"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 807.5,
+   "veh": "v505",
+   "wait": 240.0,
+   "lane": "queen_e1b_1",
+   "leader": "v1695",
+   "leaderGap": 17.8,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 0.7,
+   "tlsState": "g",
+   "type": "pickup@4",
+   "route": [
+    "queen_e1b",
+    "main_s2",
+    "main_s2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 807.75,
+   "veh": "v1367",
+   "wait": 240.0,
+   "lane": "main_n0b_2",
+   "leader": "v1711",
+   "leaderGap": 24.0,
+   "injunction": false,
+   "nextTls": "n1_0",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@3",
+   "route": [
+    "main_n0b",
+    "main_n1",
+    "main_n1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 810.75,
+   "veh": "v1546",
+   "wait": 240.0,
+   "lane": "elm_s2_1",
+   "leader": "v1749",
+   "leaderGap": 30.8,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 0.9,
+   "tlsState": "g",
+   "type": "sedan@3",
+   "route": [
+    "elm_s2",
+    "king_e1",
+    "king_e1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 815.0,
+   "veh": "v1176",
+   "wait": 240.0,
+   "lane": "park_n1_1",
+   "leader": "v938",
+   "leaderGap": 40.3,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@7",
+   "route": [
+    "park_n1",
+    "king_w1",
+    "king_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 821.25,
+   "veh": "v1319",
+   "wait": 240.0,
+   "lane": "main_s0b_2",
+   "leader": "v1732",
+   "leaderGap": 23.2,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "hatch@2",
+   "route": [
+    "main_s0b",
+    "main_s1",
+    "main_s1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 826.25,
+   "veh": "v201",
+   "wait": 240.0,
+   "lane": "main_s2b_3",
+   "leader": "v2561",
+   "leaderGap": 37.2,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "van@6",
+   "route": [
+    "main_s2b",
+    "king_e2",
+    "king_e2b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 829.25,
+   "veh": "v2167",
+   "wait": 240.0,
+   "lane": "college_w2_1",
+   "leader": "v1451",
+   "leaderGap": 31.0,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 0.8,
+   "tlsState": "g",
+   "type": "suv@2",
+   "route": [
+    "college_w2",
+    "main_s1",
+    "main_s1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 833.25,
+   "veh": "v960",
+   "wait": 240.0,
+   "lane": "king_e2b_2",
+   "leader": "v1221",
+   "leaderGap": 31.5,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "y",
+   "type": "pickup@1",
+   "route": [
+    "king_e2b",
+    "king_e3",
+    "king_e3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 834.0,
+   "veh": "v999",
+   "wait": 240.0,
+   "lane": "park_s1_1",
+   "leader": "v1586",
+   "leaderGap": 16.9,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "pickup@6",
+   "route": [
+    "park_s1",
+    "queen_w1",
+    "queen_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 834.75,
+   "veh": "v599",
+   "wait": 240.0,
+   "lane": "queen_e3b_1",
+   "leader": "v200",
+   "leaderGap": 16.7,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 0.5,
+   "tlsState": "g",
+   "type": "sedan@7",
+   "route": [
+    "queen_e3b",
+    "park_s2",
+    "king_w1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 836.5,
+   "veh": "v839",
+   "wait": 240.0,
+   "lane": "college_w1_1",
+   "leader": "v1986",
+   "leaderGap": 19.8,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 153.5,
+   "tlsState": "r",
+   "type": "suv@5",
+   "route": [
+    "college_w1",
+    "church_s1",
+    "queen_e3"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 836.75,
+   "veh": "v361",
+   "wait": 240.0,
+   "lane": "queen_w2b_2",
+   "leader": "v1885",
+   "leaderGap": 34.6,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "hatch@3",
+   "route": [
+    "queen_w2b",
+    "queen_w3",
+    "queen_w3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 840.5,
+   "veh": "v572",
+   "wait": 471.2,
+   "lane": "elm_n2_1",
+   "leader": "v1710",
+   "leaderGap": 0.2,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 7.6,
+   "tlsState": "g",
+   "type": "truck@2",
+   "route": [
+    "elm_n2",
+    "queen_e1",
+    "queen_e1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 848.0,
+   "veh": "v1257",
+   "wait": 240.0,
+   "lane": "king_e2b_3",
+   "leader": "v1975",
+   "leaderGap": 31.0,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@0",
+   "route": [
+    "king_e2b",
+    "church_n2",
+    "queen_e3"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 849.5,
+   "veh": "v1956",
+   "wait": 240.0,
+   "lane": "college_e3_1",
+   "leader": "v1865",
+   "leaderGap": 17.3,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 146.3,
+   "tlsState": "r",
+   "type": "suv@6",
+   "route": [
+    "college_e3",
+    "park_s1",
+    "queen_w1"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 855.75,
+   "veh": "v1046",
+   "wait": 240.0,
+   "lane": "main_n3b_2",
+   "leader": null,
+   "leaderGap": null,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 0.0,
+   "tlsState": "G",
+   "type": "van@7",
+   "route": [
+    "main_n3b",
+    "main_n4"
+   ],
+   "cause": "wrong lane"
+  },
+  {
+   "t": 856.75,
+   "veh": "v1039",
+   "wait": 240.0,
+   "lane": "church_s3_2",
+   "leader": "v1684",
+   "leaderGap": 18.1,
+   "injunction": false,
+   "nextTls": "n2_0",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@5",
+   "route": [
+    "church_s3",
+    "front_w2",
+    "front_w3"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 861.5,
+   "veh": "v1499",
+   "wait": 240.0,
+   "lane": "college_e2_1",
+   "leader": "v1986",
+   "leaderGap": 14.4,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 147.8,
+   "tlsState": "r",
+   "type": "sedan@2",
+   "route": [
+    "college_e2",
+    "church_s1",
+    "queen_e3"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 866.75,
+   "veh": "v2286",
+   "wait": 240.0,
+   "lane": "main_n3b_3",
+   "leader": "v2266",
+   "leaderGap": 25.2,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "suv@4",
+   "route": [
+    "main_n3b",
+    "college_w3",
+    "elm_s1"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 872.75,
+   "veh": "v1583",
+   "wait": 240.0,
+   "lane": "queen_w0b_1",
+   "leader": "v1586",
+   "leaderGap": 24.8,
+   "injunction": false,
+   "nextTls": "n3_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "hatch@4",
+   "route": [
+    "queen_w0b",
+    "queen_w1",
+    "queen_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 873.75,
+   "veh": "v2307",
+   "wait": 240.0,
+   "lane": "main_n2b_3",
+   "leader": "v1885",
+   "leaderGap": 39.7,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 0.5,
+   "tlsState": "y",
+   "type": "suv@7",
+   "route": [
+    "main_n2b",
+    "queen_w3",
+    "queen_w3b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 881.0,
+   "veh": "v1691",
+   "wait": 240.0,
+   "lane": "church_s0_2",
+   "leader": "v1986",
+   "leaderGap": 20.5,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 154.1,
+   "tlsState": "r",
+   "type": "sedan@5",
+   "route": [
+    "church_s0",
+    "church_s1",
+    "queen_e3"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 881.75,
+   "veh": "v944",
+   "wait": 240.0,
+   "lane": "elm_s1_1",
+   "leader": "v1710",
+   "leaderGap": 35.0,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "truck@2",
+   "route": [
+    "elm_s1",
+    "queen_e1",
+    "queen_e1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 887.5,
+   "veh": "v226",
+   "wait": 240.0,
+   "lane": "queen_w2b_1",
+   "leader": "v1115",
+   "leaderGap": 14.7,
+   "injunction": false,
+   "nextTls": "n1_2",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "suv@3",
+   "route": [
+    "queen_w2b",
+    "main_n3"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 888.75,
+   "veh": "v2313",
+   "wait": 240.0,
+   "lane": "king_e2_2",
+   "leader": "v620",
+   "leaderGap": 0.0,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 45.6,
+   "tlsState": "r",
+   "type": "suv@7",
+   "route": [
+    "king_e2",
+    "king_e2b",
+    "church_n2"
+   ],
+   "cause": "jam"
+  },
+  {
+   "t": 891.25,
+   "veh": "v568",
+   "wait": 240.0,
+   "lane": "park_s2_1",
+   "leader": "v938",
+   "leaderGap": 23.7,
+   "injunction": false,
+   "nextTls": "n3_1",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "sedan@6",
+   "route": [
+    "park_s2",
+    "king_w1",
+    "king_w1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 891.25,
+   "veh": "v465",
+   "wait": 240.0,
+   "lane": "college_e1_1",
+   "leader": "v1451",
+   "leaderGap": 15.3,
+   "injunction": false,
+   "nextTls": "n1_3",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "suv@1",
+   "route": [
+    "college_e1",
+    "main_s1",
+    "main_s1b"
+   ],
+   "cause": "yield"
+  },
+  {
+   "t": 891.75,
+   "veh": "v2464",
+   "wait": 240.0,
+   "lane": "college_w3_1",
+   "leader": "v1418",
+   "leaderGap": 20.5,
+   "injunction": false,
+   "nextTls": "n0_2",
+   "tlsDist": 151.4,
+   "tlsState": "r",
+   "type": "van@3",
+   "route": [
+    "college_w3",
+    "elm_s1",
+    "queen_e1"
+   ],
+   "cause": "yield"
+  }
+ ],
+ "summary": {
+  "classification": "severe",
+  "safety": {
+   "native": {
+    "junctionChecks": true,
+    "collisionRecordObservations": 4,
+    "collisionEpisodes": 4,
+    "uniqueCollisionPairs": 4,
+    "recordObservationsByType": {
+     "junction": 2,
+     "crossing": 2
+    },
+    "examples": [
+     {
+      "t": -397.25,
+      "type": "junction",
+      "collider": "v584",
+      "victim": "v467",
+      "lane": ":n1_0_6_0",
+      "colliderType": "bike@0",
+      "victimType": "suv@3",
+      "colliderSpeed": 2.497978089130552,
+      "victimSpeed": 0.7766049191172689
+     },
+     {
+      "t": -274.0,
+      "type": "crossing",
+      "collider": "v524",
+      "victim": "p31",
+      "lane": ":n2_2_28_0",
+      "colliderType": "bike@6",
+      "victimType": "walker",
+      "colliderSpeed": 0.05369822849746048,
+      "victimSpeed": 1.3409658002862335
+     },
+     {
+      "t": -38.25,
+      "type": "junction",
+      "collider": "v1758",
+      "victim": "v225",
+      "lane": ":n2_2_11_0",
+      "colliderType": "bike@2",
+      "victimType": "hatch@0",
+      "colliderSpeed": 1.289924580773523,
+      "victimSpeed": 0.0
+     },
+     {
+      "t": 128.0,
+      "type": "crossing",
+      "collider": "v225",
+      "victim": "p136",
+      "lane": ":n2_2_19_0",
+      "colliderType": "hatch@0",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.3894474272935988
+     }
+    ],
+    "definition": "An episode starts when a pair/type is reported after an unreported step; not a count of unique physical crashes."
+   },
+   "collisionFile": [
+    {
+     "time": "202.50",
+     "type": "junction",
+     "lane": ":n1_0_6_0",
+     "pos": "4.63",
+     "collider": "v584",
+     "victim": "v467",
+     "colliderType": "bike@0",
+     "victimType": "suv@3",
+     "colliderSpeed": "2.50",
+     "victimSpeed": "0.78",
+     "colliderFront": "215.27,3.73",
+     "colliderBack": "217.02,3.73",
+     "victimFront": "214.07,2.82",
+     "victimBack": "218.77,1.76"
+    },
+    {
+     "time": "325.75",
+     "type": "crossing",
+     "lane": ":n2_2_28_0",
+     "pos": "0.18",
+     "collider": "v524",
+     "victim": "p31",
+     "colliderType": "bike@6",
+     "victimType": "walker",
+     "colliderSpeed": "0.05",
+     "victimSpeed": "1.34",
+     "colliderFront": "414.81,310.43",
+     "colliderBack": "413.06,310.34",
+     "victimFront": "413.68,310.28",
+     "victimBack": "413.68,310.28"
+    },
+    {
+     "time": "561.50",
+     "type": "junction",
+     "lane": ":n2_2_11_0",
+     "pos": "12.30",
+     "collider": "v1758",
+     "victim": "v225",
+     "colliderType": "bike@2",
+     "victimType": "hatch@0",
+     "colliderSpeed": "1.29",
+     "victimSpeed": "0.00",
+     "colliderFront": "409.58,310.70",
+     "colliderBack": "407.95,309.84",
+     "victimFront": "410.38,311.85",
+     "victimBack": "406.23,311.85"
+    },
+    {
+     "time": "727.75",
+     "type": "crossing",
+     "lane": ":n2_2_19_0",
+     "pos": "2.33",
+     "collider": "v225",
+     "victim": "p136",
+     "colliderType": "hatch@0",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.39",
+     "colliderFront": "411.81,311.85",
+     "colliderBack": "407.66,311.85",
+     "victimFront": "411.76,312.43",
+     "victimBack": "411.76,312.43"
+    }
+   ],
+   "personInvolved": 2,
+   "teleports": 167,
+   "invalidRoutes": 0,
+   "routeSamples": 95651,
+   "gapOutliers": [
+    {
+     "t": -455.0,
+     "follower": "v226",
+     "leader": "v461",
+     "bumperGap": 13.12,
+     "lane": "queen_w2_1"
+    },
+    {
+     "t": -445.0,
+     "follower": "v557",
+     "leader": "v256",
+     "bumperGap": 9.1,
+     "lane": "main_n1_2"
+    },
+    {
+     "t": -420.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -415.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -410.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -405.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -400.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -395.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -390.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -385.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -380.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -375.0,
+     "follower": "v591",
+     "leader": "v229",
+     "bumperGap": 8.92,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -350.0,
+     "follower": "v629",
+     "leader": "v630",
+     "bumperGap": 6.24,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -345.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.67,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -340.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -340.0,
+     "follower": "v78",
+     "leader": "v570",
+     "bumperGap": 8.38,
+     "lane": "queen_w2_1"
+    },
+    {
+     "t": -335.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -330.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -325.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -320.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -315.0,
+     "follower": "v452",
+     "leader": "v373",
+     "bumperGap": 14.35,
+     "lane": "main_s2_1"
+    },
+    {
+     "t": -315.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -310.0,
+     "follower": "v452",
+     "leader": "v373",
+     "bumperGap": 14.35,
+     "lane": "main_s2_1"
+    },
+    {
+     "t": -310.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -305.0,
+     "follower": "v452",
+     "leader": "v373",
+     "bumperGap": 14.35,
+     "lane": "main_s2_1"
+    },
+    {
+     "t": -305.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -305.0,
+     "follower": "v575",
+     "leader": "v635",
+     "bumperGap": 13.8,
+     "lane": "queen_e3b_2"
+    },
+    {
+     "t": -305.0,
+     "follower": "v579",
+     "leader": "v961",
+     "bumperGap": 8.78,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -300.0,
+     "follower": "v452",
+     "leader": "v373",
+     "bumperGap": 14.35,
+     "lane": "main_s2_1"
+    },
+    {
+     "t": -300.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -300.0,
+     "follower": "v575",
+     "leader": "v635",
+     "bumperGap": 13.8,
+     "lane": "queen_e3b_2"
+    },
+    {
+     "t": -300.0,
+     "follower": "v579",
+     "leader": "v961",
+     "bumperGap": 9.7,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -295.0,
+     "follower": "v452",
+     "leader": "v373",
+     "bumperGap": 14.35,
+     "lane": "main_s2_1"
+    },
+    {
+     "t": -295.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 17.22,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -295.0,
+     "follower": "v575",
+     "leader": "v635",
+     "bumperGap": 13.8,
+     "lane": "queen_e3b_2"
+    },
+    {
+     "t": -290.0,
+     "follower": "v452",
+     "leader": "v373",
+     "bumperGap": 14.35,
+     "lane": "main_s2_1"
+    },
+    {
+     "t": -290.0,
+     "follower": "v447",
+     "leader": "v237",
+     "bumperGap": 16.45,
+     "lane": "main_s3b_2"
+    },
+    {
+     "t": -290.0,
+     "follower": "v575",
+     "leader": "v635",
+     "bumperGap": 13.8,
+     "lane": "queen_e3b_2"
+    },
+    {
+     "t": -285.0,
+     "follower": "v452",
+     "leader": "v373",
+     "bumperGap": 14.57,
+     "lane": "main_s2_1"
+    },
+    {
+     "t": -285.0,
+     "follower": "v575",
+     "leader": "v635",
+     "bumperGap": 13.8,
+     "lane": "queen_e3b_2"
+    }
+   ]
+  },
+  "ledger": {
+   "background": {
+    "requests": 3560,
+    "submitted": 3560,
+    "dropped": 0,
+    "cancelled": 0,
+    "heldAtEnd": 0,
+    "cruisingTrips": 0,
+    "residual": 0,
+    "holdWaitSeconds": {
+     "n": 0,
+     "mean": null,
+     "p90": null,
+     "max": null
+    },
+    "metoredAttempts": 0,
+    "expectedDeferred": 0.0,
+    "expectedOffered": 3476.1
+   },
+   "native": {
+    "added": 3560,
+    "departed": 1866,
+    "arrived": 296,
+    "pendingNow": 1694,
+    "activeNow": 1505,
+    "discardedDerived": 0,
+    "discardedLogged": 0,
+    "teleportsStarted": 167,
+    "teleportsEnded": 102
+   },
+   "residual": 0,
+   "note": "discardedDerived is added - departed - pending; it must equal what SUMO logged. Non-zero residual = unexplained vehicles."
+  }
+ }
+}

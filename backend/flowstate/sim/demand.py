@@ -132,6 +132,25 @@ class DemandGenerator:
     RISK_BLOCKS = 3
     UNSTICK_WAIT_S: float | None = 20.0  # missed-turn recovery after this long stationary (None: off)
     UNSTICK_PERIOD_S = 5.0
+    # Admission mode. "legacy": a refused attempt silently draws another origin (the original behaviour, kept for the
+    # interactive scenarios). "open" and "accumulation" keep every request, with the origin and destination it was drawn
+    # with, in an explicit external hold queue (vehicles waiting beyond the district boundary / to leave their garage)
+    # and release it to SUMO in order; nothing is redrawn or discarded, and every request is counted:
+    #   requests = submitted + dropped (no route) + cancelled (held longer than MAX_HOLD_S) + held
+    # "open" releases at once; "accumulation" releases only while fewer than TARGET_ACTIVE motor vehicles are in the
+    # district (peak spreading / queue storage outside the model), which holds an oversaturated district at a declared
+    # accumulation instead of letting it collapse into gridlock.
+    ADMISSION = "legacy"
+    # Cruising for parking: a share of the trips that end at a curb inside the district first drive past a few other
+    # blocks (seeded waypoints near the downtown core) before reaching their destination. Real downtowns carry a large
+    # share of such circling traffic (published studies put it at 8-74 % of traffic, ~30 % typical). It loads the
+    # interior streets with moving vehicles the way real traffic does, without raising the entry flow or stopping cars.
+    CRUISE_SHARE = 0.0
+    CRUISE_LEGS = (1, 3)
+    TARGET_ACTIVE: int | None = None
+    TARGET_SCHEDULE: list[list[float]] | None = None  # [[t, target], ...] from scenario second t on (demand relief / metering schedule)
+    MAX_HOLD_S: float | None = None
+    PENDING_PER_ORIGIN = 2  # vehicles SUMO may hold pending at one origin edge (bounds per-step insertion work only)
     SUSTAIN_PEAK = True  # hold the rush-hour peak profile through warm-up and observation of a short run
     SUSTAIN_MAX_S = 600.0  # ... for runs up to this length (longer runs keep the full ramp / peak / ease shape)
     GATEWAY_INDEX: dict[str, float] | None = None  # fringe gateway weight by class (default: signals.APPROACH_VOLUME_INDEX)
@@ -162,7 +181,7 @@ class DemandGenerator:
         "PATH_GATE": 0.6,
     }
 
-    def __init__(self, engine: "Engine", rng: random.Random, profiles: dict[str, list[str]]):
+    def __init__(self, engine: "Engine", rng: random.Random, profiles: dict[str, list[str]], overrides: dict[str, Any] | None = None):
         self.engine = engine
         self.net: "NetInfo" = engine.net
         self.rng = rng
@@ -170,6 +189,16 @@ class DemandGenerator:
         self.counter = 0
         self.ped_counter = 0
         self.failed = 0
+        # Integer ledger of *background* demand (scenario-tagged vehicles are counted separately in Engine.added):
+        #   requests = submitted + dropped + held   (held is always 0 in this generator: a refused attempt draws again)
+        self.requests = 0  # arrivals sampled from the profile (integers, before any guardrail)
+        self.submitted = 0  # background requests handed to SUMO as vehicles
+        self.dropped = 0  # background requests that found no admissible origin/route in 4 attempts (explicit loss)
+        self.cruised = 0  # trips that circle for parking before arriving
+        self.cancelled = 0  # held requests given up after MAX_HOLD_S (explicit, counted)
+        self.held: list[dict[str, Any]] = []  # external hold queue, oldest first
+        self.hold_waits: list[float] = []  # seconds each released request waited outside
+        self._origin_of: dict[str, str] = {}  # vehicle id -> origin edge, for the per-origin pending count
         self.metered = 0  # trip starts refused (full gateway, or a jammed path); another origin is drawn
         self.deferred = 0.0  # expected trips held back by the throttle (vehicles)
         self.offered = 0.0  # expected trips requested by the scenario profile (vehicles), before any guardrail
@@ -204,6 +233,10 @@ class DemandGenerator:
         if self.dense:
             for k, v in self.DENSE.items():
                 setattr(self, k, v)
+        for k, v in (overrides or {}).items():  # experiment overrides win over every default
+            if not hasattr(self, k):
+                raise AttributeError(f"unknown demand setting '{k}'")
+            setattr(self, k, v)
         gw = self.GATEWAY_INDEX or APPROACH_VOLUME_INDEX
         self._gateway_w: dict[str, float] = {e: gw.get(self.net.edges[e].cls, 0.12) for e in self.net.entry_edges + self.net.exit_edges}
 
@@ -484,15 +517,140 @@ class DemandGenerator:
         self.unstick(t)
         prof = self.profile(t, prof)
         lam = prof.rate * density * dt / 3600.0
-        k = self.update_throttle(t)
+        queued = self.ADMISSION != "legacy"
+        k = 1.0 if queued else self.update_throttle(t)
         self.offered += lam
         self.deferred += lam * (1.0 - k)
         n = poisson(self.rng, lam * k)
+        self.requests += n
         for _ in range(n):
-            self.spawn_trip(t, prof)
+            if queued:
+                self._request(t, prof)
+            else:
+                self.spawn_trip(t, prof)
+        if queued:
+            self._release(t)
         if self._ped_edges and prof.ped_rate > 0 and self.engine.person_count < self.MAX_PERSONS:
             for _ in range(poisson(self.rng, prof.ped_rate * dt / 3600.0)):
                 self.spawn_pedestrian(prof)
+
+    # -- external hold queue (ADMISSION "open" / "accumulation") ------------------
+    def _draw_od(self, prof: "DemandProfile", vtype: str):
+        """Draw an origin, a destination and a route, exactly as spawn_trip does. Returns None when no route exists."""
+        rng = self.rng
+        for _attempt in range(4):
+            if prof.generator_edges and rng.random() < prof.generator_share:
+                o, o_int = rng.choice(prof.generator_edges), True
+            else:
+                o, o_int = self._end(prof.origin_w, prof.core_bias, True)
+            if prof.attractor_edges and rng.random() < prof.attractor_share:
+                d, d_int = rng.choice(prof.attractor_edges), True
+            else:
+                d, d_int = self._end(prof.dest_w, prof.core_bias, False)
+            if not o or not d or o == d or self.net.reverse(o) == d:
+                continue
+            r = self.route(o, d, vtype, static=True)
+            if self.EITHER_SIDE_DESTINATIONS and d_int:
+                other = self.net.reverse(d)
+                if other and other in self.net.edges and self.net.edges[other].kind == "street":
+                    r2 = self.route(o, other, vtype, static=True)
+                    if r2 is not None and (r is None or r2[1] < r[1] - 1e-6):
+                        r, d = r2, other
+            if r is None:
+                continue
+            return o, o_int, d, d_int, r
+        return None
+
+    def _request(self, t: float, prof: "DemandProfile") -> None:
+        vtype = self.pick_type(prof)
+        od = self._draw_od(prof, vtype)
+        if od is None:
+            self.dropped += 1  # no routable origin-destination pair in 4 draws: an explicit loss, counted
+            return
+        o, o_int, d, d_int, r = od
+        if d_int and self.CRUISE_SHARE > 0 and self.rng.random() < self.CRUISE_SHARE:
+            r = self._cruise(o, d, vtype, r)
+        self.held.append({"t": t, "o": o, "o_int": o_int, "d_int": d_int, "route": r[0], "vtype": vtype})
+
+    def _cruise(self, o: str, d: str, vtype: str, direct: tuple[str, float]) -> tuple[str, float]:
+        """Route o -> w1 [-> w2 ...] -> d through seeded waypoint edges; falls back to the direct route if any leg is missing."""
+        lo, hi = self.CRUISE_LEGS
+        legs = self.rng.randint(lo, hi)
+        stops = [o]
+        for _ in range(legs):
+            w = self._zone_edge(1.5)
+            if w != stops[-1]:
+                stops.append(w)
+        stops.append(d)
+        edges: list[str] = []
+        total = 0.0
+        for a, b in zip(stops, stops[1:]):
+            leg = self.route(a, b, vtype, static=True)
+            if leg is None:
+                return direct
+            e = self._route_edges[leg[0]]
+            edges.extend(e if not edges else (e[1:] if e and e[0] == edges[-1] else e))
+            total += leg[1]
+        if len(edges) < 2:
+            return direct
+        self._route_n += 1
+        rid = f"r{self._route_n}"
+        try:
+            self.engine.T.route.add(rid, edges)
+        except Exception:  # noqa: BLE001 - a waypoint chain SUMO cannot connect: keep the direct trip
+            return direct
+        self._route_edges[rid] = edges
+        self.cruised += 1
+        return rid, total
+
+    def _active_motor(self) -> int:
+        return len(self.engine.vehicles)
+
+    def _release(self, t: float) -> None:
+        if not self.held:
+            return
+        if self.MAX_HOLD_S is not None:
+            keep = [h for h in self.held if t - h["t"] <= self.MAX_HOLD_S]
+            self.cancelled += len(self.held) - len(keep)
+            self.held = keep
+        slots = 10**9
+        if self.ADMISSION == "accumulation" and self.TARGET_ACTIVE is not None:
+            slots = self.target_active(t) - self._active_motor() - len(self.engine.T.simulation.getPendingVehicles())
+        if slots <= 0:
+            return
+        pending_at: dict[str, int] = {}
+        for vid in self.engine.T.simulation.getPendingVehicles():
+            o = self._origin_of.get(vid)
+            if o is not None:
+                pending_at[o] = pending_at.get(o, 0) + 1
+        rest: list[dict[str, Any]] = []
+        for h in self.held:  # oldest first: FIFO per origin, and the longest-waiting request goes first overall
+            if slots > 0 and pending_at.get(h["o"], 0) < self.PENDING_PER_ORIGIN:
+                self._insert(t, h)
+                pending_at[h["o"]] = pending_at.get(h["o"], 0) + 1
+                slots -= 1
+            else:
+                rest.append(h)
+        self.held = rest
+
+    def target_active(self, t: float) -> int:
+        """The accumulation the district is held at, following TARGET_SCHEDULE when one is declared."""
+        target = self.TARGET_ACTIVE
+        for ts, n in (self.TARGET_SCHEDULE or ()):
+            if t >= ts:
+                target = int(n)
+        return target
+
+    def _insert(self, t: float, h: dict[str, Any]) -> None:
+        vid = f"v{self.counter}"
+        self.counter += 1
+        if not self.engine.add_vehicle(vid, h["route"], h["vtype"], depart_pos="random_free" if h["o_int"] else "base",
+                                       depart_speed="0" if h["o_int"] else "desired", arrival_pos="random" if h["d_int"] else "max"):
+            self.dropped += 1  # SUMO refused the planned route: counted, not hidden
+            return
+        self.submitted += 1
+        self._origin_of[vid] = h["o"]
+        self.hold_waits.append(t - h["t"])
 
     def spawn_trip(self, t: float, prof: "DemandProfile", vtype: str | None = None, tag: str | None = None) -> str | None:
         rng = self.rng
@@ -526,15 +684,20 @@ class DemandGenerator:
                 continue
             vid = f"v{self.counter}"
             self.counter += 1
-            self.engine.add_vehicle(
+            if not self.engine.add_vehicle(
                 vid, r[0], vtype,
                 depart_pos="random_free" if o_int else "base",
                 depart_speed="0" if o_int else "desired",
                 arrival_pos="random" if d_int else "max",
                 tag=tag,
-            )
+            ):
+                continue  # SUMO refused the planned route (lanes closed since): draw again
+            if tag is None:
+                self.submitted += 1
             return vid
         self.failed += 1
+        if tag is None:
+            self.dropped += 1
         return None
 
     def spawn_pedestrian(self, prof: "DemandProfile") -> None:

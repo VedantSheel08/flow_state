@@ -1,0 +1,28 @@
+{
+ "preset": "severe",
+ "seed": 42,
+ "simSeconds": 900,
+ "wallSeconds": 74.9,
+ "cpuCoresAverage": 1.0,
+ "peakRssMB": 103,
+ "stepMs": {
+  "mean": 20.12,
+  "p50": 21.78,
+  "p95": 31.6,
+  "p99": 39.43,
+  "max": 47.0
+ },
+ "frameBuildMs": {
+  "mean": 2.43,
+  "p95": 4.24,
+  "max": 6.6
+ },
+ "frameBytes": {
+  "jsonMax": 26946,
+  "jsonAtPeakVehicles": 26946,
+  "gzip1AtPeak": 9563,
+  "maxVehicles": 660
+ },
+ "realtimeFactor": 12.02,
+ "stepBudgetMs": 250.0
+}

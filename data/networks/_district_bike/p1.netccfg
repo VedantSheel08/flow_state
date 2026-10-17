@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-10-16T19:15:15.251945-05:00 by Eclipse SUMO netconvert 1.28.0
+<!-- generated on 2026-10-17T08:30:13.995931-05:00 by Eclipse SUMO netconvert 1.28.0
 -->
 
 <netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <node-files value="..\data\networks\_district_bike\p1.nod.xml"/>
-        <edge-files value="..\data\networks\_district_bike\p1.edg.xml"/>
-        <connection-files value="..\data\networks\_district_bike\p1.con.xml"/>
-        <tllogic-files value="..\data\networks\_district_bike\p1.tll.xml"/>
+        <node-files value="data\networks\_district_bike\p1.nod.xml"/>
+        <edge-files value="data\networks\_district_bike\p1.edg.xml"/>
+        <connection-files value="data\networks\_district_bike\p1.con.xml"/>
+        <tllogic-files value="data\networks\_district_bike\p1.tll.xml"/>
     </input>
 
     <output>
-        <output-file value="..\data\networks\_district_bike\pass1.net.xml"/>
+        <output-file value="data\networks\_district_bike\pass1.net.xml"/>
         <output.street-names value="true"/>
     </output>
 

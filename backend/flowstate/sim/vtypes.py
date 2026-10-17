@@ -119,8 +119,12 @@ def _scale_speed_factor(expr: str, k: float) -> str:
     return f"normc({mean * k:.3f},{dev * k:.3f},{lo * k:.3f},{hi * k:.3f})"
 
 
-def build_vtypes(seed: int, cond: Conditions | None = None) -> tuple[str, dict[str, list[str]]]:
-    """Return (additional XML, {base type: [profile type ids]})."""
+def build_vtypes(seed: int, cond: Conditions | None = None, overrides: dict[str, dict[str, str]] | None = None) -> tuple[str, dict[str, list[str]]]:
+    """Return (additional XML, {base type: [profile type ids]}).
+
+    ``overrides`` ({"all" | vClass | base type: {attribute: value}}) replace attributes after the seeded draw, so a
+    safety experiment changes only the attributes it names and the random driver profiles stay identical."""
+    overrides = overrides or {}
     cond = cond or Conditions()
     rng = random.Random(seed * 1000003 + 17)
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', "<additional>"]
@@ -146,6 +150,8 @@ def build_vtypes(seed: int, cond: Conditions | None = None) -> tuple[str, dict[s
             for key, (mean, sd) in t.lc.items():
                 attrs[key] = f"{max(0.0, _draw(rng, mean, sd, 0.2, 2.5)):.2f}"
             attrs.update({k: v for k, v in t.extra.items() if k not in attrs})
+            for scope in ("all", t.vclass, t.id):
+                attrs.update({k: str(v) for k, v in overrides.get(scope, {}).items()})
             if t.color:
                 attrs["color"] = t.color
             body = " ".join(f'{k}="{v}"' for k, v in attrs.items())
@@ -161,8 +167,8 @@ def build_vtypes(seed: int, cond: Conditions | None = None) -> tuple[str, dict[s
     return "\n".join(lines) + "\n", profiles
 
 
-def write_vtypes(path: Path, seed: int, cond: Conditions | None = None) -> dict[str, list[str]]:
-    xml, profiles = build_vtypes(seed, cond)
+def write_vtypes(path: Path, seed: int, cond: Conditions | None = None, overrides: dict[str, dict[str, str]] | None = None) -> dict[str, list[str]]:
+    xml, profiles = build_vtypes(seed, cond, overrides)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(xml, encoding="utf-8")
     return profiles

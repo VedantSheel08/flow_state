@@ -1,0 +1,447 @@
+{
+ "collisions": [
+  {
+   "t": 292.0,
+   "collider": "v229",
+   "victim": "v157",
+   "ctype": "truck@0",
+   "vtype": "hatch@5",
+   "cspeed": 0.0,
+   "vspeed": 0.0,
+   "kind": "side",
+   "lane": "main_s2_1",
+   "pos": 45.2,
+   "a": {
+    "lane": "main_s2_2",
+    "speed": 0.0,
+    "type": "truck@0",
+    "wait": 9.8,
+    "route": [
+     "main_s2",
+     "main_s2b",
+     "king_e2"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   },
+   "b": {
+    "lane": "main_s2_1",
+    "speed": 0.0,
+    "type": "hatch@5",
+    "wait": 7.0,
+    "route": [
+     "main_s2",
+     "main_s2b",
+     "main_s3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   }
+  }
+ ],
+ "teleports": [
+  {
+   "t": 642.75,
+   "veh": "v319",
+   "wait": 240.0,
+   "lane": "church_n2_2",
+   "leader": "v644",
+   "leaderGap": 33.6,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "van@2",
+   "route": [
+    "church_n2",
+    "queen_w2",
+    "queen_w2b"
+   ]
+  },
+  {
+   "t": 854.75,
+   "veh": "v2023",
+   "wait": 240.0,
+   "lane": "elm_s2_1",
+   "leader": "v558",
+   "leaderGap": 30.8,
+   "injunction": false,
+   "nextTls": "n0_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "truck@4",
+   "route": [
+    "elm_s2",
+    "king_e1",
+    "king_e1b"
+   ]
+  }
+ ],
+ "summary": {
+  "classification": null,
+  "safety": {
+   "native": {
+    "junctionChecks": true,
+    "collisionRecordObservations": 1,
+    "collisionEpisodes": 1,
+    "uniqueCollisionPairs": 1,
+    "recordObservationsByType": {
+     "side": 1
+    },
+    "examples": [
+     {
+      "t": -308.0,
+      "type": "side",
+      "collider": "v229",
+      "victim": "v157",
+      "lane": "main_s2_1",
+      "colliderType": "truck@0",
+      "victimType": "hatch@5",
+      "colliderSpeed": 0.000693555715508088,
+      "victimSpeed": 0.0006772438338602565
+     }
+    ],
+    "definition": "An episode starts when a pair/type is reported after an unreported step; not a count of unique physical crashes."
+   },
+   "collisionFile": [
+    {
+     "time": "291.75",
+     "type": "side",
+     "lane": "main_s2_1",
+     "pos": "45.22",
+     "collider": "v229",
+     "victim": "v157",
+     "colliderType": "truck@0",
+     "victimType": "hatch@5",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "0.00",
+     "colliderFront": "193.69,254.88",
+     "colliderBack": "193.69,263.48",
+     "victimFront": "191.61,252.65",
+     "victimBack": "191.61,256.80"
+    }
+   ],
+   "personInvolved": 0,
+   "teleports": 2,
+   "invalidRoutes": 0,
+   "routeSamples": 38813,
+   "gapOutliers": [
+    {
+     "t": -175.0,
+     "follower": "v505",
+     "leader": "v478",
+     "bumperGap": 13.65,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -165.0,
+     "follower": "v281",
+     "leader": "v414",
+     "bumperGap": 18.94,
+     "lane": "main_s2_1"
+    },
+    {
+     "t": -75.0,
+     "follower": "v1177",
+     "leader": "v453",
+     "bumperGap": 6.3,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -70.0,
+     "follower": "v1177",
+     "leader": "v453",
+     "bumperGap": 8.15,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -65.0,
+     "follower": "v1177",
+     "leader": "v453",
+     "bumperGap": 9.72,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -60.0,
+     "follower": "v1177",
+     "leader": "v453",
+     "bumperGap": 10.33,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -55.0,
+     "follower": "v338",
+     "leader": "v281",
+     "bumperGap": 19.03,
+     "lane": "main_s2b_2"
+    },
+    {
+     "t": -55.0,
+     "follower": "v1177",
+     "leader": "v453",
+     "bumperGap": 10.44,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -50.0,
+     "follower": "v1177",
+     "leader": "v453",
+     "bumperGap": 10.46,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -45.0,
+     "follower": "v1177",
+     "leader": "v453",
+     "bumperGap": 10.44,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 50.0,
+     "follower": "v2070",
+     "leader": "v1453",
+     "bumperGap": 16.83,
+     "lane": "king_e1b_1"
+    },
+    {
+     "t": 55.0,
+     "follower": "v2070",
+     "leader": "v1453",
+     "bumperGap": 16.83,
+     "lane": "king_e1b_1"
+    },
+    {
+     "t": 60.0,
+     "follower": "v2070",
+     "leader": "v1453",
+     "bumperGap": 16.83,
+     "lane": "king_e1b_1"
+    },
+    {
+     "t": 60.0,
+     "follower": "v572",
+     "leader": "v2080",
+     "bumperGap": 8.63,
+     "lane": "queen_e2b_1"
+    },
+    {
+     "t": 65.0,
+     "follower": "v2070",
+     "leader": "v1453",
+     "bumperGap": 16.83,
+     "lane": "king_e1b_1"
+    },
+    {
+     "t": 65.0,
+     "follower": "v572",
+     "leader": "v2080",
+     "bumperGap": 8.63,
+     "lane": "queen_e2b_1"
+    },
+    {
+     "t": 70.0,
+     "follower": "v572",
+     "leader": "v2080",
+     "bumperGap": 8.63,
+     "lane": "queen_e2b_1"
+    },
+    {
+     "t": 100.0,
+     "follower": "v607",
+     "leader": "v590",
+     "bumperGap": 9.61,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 105.0,
+     "follower": "v607",
+     "leader": "v590",
+     "bumperGap": 10.88,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 110.0,
+     "follower": "v607",
+     "leader": "v590",
+     "bumperGap": 10.75,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 115.0,
+     "follower": "v607",
+     "leader": "v590",
+     "bumperGap": 10.38,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 120.0,
+     "follower": "v607",
+     "leader": "v590",
+     "bumperGap": 9.98,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 125.0,
+     "follower": "v607",
+     "leader": "v590",
+     "bumperGap": 9.57,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 130.0,
+     "follower": "v607",
+     "leader": "v590",
+     "bumperGap": 8.98,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 135.0,
+     "follower": "v607",
+     "leader": "v590",
+     "bumperGap": 8.58,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 140.0,
+     "follower": "v607",
+     "leader": "v590",
+     "bumperGap": 8.18,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 145.0,
+     "follower": "v625",
+     "leader": "v1649",
+     "bumperGap": 7.09,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 260.0,
+     "follower": "v576",
+     "leader": "v1096",
+     "bumperGap": 6.39,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 265.0,
+     "follower": "v2300",
+     "leader": "v1115",
+     "bumperGap": 18.96,
+     "lane": "queen_w2_1"
+    },
+    {
+     "t": 265.0,
+     "follower": "v576",
+     "leader": "v1096",
+     "bumperGap": 6.66,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 270.0,
+     "follower": "v2300",
+     "leader": "v1115",
+     "bumperGap": 18.96,
+     "lane": "queen_w2_1"
+    },
+    {
+     "t": 270.0,
+     "follower": "v576",
+     "leader": "v1096",
+     "bumperGap": 6.68,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 275.0,
+     "follower": "v2023",
+     "leader": "v2020",
+     "bumperGap": 12.06,
+     "lane": "king_e1b_1"
+    },
+    {
+     "t": 275.0,
+     "follower": "v2300",
+     "leader": "v1115",
+     "bumperGap": 18.96,
+     "lane": "queen_w2_1"
+    },
+    {
+     "t": 275.0,
+     "follower": "v576",
+     "leader": "v1096",
+     "bumperGap": 6.68,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 280.0,
+     "follower": "v2023",
+     "leader": "v2020",
+     "bumperGap": 12.06,
+     "lane": "king_e1b_1"
+    },
+    {
+     "t": 280.0,
+     "follower": "v2300",
+     "leader": "v1115",
+     "bumperGap": 18.96,
+     "lane": "queen_w2_1"
+    },
+    {
+     "t": 280.0,
+     "follower": "v576",
+     "leader": "v1096",
+     "bumperGap": 6.68,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 285.0,
+     "follower": "v2023",
+     "leader": "v2020",
+     "bumperGap": 12.06,
+     "lane": "king_e1b_1"
+    },
+    {
+     "t": 285.0,
+     "follower": "v2300",
+     "leader": "v1115",
+     "bumperGap": 18.96,
+     "lane": "queen_w2_1"
+    }
+   ]
+  },
+  "ledger": {
+   "background": {
+    "requests": 3388,
+    "submitted": 3388,
+    "dropped": 0,
+    "cancelled": 0,
+    "heldAtEnd": 0,
+    "cruisingTrips": 0,
+    "residual": 0,
+    "holdWaitSeconds": {
+     "n": 0,
+     "mean": null,
+     "p90": null,
+     "max": null
+    },
+    "metoredAttempts": 0,
+    "expectedDeferred": 0.0,
+    "expectedOffered": 3476.1
+   },
+   "native": {
+    "added": 3388,
+    "departed": 1602,
+    "arrived": 1039,
+    "pendingNow": 1786,
+    "activeNow": 563,
+    "discardedDerived": 0,
+    "discardedLogged": 0,
+    "teleportsStarted": 2,
+    "teleportsEnded": 2
+   },
+   "residual": 0,
+   "note": "discardedDerived is added - departed - pending; it must equal what SUMO logged. Non-zero residual = unexplained vehicles."
+  }
+ }
+}

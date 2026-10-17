@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-10-16T19:15:13.599841-05:00 by Eclipse SUMO netconvert 1.28.0
+<!-- generated on 2026-10-17T08:29:57.150524-05:00 by Eclipse SUMO netconvert 1.28.0
 <netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <node-files value="..\data\networks\_district\plain.nod.xml"/>
-        <edge-files value="..\data\networks\_district\plain.edg.xml"/>
+        <node-files value="data\networks\_district\plain.nod.xml"/>
+        <edge-files value="data\networks\_district\plain.edg.xml"/>
     </input>
 
     <output>
-        <output-file value="..\data\networks\_district\pass1.net.xml"/>
-        <plain-output-prefix value="..\data\networks\_district\p1"/>
+        <output-file value="data\networks\_district\pass1.net.xml"/>
+        <plain-output-prefix value="data\networks\_district\p1"/>
         <output.street-names value="true"/>
     </output>
 
@@ -2635,86 +2635,22 @@
     <junction id="fw1" type="dead_end" x="-160.00" y="160.00" incLanes="king_w4_0 king_w4_1 king_w4_2 king_w4_3" intLanes="" shape="-160.00,156.90 -160.00,172.90 -160.00,163.10"/>
     <junction id="fw2" type="dead_end" x="-160.00" y="320.00" incLanes="queen_w4_0 queen_w4_1 queen_w4_2 queen_w4_3" intLanes="" shape="-160.00,316.90 -160.00,332.90 -160.00,323.10"/>
     <junction id="fw3" type="dead_end" x="-160.00" y="480.00" incLanes="college_w4_0 college_w4_1" intLanes="" shape="-160.00,480.00 -160.00,486.00 -160.00,480.00"/>
-    <junction id="king_e0_x" type="priority" x="-58.00" y="160.00" incLanes="king_e0_0 king_e0_1 king_e0_2 king_e0_3" intLanes=":king_e0_x_0_0 :king_e0_x_0_1 :king_e0_x_0_2" shape="-58.00,160.00 -58.00,147.10 -58.00,156.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="king_e1_x" type="priority" x="142.00" y="160.00" incLanes="king_e1_0 king_e1_1 king_e1_2 king_e1_3" intLanes=":king_e1_x_0_0 :king_e1_x_0_1 :king_e1_x_0_2" shape="142.00,160.00 142.00,147.10 142.00,156.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="king_e2_x" type="priority" x="342.00" y="160.00" incLanes="king_e2_0 king_e2_1 king_e2_2 king_e2_3" intLanes=":king_e2_x_0_0 :king_e2_x_0_1 :king_e2_x_0_2" shape="342.00,160.00 342.00,147.10 342.00,156.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="king_e3_x" type="priority" x="542.00" y="160.00" incLanes="king_e3_0 king_e3_1 king_e3_2 king_e3_3" intLanes=":king_e3_x_0_0 :king_e3_x_0_1 :king_e3_x_0_2" shape="542.00,160.00 542.00,147.10 542.00,156.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="king_w0_x" type="priority" x="658.00" y="160.00" incLanes="king_w0_0 king_w0_1 king_w0_2 king_w0_3" intLanes=":king_w0_x_0_0 :king_w0_x_0_1 :king_w0_x_0_2" shape="658.00,172.90 658.00,160.00 658.00,172.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="king_w1_x" type="priority" x="458.00" y="160.00" incLanes="king_w1_0 king_w1_1 king_w1_2 king_w1_3" intLanes=":king_w1_x_0_0 :king_w1_x_0_1 :king_w1_x_0_2" shape="458.00,172.90 458.00,160.00 458.00,172.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="king_w2_x" type="priority" x="258.00" y="160.00" incLanes="king_w2_0 king_w2_1 king_w2_2 king_w2_3" intLanes=":king_w2_x_0_0 :king_w2_x_0_1 :king_w2_x_0_2" shape="258.00,172.90 258.00,160.00 258.00,172.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="king_w3_x" type="priority" x="58.00" y="160.00" incLanes="king_w3_0 king_w3_1 king_w3_2 king_w3_3" intLanes=":king_w3_x_0_0 :king_w3_x_0_1 :king_w3_x_0_2" shape="58.00,172.90 58.00,160.00 58.00,172.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="main_n0_x" type="priority" x="200.00" y="-58.00" incLanes="main_n0_0 main_n0_1 main_n0_2 main_n0_3" intLanes=":main_n0_x_0_0 :main_n0_x_0_1 :main_n0_x_0_2" shape="200.00,-58.00 212.90,-58.00 203.10,-58.00" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="main_n1_x" type="priority" x="200.00" y="102.00" incLanes="main_n1_0 main_n1_1 main_n1_2 main_n1_3" intLanes=":main_n1_x_0_0 :main_n1_x_0_1 :main_n1_x_0_2" shape="200.00,102.00 212.90,102.00 203.10,102.00" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="main_n2_x" type="priority" x="200.00" y="262.00" incLanes="main_n2_0 main_n2_1 main_n2_2 main_n2_3" intLanes=":main_n2_x_0_0 :main_n2_x_0_1 :main_n2_x_0_2" shape="200.00,262.00 212.90,262.00 203.10,262.00" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="main_n3_x" type="priority" x="200.00" y="422.00" incLanes="main_n3_0 main_n3_1 main_n3_2 main_n3_3" intLanes=":main_n3_x_0_0 :main_n3_x_0_1 :main_n3_x_0_2" shape="200.00,422.00 212.90,422.00 203.10,422.00" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="main_s0_x" type="priority" x="200.00" y="538.00" incLanes="main_s0_0 main_s0_1 main_s0_2 main_s0_3" intLanes=":main_s0_x_0_0 :main_s0_x_0_1 :main_s0_x_0_2" shape="187.10,538.00 200.00,538.00 187.10,538.00" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="main_s1_x" type="priority" x="200.00" y="378.00" incLanes="main_s1_0 main_s1_1 main_s1_2 main_s1_3" intLanes=":main_s1_x_0_0 :main_s1_x_0_1 :main_s1_x_0_2" shape="187.10,378.00 200.00,378.00 187.10,378.00" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="main_s2_x" type="priority" x="200.00" y="218.00" incLanes="main_s2_0 main_s2_1 main_s2_2 main_s2_3" intLanes=":main_s2_x_0_0 :main_s2_x_0_1 :main_s2_x_0_2" shape="187.10,218.00 200.00,218.00 187.10,218.00" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="main_s3_x" type="priority" x="200.00" y="58.00" incLanes="main_s3_0 main_s3_1 main_s3_2 main_s3_3" intLanes=":main_s3_x_0_0 :main_s3_x_0_1 :main_s3_x_0_2" shape="187.10,58.00 200.00,58.00 187.10,58.00" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
+    <junction id="king_e0_x" type="unregulated" x="-58.00" y="160.00" incLanes="king_e0_0 king_e0_1 king_e0_2 king_e0_3" intLanes=":king_e0_x_0_0 :king_e0_x_0_1 :king_e0_x_0_2" shape="-58.00,160.00 -58.00,147.10 -58.00,156.90" radius="7.00"/>
+    <junction id="king_e1_x" type="unregulated" x="142.00" y="160.00" incLanes="king_e1_0 king_e1_1 king_e1_2 king_e1_3" intLanes=":king_e1_x_0_0 :king_e1_x_0_1 :king_e1_x_0_2" shape="142.00,160.00 142.00,147.10 142.00,156.90" radius="7.00"/>
+    <junction id="king_e2_x" type="unregulated" x="342.00" y="160.00" incLanes="king_e2_0 king_e2_1 king_e2_2 king_e2_3" intLanes=":king_e2_x_0_0 :king_e2_x_0_1 :king_e2_x_0_2" shape="342.00,160.00 342.00,147.10 342.00,156.90" radius="7.00"/>
+    <junction id="king_e3_x" type="unregulated" x="542.00" y="160.00" incLanes="king_e3_0 king_e3_1 king_e3_2 king_e3_3" intLanes=":king_e3_x_0_0 :king_e3_x_0_1 :king_e3_x_0_2" shape="542.00,160.00 542.00,147.10 542.00,156.90" radius="7.00"/>
+    <junction id="king_w0_x" type="unregulated" x="658.00" y="160.00" incLanes="king_w0_0 king_w0_1 king_w0_2 king_w0_3" intLanes=":king_w0_x_0_0 :king_w0_x_0_1 :king_w0_x_0_2" shape="658.00,172.90 658.00,160.00 658.00,172.90" radius="7.00"/>
+    <junction id="king_w1_x" type="unregulated" x="458.00" y="160.00" incLanes="king_w1_0 king_w1_1 king_w1_2 king_w1_3" intLanes=":king_w1_x_0_0 :king_w1_x_0_1 :king_w1_x_0_2" shape="458.00,172.90 458.00,160.00 458.00,172.90" radius="7.00"/>
+    <junction id="king_w2_x" type="unregulated" x="258.00" y="160.00" incLanes="king_w2_0 king_w2_1 king_w2_2 king_w2_3" intLanes=":king_w2_x_0_0 :king_w2_x_0_1 :king_w2_x_0_2" shape="258.00,172.90 258.00,160.00 258.00,172.90" radius="7.00"/>
+    <junction id="king_w3_x" type="unregulated" x="58.00" y="160.00" incLanes="king_w3_0 king_w3_1 king_w3_2 king_w3_3" intLanes=":king_w3_x_0_0 :king_w3_x_0_1 :king_w3_x_0_2" shape="58.00,172.90 58.00,160.00 58.00,172.90" radius="7.00"/>
+    <junction id="main_n0_x" type="unregulated" x="200.00" y="-58.00" incLanes="main_n0_0 main_n0_1 main_n0_2 main_n0_3" intLanes=":main_n0_x_0_0 :main_n0_x_0_1 :main_n0_x_0_2" shape="200.00,-58.00 212.90,-58.00 203.10,-58.00" radius="7.00"/>
+    <junction id="main_n1_x" type="unregulated" x="200.00" y="102.00" incLanes="main_n1_0 main_n1_1 main_n1_2 main_n1_3" intLanes=":main_n1_x_0_0 :main_n1_x_0_1 :main_n1_x_0_2" shape="200.00,102.00 212.90,102.00 203.10,102.00" radius="7.00"/>
+    <junction id="main_n2_x" type="unregulated" x="200.00" y="262.00" incLanes="main_n2_0 main_n2_1 main_n2_2 main_n2_3" intLanes=":main_n2_x_0_0 :main_n2_x_0_1 :main_n2_x_0_2" shape="200.00,262.00 212.90,262.00 203.10,262.00" radius="7.00"/>
+    <junction id="main_n3_x" type="unregulated" x="200.00" y="422.00" incLanes="main_n3_0 main_n3_1 main_n3_2 main_n3_3" intLanes=":main_n3_x_0_0 :main_n3_x_0_1 :main_n3_x_0_2" shape="200.00,422.00 212.90,422.00 203.10,422.00" radius="7.00"/>
+    <junction id="main_s0_x" type="unregulated" x="200.00" y="538.00" incLanes="main_s0_0 main_s0_1 main_s0_2 main_s0_3" intLanes=":main_s0_x_0_0 :main_s0_x_0_1 :main_s0_x_0_2" shape="187.10,538.00 200.00,538.00 187.10,538.00" radius="7.00"/>
+    <junction id="main_s1_x" type="unregulated" x="200.00" y="378.00" incLanes="main_s1_0 main_s1_1 main_s1_2 main_s1_3" intLanes=":main_s1_x_0_0 :main_s1_x_0_1 :main_s1_x_0_2" shape="187.10,378.00 200.00,378.00 187.10,378.00" radius="7.00"/>
+    <junction id="main_s2_x" type="unregulated" x="200.00" y="218.00" incLanes="main_s2_0 main_s2_1 main_s2_2 main_s2_3" intLanes=":main_s2_x_0_0 :main_s2_x_0_1 :main_s2_x_0_2" shape="187.10,218.00 200.00,218.00 187.10,218.00" radius="7.00"/>
+    <junction id="main_s3_x" type="unregulated" x="200.00" y="58.00" incLanes="main_s3_0 main_s3_1 main_s3_2 main_s3_3" intLanes=":main_s3_x_0_0 :main_s3_x_0_1 :main_s3_x_0_2" shape="187.10,58.00 200.00,58.00 187.10,58.00" radius="7.00"/>
     <junction id="n0_0" type="priority_stop" x="0.00" y="0.00" incLanes="elm_s3_0 elm_s3_1 front_w3_0 front_w3_1 front_w3_2 elm_n0_0 elm_n0_1 front_e0_0 front_e0_1 front_e0_2 :n0_0_w1_0 :n0_0_w2_0 :n0_0_w3_0 :n0_0_w0_0" intLanes=":n0_0_0_0 :n0_0_0_1 :n0_0_2_0 :n0_0_3_0 :n0_0_3_1 :n0_0_20_0 :n0_0_6_0 :n0_0_21_0 :n0_0_8_0 :n0_0_22_0 :n0_0_10_0 :n0_0_10_1 :n0_0_12_0 :n0_0_13_0 :n0_0_13_1 :n0_0_23_0 :n0_0_16_0 :n0_0_24_0 :n0_0_18_0 :n0_0_25_0 :n0_0_c0_0 :n0_0_c1_0 :n0_0_c2_0 :n0_0_c3_0" shape="-6.00,14.80 6.00,14.80 6.35,12.03 6.78,10.91 7.38,9.96 8.16,9.18 9.11,8.58 10.23,8.15 11.53,7.89 13.00,7.80 13.00,-7.80 10.23,-8.15 9.11,-8.58 8.16,-9.18 7.38,-9.96 6.78,-10.91 6.35,-12.03 6.09,-13.33 6.00,-14.80 -6.00,-14.80 -6.35,-12.03 -6.78,-10.91 -7.38,-9.96 -8.16,-9.18 -9.11,-8.58 -10.23,-8.15 -11.53,-7.89 -13.00,-7.80 -13.00,7.80 -10.23,8.15 -9.11,8.58 -8.16,9.18 -7.38,9.96 -6.78,10.91 -6.35,12.03 -6.09,13.33" radius="7.00">
         <request index="0"  response="100000000000000001000000" foes="100100000010000001000000" cont="0"/>
         <request index="1"  response="100000000000000101000000" foes="100100000110000101000000" cont="0"/>
@@ -3111,46 +3047,14 @@
         <request index="14" response="0000000111000010" foes="0000001111100010" cont="0"/>
         <request index="15" response="0000111000010000" foes="0000111100010001" cont="0"/>
     </junction>
-    <junction id="queen_e0_x" type="priority" x="-58.00" y="320.00" incLanes="queen_e0_0 queen_e0_1 queen_e0_2 queen_e0_3" intLanes=":queen_e0_x_0_0 :queen_e0_x_0_1 :queen_e0_x_0_2" shape="-58.00,320.00 -58.00,307.10 -58.00,316.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="queen_e1_x" type="priority" x="142.00" y="320.00" incLanes="queen_e1_0 queen_e1_1 queen_e1_2 queen_e1_3" intLanes=":queen_e1_x_0_0 :queen_e1_x_0_1 :queen_e1_x_0_2" shape="142.00,320.00 142.00,307.10 142.00,316.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="queen_e2_x" type="priority" x="342.00" y="320.00" incLanes="queen_e2_0 queen_e2_1 queen_e2_2 queen_e2_3" intLanes=":queen_e2_x_0_0 :queen_e2_x_0_1 :queen_e2_x_0_2" shape="342.00,320.00 342.00,307.10 342.00,316.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="queen_e3_x" type="priority" x="542.00" y="320.00" incLanes="queen_e3_0 queen_e3_1 queen_e3_2 queen_e3_3" intLanes=":queen_e3_x_0_0 :queen_e3_x_0_1 :queen_e3_x_0_2" shape="542.00,320.00 542.00,307.10 542.00,316.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="queen_w0_x" type="priority" x="658.00" y="320.00" incLanes="queen_w0_0 queen_w0_1 queen_w0_2 queen_w0_3" intLanes=":queen_w0_x_0_0 :queen_w0_x_0_1 :queen_w0_x_0_2" shape="658.00,332.90 658.00,320.00 658.00,332.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="queen_w1_x" type="priority" x="458.00" y="320.00" incLanes="queen_w1_0 queen_w1_1 queen_w1_2 queen_w1_3" intLanes=":queen_w1_x_0_0 :queen_w1_x_0_1 :queen_w1_x_0_2" shape="458.00,332.90 458.00,320.00 458.00,332.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="queen_w2_x" type="priority" x="258.00" y="320.00" incLanes="queen_w2_0 queen_w2_1 queen_w2_2 queen_w2_3" intLanes=":queen_w2_x_0_0 :queen_w2_x_0_1 :queen_w2_x_0_2" shape="258.00,332.90 258.00,320.00 258.00,332.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
-    <junction id="queen_w3_x" type="priority" x="58.00" y="320.00" incLanes="queen_w3_0 queen_w3_1 queen_w3_2 queen_w3_3" intLanes=":queen_w3_x_0_0 :queen_w3_x_0_1 :queen_w3_x_0_2" shape="58.00,332.90 58.00,320.00 58.00,332.90" radius="7.00">
-        <request index="0" response="000" foes="000" cont="0"/>
-        <request index="1" response="000" foes="000" cont="0"/>
-        <request index="2" response="000" foes="000" cont="0"/>
-    </junction>
+    <junction id="queen_e0_x" type="unregulated" x="-58.00" y="320.00" incLanes="queen_e0_0 queen_e0_1 queen_e0_2 queen_e0_3" intLanes=":queen_e0_x_0_0 :queen_e0_x_0_1 :queen_e0_x_0_2" shape="-58.00,320.00 -58.00,307.10 -58.00,316.90" radius="7.00"/>
+    <junction id="queen_e1_x" type="unregulated" x="142.00" y="320.00" incLanes="queen_e1_0 queen_e1_1 queen_e1_2 queen_e1_3" intLanes=":queen_e1_x_0_0 :queen_e1_x_0_1 :queen_e1_x_0_2" shape="142.00,320.00 142.00,307.10 142.00,316.90" radius="7.00"/>
+    <junction id="queen_e2_x" type="unregulated" x="342.00" y="320.00" incLanes="queen_e2_0 queen_e2_1 queen_e2_2 queen_e2_3" intLanes=":queen_e2_x_0_0 :queen_e2_x_0_1 :queen_e2_x_0_2" shape="342.00,320.00 342.00,307.10 342.00,316.90" radius="7.00"/>
+    <junction id="queen_e3_x" type="unregulated" x="542.00" y="320.00" incLanes="queen_e3_0 queen_e3_1 queen_e3_2 queen_e3_3" intLanes=":queen_e3_x_0_0 :queen_e3_x_0_1 :queen_e3_x_0_2" shape="542.00,320.00 542.00,307.10 542.00,316.90" radius="7.00"/>
+    <junction id="queen_w0_x" type="unregulated" x="658.00" y="320.00" incLanes="queen_w0_0 queen_w0_1 queen_w0_2 queen_w0_3" intLanes=":queen_w0_x_0_0 :queen_w0_x_0_1 :queen_w0_x_0_2" shape="658.00,332.90 658.00,320.00 658.00,332.90" radius="7.00"/>
+    <junction id="queen_w1_x" type="unregulated" x="458.00" y="320.00" incLanes="queen_w1_0 queen_w1_1 queen_w1_2 queen_w1_3" intLanes=":queen_w1_x_0_0 :queen_w1_x_0_1 :queen_w1_x_0_2" shape="458.00,332.90 458.00,320.00 458.00,332.90" radius="7.00"/>
+    <junction id="queen_w2_x" type="unregulated" x="258.00" y="320.00" incLanes="queen_w2_0 queen_w2_1 queen_w2_2 queen_w2_3" intLanes=":queen_w2_x_0_0 :queen_w2_x_0_1 :queen_w2_x_0_2" shape="258.00,332.90 258.00,320.00 258.00,332.90" radius="7.00"/>
+    <junction id="queen_w3_x" type="unregulated" x="58.00" y="320.00" incLanes="queen_w3_0 queen_w3_1 queen_w3_2 queen_w3_3" intLanes=":queen_w3_x_0_0 :queen_w3_x_0_1 :queen_w3_x_0_2" shape="58.00,332.90 58.00,320.00 58.00,332.90" radius="7.00"/>
 
     <junction id=":n0_0_20_0" type="internal" x="3.19" y="10.80" incLanes=":n0_0_5_0" intLanes=":n0_0_7_0 :n0_0_12_0 :n0_0_19_0 :n0_0_c0_0 :n0_0_c1_0"/>
     <junction id=":n0_0_21_0" type="internal" x="6.26" y="3.50" incLanes=":n0_0_7_0 front_w3_1" intLanes=":n0_0_5_0 :n0_0_6_0 :n0_0_12_0 :n0_0_19_0 :n0_0_c0_0 :n0_0_c1_0"/>

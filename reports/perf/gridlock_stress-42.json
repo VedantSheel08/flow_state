@@ -1,0 +1,28 @@
+{
+ "preset": "gridlock_stress",
+ "seed": 42,
+ "simSeconds": 1300,
+ "wallSeconds": 243.2,
+ "cpuCoresAverage": 1.0,
+ "peakRssMB": 120,
+ "stepMs": {
+  "mean": 45.21,
+  "p50": 47.04,
+  "p95": 66.88,
+  "p99": 94.36,
+  "max": 242.8
+ },
+ "frameBuildMs": {
+  "mean": 5.65,
+  "p95": 9.92,
+  "max": 30.1
+ },
+ "frameBytes": {
+  "jsonMax": 49949,
+  "jsonAtPeakVehicles": 49747,
+  "gzip1AtPeak": 16469,
+  "maxVehicles": 1281
+ },
+ "realtimeFactor": 5.35,
+ "stepBudgetMs": 250.0
+}

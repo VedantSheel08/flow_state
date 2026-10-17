@@ -36,6 +36,7 @@ from ..performance.network_cache import load_network
 from ..scenarios.base import Scenario
 from .demand import DemandGenerator
 from .events import Event, EventLog
+from .guard import BoxGuard
 from .metrics import Metrics
 from .safety import SafetyObservations
 from .signals import SignalManager, write_actuated_programs
@@ -60,9 +61,18 @@ class RunConfig:
     params: dict[str, Any]
     seed: int
     signal_mode: str = "fixed"
+    signal_program: str | None = None  # force a fixed-time program ("safe" | "0"); None: safe for the dense rush hour, else "0"
     step_length: float = 0.25
     warmup: float = 90.0
     label: str = "live"
+    # Reproducible experiment overrides (the evaluation harness records them in its manifest):
+    sumo_options: dict[str, str] = field(default_factory=dict)  # SUMO option -> value, replacing the engine defaults
+    demand_overrides: dict[str, Any] = field(default_factory=dict)  # DemandGenerator attribute -> value, applied last
+    # Downstream conditions beyond the modelled district, applied to the exit roads at start:
+    #   {"lanes": n, "speed_kmh": v, "classes": ["arterial", ...]}  keep at most n motor lanes open / cap the speed
+    outlets: dict[str, Any] = field(default_factory=dict)
+    vtype_overrides: dict[str, dict[str, str]] = field(default_factory=dict)  # {"all"|vClass|type: {attr: value}} (sim/vtypes.build_vtypes)
+    box_guard: dict[str, Any] | None = None  # {"margin": m, "window": m} enables the keep-the-box-clear rule (sim/guard.py)
 
 
 @dataclass
@@ -137,6 +147,8 @@ class Engine:
         self.incidents: dict[str, Incident] = {}
         self.tags: dict[str, str] = {}
         self.teleports = 0
+        self.rejected_adds = 0  # vehicle.add refused by SUMO (no valid route); counted as dropped demand
+        self.added = 0  # vehicles handed to SUMO (background and scenario), for the demand ledger
         self.collisions = 0
         self.safety = SafetyObservations()
         self.wall_ms = 0.0
@@ -156,7 +168,7 @@ class Engine:
     def start(self) -> None:
         self.work_dir.mkdir(parents=True, exist_ok=True)
         vtypes = self.work_dir / "vtypes.add.xml"
-        profiles = write_vtypes(vtypes, self.config.seed, self.scenario.conditions())
+        profiles = write_vtypes(vtypes, self.config.seed, self.scenario.conditions(), self.config.vtype_overrides)
         additional = [str(vtypes)]
         stops = self.net_path.with_name(f"{self.network_id}.stops.add.xml")
         if stops.exists():
@@ -165,19 +177,24 @@ class Engine:
             act = self.work_dir / "actuated.add.xml"
             write_actuated_programs(self.net.tls_programs, act)
             additional.append(str(act))
-        cmd = [
-            sumo_env.binary("sumo"), "-n", str(self.net_path), "-a", ",".join(additional),
-            "--step-length", f"{self.dt}", "--seed", str(self.config.seed),
-            "--lateral-resolution", "0.8", "--pedestrian.model", "striping",
-            "--time-to-teleport", "240", "--time-to-teleport.highways", "0",
-            "--device.rerouting.probability", "0.35", "--device.rerouting.period", "45",
-            "--device.rerouting.adaptation-interval", "10", "--device.rerouting.adaptation-weight", "0.0",
-            "--collision.action", "warn", "--collision.check-junctions", "true",
-            "--collision-output", str(self.work_dir / "collisions.xml"),
-            "--no-step-log", "true", "--no-warnings", "false", "--xml-validation", "never",
-            "--error-log", str(self.work_dir / "sumo-errors.log"), "--default.speeddev", "0",
-            "--max-depart-delay", "180", "--eager-insert", "false",
-        ]
+        options: dict[str, str] = {
+            "--step-length": f"{self.dt}", "--seed": str(self.config.seed),
+            "--lateral-resolution": "0.8", "--pedestrian.model": "striping",
+            "--time-to-teleport": "240", "--time-to-teleport.highways": "0",
+            "--device.rerouting.probability": "0.35", "--device.rerouting.period": "45",
+            "--device.rerouting.adaptation-interval": "10", "--device.rerouting.adaptation-weight": "0.0",
+            "--collision.action": "warn", "--collision.check-junctions": "true",
+            "--collision-output": str(self.work_dir / "collisions.xml"),
+            "--no-step-log": "true", "--no-warnings": "false", "--xml-validation": "never",
+            "--error-log": str(self.work_dir / "sumo-errors.log"), "--default.speeddev": "0",
+            "--max-depart-delay": "180", "--eager-insert": "false",
+        }
+        options.update(self.config.sumo_options)
+        cmd = [sumo_env.binary("sumo"), "-n", str(self.net_path), "-a", ",".join(additional)]
+        for key, value in options.items():
+            if value is not None:  # None removes an option, e.g. lateral-resolution for the one-vehicle-per-lane model
+                cmd += [key, value]
+        self.sumo_command = cmd
         global _LIBSUMO_IN_USE
         label = f"{self.config.label}-{next(_LABELS)}"
         if libsumo is not None and backend_name() == "libsumo" and not _LIBSUMO_IN_USE:
@@ -191,7 +208,7 @@ class Engine:
             self._libsumo = False
         self._label = label
         self.started = True
-        self.demand = DemandGenerator(self, random.Random(self.config.seed * 7919 + 1), profiles)
+        self.demand = DemandGenerator(self, random.Random(self.config.seed * 7919 + 1), profiles, self.config.demand_overrides)
         self.profiles = profiles
         for tid in self.T.trafficlight.getIDList():
             self.T.trafficlight.subscribe(tid, (tc.TL_RED_YELLOW_GREEN_STATE, tc.TL_CURRENT_PHASE))
@@ -200,8 +217,78 @@ class Engine:
             if e.to in controlled and e.kind in ("street", "entry"):
                 self._approach_lanes.setdefault(e.to, []).extend(self.net.street_segment(e.id))
         self.signals.start()
+        self.apply_outlets()
+        self.guard: BoxGuard | None = None
+        if self.config.box_guard is not None:
+            self.guard = BoxGuard(self, **self.config.box_guard)
+            self.guard.start()
         self.scenario.on_start(self)
         log.info("engine %s started: %s seed=%s signals=%s", label, self.scenario.spec.id, self.config.seed, self.config.signal_mode)
+
+    def apply_outlets(self) -> None:
+        """Limit the capacity of the exit roads (a lane drop and/or a lower speed limit).
+
+        The district's exits lead to roads that are not modelled. Real arterial queues spill back from exactly
+        such downstream bottlenecks (a lane drop, a merge, a bridge or ramp). Closing lanes uses the same SUMO
+        mechanism as an incident (``setDisallowed``), so vehicles merge and queue under the normal driving model.
+        """
+        spec = self.config.outlets
+        self.outlets_relieved_at = None
+        self._outlet_saved = {"lanes": [], "speeds": []}
+        if not spec:
+            return
+        T = self.T
+        keep = spec.get("lanes")
+        speed = spec.get("speed_kmh")
+        classes = set(spec.get("classes") or ())
+        self.outlet_log: list[dict[str, Any]] = []
+        self._outlet_saved: dict[str, list] = {"lanes": [], "speeds": []}
+        self.outlets_relieved_at: float | None = None
+        for e in self.net.edges.values():
+            if e.kind != "exit" or (classes and e.cls not in classes):
+                continue
+            lanes = self.net.car_lanes(e.id)
+            closed: list[str] = []
+            if keep is not None and len(lanes) > keep:
+                for lane in lanes[keep:]:  # keep the lanes nearest the kerb open
+                    self._outlet_saved["lanes"].append((lane, list(T.lane.getAllowed(lane))))
+                    T.lane.setDisallowed(lane, ["all"])
+                    closed.append(lane)
+            if speed is not None:
+                self._outlet_saved["speeds"].append([(l, T.lane.getMaxSpeed(l)) for l in e.lanes])
+                T.edge.setMaxSpeed(e.id, speed / 3.6)
+            self.outlet_log.append({"edge": e.id, "closed": closed, "speedKmh": speed})
+        self.invalidate_routes()
+
+    def relieve_outlets(self) -> None:
+        """Lift the downstream restriction (the bottleneck clears): the original lane permissions and speed limits return.
+
+        Nothing about the vehicles is touched; the queue discharges under the normal driving model."""
+        T = self.T
+        for lane, allowed in self._outlet_saved["lanes"]:
+            T.lane.setAllowed(lane, allowed)
+        for pairs in self._outlet_saved["speeds"]:
+            for lane, v in pairs:
+                T.lane.setMaxSpeed(lane, v)
+        self._outlet_saved = {"lanes": [], "speeds": []}
+        self.outlets_relieved_at = self.t
+        self.invalidate_routes()
+
+    def relieve(self, target: int | None = None) -> dict[str, Any]:
+        """Recovery sequence: restore the exit roads and meter the held accumulation down (``target`` vehicles, default 40 %).
+
+        Both are physical: capacity returns downstream, and fewer vehicles are released into the district while the queue
+        discharges. Vehicles are never moved or removed. Returns what was changed."""
+        restored = self.outlets_relieved_at is None and bool(self._outlet_saved["lanes"] or self._outlet_saved["speeds"])
+        if restored:
+            self.relieve_outlets()
+        metered = None
+        d = self.demand
+        if d.ADMISSION == "accumulation" and d.TARGET_ACTIVE is not None:
+            current = d.target_active(self.t)
+            metered = max(200, int(current * 0.4)) if target is None else int(target)
+            d.TARGET_SCHEDULE = [[self.t, metered]]
+        return {"t": round(self.t, 2), "outletsRestored": restored, "accumulationTarget": metered}
 
     def close(self) -> None:
         global _LIBSUMO_IN_USE
@@ -238,12 +325,20 @@ class Engine:
         return len(self.persons)
 
     def add_vehicle(self, vid: str, route_id: str, vtype: str, depart_pos: str = "base", depart_speed: str = "desired",
-                    arrival_pos: str = "max", depart_lane: str = "best", tag: str | None = None) -> None:
-        self.T.vehicle.add(vid, route_id, typeID=vtype, depart="now", departLane=depart_lane, departPos=depart_pos,
-                           departSpeed=depart_speed, arrivalPos=arrival_pos)
+                    arrival_pos: str = "max", depart_lane: str = "best", tag: str | None = None) -> bool:
+        try:
+            self.T.vehicle.add(vid, route_id, typeID=vtype, depart="now", departLane=depart_lane, departPos=depart_pos,
+                               departSpeed=depart_speed, arrivalPos=arrival_pos)
+        except Exception as exc:  # noqa: BLE001 - SUMO refuses a route whose lanes were closed after it was planned
+            if "no valid route" not in str(exc):
+                raise
+            self.rejected_adds += 1  # explicit, counted loss: the caller records it in the demand ledger
+            return False
+        self.added += 1
         self.vtype[vid] = vtype
         if tag:
             self.tags[vid] = tag
+        return True
 
     def spawn(self, vid: str, origin: str, dest: str, base: str, *, kind: str | None = None, label: str = "", tag: str | None = None,
               depart_pos: str = "base", arrival_pos: str = "max", depart_speed: str = "desired", data: dict[str, Any] | None = None) -> bool:
@@ -252,7 +347,8 @@ class Engine:
         r = self.demand.route(origin, dest, vtype)
         if r is None:
             return False
-        self.add_vehicle(vid, r[0], vtype, depart_pos=depart_pos, depart_speed=depart_speed, arrival_pos=arrival_pos, tag=tag or kind)
+        if not self.add_vehicle(vid, r[0], vtype, depart_pos=depart_pos, depart_speed=depart_speed, arrival_pos=arrival_pos, tag=tag or kind):
+            return False
         if kind:
             self.tracked[vid] = Tracked(vid, kind, label or vid, self.t, data={"routeLength": round(r[1], 1), **(data or {})})
         return True
@@ -453,6 +549,11 @@ class Engine:
         self.demand.step(self.t, self.dt, prof, self.scenario.density)
         self.scenario.on_step(self, self.t)
         self.signals.step(self.t)
+        if self.guard is not None:
+            self.guard.step()
+        rel = self.config.outlets.get("relieve_at") if self.config.outlets else None
+        if rel is not None and self.outlets_relieved_at is None and self.t >= rel:
+            self.relieve_outlets()
         T.simulationStep()
         self.t = T.simulation.getTime() - self.warmup
         self._read_state()

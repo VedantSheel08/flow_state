@@ -331,6 +331,39 @@ def _exclusive_left(spec: NetworkSpec, records: list[dict[str, Any]], pass1: Pat
     tree.write(con_path, encoding="UTF-8", xml_declaration=True)
 
 
+def _no_bike_left(pass1: Path, prefix: Path) -> int:
+    """Remove left-turn connections from bicycle-only lanes (cyclists turn left in two stages instead).
+
+    A left turn out of the kerb-side bike lane crosses the live car lanes inside the junction. In the collision
+    investigation (docs/TRAFFIC_REALISM.md) these movements produced the repeated cyclist/vehicle junction collisions
+    on the same internal lanes; a real design gives them a two-stage box or forbids them. Returns the number removed."""
+    import sumolib
+
+    from .. import sumo_env  # noqa: F401
+
+    net = sumolib.net.readNet(str(pass1))
+    con_path = prefix.with_name(prefix.name + ".con.xml")
+    tree = ET.parse(con_path)
+    root = tree.getroot()
+    removed = 0
+    for c in list(root.iter("connection")):
+        frm, to = c.get("from"), c.get("to")
+        if to is None or c.get("fromLane") is None:
+            continue
+        try:
+            lane = net.getEdge(frm).getLane(int(c.get("fromLane")))
+        except Exception:  # noqa: BLE001
+            continue
+        if lane.allows("bicycle") and not lane.allows("passenger"):
+            for conn in lane.getOutgoing():
+                if conn.getTo().getID() == to and conn.getToLane().getIndex() == int(c.get("toLane")) and conn.getDirection() in ("l", "L"):
+                    root.remove(c)
+                    removed += 1
+                    break
+    tree.write(con_path, encoding="UTF-8", xml_declaration=True)
+    return removed
+
+
 def build_network(spec: NetworkSpec, out_dir: Path) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     work = out_dir / f"_{spec.id}"
@@ -351,6 +384,7 @@ def build_network(spec: NetworkSpec, out_dir: Path) -> Path:
     for ext in ("nod", "edg", "con"):
         (work / f"p1.{ext}.xml").replace(prefix.with_name(f"plain.{ext}.xml"))
     _exclusive_left(spec, records, pass1, prefix)
+    _no_bike_left(pass1, prefix)
     net_path = out_dir / f"{spec.id}.net.xml"
     _run([
         binary("netconvert"),

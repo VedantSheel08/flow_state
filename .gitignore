@@ -12,3 +12,4 @@ data/record.log
 data/shots/
 data/runs/
 archive/
+reports/**/*.log

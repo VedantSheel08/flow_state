@@ -1,0 +1,1353 @@
+{
+ "collisions": [
+  {
+   "t": 646.5,
+   "collider": "v830",
+   "victim": "v826",
+   "ctype": "sedan@4",
+   "vtype": "hatch@6",
+   "cspeed": 1.35,
+   "vspeed": 0.0,
+   "kind": "junction",
+   "lane": ":n0_2_12_0",
+   "pos": 12.1,
+   "a": {
+    "lane": ":n0_2_12_0",
+    "speed": 1.35,
+    "type": "sedan@4",
+    "wait": 0.0,
+    "route": [
+     "queen_e0b",
+     "elm_s2",
+     "king_w4"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 9
+   },
+   "b": {
+    "lane": ":n0_2_1_0",
+    "speed": 0.0,
+    "type": "hatch@6",
+    "wait": 3.5,
+    "route": [
+     "elm_s1",
+     "elm_s2",
+     "elm_s3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   }
+  },
+  {
+   "t": 651.0,
+   "collider": "v844",
+   "victim": "v826",
+   "ctype": "suv@0",
+   "vtype": "hatch@6",
+   "cspeed": 3.28,
+   "vspeed": 0.0,
+   "kind": "junction",
+   "lane": ":n0_2_12_0",
+   "pos": 12.5,
+   "a": {
+    "lane": ":n0_2_12_0",
+    "speed": 3.28,
+    "type": "suv@0",
+    "wait": 0.0,
+    "route": [
+     "queen_e0b",
+     "elm_s2",
+     "elm_s3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 1
+   },
+   "b": {
+    "lane": ":n0_2_1_0",
+    "speed": 0.0,
+    "type": "hatch@6",
+    "wait": 8.0,
+    "route": [
+     "elm_s1",
+     "elm_s2",
+     "elm_s3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   }
+  },
+  {
+   "t": 661.25,
+   "collider": "v281",
+   "victim": "v407",
+   "ctype": "hatch@6",
+   "vtype": "truck@2",
+   "cspeed": 2.79,
+   "vspeed": 0.36,
+   "kind": "junction",
+   "lane": ":n1_3_4_0",
+   "pos": 14.1,
+   "a": {
+    "lane": ":n1_3_4_0",
+    "speed": 2.79,
+    "type": "hatch@6",
+    "wait": 0.0,
+    "route": [
+     "college_w2",
+     "main_n4"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 1
+   },
+   "b": {
+    "lane": ":n1_3_23_0",
+    "speed": 0.36,
+    "type": "truck@2",
+    "wait": 0.0,
+    "route": [
+     "college_e1",
+     "main_n4"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 2
+   }
+  },
+  {
+   "t": 1368.25,
+   "collider": "v117",
+   "victim": "v979",
+   "ctype": "sedan@5",
+   "vtype": "sedan@6",
+   "cspeed": 0.0,
+   "vspeed": 1.08,
+   "kind": "side",
+   "lane": "main_s2_1",
+   "pos": 10.4,
+   "a": {
+    "lane": "main_s2_2",
+    "speed": 0.0,
+    "type": "sedan@5",
+    "wait": 129.2,
+    "route": [
+     "main_s2",
+     "main_s2b",
+     "king_w3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 9
+   },
+   "b": {
+    "lane": "main_s2_1",
+    "speed": 1.08,
+    "type": "sedan@6",
+    "wait": 0.0,
+    "route": [
+     "main_s2",
+     "main_s2b",
+     "main_s3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 2
+   }
+  },
+  {
+   "t": 1373.75,
+   "collider": "v117",
+   "victim": "v979",
+   "ctype": "sedan@5",
+   "vtype": "sedan@6",
+   "cspeed": 4.27,
+   "vspeed": 0.56,
+   "kind": "collision",
+   "lane": "main_s2_1",
+   "pos": 15.2,
+   "a": {
+    "lane": "main_s2_2",
+    "speed": 4.27,
+    "type": "sedan@5",
+    "wait": 0.0,
+    "route": [
+     "main_s2",
+     "main_s2b",
+     "king_w3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 1
+   },
+   "b": {
+    "lane": "main_s2_1",
+    "speed": 0.56,
+    "type": "sedan@6",
+    "wait": 0.0,
+    "route": [
+     "main_s2",
+     "main_s2b",
+     "main_s3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   }
+  },
+  {
+   "t": 1601.25,
+   "collider": "v1591",
+   "victim": "v1259",
+   "ctype": "bike@2",
+   "vtype": "truck@3",
+   "cspeed": 0.0,
+   "vspeed": 2.98,
+   "kind": "junction",
+   "lane": ":n1_2_5_0",
+   "pos": 0.1,
+   "a": {
+    "lane": ":n1_2_5_0",
+    "speed": 0.0,
+    "type": "bike@2",
+    "wait": 1.8,
+    "route": [
+     "queen_w2b",
+     "queen_w3",
+     "queen_w3b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   },
+   "b": {
+    "lane": ":n1_2_4_0",
+    "speed": 2.98,
+    "type": "truck@3",
+    "wait": 0.0,
+    "route": [
+     "queen_w2b",
+     "main_n3",
+     "main_n3b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 1
+   }
+  },
+  {
+   "t": 1607.75,
+   "collider": "v1259",
+   "victim": "v1591",
+   "ctype": "truck@3",
+   "vtype": "bike@2",
+   "cspeed": 0.13,
+   "vspeed": 0.38,
+   "kind": "junction",
+   "lane": ":n1_2_4_0",
+   "pos": 13.8,
+   "a": {
+    "lane": ":n1_2_4_0",
+    "speed": 0.13,
+    "type": "truck@3",
+    "wait": 0.0,
+    "route": [
+     "queen_w2b",
+     "main_n3",
+     "main_n3b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 9
+   },
+   "b": {
+    "lane": ":n1_2_5_0",
+    "speed": 0.38,
+    "type": "bike@2",
+    "wait": 0.0,
+    "route": [
+     "queen_w2b",
+     "queen_w3",
+     "queen_w3b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   }
+  },
+  {
+   "t": 1646.25,
+   "collider": "v1132",
+   "victim": "p247",
+   "ctype": "bike@5",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.54,
+   "kind": "crossing",
+   "lane": ":n2_1_29_0",
+   "pos": 0.4,
+   "a": {
+    "lane": ":n2_1_29_0",
+    "speed": 0.0,
+    "type": "bike@5",
+    "wait": 124.2,
+    "route": [
+     "church_n1",
+     "king_w2",
+     "king_w2b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   },
+   "b": null
+  },
+  {
+   "t": 1653.0,
+   "collider": "v1109",
+   "victim": "p393",
+   "ctype": "truck@3",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.32,
+   "kind": "crossing",
+   "lane": ":n2_1_21_0",
+   "pos": 10.8,
+   "a": {
+    "lane": ":n2_1_21_0",
+    "speed": 0.0,
+    "type": "truck@3",
+    "wait": 89.0,
+    "route": [
+     "king_e2b",
+     "church_n2",
+     "queen_w2"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   },
+   "b": null
+  },
+  {
+   "t": 1726.25,
+   "collider": "v1132",
+   "victim": "p408",
+   "ctype": "bike@5",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.37,
+   "kind": "crossing",
+   "lane": ":n2_1_29_0",
+   "pos": 0.3,
+   "a": {
+    "lane": ":n2_1_29_0",
+    "speed": 0.0,
+    "type": "bike@5",
+    "wait": 204.2,
+    "route": [
+     "church_n1",
+     "king_w2",
+     "king_w2b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   },
+   "b": null
+  },
+  {
+   "t": 1726.25,
+   "collider": "v1132",
+   "victim": "p362",
+   "ctype": "bike@5",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.73,
+   "kind": "crossing",
+   "lane": ":n2_1_29_0",
+   "pos": 0.4,
+   "a": {
+    "lane": ":n2_1_29_0",
+    "speed": 0.0,
+    "type": "bike@5",
+    "wait": 204.2,
+    "route": [
+     "church_n1",
+     "king_w2",
+     "king_w2b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   },
+   "b": null
+  },
+  {
+   "t": 1729.25,
+   "collider": "v1132",
+   "victim": "p388",
+   "ctype": "bike@5",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.74,
+   "kind": "crossing",
+   "lane": ":n2_1_29_0",
+   "pos": 0.4,
+   "a": {
+    "lane": ":n2_1_29_0",
+    "speed": 0.0,
+    "type": "bike@5",
+    "wait": 207.2,
+    "route": [
+     "church_n1",
+     "king_w2",
+     "king_w2b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   },
+   "b": null
+  },
+  {
+   "t": 1733.25,
+   "collider": "v1109",
+   "victim": "p353",
+   "ctype": "truck@3",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.55,
+   "kind": "crossing",
+   "lane": ":n2_1_21_0",
+   "pos": 10.0,
+   "a": {
+    "lane": ":n2_1_21_0",
+    "speed": 0.0,
+    "type": "truck@3",
+    "wait": 169.2,
+    "route": [
+     "king_e2b",
+     "church_n2",
+     "queen_w2"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   },
+   "b": null
+  },
+  {
+   "t": 1734.5,
+   "collider": "v1109",
+   "victim": "p408",
+   "ctype": "truck@3",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.29,
+   "kind": "crossing",
+   "lane": ":n2_1_21_0",
+   "pos": 10.1,
+   "a": {
+    "lane": ":n2_1_21_0",
+    "speed": 0.0,
+    "type": "truck@3",
+    "wait": 170.5,
+    "route": [
+     "king_e2b",
+     "church_n2",
+     "queen_w2"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   },
+   "b": null
+  },
+  {
+   "t": 1737.25,
+   "collider": "v1109",
+   "victim": "p388",
+   "ctype": "truck@3",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.57,
+   "kind": "crossing",
+   "lane": ":n2_1_21_0",
+   "pos": 10.1,
+   "a": {
+    "lane": ":n2_1_21_0",
+    "speed": 0.0,
+    "type": "truck@3",
+    "wait": 173.2,
+    "route": [
+     "king_e2b",
+     "church_n2",
+     "queen_w2"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   },
+   "b": null
+  },
+  {
+   "t": 1853.75,
+   "collider": "v1350",
+   "victim": "p366",
+   "ctype": "suv@1",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.32,
+   "kind": "crossing",
+   "lane": ":n2_1_3_0",
+   "pos": 7.1,
+   "a": {
+    "lane": ":n2_1_3_0",
+    "speed": 0.0,
+    "type": "suv@1",
+    "wait": 323.8,
+    "route": [
+     "church_s2",
+     "king_w2",
+     "king_w2b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 9
+   },
+   "b": null
+  },
+  {
+   "t": 1891.5,
+   "collider": "v1109",
+   "victim": "p445",
+   "ctype": "truck@3",
+   "vtype": "walker",
+   "cspeed": 0.0,
+   "vspeed": 1.57,
+   "kind": "crossing",
+   "lane": ":n2_1_21_0",
+   "pos": 10.8,
+   "a": {
+    "lane": ":n2_1_21_0",
+    "speed": 0.0,
+    "type": "truck@3",
+    "wait": 327.5,
+    "route": [
+     "king_e2b",
+     "church_n2",
+     "queen_w2"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   },
+   "b": null
+  }
+ ],
+ "teleports": [],
+ "summary": {
+  "classification": null,
+  "safety": {
+   "native": {
+    "junctionChecks": true,
+    "collisionRecordObservations": 17,
+    "collisionEpisodes": 17,
+    "uniqueCollisionPairs": 15,
+    "recordObservationsByType": {
+     "junction": 5,
+     "side": 1,
+     "collision": 1,
+     "crossing": 10
+    },
+    "examples": [
+     {
+      "t": -353.5,
+      "type": "junction",
+      "collider": "v830",
+      "victim": "v826",
+      "lane": ":n0_2_12_0",
+      "colliderType": "sedan@4",
+      "victimType": "hatch@6",
+      "colliderSpeed": 1.349393485066768,
+      "victimSpeed": 0.0
+     },
+     {
+      "t": -349.0,
+      "type": "junction",
+      "collider": "v844",
+      "victim": "v826",
+      "lane": ":n0_2_12_0",
+      "colliderType": "suv@0",
+      "victimType": "hatch@6",
+      "colliderSpeed": 3.2831216255955082,
+      "victimSpeed": 0.0
+     },
+     {
+      "t": -338.75,
+      "type": "junction",
+      "collider": "v281",
+      "victim": "v407",
+      "lane": ":n1_3_4_0",
+      "colliderType": "hatch@6",
+      "victimType": "truck@2",
+      "colliderSpeed": 2.7904288715314802,
+      "victimSpeed": 0.3601076783386059
+     },
+     {
+      "t": 368.25,
+      "type": "side",
+      "collider": "v117",
+      "victim": "v979",
+      "lane": "main_s2_1",
+      "colliderType": "sedan@5",
+      "victimType": "sedan@6",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.0776154993770721
+     },
+     {
+      "t": 373.75,
+      "type": "collision",
+      "collider": "v117",
+      "victim": "v979",
+      "lane": "main_s2_1",
+      "colliderType": "sedan@5",
+      "victimType": "sedan@6",
+      "colliderSpeed": 4.270010284975268,
+      "victimSpeed": 0.5593076777922978
+     },
+     {
+      "t": 601.25,
+      "type": "junction",
+      "collider": "v1591",
+      "victim": "v1259",
+      "lane": ":n1_2_5_0",
+      "colliderType": "bike@2",
+      "victimType": "truck@3",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 2.9841572223668313
+     },
+     {
+      "t": 607.75,
+      "type": "junction",
+      "collider": "v1259",
+      "victim": "v1591",
+      "lane": ":n1_2_4_0",
+      "colliderType": "truck@3",
+      "victimType": "bike@2",
+      "colliderSpeed": 0.13447575399405626,
+      "victimSpeed": 0.38190863053964536
+     },
+     {
+      "t": 646.25,
+      "type": "crossing",
+      "collider": "v1132",
+      "victim": "p247",
+      "lane": ":n2_1_29_0",
+      "colliderType": "bike@5",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.5391055001171678
+     },
+     {
+      "t": 653.0,
+      "type": "crossing",
+      "collider": "v1109",
+      "victim": "p393",
+      "lane": ":n2_1_21_0",
+      "colliderType": "truck@3",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.3160231360764503
+     },
+     {
+      "t": 726.25,
+      "type": "crossing",
+      "collider": "v1132",
+      "victim": "p408",
+      "lane": ":n2_1_29_0",
+      "colliderType": "bike@5",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.3746252683600486
+     },
+     {
+      "t": 726.25,
+      "type": "crossing",
+      "collider": "v1132",
+      "victim": "p362",
+      "lane": ":n2_1_29_0",
+      "colliderType": "bike@5",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.7281506660658168
+     },
+     {
+      "t": 729.25,
+      "type": "crossing",
+      "collider": "v1132",
+      "victim": "p388",
+      "lane": ":n2_1_29_0",
+      "colliderType": "bike@5",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.7358595569527748
+     },
+     {
+      "t": 733.25,
+      "type": "crossing",
+      "collider": "v1109",
+      "victim": "p353",
+      "lane": ":n2_1_21_0",
+      "colliderType": "truck@3",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.5486836578253655
+     },
+     {
+      "t": 734.5,
+      "type": "crossing",
+      "collider": "v1109",
+      "victim": "p408",
+      "lane": ":n2_1_21_0",
+      "colliderType": "truck@3",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.2868887287251054
+     },
+     {
+      "t": 737.25,
+      "type": "crossing",
+      "collider": "v1109",
+      "victim": "p388",
+      "lane": ":n2_1_21_0",
+      "colliderType": "truck@3",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.5689365480359796
+     },
+     {
+      "t": 853.75,
+      "type": "crossing",
+      "collider": "v1350",
+      "victim": "p366",
+      "lane": ":n2_1_3_0",
+      "colliderType": "suv@1",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.3181601148349047
+     },
+     {
+      "t": 891.5,
+      "type": "crossing",
+      "collider": "v1109",
+      "victim": "p445",
+      "lane": ":n2_1_21_0",
+      "colliderType": "truck@3",
+      "victimType": "walker",
+      "colliderSpeed": 0.0,
+      "victimSpeed": 1.5689631265150308
+     }
+    ],
+    "definition": "An episode starts when a pair/type is reported after an unreported step; not a count of unique physical crashes."
+   },
+   "collisionFile": [
+    {
+     "time": "646.25",
+     "type": "junction",
+     "lane": ":n0_2_12_0",
+     "pos": "12.09",
+     "collider": "v830",
+     "victim": "v826",
+     "colliderType": "sedan@4",
+     "victimType": "hatch@6",
+     "colliderSpeed": "1.35",
+     "victimSpeed": "0.00",
+     "colliderFront": "-3.00,306.46",
+     "colliderBack": "-6.00,310.05",
+     "victimFront": "-1.80,306.78",
+     "victimBack": "-1.80,310.93"
+    },
+    {
+     "time": "650.75",
+     "type": "junction",
+     "lane": ":n0_2_12_0",
+     "pos": "12.53",
+     "collider": "v844",
+     "victim": "v826",
+     "colliderType": "suv@0",
+     "victimType": "hatch@6",
+     "colliderSpeed": "3.28",
+     "victimSpeed": "0.00",
+     "colliderFront": "-2.82,306.06",
+     "colliderBack": "-5.72,309.85",
+     "victimFront": "-1.80,306.78",
+     "victimBack": "-1.80,310.93"
+    },
+    {
+     "time": "661.00",
+     "type": "junction",
+     "lane": ":n1_3_4_0",
+     "pos": "14.08",
+     "collider": "v281",
+     "victim": "v407",
+     "colliderType": "hatch@6",
+     "victimType": "truck@2",
+     "colliderSpeed": "2.79",
+     "victimSpeed": "0.36",
+     "colliderFront": "208.77,488.53",
+     "colliderBack": "210.78,484.94",
+     "victimFront": "207.45,488.87",
+     "victimBack": "202.04,482.44"
+    },
+    {
+     "time": "1368.00",
+     "type": "side",
+     "lane": "main_s2_1",
+     "pos": "10.39",
+     "collider": "v117",
+     "victim": "v979",
+     "colliderType": "sedan@5",
+     "victimType": "sedan@6",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.08",
+     "colliderFront": "194.50,289.71",
+     "colliderBack": "194.50,294.46",
+     "victimFront": "192.68,286.18",
+     "victimBack": "192.68,290.93"
+    },
+    {
+     "time": "1373.50",
+     "type": "collision",
+     "lane": "main_s2_1",
+     "pos": "15.20",
+     "collider": "v117",
+     "victim": "v979",
+     "colliderType": "sedan@5",
+     "victimType": "sedan@6",
+     "colliderSpeed": "4.27",
+     "victimSpeed": "0.56",
+     "colliderFront": "194.50,284.90",
+     "colliderBack": "194.50,289.65",
+     "victimFront": "192.68,280.16",
+     "victimBack": "192.68,284.91"
+    },
+    {
+     "time": "1601.00",
+     "type": "junction",
+     "lane": ":n1_2_5_0",
+     "pos": "0.12",
+     "collider": "v1591",
+     "victim": "v1259",
+     "colliderType": "bike@2",
+     "victimType": "truck@3",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "2.98",
+     "colliderFront": "219.78,329.57",
+     "colliderBack": "221.53,329.57",
+     "victimFront": "215.27,328.24",
+     "victimBack": "223.96,327.65"
+    },
+    {
+     "time": "1607.50",
+     "type": "junction",
+     "lane": ":n1_2_4_0",
+     "pos": "13.84",
+     "collider": "v1259",
+     "victim": "v1591",
+     "colliderType": "truck@3",
+     "victimType": "bike@2",
+     "colliderSpeed": "0.13",
+     "victimSpeed": "0.38",
+     "colliderFront": "208.90,334.76",
+     "colliderBack": "214.73,328.91",
+     "victimFront": "215.61,329.57",
+     "victimBack": "217.36,329.57"
+    },
+    {
+     "time": "1646.00",
+     "type": "crossing",
+     "lane": ":n2_1_29_0",
+     "pos": "0.38",
+     "collider": "v1132",
+     "victim": "p247",
+     "colliderType": "bike@5",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.54",
+     "colliderFront": "385.36,169.56",
+     "colliderBack": "387.11,169.44",
+     "victimFront": "386.48,169.52",
+     "victimBack": "386.48,169.52"
+    },
+    {
+     "time": "1652.75",
+     "type": "crossing",
+     "lane": ":n2_1_21_0",
+     "pos": "10.78",
+     "collider": "v1109",
+     "victim": "p393",
+     "colliderType": "truck@3",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.32",
+     "colliderFront": "395.77,161.96",
+     "colliderBack": "387.99,158.63",
+     "victimFront": "387.60,159.12",
+     "victimBack": "387.60,159.12"
+    },
+    {
+     "time": "1726.00",
+     "type": "crossing",
+     "lane": ":n2_1_29_0",
+     "pos": "0.34",
+     "collider": "v1132",
+     "victim": "p408",
+     "colliderType": "bike@5",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.37",
+     "colliderFront": "385.36,169.56",
+     "colliderBack": "387.11,169.44",
+     "victimFront": "386.96,169.56",
+     "victimBack": "386.96,169.56"
+    },
+    {
+     "time": "1726.00",
+     "type": "crossing",
+     "lane": ":n2_1_29_0",
+     "pos": "0.43",
+     "collider": "v1132",
+     "victim": "p362",
+     "colliderType": "bike@5",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.73",
+     "colliderFront": "385.36,169.56",
+     "colliderBack": "387.11,169.44",
+     "victimFront": "386.32,169.47",
+     "victimBack": "386.32,169.47"
+    },
+    {
+     "time": "1729.00",
+     "type": "crossing",
+     "lane": ":n2_1_29_0",
+     "pos": "0.42",
+     "collider": "v1132",
+     "victim": "p388",
+     "colliderType": "bike@5",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.74",
+     "colliderFront": "385.36,169.56",
+     "colliderBack": "387.11,169.44",
+     "victimFront": "386.32,169.48",
+     "victimBack": "386.32,169.48"
+    },
+    {
+     "time": "1733.00",
+     "type": "crossing",
+     "lane": ":n2_1_21_0",
+     "pos": "10.04",
+     "collider": "v1109",
+     "victim": "p353",
+     "colliderType": "truck@3",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.55",
+     "colliderFront": "395.77,161.96",
+     "colliderBack": "387.99,158.63",
+     "victimFront": "387.60,159.86",
+     "victimBack": "387.60,159.86"
+    },
+    {
+     "time": "1734.25",
+     "type": "crossing",
+     "lane": ":n2_1_21_0",
+     "pos": "10.15",
+     "collider": "v1109",
+     "victim": "p408",
+     "colliderType": "truck@3",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.29",
+     "colliderFront": "395.77,161.96",
+     "colliderBack": "387.99,158.63",
+     "victimFront": "387.60,159.75",
+     "victimBack": "387.60,159.75"
+    },
+    {
+     "time": "1737.00",
+     "type": "crossing",
+     "lane": ":n2_1_21_0",
+     "pos": "10.07",
+     "collider": "v1109",
+     "victim": "p388",
+     "colliderType": "truck@3",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.57",
+     "colliderFront": "395.77,161.96",
+     "colliderBack": "387.99,158.63",
+     "victimFront": "387.60,159.83",
+     "victimBack": "387.60,159.83"
+    },
+    {
+     "time": "1853.50",
+     "type": "crossing",
+     "lane": ":n2_1_3_0",
+     "pos": "7.12",
+     "collider": "v1350",
+     "victim": "p366",
+     "colliderType": "suv@1",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.32",
+     "colliderFront": "397.35,174.42",
+     "colliderBack": "398.26,179.16",
+     "victimFront": "398.08,179.42",
+     "victimBack": "398.08,179.42"
+    },
+    {
+     "time": "1891.25",
+     "type": "crossing",
+     "lane": ":n2_1_21_0",
+     "pos": "10.84",
+     "collider": "v1109",
+     "victim": "p445",
+     "colliderType": "truck@3",
+     "victimType": "walker",
+     "colliderSpeed": "0.00",
+     "victimSpeed": "1.57",
+     "colliderFront": "395.77,161.96",
+     "colliderBack": "387.99,158.63",
+     "victimFront": "387.60,159.06",
+     "victimBack": "387.60,159.06"
+    }
+   ],
+   "personInvolved": 10,
+   "teleports": 0,
+   "invalidRoutes": 0,
+   "routeSamples": 123175,
+   "gapOutliers": [
+    {
+     "t": -645.0,
+     "follower": "v357",
+     "leader": "v403",
+     "bumperGap": 15.11,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -485.0,
+     "follower": "v559",
+     "leader": "v471",
+     "bumperGap": 29.42,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -480.0,
+     "follower": "v559",
+     "leader": "v471",
+     "bumperGap": 29.42,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -480.0,
+     "follower": "v448",
+     "leader": "v427",
+     "bumperGap": 17.65,
+     "lane": "main_s2b_2"
+    },
+    {
+     "t": -480.0,
+     "follower": "v215",
+     "leader": "v541",
+     "bumperGap": 10.97,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -475.0,
+     "follower": "v559",
+     "leader": "v471",
+     "bumperGap": 29.42,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -475.0,
+     "follower": "v448",
+     "leader": "v427",
+     "bumperGap": 17.65,
+     "lane": "main_s2b_2"
+    },
+    {
+     "t": -470.0,
+     "follower": "v559",
+     "leader": "v471",
+     "bumperGap": 29.42,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -470.0,
+     "follower": "v448",
+     "leader": "v427",
+     "bumperGap": 17.65,
+     "lane": "main_s2b_2"
+    },
+    {
+     "t": -465.0,
+     "follower": "v559",
+     "leader": "v471",
+     "bumperGap": 29.42,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -465.0,
+     "follower": "v448",
+     "leader": "v427",
+     "bumperGap": 17.65,
+     "lane": "main_s2b_2"
+    },
+    {
+     "t": -460.0,
+     "follower": "v559",
+     "leader": "v471",
+     "bumperGap": 29.42,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -455.0,
+     "follower": "v559",
+     "leader": "v471",
+     "bumperGap": 29.42,
+     "lane": "main_n2_2"
+    },
+    {
+     "t": -445.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 15.75,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -405.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -400.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -400.0,
+     "follower": "v615",
+     "leader": "v507",
+     "bumperGap": 11.0,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -395.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -395.0,
+     "follower": "v615",
+     "leader": "v507",
+     "bumperGap": 11.0,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -390.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -390.0,
+     "follower": "v615",
+     "leader": "v507",
+     "bumperGap": 11.0,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -385.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -385.0,
+     "follower": "v185",
+     "leader": "v163",
+     "bumperGap": 42.36,
+     "lane": "main_s2_1"
+    },
+    {
+     "t": -385.0,
+     "follower": "v615",
+     "leader": "v507",
+     "bumperGap": 11.0,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -380.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -375.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -370.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -365.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -360.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -355.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -350.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -345.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -340.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -335.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -330.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -325.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -320.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -315.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -310.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    },
+    {
+     "t": -305.0,
+     "follower": "v537",
+     "leader": "v384",
+     "bumperGap": 14.99,
+     "lane": "main_n1_1"
+    }
+   ]
+  },
+  "ledger": {
+   "background": {
+    "requests": 3648,
+    "submitted": 1904,
+    "dropped": 0,
+    "cancelled": 0,
+    "heldAtEnd": 1744,
+    "cruisingTrips": 0,
+    "residual": 0,
+    "holdWaitSeconds": {
+     "n": 1904,
+     "mean": 2.5,
+     "p90": 0.0,
+     "max": 435.5
+    },
+    "metoredAttempts": 0,
+    "expectedDeferred": 0.0,
+    "expectedOffered": 3657.3
+   },
+   "native": {
+    "added": 1904,
+    "departed": 1877,
+    "arrived": 978,
+    "pendingNow": 27,
+    "activeNow": 899,
+    "discardedDerived": 0,
+    "discardedLogged": 0,
+    "teleportsStarted": 0,
+    "teleportsEnded": 0
+   },
+   "residual": 0,
+   "note": "discardedDerived is added - departed - pending; it must equal what SUMO logged. Non-zero residual = unexplained vehicles."
+  }
+ }
+}

@@ -817,7 +817,7 @@ class SignalManager:
             if self.mode == "actuated":
                 T.trafficlight.setProgram(tid, "actuated")
             else:
-                self._select_program(tid, SAFE_PROGRAM if dense else "0")
+                self._select_program(tid, getattr(self.engine.config, "signal_program", None) or (SAFE_PROGRAM if dense else "0"))
             self.tls[tid] = info
 
     # -- phase bookkeeping -------------------------------------------------
@@ -838,6 +838,33 @@ class SignalManager:
         if any(info.prev_state[i:i + 1] == "G" and s[i] == "r" for i in info.crossing_links if i < len(s)):
             return False  # pedestrian clearance interval
         return t - info.phase_start >= self.MIN_GREEN_BEFORE_PREEMPT
+
+    # -- public control primitives for policies (docs/OBSERVATION_SCHEMA.md) -------
+    def end_phase(self, tid: str, t: float) -> bool:
+        """End the current green early. Returns False (and does nothing) during amber, all-red, pedestrian clearance, before the
+        5 s minimum green, or while an emergency vehicle holds the signal: no policy can shorten a clearance interval."""
+        info = self.tls.get(tid)
+        if info is None or info.held_by or not self._cuttable(info, t):
+            return False
+        self.T.trafficlight.setPhaseDuration(tid, 0.0)
+        return True
+
+    def extend_green(self, tid: str, seconds: float, t: float, limit: float = 15.0) -> float:
+        """Lengthen the current green by up to ``seconds`` (at most ``limit`` in total per phase). Returns the seconds granted (0.0 when the
+        signal is not in a green interval or the limit is used up). Clearance intervals are never touched."""
+        info = self.tls.get(tid)
+        if info is None or info.held_by or seconds <= 0:
+            return 0.0
+        s = info.state
+        if "y" in s.lower() or not any(c in "Gg" for c in s):
+            return 0.0
+        grant = min(seconds, limit - info.extended)
+        if grant <= 0.0:
+            return 0.0
+        remaining = self.T.trafficlight.getNextSwitch(tid) - self.T.simulation.getTime()
+        self.T.trafficlight.setPhaseDuration(tid, remaining + grant)
+        info.extended += grant
+        return grant
 
     def step(self, t: float) -> None:
         if self.preemption:

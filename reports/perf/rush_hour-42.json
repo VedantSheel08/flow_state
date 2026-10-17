@@ -1,0 +1,28 @@
+{
+ "preset": "rush_hour",
+ "seed": 42,
+ "simSeconds": 900,
+ "wallSeconds": 60.6,
+ "cpuCoresAverage": 1.0,
+ "peakRssMB": 92,
+ "stepMs": {
+  "mean": 16.28,
+  "p50": 17.53,
+  "p95": 21.67,
+  "p99": 24.19,
+  "max": 36.0
+ },
+ "frameBuildMs": {
+  "mean": 1.96,
+  "p95": 2.53,
+  "max": 7.5
+ },
+ "frameBytes": {
+  "jsonMax": 20790,
+  "jsonAtPeakVehicles": 20787,
+  "gzip1AtPeak": 7702,
+  "maxVehicles": 475
+ },
+ "realtimeFactor": 14.84,
+ "stepBudgetMs": 250.0
+}

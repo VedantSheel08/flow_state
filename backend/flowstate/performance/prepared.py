@@ -27,7 +27,7 @@ def _worker(pipe, request):
     try:
         scenario = create(request["scenario"], request["params"])
         engine = Engine(scenario, RunConfig(request["scenario"], scenario.params, request["seed"],
-                        scenario.params.get("signals", "fixed"), warmup=request["warmup"]),
+                        scenario.params.get("signals", "fixed"), warmup=request["warmup"], **request.get("engine", {})),
                         Path(request["networks"]), Path(work))
         start = time.perf_counter()
         engine.start()
@@ -81,7 +81,7 @@ class PreparedRun:
     """
 
     def __init__(self, scenario: str, params: dict, seed: int, networks: Path, *, warmup: float = 180,
-                 backend: str = "libsumo", timeout: float = 120):
+                 backend: str = "libsumo", timeout: float = 120, engine: dict | None = None):
         if type(seed) is not int or not 0 <= seed < 2**31:
             raise ValueError("seed must be a nonnegative 31-bit integer")
         if not math.isfinite(warmup) or not 0 <= warmup <= 1800 or warmup % 0.25:
@@ -89,8 +89,8 @@ class PreparedRun:
         if backend not in ("libsumo", "traci"):
             raise ValueError("unknown backend")
         self.request = dict(scenario=scenario, params=dict(params), seed=seed, networks=str(networks.resolve()),
-                            warmup=warmup, backend=backend)
-        self.identity = identity(scenario, params, seed, networks, warmup=warmup, backend=backend)
+                            warmup=warmup, backend=backend, engine=dict(engine or {}))
+        self.identity = identity(scenario, params, seed, networks, warmup=warmup, backend=backend, engine=self.request["engine"])
         context = mp.get_context("spawn")
         self.pipe, child = context.Pipe()
         self.process = context.Process(target=_worker, args=(child, self.request), daemon=True)
@@ -116,8 +116,8 @@ class PreparedRun:
     def claim(self, *, max_age: float = 600):
         if self.closed or self.claimed:
             raise RuntimeError("prepared run already consumed or closed")
-        current = identity(self.request["scenario"], self.request["params"], self.request["seed"],
-                           Path(self.request["networks"]), warmup=self.request["warmup"], backend=self.request["backend"])
+        current = identity(self.request["scenario"], self.request["params"], self.request["seed"], Path(self.request["networks"]),
+                           warmup=self.request["warmup"], backend=self.request["backend"], engine=self.request["engine"])
         if current["key"] != self.identity["key"] or time.monotonic() - self.created > max_age:
             self.close()
             raise RuntimeError("prepared state expired or inputs changed; prepare a fresh run")

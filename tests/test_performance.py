@@ -123,7 +123,7 @@ def test_presets_are_valid_existing_scenario_inputs_and_honest_labels():
     for preset in list_presets():
         params, warmup, description = resolve({}, preset["id"], "rush_hour")
         assert create("rush_hour", params).duration == 300
-        assert warmup == 180
+        assert warmup == preset["warmup"] >= 180  # the jam presets need a longer warm-up to reach their accumulation
         assert not description["calibrated"] and not description["safetyValidated"]
     original = {"duration": 10, "demand": 1800}
     params, _, _ = resolve(original, "normal", "rush_hour")

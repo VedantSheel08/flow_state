@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-10-16T19:15:13.658040-05:00 by Eclipse SUMO netconvert 1.28.0
+<!-- generated on 2026-10-17T08:29:57.182660-05:00 by Eclipse SUMO netconvert 1.28.0
 <netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <node-files value="..\data\networks\_district\plain.nod.xml"/>
-        <edge-files value="..\data\networks\_district\plain.edg.xml"/>
+        <node-files value="data\networks\_district\plain.nod.xml"/>
+        <edge-files value="data\networks\_district\plain.edg.xml"/>
     </input>
 
     <output>
-        <output-file value="..\data\networks\_district\pass1.net.xml"/>
-        <plain-output-prefix value="..\data\networks\_district\p1"/>
+        <output-file value="data\networks\_district\pass1.net.xml"/>
+        <plain-output-prefix value="data\networks\_district\p1"/>
         <output.street-names value="true"/>
     </output>
 
@@ -69,22 +69,22 @@
     <node id="fw1" x="-160.00" y="160.00" type="dead_end"/>
     <node id="fw2" x="-160.00" y="320.00" type="dead_end"/>
     <node id="fw3" x="-160.00" y="480.00" type="dead_end"/>
-    <node id="king_e0_x" x="-58.00" y="160.00" type="priority" radius="7.00"/>
-    <node id="king_e1_x" x="142.00" y="160.00" type="priority" radius="7.00"/>
-    <node id="king_e2_x" x="342.00" y="160.00" type="priority" radius="7.00"/>
-    <node id="king_e3_x" x="542.00" y="160.00" type="priority" radius="7.00"/>
-    <node id="king_w0_x" x="658.00" y="160.00" type="priority" radius="7.00"/>
-    <node id="king_w1_x" x="458.00" y="160.00" type="priority" radius="7.00"/>
-    <node id="king_w2_x" x="258.00" y="160.00" type="priority" radius="7.00"/>
-    <node id="king_w3_x" x="58.00" y="160.00" type="priority" radius="7.00"/>
-    <node id="main_n0_x" x="200.00" y="-58.00" type="priority" radius="7.00"/>
-    <node id="main_n1_x" x="200.00" y="102.00" type="priority" radius="7.00"/>
-    <node id="main_n2_x" x="200.00" y="262.00" type="priority" radius="7.00"/>
-    <node id="main_n3_x" x="200.00" y="422.00" type="priority" radius="7.00"/>
-    <node id="main_s0_x" x="200.00" y="538.00" type="priority" radius="7.00"/>
-    <node id="main_s1_x" x="200.00" y="378.00" type="priority" radius="7.00"/>
-    <node id="main_s2_x" x="200.00" y="218.00" type="priority" radius="7.00"/>
-    <node id="main_s3_x" x="200.00" y="58.00" type="priority" radius="7.00"/>
+    <node id="king_e0_x" x="-58.00" y="160.00" type="unregulated" radius="7.00"/>
+    <node id="king_e1_x" x="142.00" y="160.00" type="unregulated" radius="7.00"/>
+    <node id="king_e2_x" x="342.00" y="160.00" type="unregulated" radius="7.00"/>
+    <node id="king_e3_x" x="542.00" y="160.00" type="unregulated" radius="7.00"/>
+    <node id="king_w0_x" x="658.00" y="160.00" type="unregulated" radius="7.00"/>
+    <node id="king_w1_x" x="458.00" y="160.00" type="unregulated" radius="7.00"/>
+    <node id="king_w2_x" x="258.00" y="160.00" type="unregulated" radius="7.00"/>
+    <node id="king_w3_x" x="58.00" y="160.00" type="unregulated" radius="7.00"/>
+    <node id="main_n0_x" x="200.00" y="-58.00" type="unregulated" radius="7.00"/>
+    <node id="main_n1_x" x="200.00" y="102.00" type="unregulated" radius="7.00"/>
+    <node id="main_n2_x" x="200.00" y="262.00" type="unregulated" radius="7.00"/>
+    <node id="main_n3_x" x="200.00" y="422.00" type="unregulated" radius="7.00"/>
+    <node id="main_s0_x" x="200.00" y="538.00" type="unregulated" radius="7.00"/>
+    <node id="main_s1_x" x="200.00" y="378.00" type="unregulated" radius="7.00"/>
+    <node id="main_s2_x" x="200.00" y="218.00" type="unregulated" radius="7.00"/>
+    <node id="main_s3_x" x="200.00" y="58.00" type="unregulated" radius="7.00"/>
     <node id="n0_0" x="0.00" y="0.00" type="priority_stop" radius="7.00"/>
     <node id="n0_1" x="0.00" y="160.00" type="traffic_light" tl="n0_1" radius="7.00"/>
     <node id="n0_2" x="0.00" y="320.00" type="traffic_light" tl="n0_2" radius="7.00"/>
@@ -101,12 +101,12 @@
     <node id="n3_1" x="600.00" y="160.00" type="traffic_light" tl="n3_1" radius="7.00"/>
     <node id="n3_2" x="600.00" y="320.00" type="traffic_light" tl="n3_2" radius="7.00"/>
     <node id="n3_3" x="600.00" y="480.00" type="allway_stop" radius="7.00"/>
-    <node id="queen_e0_x" x="-58.00" y="320.00" type="priority" radius="7.00"/>
-    <node id="queen_e1_x" x="142.00" y="320.00" type="priority" radius="7.00"/>
-    <node id="queen_e2_x" x="342.00" y="320.00" type="priority" radius="7.00"/>
-    <node id="queen_e3_x" x="542.00" y="320.00" type="priority" radius="7.00"/>
-    <node id="queen_w0_x" x="658.00" y="320.00" type="priority" radius="7.00"/>
-    <node id="queen_w1_x" x="458.00" y="320.00" type="priority" radius="7.00"/>
-    <node id="queen_w2_x" x="258.00" y="320.00" type="priority" radius="7.00"/>
-    <node id="queen_w3_x" x="58.00" y="320.00" type="priority" radius="7.00"/>
+    <node id="queen_e0_x" x="-58.00" y="320.00" type="unregulated" radius="7.00"/>
+    <node id="queen_e1_x" x="142.00" y="320.00" type="unregulated" radius="7.00"/>
+    <node id="queen_e2_x" x="342.00" y="320.00" type="unregulated" radius="7.00"/>
+    <node id="queen_e3_x" x="542.00" y="320.00" type="unregulated" radius="7.00"/>
+    <node id="queen_w0_x" x="658.00" y="320.00" type="unregulated" radius="7.00"/>
+    <node id="queen_w1_x" x="458.00" y="320.00" type="unregulated" radius="7.00"/>
+    <node id="queen_w2_x" x="258.00" y="320.00" type="unregulated" radius="7.00"/>
+    <node id="queen_w3_x" x="58.00" y="320.00" type="unregulated" radius="7.00"/>
 </nodes>

@@ -29,7 +29,7 @@ def dependencies():
 
 
 def identity(scenario: str, params: dict, seed: int, networks: Path, *, warmup: float,
-             backend: str = "libsumo", step_length: float = 0.25) -> dict:
+             backend: str = "libsumo", step_length: float = 0.25, engine: dict | None = None) -> dict:
     from ..scenarios.catalog import create
     resolved = create(scenario, params)
     network = resolved.network_id()
@@ -48,5 +48,7 @@ def identity(scenario: str, params: dict, seed: int, networks: Path, *, warmup: 
                       for p in sorted(code.rglob("*.py"))},
         "resourceFiles": resource_digests(code),
     }
+    if engine:  # engine-level options (congestion preset); absent for ordinary runs so their keys are unchanged
+        manifest["engineOptions"] = engine
     key = hashlib.sha256(json.dumps(manifest, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
     return {"key": key, "manifest": manifest}

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-10-16T19:15:13.669750-05:00 by Eclipse SUMO netconvert 1.28.0
+<!-- generated on 2026-10-17T08:29:57.189380-05:00 by Eclipse SUMO netconvert 1.28.0
 <netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <node-files value="..\data\networks\_district\plain.nod.xml"/>
-        <edge-files value="..\data\networks\_district\plain.edg.xml"/>
+        <node-files value="data\networks\_district\plain.nod.xml"/>
+        <edge-files value="data\networks\_district\plain.edg.xml"/>
     </input>
 
     <output>
-        <output-file value="..\data\networks\_district\pass1.net.xml"/>
-        <plain-output-prefix value="..\data\networks\_district\p1"/>
+        <output-file value="data\networks\_district\pass1.net.xml"/>
+        <plain-output-prefix value="data\networks\_district\p1"/>
         <output.street-names value="true"/>
     </output>
 

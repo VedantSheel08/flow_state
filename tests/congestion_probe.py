@@ -47,8 +47,14 @@ def audited_sumo(work: Path):
             cmd = list(cmd)
             if "--collision.check-junctions" in cmd:
                 cmd[cmd.index("--collision.check-junctions") + 1] = "true"
-            cmd += ["--collision-output", str(work / "collisions.xml"), "--tripinfo-output", str(work / "trips.xml"),
-                    "--tripinfo-output.write-unfinished", "true"]
+            # the engine already writes collisions.xml itself; SUMO rejects an option that is set twice
+            extra = {"--collision-output": str(work / "collisions.xml"), "--tripinfo-output": str(work / "trips.xml"),
+                     "--tripinfo-output.write-unfinished": "true"}
+            for key, value in extra.items():
+                if key in cmd:
+                    cmd[cmd.index(key) + 1] = value
+                else:
+                    cmd += [key, value]
             return original(cmd, *a, **kw)
         return start
 

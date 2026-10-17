@@ -1,0 +1,999 @@
+{
+ "collisions": [
+  {
+   "t": 174.25,
+   "collider": "v154",
+   "victim": "v293",
+   "ctype": "suv@1",
+   "vtype": "suv@4",
+   "cspeed": 3.17,
+   "vspeed": 0.16,
+   "kind": "junction",
+   "lane": ":n3_1_16_0",
+   "pos": 0.5,
+   "a": {
+    "lane": ":n3_1_16_0",
+    "speed": 3.17,
+    "type": "suv@1",
+    "wait": 0.0,
+    "route": [
+     "park_s2",
+     "king_w1"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 1
+   },
+   "b": {
+    "lane": ":n3_1_21_0",
+    "speed": 0.16,
+    "type": "suv@4",
+    "wait": 0.0,
+    "route": [
+     "park_n1",
+     "king_w1",
+     "king_w1b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 2
+   }
+  },
+  {
+   "t": 177.5,
+   "collider": "v250",
+   "victim": "v293",
+   "ctype": "suv@7",
+   "vtype": "suv@4",
+   "cspeed": 3.39,
+   "vspeed": 0.16,
+   "kind": "junction",
+   "lane": ":n3_1_16_0",
+   "pos": 0.7,
+   "a": {
+    "lane": ":n3_1_16_0",
+    "speed": 3.39,
+    "type": "suv@7",
+    "wait": 0.0,
+    "route": [
+     "park_s2",
+     "king_w1"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 1
+   },
+   "b": {
+    "lane": ":n3_1_21_0",
+    "speed": 0.16,
+    "type": "suv@4",
+    "wait": 0.0,
+    "route": [
+     "park_n1",
+     "king_w1",
+     "king_w1b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 2
+   }
+  },
+  {
+   "t": 229.5,
+   "collider": "v56",
+   "victim": "v219",
+   "ctype": "bike@2",
+   "vtype": "sedan@1",
+   "cspeed": 3.08,
+   "vspeed": 1.27,
+   "kind": "junction",
+   "lane": ":n2_1_2_0",
+   "pos": 4.4,
+   "a": {
+    "lane": ":n2_1_2_0",
+    "speed": 3.08,
+    "type": "bike@2",
+    "wait": 0.0,
+    "route": [
+     "church_s2",
+     "king_e3",
+     "king_e3b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 2
+   },
+   "b": {
+    "lane": ":n2_1_3_0",
+    "speed": 1.27,
+    "type": "sedan@1",
+    "wait": 0.0,
+    "route": [
+     "church_s2",
+     "king_w2",
+     "king_w2b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 9
+   }
+  },
+  {
+   "t": 474.25,
+   "collider": "v927",
+   "victim": "v922",
+   "ctype": "hatch@6",
+   "vtype": "van@2",
+   "cspeed": 5.12,
+   "vspeed": 0.0,
+   "kind": "collision",
+   "lane": "king_e1b_2",
+   "pos": 24.2,
+   "a": {
+    "lane": "king_e1b_2",
+    "speed": 5.12,
+    "type": "hatch@6",
+    "wait": 0.0,
+    "route": [
+     "king_e1b",
+     "king_e2",
+     "king_e2b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 0
+   },
+   "b": {
+    "lane": "king_e1b_1",
+    "speed": 0.0,
+    "type": "van@2",
+    "wait": 18.5,
+    "route": [
+     "king_e1b",
+     "king_e2",
+     "king_e2b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   }
+  },
+  {
+   "t": 484.75,
+   "collider": "v990",
+   "victim": "v715",
+   "ctype": "hatch@6",
+   "vtype": "sedan@6",
+   "cspeed": 9.84,
+   "vspeed": 1.79,
+   "kind": "collision",
+   "lane": "main_n1_1",
+   "pos": 36.6,
+   "a": {
+    "lane": "main_n1_2",
+    "speed": 9.84,
+    "type": "hatch@6",
+    "wait": 0.0,
+    "route": [
+     "main_n1",
+     "main_n1b",
+     "main_n2"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 1
+   },
+   "b": {
+    "lane": "main_n1_1",
+    "speed": 1.79,
+    "type": "sedan@6",
+    "wait": 0.0,
+    "route": [
+     "main_n1"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 2
+   }
+  },
+  {
+   "t": 490.0,
+   "collider": "v990",
+   "victim": "v656",
+   "ctype": "hatch@6",
+   "vtype": "sedan@4",
+   "cspeed": 3.2,
+   "vspeed": 2.32,
+   "kind": "collision",
+   "lane": "main_n1_1",
+   "pos": 74.6,
+   "a": {
+    "lane": "main_n1_2",
+    "speed": 3.2,
+    "type": "hatch@6",
+    "wait": 0.0,
+    "route": [
+     "main_n1",
+     "main_n1b",
+     "main_n2"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 9
+   },
+   "b": {
+    "lane": "main_n1_1",
+    "speed": 2.32,
+    "type": "sedan@4",
+    "wait": 0.0,
+    "route": [
+     "main_n1"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   }
+  },
+  {
+   "t": 557.75,
+   "collider": "v664",
+   "victim": "v492",
+   "ctype": "bike@0",
+   "vtype": "truck@5",
+   "cspeed": 0.12,
+   "vspeed": 0.0,
+   "kind": "junction",
+   "lane": ":n1_1_1_0",
+   "pos": 4.4,
+   "a": {
+    "lane": ":n1_1_1_0",
+    "speed": 0.12,
+    "type": "bike@0",
+    "wait": 0.0,
+    "route": [
+     "main_s2b",
+     "main_s3",
+     "main_s3b"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 0
+   },
+   "b": {
+    "lane": ":n1_1_0_0",
+    "speed": 0.0,
+    "type": "truck@5",
+    "wait": 0.2,
+    "route": [
+     "main_s2b",
+     "king_w3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 10
+   }
+  },
+  {
+   "t": 833.0,
+   "collider": "v1130",
+   "victim": "v953",
+   "ctype": "suv@3",
+   "vtype": "hatch@6",
+   "cspeed": 6.3,
+   "vspeed": 0.0,
+   "kind": "collision",
+   "lane": "king_w2_1",
+   "pos": 74.9,
+   "a": {
+    "lane": "king_w2_2",
+    "speed": 6.3,
+    "type": "suv@3",
+    "wait": 0.0,
+    "route": [
+     "king_w2",
+     "king_w2b",
+     "king_w3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 9
+   },
+   "b": {
+    "lane": "king_w2_1",
+    "speed": 0.0,
+    "type": "hatch@6",
+    "wait": 9.2,
+    "route": [
+     "king_w2",
+     "king_w2b",
+     "king_w3"
+    ],
+    "speedMode": 31,
+    "laneChangeMode": 1621,
+    "signals": 8
+   }
+  }
+ ],
+ "teleports": [
+  {
+   "t": 613.75,
+   "veh": "v360",
+   "wait": 240.0,
+   "lane": "king_w2b_1",
+   "leader": "v852",
+   "leaderGap": 22.2,
+   "injunction": false,
+   "nextTls": "n1_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "suv@3",
+   "route": [
+    "king_w2b",
+    "main_n2",
+    "main_n2b"
+   ]
+  },
+  {
+   "t": 644.25,
+   "veh": "v699",
+   "wait": 240.0,
+   "lane": "church_n2_2",
+   "leader": "v753",
+   "leaderGap": 37.8,
+   "injunction": false,
+   "nextTls": "n2_2",
+   "tlsDist": 1.0,
+   "tlsState": "g",
+   "type": "truck@0",
+   "route": [
+    "church_n2",
+    "queen_w2"
+   ]
+  },
+  {
+   "t": 691.75,
+   "veh": "v829",
+   "wait": 240.0,
+   "lane": "king_e2b_3",
+   "leader": "v954",
+   "leaderGap": 33.5,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "r",
+   "type": "sedan@1",
+   "route": [
+    "king_e2b",
+    "church_n2",
+    "queen_w2"
+   ]
+  },
+  {
+   "t": 773.25,
+   "veh": "v692",
+   "wait": 240.0,
+   "lane": "church_n1_2",
+   "leader": "v667",
+   "leaderGap": 40.6,
+   "injunction": false,
+   "nextTls": "n2_1",
+   "tlsDist": 1.0,
+   "tlsState": "G",
+   "type": "pickup@6",
+   "route": [
+    "church_n1",
+    "church_n2",
+    "queen_e3"
+   ]
+  }
+ ],
+ "summary": {
+  "classification": null,
+  "safety": {
+   "native": {
+    "junctionChecks": true,
+    "collisionRecordObservations": 10,
+    "collisionEpisodes": 10,
+    "uniqueCollisionPairs": 8,
+    "recordObservationsByType": {
+     "junction": 6,
+     "collision": 4
+    },
+    "examples": [
+     {
+      "t": -425.75,
+      "type": "junction",
+      "collider": "v154",
+      "victim": "v293",
+      "lane": ":n3_1_16_0",
+      "colliderType": "suv@1",
+      "victimType": "suv@4",
+      "colliderSpeed": 3.1730343865296855,
+      "victimSpeed": 0.15637253620102556
+     },
+     {
+      "t": -425.0,
+      "type": "junction",
+      "collider": "v154",
+      "victim": "v293",
+      "lane": ":n3_1_16_0",
+      "colliderType": "suv@1",
+      "victimType": "suv@4",
+      "colliderSpeed": 5.04044850029766,
+      "victimSpeed": 0.0
+     },
+     {
+      "t": -422.5,
+      "type": "junction",
+      "collider": "v250",
+      "victim": "v293",
+      "lane": ":n3_1_16_0",
+      "colliderType": "suv@7",
+      "victimType": "suv@4",
+      "colliderSpeed": 3.3890828089368044,
+      "victimSpeed": 0.15934813310490692
+     },
+     {
+      "t": -370.5,
+      "type": "junction",
+      "collider": "v56",
+      "victim": "v219",
+      "lane": ":n2_1_2_0",
+      "colliderType": "bike@2",
+      "victimType": "sedan@1",
+      "colliderSpeed": 3.081674078675101,
+      "victimSpeed": 1.2662628096968442
+     },
+     {
+      "t": -125.75,
+      "type": "collision",
+      "collider": "v927",
+      "victim": "v922",
+      "lane": "king_e1b_2",
+      "colliderType": "hatch@6",
+      "victimType": "van@2",
+      "colliderSpeed": 5.117589323152214,
+      "victimSpeed": 0.0
+     },
+     {
+      "t": -115.25,
+      "type": "collision",
+      "collider": "v990",
+      "victim": "v715",
+      "lane": "main_n1_1",
+      "colliderType": "hatch@6",
+      "victimType": "sedan@6",
+      "colliderSpeed": 9.83544797182325,
+      "victimSpeed": 1.7931967121537609
+     },
+     {
+      "t": -110.0,
+      "type": "collision",
+      "collider": "v990",
+      "victim": "v656",
+      "lane": "main_n1_1",
+      "colliderType": "hatch@6",
+      "victimType": "sedan@4",
+      "colliderSpeed": 3.1964727262808617,
+      "victimSpeed": 2.323902142269601
+     },
+     {
+      "t": -42.25,
+      "type": "junction",
+      "collider": "v664",
+      "victim": "v492",
+      "lane": ":n1_1_1_0",
+      "colliderType": "bike@0",
+      "victimType": "truck@5",
+      "colliderSpeed": 0.11930066889233099,
+      "victimSpeed": 0.0
+     },
+     {
+      "t": -41.5,
+      "type": "junction",
+      "collider": "v664",
+      "victim": "v492",
+      "lane": ":n1_1_1_0",
+      "colliderType": "bike@0",
+      "victimType": "truck@5",
+      "colliderSpeed": 0.1181721574655729,
+      "victimSpeed": 0.0
+     },
+     {
+      "t": 233.0,
+      "type": "collision",
+      "collider": "v1130",
+      "victim": "v953",
+      "lane": "king_w2_1",
+      "colliderType": "suv@3",
+      "victimType": "hatch@6",
+      "colliderSpeed": 6.3027526379314684,
+      "victimSpeed": 0.0
+     }
+    ],
+    "definition": "An episode starts when a pair/type is reported after an unreported step; not a count of unique physical crashes."
+   },
+   "collisionFile": [
+    {
+     "time": "174.00",
+     "type": "junction",
+     "lane": ":n3_1_16_0",
+     "pos": "0.53",
+     "collider": "v154",
+     "victim": "v293",
+     "colliderType": "suv@1",
+     "victimType": "suv@4",
+     "colliderSpeed": "3.17",
+     "victimSpeed": "0.16",
+     "colliderFront": "590.49,168.51",
+     "colliderBack": "594.83,170.55",
+     "victimFront": "591.13,167.42",
+     "victimBack": "595.22,164.93"
+    },
+    {
+     "time": "174.75",
+     "type": "junction",
+     "lane": ":n3_1_16_0",
+     "pos": "3.85",
+     "collider": "v154",
+     "victim": "v293",
+     "colliderType": "suv@1",
+     "victimType": "suv@4",
+     "colliderSpeed": "5.04",
+     "victimSpeed": "0.00",
+     "colliderFront": "587.19,168.16",
+     "colliderBack": "591.95,168.92",
+     "victimFront": "591.13,167.42",
+     "victimBack": "595.22,164.93"
+    },
+    {
+     "time": "177.25",
+     "type": "junction",
+     "lane": ":n3_1_16_0",
+     "pos": "0.72",
+     "collider": "v250",
+     "victim": "v293",
+     "colliderType": "suv@7",
+     "victimType": "suv@4",
+     "colliderSpeed": "3.39",
+     "victimSpeed": "0.16",
+     "colliderFront": "590.30,168.47",
+     "colliderBack": "594.67,170.44",
+     "victimFront": "590.97,167.47",
+     "victimBack": "595.09,165.04"
+    },
+    {
+     "time": "229.25",
+     "type": "junction",
+     "lane": ":n2_1_2_0",
+     "pos": "4.41",
+     "collider": "v56",
+     "victim": "v219",
+     "colliderType": "bike@2",
+     "victimType": "sedan@1",
+     "colliderSpeed": "3.08",
+     "victimSpeed": "1.27",
+     "colliderFront": "396.41,175.51",
+     "colliderBack": "396.36,177.26",
+     "victimFront": "397.32,174.33",
+     "victimBack": "398.25,178.97"
+    },
+    {
+     "time": "474.00",
+     "type": "collision",
+     "lane": "king_e1b_2",
+     "pos": "24.17",
+     "collider": "v927",
+     "victim": "v922",
+     "colliderType": "hatch@6",
+     "victimType": "van@2",
+     "colliderSpeed": "5.12",
+     "victimSpeed": "0.00",
+     "colliderFront": "166.17,155.35",
+     "colliderBack": "162.02,155.35",
+     "victimFront": "171.47,153.47",
+     "victimBack": "166.07,153.47"
+    },
+    {
+     "time": "484.50",
+     "type": "collision",
+     "lane": "main_n1_1",
+     "pos": "36.58",
+     "collider": "v990",
+     "victim": "v715",
+     "colliderType": "hatch@6",
+     "victimType": "sedan@6",
+     "colliderSpeed": "9.84",
+     "victimSpeed": "1.79",
+     "colliderFront": "205.59,51.38",
+     "colliderBack": "205.59,47.23",
+     "victimFront": "207.32,55.94",
+     "victimBack": "207.32,51.19"
+    },
+    {
+     "time": "489.75",
+     "type": "collision",
+     "lane": "main_n1_1",
+     "pos": "74.63",
+     "collider": "v990",
+     "victim": "v656",
+     "colliderType": "hatch@6",
+     "victimType": "sedan@4",
+     "colliderSpeed": "3.20",
+     "victimSpeed": "2.32",
+     "colliderFront": "205.59,89.43",
+     "colliderBack": "205.59,85.28",
+     "victimFront": "207.32,94.18",
+     "victimBack": "207.32,89.43"
+    },
+    {
+     "time": "557.50",
+     "type": "junction",
+     "lane": ":n1_1_1_0",
+     "pos": "4.40",
+     "collider": "v664",
+     "victim": "v492",
+     "colliderType": "bike@0",
+     "victimType": "truck@5",
+     "colliderSpeed": "0.12",
+     "victimSpeed": "0.00",
+     "colliderFront": "190.43,175.50",
+     "colliderBack": "190.43,177.25",
+     "victimFront": "185.12,168.87",
+     "victimBack": "191.05,174.61"
+    },
+    {
+     "time": "558.25",
+     "type": "junction",
+     "lane": ":n1_1_1_0",
+     "pos": "4.49",
+     "collider": "v664",
+     "victim": "v492",
+     "colliderType": "bike@0",
+     "victimType": "truck@5",
+     "colliderSpeed": "0.12",
+     "victimSpeed": "0.00",
+     "colliderFront": "190.43,175.41",
+     "colliderBack": "190.43,177.16",
+     "victimFront": "185.04,168.84",
+     "victimBack": "191.03,174.54"
+    },
+    {
+     "time": "832.75",
+     "type": "collision",
+     "lane": "king_w2_1",
+     "pos": "74.90",
+     "collider": "v1130",
+     "victim": "v953",
+     "colliderType": "suv@3",
+     "victimType": "hatch@6",
+     "colliderSpeed": "6.30",
+     "victimSpeed": "0.00",
+     "colliderFront": "310.30,165.62",
+     "colliderBack": "315.15,165.62",
+     "victimFront": "306.28,167.46",
+     "victimBack": "310.43,167.46"
+    }
+   ],
+   "personInvolved": 0,
+   "teleports": 4,
+   "invalidRoutes": 0,
+   "routeSamples": 42379,
+   "gapOutliers": [
+    {
+     "t": -285.0,
+     "follower": "v494",
+     "leader": "v472",
+     "bumperGap": 11.05,
+     "lane": "main_s1_2"
+    },
+    {
+     "t": -250.0,
+     "follower": "v642",
+     "leader": "v670",
+     "bumperGap": 8.83,
+     "lane": "queen_e1_2"
+    },
+    {
+     "t": -240.0,
+     "follower": "v246",
+     "leader": "v428",
+     "bumperGap": 11.33,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": -235.0,
+     "follower": "v352",
+     "leader": "v296",
+     "bumperGap": 22.84,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -230.0,
+     "follower": "v352",
+     "leader": "v296",
+     "bumperGap": 22.84,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -225.0,
+     "follower": "v352",
+     "leader": "v296",
+     "bumperGap": 22.84,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -200.0,
+     "follower": "v215",
+     "leader": "v501",
+     "bumperGap": 8.5,
+     "lane": "main_n2b_2"
+    },
+    {
+     "t": -195.0,
+     "follower": "v215",
+     "leader": "v501",
+     "bumperGap": 8.5,
+     "lane": "main_n2b_2"
+    },
+    {
+     "t": -190.0,
+     "follower": "v215",
+     "leader": "v501",
+     "bumperGap": 8.5,
+     "lane": "main_n2b_2"
+    },
+    {
+     "t": -155.0,
+     "follower": "v178",
+     "leader": "v1002",
+     "bumperGap": 10.21,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -150.0,
+     "follower": "v178",
+     "leader": "v1002",
+     "bumperGap": 10.21,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -145.0,
+     "follower": "v178",
+     "leader": "v1002",
+     "bumperGap": 10.21,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -140.0,
+     "follower": "v178",
+     "leader": "v1002",
+     "bumperGap": 10.21,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -135.0,
+     "follower": "v178",
+     "leader": "v1002",
+     "bumperGap": 10.21,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": -130.0,
+     "follower": "v780",
+     "leader": "v925",
+     "bumperGap": 17.84,
+     "lane": "main_s1_2"
+    },
+    {
+     "t": -60.0,
+     "follower": "v1054",
+     "leader": "v1052",
+     "bumperGap": 106.85,
+     "lane": "king_w1_2"
+    },
+    {
+     "t": -55.0,
+     "follower": "v1054",
+     "leader": "v1052",
+     "bumperGap": 106.85,
+     "lane": "king_w1_2"
+    },
+    {
+     "t": -50.0,
+     "follower": "v1054",
+     "leader": "v1052",
+     "bumperGap": 106.85,
+     "lane": "king_w1_2"
+    },
+    {
+     "t": -45.0,
+     "follower": "v1054",
+     "leader": "v1052",
+     "bumperGap": 106.85,
+     "lane": "king_w1_2"
+    },
+    {
+     "t": -40.0,
+     "follower": "v1054",
+     "leader": "v1052",
+     "bumperGap": 106.85,
+     "lane": "king_w1_2"
+    },
+    {
+     "t": -35.0,
+     "follower": "v1054",
+     "leader": "v1052",
+     "bumperGap": 106.85,
+     "lane": "king_w1_2"
+    },
+    {
+     "t": -30.0,
+     "follower": "v1054",
+     "leader": "v1052",
+     "bumperGap": 106.85,
+     "lane": "king_w1_2"
+    },
+    {
+     "t": -25.0,
+     "follower": "v1054",
+     "leader": "v1052",
+     "bumperGap": 107.41,
+     "lane": "king_w1_2"
+    },
+    {
+     "t": -20.0,
+     "follower": "v1054",
+     "leader": "v1052",
+     "bumperGap": 114.4,
+     "lane": "king_w1_2"
+    },
+    {
+     "t": -20.0,
+     "follower": "v273",
+     "leader": "v267",
+     "bumperGap": 10.14,
+     "lane": "main_n2b_2"
+    },
+    {
+     "t": 10.0,
+     "follower": "v1115",
+     "leader": "v822",
+     "bumperGap": 9.57,
+     "lane": "main_s1_2"
+    },
+    {
+     "t": 10.0,
+     "follower": "v1059",
+     "leader": "v960",
+     "bumperGap": 8.25,
+     "lane": "queen_w2b_1"
+    },
+    {
+     "t": 15.0,
+     "follower": "v202",
+     "leader": "v786",
+     "bumperGap": 16.95,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": 15.0,
+     "follower": "v1059",
+     "leader": "v960",
+     "bumperGap": 8.25,
+     "lane": "queen_w2b_1"
+    },
+    {
+     "t": 20.0,
+     "follower": "v202",
+     "leader": "v786",
+     "bumperGap": 16.95,
+     "lane": "main_s2b_1"
+    },
+    {
+     "t": 20.0,
+     "follower": "v1030",
+     "leader": "v1037",
+     "bumperGap": 10.13,
+     "lane": "queen_e1_1"
+    },
+    {
+     "t": 20.0,
+     "follower": "v1059",
+     "leader": "v960",
+     "bumperGap": 8.25,
+     "lane": "queen_w2b_1"
+    },
+    {
+     "t": 25.0,
+     "follower": "v1059",
+     "leader": "v960",
+     "bumperGap": 8.25,
+     "lane": "queen_w2b_1"
+    },
+    {
+     "t": 75.0,
+     "follower": "v1358",
+     "leader": "v511",
+     "bumperGap": 10.93,
+     "lane": "king_w2_1"
+    },
+    {
+     "t": 80.0,
+     "follower": "v367",
+     "leader": "v311",
+     "bumperGap": 6.11,
+     "lane": "main_n2b_2"
+    },
+    {
+     "t": 85.0,
+     "follower": "v476",
+     "leader": "v463",
+     "bumperGap": 7.05,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 90.0,
+     "follower": "v476",
+     "leader": "v463",
+     "bumperGap": 12.78,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 95.0,
+     "follower": "v476",
+     "leader": "v463",
+     "bumperGap": 13.97,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 100.0,
+     "follower": "v476",
+     "leader": "v463",
+     "bumperGap": 13.78,
+     "lane": "queen_w2_2"
+    },
+    {
+     "t": 110.0,
+     "follower": "v1005",
+     "leader": "v957",
+     "bumperGap": 9.62,
+     "lane": "king_w1_1"
+    }
+   ]
+  },
+  "ledger": {
+   "background": {
+    "requests": 3094,
+    "submitted": 1782,
+    "dropped": 1312,
+    "cancelled": 0,
+    "heldAtEnd": 0,
+    "cruisingTrips": 0,
+    "residual": 0,
+    "holdWaitSeconds": {
+     "n": 0,
+     "mean": null,
+     "p90": null,
+     "max": null
+    },
+    "metoredAttempts": 6689,
+    "expectedDeferred": 46.9,
+    "expectedOffered": 3150.3
+   },
+   "native": {
+    "added": 1782,
+    "departed": 1747,
+    "arrived": 1198,
+    "pendingNow": 21,
+    "activeNow": 549,
+    "discardedDerived": 14,
+    "discardedLogged": 0,
+    "teleportsStarted": 4,
+    "teleportsEnded": 4
+   },
+   "residual": 14,
+   "note": "discardedDerived is added - departed - pending; it must equal what SUMO logged. Non-zero residual = unexplained vehicles."
+  }
+ }
+}

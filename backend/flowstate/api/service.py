@@ -29,7 +29,7 @@ from typing import Any, Callable
 
 from ..scenarios.catalog import create
 from ..sim.engine import Engine, RunConfig
-from ..performance.congestion import resolve
+from ..performance.congestion import engine_options, resolve
 from ..performance.identity import identity
 
 log = logging.getLogger(__name__)
@@ -248,7 +248,7 @@ class SimulationService:
         seed = int(seed) if seed is not None else random.randint(1, 99999)
         params, warmup, preset = resolve(params, congestion, scenario_id)
         scenario = create(scenario_id, params)  # raises ValueError on invalid params
-        config = RunConfig(scenario_id, scenario.params, seed, signal_mode=scenario.params.get("signals", "fixed"), warmup=warmup, label="live")
+        config = RunConfig(scenario_id, scenario.params, seed, signal_mode=scenario.params.get("signals", "fixed"), warmup=warmup, label="live", **engine_options(congestion))
         run_id = f"{time.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:4]}"
         engine = Engine(scenario, config, NETWORKS_DIR, WORK_DIR / "live")  # instantiates (draws) the scenario
         info = {"id": run_id, **scenario.describe(), "signalMode": config.signal_mode, "spec": scenario.spec.model_dump(), "created": time.time(),
@@ -313,6 +313,8 @@ class SimulationService:
             if speed is None:
                 raise ValueError("speed required")
             run.set_speed(speed)
+        elif action == "relieve":  # the downstream restriction clears and the district is metered down: the jam discharges
+            return {**run.status(), "relief": run.call(lambda: run.engine.relieve(), timeout=10.0)}
         elif action == "stop":
             with self._lock:
                 self._stop_live()

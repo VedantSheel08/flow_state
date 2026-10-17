@@ -2,21 +2,18 @@
 <connections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.20" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">
     <connection from="church_n0" to="front_e3" fromLane="1" toLane="1" />
     <connection from="church_n0" to="church_n1" fromLane="1" toLane="1" />
-    <connection from="church_n0" to="front_w2" fromLane="1" toLane="1" />
     <connection from="church_n0" to="front_e3" fromLane="2" toLane="2" />
     <connection from="church_n0" to="church_n1" fromLane="2" toLane="2" />
     <connection from="church_n0" to="front_w2" fromLane="2" toLane="2" />
 
     <connection from="church_n1" to="king_e3" fromLane="1" toLane="1" />
     <connection from="church_n1" to="church_n2" fromLane="1" toLane="1" />
-    <connection from="church_n1" to="king_w2" fromLane="1" toLane="1" />
     <connection from="church_n1" to="king_e3" fromLane="2" toLane="2" />
     <connection from="church_n1" to="church_n2" fromLane="2" toLane="2" />
     <connection from="church_n1" to="king_w2" fromLane="2" toLane="3" />
 
     <connection from="church_n2" to="queen_e3" fromLane="1" toLane="1" />
     <connection from="church_n2" to="church_n3" fromLane="1" toLane="1" />
-    <connection from="church_n2" to="queen_w2" fromLane="1" toLane="1" />
     <connection from="church_n2" to="queen_e3" fromLane="2" toLane="1" />
     <connection from="church_n2" to="church_n3" fromLane="2" toLane="2" />
     <connection from="church_n2" to="queen_w2" fromLane="2" toLane="2" />
@@ -37,21 +34,18 @@
 
     <connection from="church_s1" to="queen_w2" fromLane="1" toLane="1" />
     <connection from="church_s1" to="church_s2" fromLane="1" toLane="1" />
-    <connection from="church_s1" to="queen_e3" fromLane="1" toLane="1" />
     <connection from="church_s1" to="queen_w2" fromLane="2" toLane="1" />
     <connection from="church_s1" to="church_s2" fromLane="2" toLane="2" />
     <connection from="church_s1" to="queen_e3" fromLane="2" toLane="2" />
 
     <connection from="church_s2" to="king_w2" fromLane="1" toLane="1" />
     <connection from="church_s2" to="church_s3" fromLane="1" toLane="1" />
-    <connection from="church_s2" to="king_e3" fromLane="1" toLane="1" />
     <connection from="church_s2" to="king_w2" fromLane="2" toLane="2" />
     <connection from="church_s2" to="church_s3" fromLane="2" toLane="2" />
     <connection from="church_s2" to="king_e3" fromLane="2" toLane="3" />
 
     <connection from="church_s3" to="front_w2" fromLane="1" toLane="1" />
     <connection from="church_s3" to="church_s4" fromLane="1" toLane="1" />
-    <connection from="church_s3" to="front_e3" fromLane="1" toLane="1" />
     <connection from="church_s3" to="front_w2" fromLane="2" toLane="2" />
     <connection from="church_s3" to="church_s4" fromLane="2" toLane="2" />
     <connection from="church_s3" to="front_e3" fromLane="2" toLane="2" />
@@ -154,14 +148,12 @@
 
     <connection from="front_e1" to="main_s4" fromLane="1" toLane="1" />
     <connection from="front_e1" to="front_e2" fromLane="1" toLane="1" />
-    <connection from="front_e1" to="main_n1" fromLane="1" toLane="1" />
     <connection from="front_e1" to="main_s4" fromLane="2" toLane="1" />
     <connection from="front_e1" to="front_e2" fromLane="2" toLane="2" />
     <connection from="front_e1" to="main_n1" fromLane="2" toLane="2" />
 
     <connection from="front_e2" to="church_s4" fromLane="1" toLane="1" />
     <connection from="front_e2" to="front_e3" fromLane="1" toLane="1" />
-    <connection from="front_e2" to="church_n1" fromLane="1" toLane="1" />
     <connection from="front_e2" to="church_s4" fromLane="2" toLane="2" />
     <connection from="front_e2" to="front_e3" fromLane="2" toLane="2" />
     <connection from="front_e2" to="church_n1" fromLane="2" toLane="2" />
@@ -182,14 +174,12 @@
 
     <connection from="front_w1" to="church_n1" fromLane="1" toLane="1" />
     <connection from="front_w1" to="front_w2" fromLane="1" toLane="1" />
-    <connection from="front_w1" to="church_s4" fromLane="1" toLane="1" />
     <connection from="front_w1" to="church_n1" fromLane="2" toLane="2" />
     <connection from="front_w1" to="front_w2" fromLane="2" toLane="2" />
     <connection from="front_w1" to="church_s4" fromLane="2" toLane="2" />
 
     <connection from="front_w2" to="main_n1" fromLane="1" toLane="1" />
     <connection from="front_w2" to="front_w3" fromLane="1" toLane="1" />
-    <connection from="front_w2" to="main_s4" fromLane="1" toLane="1" />
     <connection from="front_w2" to="main_n1" fromLane="2" toLane="1" />
     <connection from="front_w2" to="front_w3" fromLane="2" toLane="2" />
     <connection from="front_w2" to="main_s4" fromLane="2" toLane="2" />
@@ -211,7 +201,6 @@
 
     <connection from="king_e1" to="main_s3" fromLane="1" toLane="1" />
     <connection from="king_e1" to="king_e2" fromLane="1" toLane="1" />
-    <connection from="king_e1" to="main_n2" fromLane="1" toLane="1" />
     <connection from="king_e1" to="main_s3" fromLane="2" toLane="1" />
     <connection from="king_e1" to="king_e2" fromLane="2" toLane="2" />
     <connection from="king_e1" to="king_e2" fromLane="3" toLane="3" />
@@ -219,7 +208,6 @@
 
     <connection from="king_e2" to="church_s3" fromLane="1" toLane="1" />
     <connection from="king_e2" to="king_e3" fromLane="1" toLane="1" />
-    <connection from="king_e2" to="church_n2" fromLane="1" toLane="1" />
     <connection from="king_e2" to="church_s3" fromLane="2" toLane="2" />
     <connection from="king_e2" to="king_e3" fromLane="2" toLane="2" />
     <connection from="king_e2" to="king_e3" fromLane="3" toLane="3" />
@@ -243,7 +231,6 @@
 
     <connection from="king_w1" to="church_n2" fromLane="1" toLane="1" />
     <connection from="king_w1" to="king_w2" fromLane="1" toLane="1" />
-    <connection from="king_w1" to="church_s3" fromLane="1" toLane="1" />
     <connection from="king_w1" to="church_n2" fromLane="2" toLane="2" />
     <connection from="king_w1" to="king_w2" fromLane="2" toLane="2" />
     <connection from="king_w1" to="king_w2" fromLane="3" toLane="3" />
@@ -251,7 +238,6 @@
 
     <connection from="king_w2" to="main_n2" fromLane="1" toLane="1" />
     <connection from="king_w2" to="king_w3" fromLane="1" toLane="1" />
-    <connection from="king_w2" to="main_s3" fromLane="1" toLane="1" />
     <connection from="king_w2" to="main_n2" fromLane="2" toLane="1" />
     <connection from="king_w2" to="king_w3" fromLane="2" toLane="2" />
     <connection from="king_w2" to="king_w3" fromLane="3" toLane="3" />
