@@ -75,9 +75,16 @@ export function junctionGrid(list: NavJunction[], tol = 25): { rows: number; col
   }
 }
 
-/** "Main Street & King Street" -> "Main & King" */
+/** "John Street & King Street West" -> "John & King" */
 export function shortName(name: string): string {
-  return name.replace(/\s+(Street|Avenue|Road|Boulevard|Drive|Lane)\b/g, '').replace(/\s*&\s*/, ' & ')
+  return name
+    .replace(/\s+(Street|Avenue|Road|Boulevard|Drive|Lane)(\s+(West|East|North|South))?\b/g, '')
+    .replace(/\s*&\s*/, ' & ')
+}
+
+/** Street-name part of a junction name ("John Street & King Street West", 0) -> "John". */
+export function streetPart(name: string, side: 0 | 1): string {
+  return shortName(name.split('&')[side]?.trim() ?? '')
 }
 
 export const CONTROL_LABEL: Record<string, string> = {

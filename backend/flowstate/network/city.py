@@ -26,7 +26,7 @@ import math
 import random
 import subprocess
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -73,10 +73,21 @@ CLASSES: dict[str, dict[str, Any]] = {
     },
 }
 
+# One-way cross-sections (right -> left). The opposite curb keeps its sidewalk on a
+# pedestrian-only reverse edge, so crossings and walking areas still form on both sides.
+ONEWAY_LANES: dict[str, list[LaneDef]] = {
+    "arterial": [LaneDef("sidewalk", 2.6, PED), LaneDef("bike", 1.8, BIKE), LaneDef("car", 3.3, MOTOR), LaneDef("car", 3.3, MOTOR), LaneDef("car", 3.2, MOTOR)],
+    "collector": [LaneDef("sidewalk", 2.6, PED), LaneDef("bike", 1.8, BIKE), LaneDef("car", 3.4, MOTOR), LaneDef("car", 3.3, MOTOR)],
+    "local": [LaneDef("sidewalk", 2.4, PED), LaneDef("car", 3.8, MOTOR + " " + BIKE)],
+}
+
 CURB_RADIUS = 7.0
 
 
-def half_width(cls: str) -> float:
+def half_width(cls: str, oneway: bool = False) -> float:
+    if oneway:
+        lanes = ONEWAY_LANES[cls]
+        return (sum(l.width for l in lanes) + lanes[0].width) / 2
     return sum(l.width for l in CLASSES[cls]["lanes"])
 
 
@@ -86,6 +97,10 @@ class Street:
     name: str
     cls: str
     pos: float  # x for north-south streets, y for east-west streets
+    # cross streets (ids) where the street starts / ends; None runs on to the map edge
+    span: tuple[str | None, str | None] = (None, None)
+    oneway: str | None = None  # travel direction of a one-way street: e | w | n | s
+    renames: tuple[tuple[str, str], ...] = ()  # (cross street id, name from there on, towards increasing x / y)
 
 
 @dataclass
@@ -95,6 +110,8 @@ class Poi:
     name: str
     cell: tuple[int, int]  # block cell (i, j) in the extended grid
     entrance: str  # side of the block that faces the entrance: N/E/S/W
+    area: tuple[float, float, float, float] | None = None  # part of the block (fractions x0, y0, x1, y1); the rest is built up
+    note: str = ""
 
 
 @dataclass
@@ -109,19 +126,24 @@ class NetworkSpec:
     core_cells: list[tuple[int, int]] = field(default_factory=list)
     bus_lines: list[dict[str, Any]] = field(default_factory=list)
     seed: int = 7
+    controls: dict[tuple[str, str], str] = field(default_factory=dict)  # (ns street, ew street) -> junction type override
+    focus: tuple[str, str] | None = None  # (ns street, ew street) of the default camera junction
+    no_left: list[tuple[str, str]] = field(default_factory=list)  # (approach street, cross street): left turns prohibited
+    source: dict[str, Any] = field(default_factory=dict)
 
     def with_class(self, street_id: str, cls: str, new_id: str, title: str, description: str) -> "NetworkSpec":
         def swap(lst: list[Street]) -> list[Street]:
-            return [Street(s.id, s.name, cls if s.id == street_id else s.cls, s.pos) for s in lst]
+            return [replace(s, cls=cls) if s.id == street_id else s for s in lst]
 
-        return NetworkSpec(new_id, title, description, swap(self.ns), swap(self.ew), self.fringe, self.pois, self.core_cells, self.bus_lines, self.seed)
+        return replace(self, id=new_id, title=title, description=description, ns=swap(self.ns), ew=swap(self.ew))
 
 
 # ---------------------------------------------------------------------------
 # Network catalogue
 # ---------------------------------------------------------------------------
-DISTRICT = NetworkSpec(
-    id="district",
+# The original synthetic 4x4 grid, kept for reference (not built; see toronto.py for the live map).
+RIVERSIDE = NetworkSpec(
+    id="riverside",
     title="Riverside District",
     description="Downtown district: three signalised arterials, two cycling collectors and quiet local streets with all-way stops. Sidewalks and crosswalks throughout.",
     ns=[
@@ -150,10 +172,10 @@ DISTRICT = NetworkSpec(
     ],
 )
 
-DISTRICT_BIKE = DISTRICT.with_class(
+RIVERSIDE_BIKE = RIVERSIDE.with_class(
     "king",
     "arterial_bike",
-    "district_bike",
+    "riverside_bike",
     "Riverside District · King St bike lanes",
     "King Street road diet: one general traffic lane per direction converted into a protected bicycle lane.",
 )
@@ -169,7 +191,6 @@ GRID = NetworkSpec(
     seed=11,
 )
 
-NETWORKS: dict[str, NetworkSpec] = {n.id: n for n in (DISTRICT, DISTRICT_BIKE)}
 
 
 # ---------------------------------------------------------------------------
@@ -190,75 +211,147 @@ def _junction_type(a: str, b: str) -> str:
     return "allway_stop"
 
 
-def _edges_for_street(spec: NetworkSpec, street: Street, axis: str) -> list[dict[str, Any]]:
-    """Return directed edge records along a street, including fringe stubs."""
+def _control(spec: NetworkSpec, sx: Street, sy: Street) -> str:
+    return spec.controls.get((sx.id, sy.id)) or _junction_type(sx.cls, sy.cls)
+
+
+def _extent(street: Street, cross: list[Street]) -> tuple[float, float]:
+    """Range of the street along its own axis (positions of its end cross streets)."""
+    pos = {s.id: s.pos for s in cross}
+    lo, hi = street.span
+    return (pos[lo] if lo else -math.inf, pos[hi] if hi else math.inf)
+
+
+def _crosses(spec: NetworkSpec, i: int, j: int) -> bool:
+    sx, sy = spec.ns[i], spec.ew[j]
+    xlo, xhi = _extent(sy, spec.ns)
+    ylo, yhi = _extent(sx, spec.ew)
+    return xlo - 0.5 <= sx.pos <= xhi + 0.5 and ylo - 0.5 <= sy.pos <= yhi + 0.5
+
+
+def _junctions(spec: NetworkSpec) -> list[tuple[int, int]]:
+    return [(i, j) for i in range(len(spec.ns)) for j in range(len(spec.ew)) if _crosses(spec, i, j)]
+
+
+def _segment_name(street: Street, cross: list[Street], at: float) -> str:
+    """Name of the street from position ``at`` onwards (towards increasing x / y)."""
+    pos = {s.id: s.pos for s in cross}
+    name = street.name
+    for cid, new in sorted(street.renames, key=lambda r: pos[r[0]]):
+        if at >= pos[cid] - 0.5:
+            name = new
+    return name
+
+
+def _chain(spec: NetworkSpec, street: Street, axis: str) -> list[str]:
+    """Node ids along the street, west to east / south to north, fringe stubs included."""
     if axis == "ew":
         j = spec.ew.index(street)
-        chain = [f"fw{j}"] + [_node_id(i, j) for i in range(len(spec.ns))] + [f"fe{j}"]
-        fwd, back = "e", "w"
-        sides = ("W", "E")
+        inner = [_node_id(i, j) for i in range(len(spec.ns)) if _crosses(spec, i, j)]
+        head, tail = f"fw{j}", f"fe{j}"
     else:
         i = spec.ns.index(street)
-        chain = [f"fs{i}"] + [_node_id(i, j) for j in range(len(spec.ew))] + [f"fn{i}"]
-        fwd, back = "n", "s"
-        sides = ("S", "N")
+        inner = [_node_id(i, j) for j in range(len(spec.ew)) if _crosses(spec, i, j)]
+        head, tail = f"fs{i}", f"fn{i}"
+    return ([head] if street.span[0] is None else []) + inner + ([tail] if street.span[1] is None else [])
+
+
+def _edges_for_street(spec: NetworkSpec, street: Street, axis: str) -> list[dict[str, Any]]:
+    """Return directed edge records along a street, including fringe stubs.
+
+    A one-way street gets its travel direction plus a pedestrian-only reverse
+    edge (``kind == "footway"``) that carries the far sidewalk."""
+    chain = _chain(spec, street, axis)
+    fwd, back = ("e", "w") if axis == "ew" else ("n", "s")
+    sides = ("W", "E") if axis == "ew" else ("S", "N")
+    open_lo, open_hi = street.span[0] is None, street.span[1] is None
     out = []
     n = len(chain) - 1
-    for k in range(n):
-        a, b = chain[k], chain[k + 1]
-        kind = "entry" if k == 0 else ("exit" if k == n - 1 else "street")
-        out.append({"id": f"{street.id}_{fwd}{k}", "from": a, "to": b, "street": street, "dir": fwd, "kind": kind, "side": sides[0] if kind == "entry" else (sides[1] if kind == "exit" else None), "seg": k})
-    for k in range(n):
-        a, b = chain[n - k], chain[n - k - 1]
-        kind = "entry" if k == 0 else ("exit" if k == n - 1 else "street")
-        out.append({"id": f"{street.id}_{back}{k}", "from": a, "to": b, "street": street, "dir": back, "kind": kind, "side": sides[1] if kind == "entry" else (sides[0] if kind == "exit" else None), "seg": n - 1 - k})
+
+    def kind_of(first: bool, last: bool, enters: bool, leaves: bool) -> str:
+        if first and enters:
+            return "entry"
+        if last and leaves:
+            return "exit"
+        return "street"
+
+    for d in (fwd, back):
+        foot = street.oneway is not None and street.oneway != d
+        for k in range(n):
+            if d == fwd:
+                a, b, seg = chain[k], chain[k + 1], k
+                kind = kind_of(k == 0, k == n - 1, open_lo, open_hi)
+                side = sides[0] if kind == "entry" else (sides[1] if kind == "exit" else None)
+            else:
+                a, b, seg = chain[n - k], chain[n - k - 1], n - 1 - k
+                kind = kind_of(k == 0, k == n - 1, open_hi, open_lo)
+                side = sides[1] if kind == "entry" else (sides[0] if kind == "exit" else None)
+            if foot:
+                kind, side = "footway", None
+            out.append({"id": f"{street.id}_{d}{k}", "from": a, "to": b, "street": street, "dir": d, "kind": kind, "side": side, "seg": seg})
     return out
 
 
 def _write_plain(spec: NetworkSpec, prefix: Path) -> list[dict[str, Any]]:
     xs = [s.pos for s in spec.ns]
     ys = [s.pos for s in spec.ew]
+    x_lo, x_hi, y_lo, y_hi = min(xs) - spec.fringe, max(xs) + spec.fringe, min(ys) - spec.fringe, max(ys) + spec.fringe
     nodes = ET.Element("nodes")
-    for i, sx in enumerate(spec.ns):
-        for j, sy in enumerate(spec.ew):
-            jt = _junction_type(sx.cls, sy.cls)
-            attrs = {"id": _node_id(i, j), "x": f"{sx.pos:.2f}", "y": f"{sy.pos:.2f}", "type": jt, "radius": f"{CURB_RADIUS:.1f}"}
-            if jt == "traffic_light":
-                attrs["tlType"] = "static"
-            ET.SubElement(nodes, "node", attrs)
+    for i, j in _junctions(spec):
+        sx, sy = spec.ns[i], spec.ew[j]
+        jt = _control(spec, sx, sy)
+        attrs = {"id": _node_id(i, j), "x": f"{sx.pos:.2f}", "y": f"{sy.pos:.2f}", "type": jt, "radius": f"{CURB_RADIUS:.1f}"}
+        if jt == "traffic_light":
+            attrs["tlType"] = "static"
+        ET.SubElement(nodes, "node", attrs)
     for j, s in enumerate(spec.ew):
-        ET.SubElement(nodes, "node", {"id": f"fw{j}", "x": f"{xs[0] - spec.fringe:.2f}", "y": f"{s.pos:.2f}", "type": "dead_end"})
-        ET.SubElement(nodes, "node", {"id": f"fe{j}", "x": f"{xs[-1] + spec.fringe:.2f}", "y": f"{s.pos:.2f}", "type": "dead_end"})
+        if s.span[0] is None:
+            ET.SubElement(nodes, "node", {"id": f"fw{j}", "x": f"{x_lo:.2f}", "y": f"{s.pos:.2f}", "type": "dead_end"})
+        if s.span[1] is None:
+            ET.SubElement(nodes, "node", {"id": f"fe{j}", "x": f"{x_hi:.2f}", "y": f"{s.pos:.2f}", "type": "dead_end"})
     for i, s in enumerate(spec.ns):
-        ET.SubElement(nodes, "node", {"id": f"fs{i}", "x": f"{s.pos:.2f}", "y": f"{ys[0] - spec.fringe:.2f}", "type": "dead_end"})
-        ET.SubElement(nodes, "node", {"id": f"fn{i}", "x": f"{s.pos:.2f}", "y": f"{ys[-1] + spec.fringe:.2f}", "type": "dead_end"})
+        if s.span[0] is None:
+            ET.SubElement(nodes, "node", {"id": f"fs{i}", "x": f"{s.pos:.2f}", "y": f"{y_lo:.2f}", "type": "dead_end"})
+        if s.span[1] is None:
+            ET.SubElement(nodes, "node", {"id": f"fn{i}", "x": f"{s.pos:.2f}", "y": f"{y_hi:.2f}", "type": "dead_end"})
     coords: dict[str, tuple[float, float]] = {}
     for n in nodes.iter("node"):
         coords[n.get("id")] = (float(n.get("x")), float(n.get("y")))
     edges = ET.Element("edges")
     records: list[dict[str, Any]] = []
     for axis, streets in (("ew", spec.ew), ("ns", spec.ns)):
+        cross = spec.ns if axis == "ew" else spec.ew
         for st in streets:
             cls = CLASSES[st.cls]
             for rec in _edges_for_street(spec, st, axis):
-                parts = [dict(rec, part="full")]
-                if cls.get("bay") and rec["kind"] in ("entry", "street"):
-                    (x0, y0), (x1, y1) = coords[rec["from"]], coords[rec["to"]]
+                (x0, y0), (x1, y1) = coords[rec["from"]], coords[rec["to"]]
+                lo = min(x0, x1) if axis == "ew" else min(y0, y1)
+                name = _segment_name(st, cross, lo)
+                parts = [dict(rec, part="full", name=name)]
+                if st.oneway:
+                    lanes = ONEWAY_LANES[st.cls] if rec["kind"] != "footway" else [ONEWAY_LANES[st.cls][0]]
+                else:
+                    lanes = cls["lanes"]
+                if cls.get("bay") and not st.oneway and rec["kind"] in ("entry", "street"):
                     L = math.hypot(x1 - x0, y1 - y0)
-                    f = 1.0 - cls["bay"] / L
+                    # short downtown blocks: keep at least ~40 % of the block ahead of the bay opening
+                    f = 1.0 - min(cls["bay"], 0.6 * L) / L
                     mid = f"{rec['id']}_x"
                     nd = ET.SubElement(nodes, "node", {"id": mid, "x": f"{x0 + (x1 - x0) * f:.2f}", "y": f"{y0 + (y1 - y0) * f:.2f}", "type": "priority"})
                     coords[mid] = (float(nd.get("x")), float(nd.get("y")))
                     parts = [
-                        dict(rec, to=mid, part="main"),
-                        dict(rec, id=rec["id"] + "b", **{"from": mid}, part="bay", side=None),
+                        dict(rec, to=mid, part="main", name=name),
+                        dict(rec, id=rec["id"] + "b", **{"from": mid}, part="bay", side=None, name=name),
                     ]
                 for r in parts:
-                    e = ET.SubElement(edges, "edge", {
+                    attrs = {
                         "id": r["id"], "from": r["from"], "to": r["to"], "priority": str(cls["priority"]),
-                        "numLanes": str(len(cls["lanes"])), "speed": f"{cls['speed']:.2f}", "name": st.name, "type": st.cls,
-                    })
-                    for idx, ld in enumerate(cls["lanes"]):
+                        "numLanes": str(len(lanes)), "speed": f"{cls['speed']:.2f}", "name": name, "type": st.cls,
+                    }
+                    if st.oneway:
+                        attrs["spreadType"] = "roadCenter"
+                    e = ET.SubElement(edges, "edge", attrs)
+                    for idx, ld in enumerate(lanes):
                         attrs = {"index": str(idx), "width": f"{ld.width:.2f}"}
                         if ld.role == "bay" and r["part"] in ("main", "full"):
                             attrs["disallow"] = "all"
@@ -298,18 +391,28 @@ def _run(cmd: list[str]) -> str:
 
 def _exclusive_left(spec: NetworkSpec, records: list[dict[str, Any]], pass1: Path, prefix: Path) -> None:
     """Make the left-turn bay of every arterial approach left-only and forbid
-    left turns from the through lanes (protected-left operation)."""
+    left turns from the through lanes (protected-left operation); drop the
+    left turns the spec prohibits."""
     import sumolib
 
     from .. import sumo_env  # noqa: F401
 
     net = sumolib.net.readNet(str(pass1))
     bays = {r["id"] for r in records if r.get("part") == "bay"}
+    # turn prohibitions: approach edges (by street) into the junction with the named cross street
+    node_streets = {_node_id(i, j): {spec.ns[i].id, spec.ew[j].id} for i, j in _junctions(spec)}
+    banned = {r["id"] for r in records for a, b in spec.no_left
+              if r["street"].id == a and r["kind"] != "footway" and b in node_streets.get(r["to"], set())}
     con_path = prefix.with_name(prefix.name + ".con.xml")
     tree = ET.parse(con_path)
     root = tree.getroot()
     for c in list(root.iter("connection")):
         frm, to = c.get("from"), c.get("to")
+        if to is not None and frm in banned:
+            lane = net.getEdge(frm).getLane(int(c.get("fromLane")))
+            if any(cn.getTo().getID() == to and cn.getDirection() in ("l", "L") for cn in lane.getOutgoing()):
+                root.remove(c)
+                continue
         if to is None or frm not in bays:
             continue
         edge = net.getEdge(frm)
@@ -325,6 +428,21 @@ def _exclusive_left(spec: NetworkSpec, records: list[dict[str, Any]], pass1: Pat
         if (lane == car[-1]) != is_left:
             root.remove(c)
     tree.write(con_path, encoding="UTF-8", xml_declaration=True)
+
+
+def _restore_footway_width(spec: NetworkSpec, records: list[dict[str, Any]], prefix: Path) -> None:
+    """netconvert's plain output folds a single-lane edge's lane into the edge
+    element and drops its width; put the sidewalk width back for pass 2."""
+    width = {r["id"]: ONEWAY_LANES[r["street"].cls][0].width for r in records if r["kind"] == "footway"}
+    if not width:
+        return
+    path = prefix.with_name(prefix.name + ".edg.xml")
+    tree = ET.parse(path)
+    for e in tree.getroot().iter("edge"):
+        w = width.get(e.get("id", ""))
+        if w is not None:
+            e.set("width", f"{w:.2f}")
+    tree.write(path, encoding="UTF-8", xml_declaration=True)
 
 
 def build_network(spec: NetworkSpec, out_dir: Path) -> Path:
@@ -347,6 +465,7 @@ def build_network(spec: NetworkSpec, out_dir: Path) -> Path:
     for ext in ("nod", "edg", "con"):
         (work / f"p1.{ext}.xml").replace(prefix.with_name(f"plain.{ext}.xml"))
     _exclusive_left(spec, records, pass1, prefix)
+    _restore_footway_width(spec, records, prefix)
     net_path = out_dir / f"{spec.id}.net.xml"
     _run([
         binary("netconvert"),
@@ -387,45 +506,145 @@ def _rect(x0: float, y0: float, x1: float, y1: float) -> list[list[float]]:
     return [[round(x0, 2), round(y0, 2)], [round(x1, 2), round(y0, 2)], [round(x1, 2), round(y1, 2)], [round(x0, 2), round(y1, 2)]]
 
 
+def _grid_lines(streets: list[Street], cross: list[Street]) -> list[dict[str, Any]]:
+    """Distinct street lines along one axis (streets that share a line, e.g. Windsor
+    and Widmer, are one line), each with the streets on it and their extents."""
+    lines: list[dict[str, Any]] = []
+    for s in sorted(streets, key=lambda s: s.pos):
+        if lines and s.pos - lines[-1]["pos"] < 6.0:
+            lines[-1]["streets"].append(s)
+        else:
+            lines.append({"pos": s.pos, "streets": [s]})
+    for ln in lines:
+        ln["hw"] = max(half_width(s.cls, bool(s.oneway)) for s in ln["streets"])
+        ln["extents"] = [_extent(s, cross) for s in ln["streets"]]
+    return lines
+
+
+def _merge_cells(cols: list[dict[str, Any]], rows: list[dict[str, Any]], col_mid: list[float], row_mid: list[float]) -> list[tuple[int, int, int, int]]:
+    """Group grid cells into blocks: neighbouring cells merge where no street
+    separates them. Returns (i0, j0, i1, j1) cell ranges (inclusive)."""
+    ncols, nrows = len(cols) + 1, len(rows) + 1
+    parent = {(i, j): (i, j) for i in range(ncols) for j in range(nrows)}
+
+    def find(c):
+        while parent[c] != c:
+            parent[c] = parent[parent[c]]
+            c = parent[c]
+        return c
+
+    def covered(line: dict[str, Any], at: float) -> bool:
+        return any(lo - 0.5 <= at <= hi + 0.5 for lo, hi in line["extents"])
+
+    for i in range(ncols):
+        for j in range(nrows):
+            if i + 1 < ncols and not covered(cols[i], row_mid[j]):
+                parent[find((i + 1, j))] = find((i, j))
+            if j + 1 < nrows and not covered(rows[j], col_mid[i]):
+                parent[find((i, j + 1))] = find((i, j))
+    groups: dict[tuple[int, int], list[tuple[int, int]]] = {}
+    for c in parent:
+        groups.setdefault(find(c), []).append(c)
+    out = []
+    for cells in groups.values():
+        i0, i1 = min(c[0] for c in cells), max(c[0] for c in cells)
+        j0, j1 = min(c[1] for c in cells), max(c[1] for c in cells)
+        if len(cells) == (i1 - i0 + 1) * (j1 - j0 + 1):
+            out.append((i0, j0, i1, j1))
+        else:  # not a rectangle: keep the cells as separate blocks
+            out.extend((i, j, i, j) for i, j in cells)
+    return sorted(out, key=lambda b: (b[0], b[1]))
+
+
+def _onward_options(records: list[dict[str, Any]], net_path: Path) -> dict[str, tuple[int, int]]:
+    """Per edge, how well connected it is for a vehicle based there: (fewest of the distinct inner edges it can
+    be reached from and continued onto, the number it can continue onto). Bays count as their block."""
+    import sumolib
+
+    from .. import sumo_env  # noqa: F401
+
+    net = sumolib.net.readNet(str(net_path))
+    kinds = {r["id"]: r["kind"] for r in records}
+    out: dict[str, int] = {}
+    for r in records:
+        last = net.getEdge(r["id"] + "b" if r["part"] == "main" else r["id"])
+        first = net.getEdge(r["id"][:-1] if r["part"] == "bay" else r["id"])
+        nxt = {c.getTo().getID() for lane in last.getLanes() if lane.allows("passenger") for c in lane.getOutgoing()}
+        prev = {e.getID() for e in first.getIncoming() if kinds.get(e.getID()) == "street"}
+        onward = len({e for e in nxt if kinds.get(e) in ("street", "entry")})
+        out[r["id"]] = (min(onward, len(prev)), onward)
+    return out
+
+
 def build_layout(spec: NetworkSpec, records: list[dict[str, Any]], net_path: Path) -> dict[str, Any]:
     rng = random.Random(spec.seed)
+    onward = _onward_options(records, net_path)
     xs = [s.pos for s in spec.ns]
     ys = [s.pos for s in spec.ew]
-    hw_x = [half_width(s.cls) for s in spec.ns]
-    hw_y = [half_width(s.cls) for s in spec.ew]
+    x_lo, x_hi, y_lo, y_hi = min(xs) - spec.fringe, max(xs) + spec.fringe, min(ys) - spec.fringe, max(ys) + spec.fringe
     margin = 70.0
-    bx0, bx1 = xs[0] - spec.fringe - margin, xs[-1] + spec.fringe + margin
-    by0, by1 = ys[0] - spec.fringe - margin, ys[-1] + spec.fringe + margin
+    bx0, bx1 = x_lo - margin, x_hi + margin
+    by0, by1 = y_lo - margin, y_hi + margin
 
-    # column/row boundaries of the extended grid
-    col_bounds = [(bx0, xs[0] - hw_x[0])] + [(xs[i] + hw_x[i], xs[i + 1] - hw_x[i + 1]) for i in range(len(xs) - 1)] + [(xs[-1] + hw_x[-1], bx1)]
-    row_bounds = [(by0, ys[0] - hw_y[0])] + [(ys[j] + hw_y[j], ys[j + 1] - hw_y[j + 1]) for j in range(len(ys) - 1)] + [(ys[-1] + hw_y[-1], by1)]
+    cols = _grid_lines(spec.ns, spec.ew)
+    rows = _grid_lines(spec.ew, spec.ns)
+    col_edges = [bx0] + [c["pos"] for c in cols] + [bx1]
+    row_edges = [by0] + [r["pos"] for r in rows] + [by1]
+    col_mid = [(col_edges[i] + col_edges[i + 1]) / 2 for i in range(len(cols) + 1)]
+    row_mid = [(row_edges[j] + row_edges[j + 1]) / 2 for j in range(len(rows) + 1)]
+    ncols, nrows = len(cols) + 1, len(rows) + 1
 
-    edges_by_id = {r["id"]: r for r in records}
-    poi_by_cell = {p.cell: p for p in spec.pois}
+    def bounds(i0: int, j0: int, i1: int, j1: int) -> tuple[float, float, float, float]:
+        x0 = cols[i0 - 1]["pos"] + cols[i0 - 1]["hw"] if i0 > 0 else bx0
+        x1 = cols[i1]["pos"] - cols[i1]["hw"] if i1 < len(cols) else bx1
+        y0 = rows[j0 - 1]["pos"] + rows[j0 - 1]["hw"] if j0 > 0 else by0
+        y1 = rows[j1]["pos"] - rows[j1]["hw"] if j1 < len(rows) else by1
+        return x0, y0, x1, y1
 
-    def frontage(i: int, j: int) -> dict[str, list[str]]:
-        """Street edges that bound block cell (i, j), per side."""
+    coords: dict[str, tuple[float, float]] = {}
+    for i, j in _junctions(spec):
+        coords[_node_id(i, j)] = (spec.ns[i].pos, spec.ew[j].pos)
+    for j, s in enumerate(spec.ew):
+        coords[f"fw{j}"], coords[f"fe{j}"] = (x_lo, s.pos), (x_hi, s.pos)
+    for i, s in enumerate(spec.ns):
+        coords[f"fs{i}"], coords[f"fn{i}"] = (s.pos, y_lo), (s.pos, y_hi)
+    edge_span: dict[str, tuple[float, float]] = {}
+    for r in records:
+        if r["part"] == "bay":
+            continue
+        a = coords[r["from"]]
+        b = coords[r["to"] if r["part"] == "full" else next(x["to"] for x in records if x["id"] == r["id"] + "b")]
+        k = 0 if r["street"] in spec.ew else 1
+        edge_span[r["id"]] = (min(a[k], b[k]), max(a[k], b[k]))
+        if r["part"] == "main":
+            edge_span[r["id"] + "b"] = edge_span[r["id"]]
+
+    line_hw = {s.id: ln["hw"] for ln in cols + rows for s in ln["streets"]}
+
+    def frontage(x0: float, y0: float, x1: float, y1: float) -> dict[str, list[str]]:
+        """Vehicle edges along each side of a block (all segments within its extent)."""
         out: dict[str, list[str]] = {"S": [], "N": [], "W": [], "E": []}
-        for side, street_list, idx, along, lo in (
-            ("S", spec.ew, j - 1, "ew", i),
-            ("N", spec.ew, j, "ew", i),
-            ("W", spec.ns, i - 1, "ns", j),
-            ("E", spec.ns, i, "ns", j),
-        ):
-            if not (0 <= idx < len(street_list)):
+        for r in records:
+            if r["kind"] == "footway":
                 continue
-            st = street_list[idx]
-            # segment index along the street that spans this cell
-            for rec in records:
-                if rec["street"].id != st.id:
-                    continue
-                if rec["dir"] in ("e", "n") and rec["seg"] == lo:
-                    out[side].append(rec["id"])
-                elif rec["dir"] in ("w", "s") and rec["seg"] == lo:
-                    out[side].append(rec["id"])
+            st = r["street"]
+            lo, hi = edge_span[r["id"]]
+            mid = (lo + hi) / 2
+            if st in spec.ew and x0 - 1 <= mid <= x1 + 1:
+                hw = line_hw[st.id]
+                if abs(st.pos + hw - y0) < 1.0:
+                    out["S"].append(r["id"])
+                elif abs(st.pos - hw - y1) < 1.0:
+                    out["N"].append(r["id"])
+            elif st in spec.ns and y0 - 1 <= mid <= y1 + 1:
+                hw = line_hw[st.id]
+                if abs(st.pos + hw - x0) < 1.0:
+                    out["W"].append(r["id"])
+                elif abs(st.pos - hw - x1) < 1.0:
+                    out["E"].append(r["id"])
         return out
 
+    edges_by_id = {r["id"]: r for r in records}
     blocks: list[dict[str, Any]] = []
     buildings: list[dict[str, Any]] = []
     trees: list[list[float]] = []
@@ -433,64 +652,71 @@ def build_layout(spec: NetworkSpec, records: list[dict[str, Any]], net_path: Pat
     pois_out: list[dict[str, Any]] = []
     zones: list[dict[str, Any]] = []
     core = set(spec.core_cells)
-    ncols, nrows = len(col_bounds), len(row_bounds)
-    for i, (x0, x1) in enumerate(col_bounds):
-        for j, (y0, y1) in enumerate(row_bounds):
-            outer = i in (0, ncols - 1) or j in (0, nrows - 1)
-            poi = poi_by_cell.get((i, j))
-            use = poi.kind if poi else ("commercial" if (i, j) in core else "residential")
-            r_corner = CURB_RADIUS + 1.0
-            blocks.append({"id": f"b{i}_{j}", "cell": [i, j], "use": use, "shape": _round_rect(x0, y0, x1, y1, r_corner), "outer": outer})
-            fr = frontage(i, j)
-            zone_edges = sorted({e for lst in fr.values() for e in lst if edges_by_id[e]["kind"] == "street"})
-            if zone_edges:
-                zones.append({"id": f"b{i}_{j}", "use": use, "edges": zone_edges, "core": (i, j) in core, "cell": [i, j]})
-            inner = (x0 + 2.0, y0 + 2.0, x1 - 2.0, y1 - 2.0)
-            if poi:
-                info = _poi_layout(poi, inner, fr, rng, buildings, features, trees)
-                pois_out.append({"id": poi.id, "kind": poi.kind, "name": poi.name, "cell": [i, j], **info})
-            else:
-                _block_buildings(inner, use, (i, j) in core, outer, rng, buildings, trees)
-            _street_trees((x0, y0, x1, y1), rng, trees, use)
+    for i0, j0, i1, j1 in _merge_cells(cols, rows, col_mid, row_mid):
+        cells = [(i, j) for i in range(i0, i1 + 1) for j in range(j0, j1 + 1)]
+        x0, y0, x1, y1 = bounds(i0, j0, i1, j1)
+        outer = i0 == 0 or j0 == 0 or i1 == ncols - 1 or j1 == nrows - 1
+        poi = next((p for p in spec.pois if p.cell in cells), None)
+        is_core = any(c in core for c in cells)
+        use = poi.kind if poi else ("commercial" if is_core else "residential")
+        r_corner = CURB_RADIUS + 1.0
+        bid = f"b{i0}_{j0}"
+        blocks.append({"id": bid, "cell": [i0, j0], "cells": [list(c) for c in cells], "use": use, "shape": _round_rect(x0, y0, x1, y1, r_corner), "outer": outer})
+        fr = frontage(x0, y0, x1, y1)
+        zone_edges = sorted({e for lst in fr.values() for e in lst if edges_by_id[e]["kind"] == "street"})
+        if zone_edges:
+            zones.append({"id": bid, "use": use, "edges": zone_edges, "core": is_core, "cell": [i0, j0]})
+        inner = (x0 + 2.0, y0 + 2.0, x1 - 2.0, y1 - 2.0)
+        if poi:
+            info = _poi_layout(poi, inner, fr, rng, buildings, features, trees)
+            # responders start (and end) on the first access edge: lead with one that is reachable and has ways on
+            info["access"] = sorted(info["access"], key=lambda e: tuple(-v for v in onward.get(e, (0, 0))))
+            pois_out.append({"id": poi.id, "kind": poi.kind, "name": poi.name, "cell": [i0, j0], **({"note": poi.note} if poi.note else {}), **info})
+        else:
+            _block_buildings(inner, use, is_core, outer, rng, buildings, trees)
+        _street_trees((x0, y0, x1, y1), rng, trees, use)
 
-    # street labels (one per interior segment, centred)
+    # street labels (one per segment between junctions, centred)
     labels: list[dict[str, Any]] = []
-    for st in spec.ew:
-        for i in range(len(xs) + 1):
-            xa = xs[i - 1] if i > 0 else xs[0] - spec.fringe
-            xb = xs[i] if i < len(xs) else xs[-1] + spec.fringe
-            labels.append({"text": st.name, "x": round((xa + xb) / 2, 1), "y": st.pos, "angle": 0, "cls": st.cls})
-    for st in spec.ns:
-        for j in range(len(ys) + 1):
-            ya = ys[j - 1] if j > 0 else ys[0] - spec.fringe
-            yb = ys[j] if j < len(ys) else ys[-1] + spec.fringe
-            labels.append({"text": st.name, "x": st.pos, "y": round((ya + yb) / 2, 1), "angle": 90, "cls": st.cls})
+    for axis, streets, cross in (("ew", spec.ew, spec.ns), ("ns", spec.ns, spec.ew)):
+        for st in streets:
+            chain = _chain(spec, st, axis)
+            for a, b in zip(chain, chain[1:]):
+                (xa, ya), (xb, yb) = coords[a], coords[b]
+                name = _segment_name(st, cross, min(xa, xb) if axis == "ew" else min(ya, yb))
+                labels.append({"text": name, "x": round((xa + xb) / 2, 1), "y": round((ya + yb) / 2, 1), "angle": 0 if axis == "ew" else 90, "cls": st.cls})
 
     edges_meta = {
-        r["id"]: {"kind": r["kind"], "side": r["side"], "street": r["street"].id, "name": r["street"].name, "cls": r["street"].cls, "dir": r["dir"], "part": r["part"], "seg": r["seg"]}
+        r["id"]: {"kind": r["kind"], "side": r["side"], "street": r["street"].id, "name": r.get("name") or r["street"].name, "cls": r["street"].cls, "dir": r["dir"], "part": r["part"], "seg": r["seg"],
+                  **({"oneway": True} if r["street"].oneway else {})}
         for r in records
     }
     junctions = {}
-    for i, sx in enumerate(spec.ns):
-        for j, sy in enumerate(spec.ew):
-            junctions[_node_id(i, j)] = {"name": f"{sx.name} & {sy.name}", "control": _junction_type(sx.cls, sy.cls), "x": sx.pos, "y": sy.pos}
+    for i, j in _junctions(spec):
+        sx, sy = spec.ns[i], spec.ew[j]
+        junctions[_node_id(i, j)] = {"name": f"{_segment_name(sx, spec.ew, sy.pos)} & {_segment_name(sy, spec.ns, sx.pos)}", "control": _control(spec, sx, sy), "x": sx.pos, "y": sy.pos}
 
-    # default camera: the busiest arterial intersection near the centre
+    # default camera: the named focus junction, else the first arterial x arterial intersection
     focus = None
-    for i, sx in enumerate(spec.ns):
-        for j, sy in enumerate(spec.ew):
-            if sx.cls.startswith("arterial") and sy.cls.startswith("arterial"):
-                focus = focus or [sx.pos, sy.pos]
-    focus = focus or [(xs[0] + xs[-1]) / 2, (ys[0] + ys[-1]) / 2]
+    if spec.focus:
+        sx = next(s for s in spec.ns if s.id == spec.focus[0])
+        sy = next(s for s in spec.ew if s.id == spec.focus[1])
+        focus = [sx.pos, sy.pos]
+    for i, j in _junctions(spec):
+        sx, sy = spec.ns[i], spec.ew[j]
+        if sx.cls.startswith("arterial") and sy.cls.startswith("arterial"):
+            focus = focus or [sx.pos, sy.pos]
+    focus = focus or [(min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2]
 
     return {
         "id": spec.id,
         "title": spec.title,
         "description": spec.description,
         "bounds": [round(bx0, 1), round(by0, 1), round(bx1, 1), round(by1, 1)],
-        "roadBounds": [xs[0] - spec.fringe, ys[0] - spec.fringe, xs[-1] + spec.fringe, ys[-1] + spec.fringe],
+        "roadBounds": [x_lo, y_lo, x_hi, y_hi],
         "focus": focus,
-        "streets": [{"id": s.id, "name": s.name, "cls": s.cls, "axis": ax, "pos": s.pos} for ax, lst in (("ns", spec.ns), ("ew", spec.ew)) for s in lst],
+        "streets": [{"id": s.id, "name": s.name, "cls": s.cls, "axis": ax, "pos": s.pos, "span": list(s.span), "oneway": s.oneway}
+                    for ax, lst in (("ns", spec.ns), ("ew", spec.ew)) for s in lst],
         "blocks": blocks,
         "buildings": buildings,
         "trees": trees,
@@ -501,6 +727,7 @@ def build_layout(spec: NetworkSpec, records: list[dict[str, Any]], net_path: Pat
         "edges": edges_meta,
         "junctions": junctions,
         "busLines": spec.bus_lines,
+        **({"source": spec.source} if spec.source else {}),
     }
 
 
@@ -577,6 +804,14 @@ def _street_trees(rect, rng, trees, use) -> None:
 
 
 def _poi_layout(poi: Poi, rect, frontage, rng, buildings, features, trees) -> dict[str, Any]:
+    if poi.area:
+        # the POI takes part of the block; the remaining strips are built up as downtown frontage
+        bx0, by0, bx1, by1 = rect
+        fx0, fy0, fx1, fy1 = poi.area
+        sub = (bx0 + (bx1 - bx0) * fx0, by0 + (by1 - by0) * fy0, bx0 + (bx1 - bx0) * fx1, by0 + (by1 - by0) * fy1)
+        for strip in ((bx0, by0, sub[0] - 3, by1), (sub[2] + 3, by0, bx1, by1), (sub[0], by0, sub[2], sub[1] - 3), (sub[0], sub[3] + 3, sub[2], by1)):
+            _block_buildings(strip, "commercial", True, False, rng, buildings, trees)
+        rect = sub
     x0, y0, x1, y1 = rect
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
     w, h = x1 - x0, y1 - y0
@@ -643,3 +878,12 @@ def _write_bus_stops(spec: NetworkSpec, layout: dict[str, Any], path: Path) -> N
     ET.ElementTree(root).write(path, encoding="UTF-8", xml_declaration=True)
     layout["busStops"] = stops
     (path.with_name(f"{spec.id}.city.json")).write_text(json.dumps(layout, separators=(",", ":")), encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# Registry (the Toronto spec reuses the helpers above)
+# ---------------------------------------------------------------------------
+from .toronto import DOWNTOWN, DOWNTOWN_BIKE  # noqa: E402
+
+NETWORKS: dict[str, NetworkSpec] = {n.id: n for n in (DOWNTOWN, DOWNTOWN_BIKE)}
+LEGACY: dict[str, NetworkSpec] = {n.id: n for n in (RIVERSIDE, RIVERSIDE_BIKE)}

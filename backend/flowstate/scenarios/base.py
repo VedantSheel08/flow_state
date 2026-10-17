@@ -48,6 +48,22 @@ class Marker(BaseModel):
     kind: str = "event"  # event | incident | emergency | demand | transit
 
 
+class Overlay(BaseModel):
+    """Where a component acts on the map. Edges are resolved to geometry by the client."""
+
+    id: str
+    kind: Literal["point", "zone", "route", "weather"]
+    tone: str = "event"  # incident | emergency | demand | transit | environment
+    label: str
+    edges: list[str] = []
+    pos: float | None = None  # metres along the first edge (points); None = mid-block
+    tStart: float | None = None  # planned before this, active from here
+    tEnd: float | None = None
+    color: str | None = None
+    condition: str | None = None
+    detail: str | None = None
+
+
 class BriefingItem(BaseModel):
     label: str
     value: str
@@ -141,6 +157,9 @@ class Component:
     def markers(self) -> list[Marker]:
         return []
 
+    def overlays(self) -> list[Overlay]:
+        return []
+
     def conditions(self, cond: Conditions) -> None:
         pass
 
@@ -185,6 +204,7 @@ class Scenario:
         self.reserved: set[str] = set()
         self.protected: set[str] = set()
         self.preemption = bool(self.params.get("preemption", False))
+        self.yield_to_ev = bool(self.params.get("yield_to_ev", True))
         self.tsp = bool(self.params.get("tsp", False))
 
     # -- lifecycle -----------------------------------------------------------
@@ -269,6 +289,9 @@ class Scenario:
     def briefing(self) -> list[BriefingItem]:
         return [b for c in self.components for b in c.briefing()]
 
+    def overlays(self) -> list[Overlay]:
+        return [o for c in self.components for o in c.overlays()]
+
     def update_live(self, params: dict[str, Any]) -> dict[str, Any]:
         specs = {p.key: p for p in self.spec.params}
         applied: dict[str, Any] = {}
@@ -290,6 +313,7 @@ class Scenario:
             "duration": self.duration,
             "briefing": [b.model_dump() for b in self.briefing()],
             "markers": [m.model_dump() for m in self.markers],
+            "overlays": [o.model_dump() for o in self.overlays()],
         }
 
 

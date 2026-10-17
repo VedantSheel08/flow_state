@@ -1,0 +1,23 @@
+# Render Blueprint for FlowState. Nothing is created on Render until this file is
+# applied from the dashboard (New > Blueprint). See docs/RENDER.md.
+services:
+  - type: web
+    name: flowstate
+    runtime: docker
+    dockerfilePath: ./deployment/render/Dockerfile
+    dockerContext: .
+    branch: colton-updates
+    autoDeploy: false            # deploy manually until we're ready to go live
+    plan: pro                    # 4 GB / 2 CPU; `standard` (2 GB / 1 CPU) also works
+    region: virginia
+    numInstances: 1              # the live run is in process memory: never scale out
+    healthCheckPath: /api/health
+    disk:
+      name: runs
+      mountPath: /var/lib/flowstate/runs
+      sizeGB: 1
+    envVars:
+      - key: FLOWSTATE_BACKEND
+        value: traci
+      - key: PYTHONUNBUFFERED
+        value: "1"

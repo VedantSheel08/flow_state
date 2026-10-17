@@ -1,5 +1,6 @@
 import { Loader2, WifiOff } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, type CSSProperties } from 'react'
+import { ConfigDialog } from './components/ConfigDialog'
 import { Header } from './components/Header'
 import { LaunchProgress } from './components/LaunchProgress'
 import { RightPanel } from './components/RightPanel'
@@ -14,6 +15,7 @@ import { connect } from './lib/ws'
 import { MapView, mapApi } from './map/MapView'
 import type { Dir } from './map/nav'
 import { AnalyticsView } from './views/AnalyticsView'
+import { ResultsView } from './views/ResultsView'
 import { RunsView } from './views/RunsView'
 
 function useBootstrap() {
@@ -99,8 +101,11 @@ function MapStage() {
   const conn = useStore((s) => s.connection)
   const run = useStore((s) => s.run)
   const pick = useStore((s) => s.pick)
+  const railOpen = useStore((s) => s.panels.left)
+  // left-anchored map overlays sit beside the floating scenario rail
+  const railStyle = { '--rail-w': railOpen ? '260px' : '64px' } as CSSProperties
   return (
-    <main className="relative min-w-0 flex-1">
+    <main className="relative min-w-0 flex-1" style={railStyle}>
       {net ? (
         <MapView net={net} />
       ) : (
@@ -145,6 +150,7 @@ function MapStage() {
           </div>
         </div>
       )}
+      <ScenarioRail />
       <RunBar />
     </main>
   )
@@ -180,14 +186,15 @@ export default function App() {
         <Header />
         <div className="flex min-h-0 flex-1">
           <div className={cn('flex min-h-0 min-w-0 flex-1', view !== 'simulate' && 'hidden')}>
-            <ScenarioRail />
             <MapStage />
             <RightPanel />
           </div>
+          {view === 'results' && <ResultsView />}
           {view === 'analyze' && <AnalyticsView />}
           {view === 'runs' && <RunsView />}
         </div>
       </div>
+      <ConfigDialog />
       <Toasts />
     </TooltipProvider>
   )

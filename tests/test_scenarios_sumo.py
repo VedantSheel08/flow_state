@@ -11,6 +11,7 @@ from scenario_audit import Audit, custom_scenario, run_audit
 
 from flowstate.scenarios.catalog import CATALOG
 from flowstate.scenarios.components import Construction, EmergencyDispatch, poi_edges
+from flowstate.sim.emergency import YIELD_LC_MODE
 
 SEEDS = [int(s) for s in os.environ.get("FLOWSTATE_SWEEP_SEEDS", "1,2").split(",")]
 # Gridlock teleports of ordinary vehicles that no scenario component owns. SUMO's junction model can wedge a ring of
@@ -66,13 +67,19 @@ def test_accident_blocks_valid_lanes_and_reopens(severity, seed):
             state["wreck_lanes"] = {T.vehicle.getLaneIndex(w) for w in wrecks}
             assert {T.vehicle.getRoadID(w) for w in wrecks} == {acc.edge}
             tail = {li: min(T.vehicle.getLanePosition(w) - T.vehicle.getLength(w) for w in wrecks if T.vehicle.getLaneIndex(w) == li) for li in state["wreck_lanes"]}
+            was_behind, now_behind = state.get("behind", {}), {}
+            state["behind"] = now_behind
             for li, rear in tail.items():
                 for v in T.lane.getLastStepVehicleIDs(f"{acc.edge}_{li}"):
                     if v in wrecks or v.startswith(("resp", "amb", "police")):
                         continue
                     # ahead of the wreck and still inside the wreck's own corridor (a car that has already slid over into
-                    # the free lane is indexed in the blocked lane until its centre crosses the boundary)
-                    if T.vehicle.getLanePosition(v) > rear + 0.5 and abs(T.vehicle.getLateralLanePosition(v)) < 0.6:
+                    # the free lane is indexed in the blocked lane until its centre crosses the boundary). Only a car that was
+                    # behind the wreck in this lane at the previous step counts: on a short one-way block a car may pass in
+                    # the free lane and then move back over in front of the wreck to make its turn.
+                    if T.vehicle.getLanePosition(v) < rear:
+                        now_behind.setdefault(li, set()).add(v)
+                    elif v in was_behind.get(li, set()) and T.vehicle.getLanePosition(v) > rear + 0.5 and abs(T.vehicle.getLateralLanePosition(v)) < 0.6:
                         state["through"].add(v)
             if acc.closed:
                 for li in acc.car_lanes:
@@ -148,6 +155,32 @@ def test_every_ambulance_call_is_answered(seed):
     assert not problems(a), problems(a)
 
 
+def test_drivers_make_way_and_resume_their_trips():
+    """Drivers yield to a unit with its lights on, and every command is released once it has gone by."""
+    yielded: set[str] = set()
+    stuck: list[tuple[float, str]] = []
+    last_active = [-1e9]
+
+    def watch(eng, audit):
+        yielded.update(eng.corridor.yielding)
+        if eng.emergency_active():
+            last_active[0] = eng.t
+        elif eng.t - last_active[0] > 1.0 and int(eng.t * 4) % 20 == 0:
+            assert not eng.corridor.yielding, f"drivers still yielding with no unit active: {list(eng.corridor.yielding)}"
+            for vid in yielded & set(eng.vehicles):
+                if eng.T.vehicle.getLaneChangeMode(vid) == YIELD_LC_MODE:  # SUMO's bluelight device adjusts it too
+                    stuck.append((eng.t, vid))
+
+    a = run_audit("ambulance", 7, {"calls": 2}, duration=10, on_step=watch)
+    summary = a.extra["emergency"]
+    assert summary["enabled"] and summary["yields"] > 0 and summary["crossHolds"] > 0, summary
+    assert summary["yieldingNow"] == 0, summary
+    assert not stuck, f"lane-change mode never restored: {stuck[:5]}"
+    assert not a.emergency_collisions, a.emergency_collisions
+    assert not problems(a), problems(a)
+
+
+
 def test_ambulance_drives_around_a_closed_street():
     """Put a full closure on the ambulance's own shortest route: it must find another way and still arrive."""
     state = {}
@@ -169,8 +202,9 @@ def test_ambulance_drives_around_a_closed_street():
     from flowstate.network.info import load_net_info
 
     net = load_net_info(str(NETWORKS_DIR / "district.net.xml"), "district")
+    stations = set(poi_edges(net, "hospital")) | set(poi_edges(net, "police"))  # their frontage is never closed
     block = next(e for e in mid if net.edges[e].part != "bay" and net.edges[e].kind == "street"
-                 and not set(net.street_segment(e)) & set(poi_edges(net, "hospital")))
+                 and not set(net.street_segment(e)) & stations)
     sc = custom_scenario(lambda: [EmergencyDispatch(1), Construction(location=block, closure="full")], {"duration": 10})
     a = run_audit(sc, seed, label="amb_closure")
     ems = a.results["ems"][0]

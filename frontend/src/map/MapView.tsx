@@ -10,7 +10,10 @@ import { distToPolyline, pointInPolygon } from './geom'
 import { MapControls } from './MapControls'
 import { Minimap } from './Minimap'
 import { cycleJunction, focusScale, stepJunction, type Dir, type NavJunction } from './nav'
-import { render, type RenderState } from './renderer'
+import { hitOverlay, phaseAt, placeOverlays, type PlacedOverlay, type Rect } from './overlays'
+import { overlayHits, render, type RenderState } from './renderer'
+import { ScenarioBanner } from './ScenarioBanner'
+import { WeatherLayer } from './WeatherLayer'
 import { buildScene, type Scene } from './scene'
 import { CODE_TO_TYPE, DIMS } from './vehicles'
 
@@ -140,6 +143,18 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
     let lastErr = 0
     let framedScale = 0 // target scale for the previous viewport size
     let lastT = NaN
+    // scenario footprints, resolved against this scene once per run
+    let placedRun: string | null = null
+    let placed: PlacedOverlay[] = []
+    // screen area clear of the scenario rail, the top bars and the run bar
+    const safe: Rect = { x0: 0, y0: 0, x1: 0, y1: 0 }
+    const measureSafe = () => {
+      const rail = parseFloat(getComputedStyle(wrapRef.current!).getPropertyValue('--rail-w')) || 0
+      safe.x0 = rail + 16
+      safe.y0 = 108 // below the camera bar and its Recenter button
+      safe.x1 = Math.max(safe.x0 + 40, cam.width - 64) // clear of the zoom controls
+      safe.y1 = Math.max(safe.y0 + 40, cam.height - 128) // above the run bar and the scenario banner
+    }
     const unsubscribe = useStore.subscribe(() => {
       dirty.current = true
     })
@@ -152,6 +167,7 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
       canvas.style.width = `${el.clientWidth}px`
       canvas.style.height = `${el.clientHeight}px`
       cam.setViewport(el.clientWidth, el.clientHeight)
+      measureSafe()
       const [x0, y0, x1, y1] = scene.roadBounds
       cam.minScale = Math.min(0.45, cam.width / (x1 - x0 + 200), cam.height / (y1 - y0 + 200))
       // keep the requested view framed while panels open/close, preserving any extra zoom
@@ -200,6 +216,13 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
       }
       trackedMap.clear()
       for (const tr of st.stats?.tracked ?? []) trackedMap.set(tr.id, tr)
+      const runId = st.run && st.run.network === scene.id ? st.run.id : null
+      if (runId !== placedRun) {
+        placedRun = runId
+        placed = runId ? placeOverlays(scene, st.run?.overlays) : []
+        measureSafe() // the rail may have opened or closed since the last resize
+      }
+      const simT = isFinite(t) ? t : 0
       const rs: RenderState = {
         vehicles,
         persons,
@@ -216,14 +239,22 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
         busLines,
         now,
         pick: !!st.pick,
+        overlays: placed,
+        t: simT,
+        safe,
       }
       // Only draw when the picture can have changed: new sim time, camera motion,
-      // UI state, or something animating in place (beacons, accident zones).
-      const animated = rs.incidents.some((i) => !i.cleared) || vehicles.some((v) => ANIMATED_CODES.has(v.code))
+      // UI state, or something animating in place (beacons, accident zones, scene pins).
+      const animated =
+        rs.incidents.some((i) => !i.cleared) ||
+        vehicles.some((v) => ANIMATED_CODES.has(v.code)) ||
+        placed.some((p) => p.o.kind === 'point' && phaseAt(p.o, simT) === 'active')
       const changed = dirty.current || moving || t !== lastT || animated
-      dirty.current = false
+      // a 0x0 canvas (hidden or mid-resize) gives a device-pixel ratio of 0 and caches empty layers
+      const drawable = canvas.width > 0 && canvas.height > 0
+      dirty.current = changed && !drawable
       lastT = t
-      if (changed) {
+      if (changed && drawable) {
         try {
           const tr = performance.now()
           const visible = render(ctx, scene, cam, rs, canvas.width / Math.max(1, cam.width))
@@ -239,6 +270,7 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
       }
       if (now - lastScaleBar > 250) {
         lastScaleBar = now
+        measureSafe() // follows the scenario rail opening and closing
         const target = 90 / cam.scale
         const nice = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000].find((n) => n >= target * 0.6) ?? 1000
         setScaleBar((p) => (p.label === `${nice} m` && Math.abs(p.px - nice * cam.scale) < 0.5 ? p : { px: nice * cam.scale, label: `${nice} m` }))
@@ -292,7 +324,9 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
       const [sx, sy] = local(e)
       const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY
       cam.vx = cam.vy = 0
-      cam.zoomAt(Math.exp(-delta * 0.0016), sx, sy)
+      // touchpad pinch (ctrlKey) sends small deltas; boost it so it isn't sluggish
+      const rate = e.ctrlKey ? 0.004 : 0.0016
+      cam.zoomAt(Math.exp(-delta * rate), sx, sy)
       useStore.getState().set({ follow: false })
     }
     const onDown = (e: PointerEvent) => {
@@ -330,7 +364,7 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
       } else {
         const [sx, sy] = local(e)
         const [wx, wy] = cam.toWorld(sx, sy)
-        const hit = pickVehicle(wx, wy, cam.scale) || pickJunction(scene, wx, wy, cam.scale)
+        const hit = hitOverlay(overlayHits, sx, sy) || pickVehicle(wx, wy, cam.scale) || pickJunction(scene, wx, wy, cam.scale)
         setCursor(hit ? 'pointer' : 'grab')
       }
     }
@@ -357,6 +391,13 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
           st.set({ pick: null, selection: { kind: 'edge', id: eid } })
           hoverEdge.current = null
         }
+        return
+      }
+      // a scenario pin or off-screen indicator flies to its scene
+      const ov = hitOverlay(overlayHits, sx, sy)
+      if (ov) {
+        st.set({ follow: false })
+        cam.glide(ov.wx, ov.wy, Math.max(cam.tscale, 5))
         return
       }
       const vid = pickVehicle(wx, wy, cam.scale)
@@ -394,6 +435,8 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
   return (
     <div ref={wrapRef} className="@container absolute inset-0 overflow-hidden bg-[#E9EBE7]">
       <canvas ref={canvasRef} className="block touch-none select-none" style={{ cursor }} data-testid="map-canvas" />
+      <WeatherLayer />
+      <ScenarioBanner scene={scene} />
       <FocusBar scene={scene} junctions={navList} />
       <MapControls />
       <Minimap scene={scene} camRef={camRef} scaleBar={scaleBar} />

@@ -51,7 +51,7 @@ export function MapControls() {
         </ToolButton>
       </div>
       <div className="glass flex flex-col gap-0.5 rounded-xl p-1">
-        <ToolButton label="Home · Main & King (H)" onClick={() => mapApi.current?.home()}>
+        <ToolButton label="Home · King & John (H)" onClick={() => mapApi.current?.home()}>
           <Home size={15} />
         </ToolButton>
         <ToolButton label="Full network (F)" onClick={() => mapApi.current?.fit()}>

@@ -5,6 +5,7 @@ import type { PersonView, VehicleView } from '../lib/frames'
 import type { Layers } from '../lib/store'
 import type { Incident, Tracked } from '../lib/types'
 import { Camera } from './camera'
+import { drawOverlayPins, drawOverlayZones, type OverlayHit, type PlacedOverlay, type Rect } from './overlays'
 import { along, hash, offset, polyLength, slice, strip, type Pt } from './geom'
 import type { Scene } from './scene'
 import { CODE_TO_TYPE, DIMS, LIGHTBAR, busLineFor, cargoFor, dotSprite, markerSprite, paintFor, personSprite, spriteBucket, spriteFor, type VType } from './vehicles'
@@ -75,7 +76,15 @@ export interface RenderState {
   busLines: { id: string; color: string }[]
   now: number
   pick: boolean
+  /** scenario footprints for this run, and the sim time that decides which are live */
+  overlays: PlacedOverlay[]
+  t: number
+  /** screen area clear of floating panels, where off-screen indicators may sit */
+  safe: Rect
 }
+
+/** Click targets of the scenario pins drawn in the latest frame. */
+export let overlayHits: OverlayHit[] = []
 
 /** Draws one frame; returns how many vehicles were drawn (inside the view after culling). */
 export function render(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera, st: RenderState, dpr: number): number {
@@ -109,6 +118,7 @@ export function render(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera,
   }
 
   // ---- incidents ------------------------------------------------------
+  drawOverlayZones(ctx, st.overlays, st.t, px, st.now)
   for (const inc of st.incidents) if (!inc.cleared) drawIncident(ctx, scene, inc, s, st.now)
 
   // ---- selected route -------------------------------------------------
@@ -177,6 +187,7 @@ export function render(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera,
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   ctx.drawImage(vignette(W, H), 0, 0, W, H)
   drawTrackedTags(ctx, cam, st)
+  overlayHits = drawOverlayPins(ctx, cam, st.overlays, st.t, st.now, st.safe)
   return visible
 }
 
@@ -650,7 +661,7 @@ function drawVehicles(ctx: CanvasRenderingContext2D, cam: Camera, st: RenderStat
     const [sx, sy] = cam.toScreen(v.x, v.y)
     if (sx < -margin * s || sy < -margin * s || sx > cam.width + margin * s || sy > cam.height + margin * s) continue
     drawn++
-    const th = ((v.angle - 90) * Math.PI) / 180
+    const th = ((v.angle - 90) * Math.PI) / 180 + (type === 'wreck' ? wreckSpin(v.id) : 0)
     const cos = Math.cos(th)
     const sin = Math.sin(th)
     ctx.globalAlpha = v.alpha
@@ -737,6 +748,68 @@ function drawVehicles(ctx: CanvasRenderingContext2D, cam: Camera, st: RenderStat
   return drawn
 }
 
+/** Wrecks stand lane-aligned in SUMO; a stable per-id yaw (±14–31°) makes them read as knocked askew. */
+function wreckSpin(id: string): number {
+  const h = hash(id)
+  return (h & 1 ? 1 : -1) * (0.25 + ((h >>> 1) % 1000) / 3300)
+}
+
+function rng(seed: number) {
+  let a = seed || 1
+  return () => {
+    a = (Math.imul(a ^ (a >>> 15), 1 | a) + 0x6d2b79f5) | 0
+    return ((a ^ (a >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+const DEBRIS = ['#9CA3AF', '#6B7280', '#1F2937', '#D1D5DB', '#BFDBFE', '#E5E7EB']
+
+/** Skid marks, a fluid stain and scattered debris under the wrecks (drawn below the vehicles). */
+function drawCrashScene(ctx: CanvasRenderingContext2D, lanes: { pts: Pt[]; w: number }[], inc: Incident, L: number) {
+  const r = rng(hash(inc.id))
+  const at = (ln: { pts: Pt[] }, u: number, lat: number) => {
+    const a = along(ln.pts, Math.min(L, Math.max(0, u)))
+    return [a.x - a.dy * lat, a.y + a.dx * lat] as const
+  }
+  const impact = inc.pos + inc.length * 0.5
+  ctx.lineCap = 'round'
+  for (const ln of lanes) {
+    const drift = (r() - 0.5) * 2.4
+    ctx.strokeStyle = 'rgba(17,24,39,0.32)'
+    ctx.lineWidth = 0.22
+    for (const side of [-0.75, 0.75]) {
+      ctx.beginPath()
+      for (let d = 0; d <= 16; d += 2) {
+        const f = d / 16
+        const [x, y] = at(ln, inc.pos - 16 + d, side + drift * f * f)
+        if (d) ctx.lineTo(x, y)
+        else ctx.moveTo(x, y)
+      }
+      ctx.stroke()
+    }
+  }
+  const mid = lanes[Math.floor(lanes.length / 2)]
+  const [fx, fy] = at(mid, impact, (r() - 0.5) * 1.5)
+  ctx.fillStyle = 'rgba(30,27,24,0.22)'
+  ctx.beginPath()
+  ctx.ellipse(fx, fy, 1.9 + r(), 1.1 + r() * 0.6, r() * Math.PI, 0, Math.PI * 2)
+  ctx.fill()
+  const world = ctx.getTransform()
+  for (let i = 0; i < 34; i++) {
+    const ln = lanes[Math.floor(r() * lanes.length)]
+    const [x, y] = at(ln, inc.pos - 2 + r() * (inc.length + 9), (r() - 0.5) * (ln.w + 0.8))
+    const w = 0.12 + r() * 0.34
+    const h = 0.08 + r() * 0.2
+    ctx.setTransform(world)
+    ctx.translate(x, y)
+    ctx.rotate(r() * Math.PI)
+    ctx.fillStyle = DEBRIS[Math.floor(r() * DEBRIS.length)]
+    ctx.fillRect(-w / 2, -h / 2, w, h)
+  }
+  ctx.setTransform(world)
+  ctx.lineCap = 'butt'
+}
+
 function drawIncident(ctx: CanvasRenderingContext2D, scene: Scene, inc: Incident, s: number, now: number) {
   const lanes = inc.lanes.map((i) => scene.lanes.get(`${inc.edge}_${i}`)).filter(Boolean) as { pts: Pt[]; w: number }[]
   if (!lanes.length) return
@@ -805,7 +878,8 @@ function drawIncident(ctx: CanvasRenderingContext2D, scene: Scene, inc: Incident
   const u = inc.pos
   for (const ln of lanes) {
     const seg = slice(ln.pts, Math.max(0, u - 3), Math.min(L, u + inc.length + 4))
-    const poly = strip(seg, ln.w)
+    // never thinner than a few pixels, so the blockage reads at overview zoom
+    const poly = strip(seg, Math.max(ln.w, 6 / s))
     ctx.fillStyle = `rgba(239,68,68,${0.12 + 0.06 * Math.sin(now / 300)})`
     ctx.beginPath()
     poly.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])))
@@ -813,6 +887,7 @@ function drawIncident(ctx: CanvasRenderingContext2D, scene: Scene, inc: Incident
     ctx.fill()
   }
   if (s > 1.8) {
+    drawCrashScene(ctx, lanes, inc, L)
     const outer = lanes[0]
     const taperLen = 22
     for (let d = 0; d <= taperLen; d += 2.75) {

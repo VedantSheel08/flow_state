@@ -1,11 +1,9 @@
-import { Ambulance, Bike, BusFront, ChevronDown, CloudRain, Construction, Dices, Gauge, PanelLeftClose, PanelLeftOpen, Play, RotateCcw, School, Shuffle, Siren, Ticket, TriangleAlert, type LucideIcon } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { Ambulance, Bike, BusFront, CloudRain, Construction, Dices, Gauge, PanelLeftClose, PanelLeftOpen, Play, School, Shuffle, Siren, SlidersHorizontal, Ticket, TriangleAlert, type LucideIcon } from 'lucide-react'
+import { useMemo } from 'react'
 import { launch } from '../lib/actions'
-import { cn } from '../lib/format'
-import { effectiveValues } from '../lib/intensity'
+import { cn, num } from '../lib/format'
+import { effectiveValues, nominalRate } from '../lib/intensity'
 import { useStore } from '../lib/store'
-import { IntensitySelector } from './IntensitySelector'
-import { ParamField } from './ParamField'
 import { Button, Tip } from './ui'
 
 export const ICONS: Record<string, LucideIcon> = {
@@ -22,42 +20,38 @@ export const ICONS: Record<string, LucideIcon> = {
   disruption: Shuffle,
 }
 
+/** Floating scenario picker over the map; configuration lives in ConfigDialog. */
 export function ScenarioRail() {
   const scenarios = useStore((s) => s.scenarios)
   const scenarioId = useStore((s) => s.scenarioId)
   const drafts = useStore((s) => s.drafts)
   const set = useStore((s) => s.set)
-  const setDraft = useStore((s) => s.setDraft)
-  const resetDraft = useStore((s) => s.resetDraft)
   const seed = useStore((s) => s.seed)
   const status = useStore((s) => s.status)
   const conn = useStore((s) => s.connection)
-  const networks = useStore((s) => s.networks)
   const open = useStore((s) => s.panels.left)
   const togglePanel = useStore((s) => s.togglePanel)
-  const [showSim, setShowSim] = useState(false)
   const spec = scenarios.find((s) => s.id === scenarioId)
   const presets = useStore((s) => s.congestionPresets)
   const congestionId = useStore((s) => (spec ? (s.congestion[spec.id] ?? null) : null))
   const preset = presets?.find((p) => p.id === congestionId) ?? null
   // what the run will actually use: scenario defaults, then the selected preset, then the user's edits
   const values = useMemo(() => (spec ? effectiveValues(spec, drafts[spec.id], preset) : {}), [spec, drafts, preset])
-  const scenarioParams = spec?.params.filter((p) => p.group !== 'Simulation') ?? []
-  const simParams = spec?.params.filter((p) => p.group === 'Simulation') ?? []
   const busy = status.state === 'starting'
-  const net = networks[(values.network as string) ?? 'district'] ?? networks.district
   const edited = Object.keys(drafts[scenarioId] ?? {}).length > 0
+  const rate = nominalRate(values)
+  const configure = () => set({ configOpen: true })
 
   if (!open) {
     return (
-      <aside className="flex w-[56px] shrink-0 flex-col items-center border-r border-border bg-surface py-2.5" aria-label="Scenarios (collapsed)">
+      <aside className="glass anim-fade absolute bottom-[80px] left-3 top-3 z-20 flex w-[52px] flex-col items-center rounded-xl py-2" aria-label="Scenarios (collapsed)">
         <Tip label="Show scenarios ( [ )" side="right">
           <Button size="icon" variant="ghost" aria-label="Show scenario panel" onClick={() => togglePanel('left', true)}>
             <PanelLeftOpen size={16} />
           </Button>
         </Tip>
-        <div className="my-2 h-px w-7 bg-border" />
-        <ul className="scroll-y flex min-h-0 flex-1 flex-col items-center gap-1 [scrollbar-gutter:auto]">
+        <div className="my-2 h-px w-7 bg-black/[0.08]" />
+        <ul className="scroll-y flex min-h-0 w-full flex-1 flex-col items-center gap-1 [scrollbar-gutter:auto]! [scrollbar-width:none]!">
           {scenarios.map((s) => {
             const Icon = ICONS[s.id] ?? Gauge
             const active = s.id === scenarioId
@@ -67,7 +61,7 @@ export function ScenarioRail() {
                   <button
                     aria-label={s.title}
                     onClick={() => set({ scenarioId: s.id, pick: null })}
-                    className={cn('flex h-9 w-9 items-center justify-center rounded-lg transition-colors', active ? 'bg-ink text-white shadow-xs' : 'text-ink-3 hover:bg-muted hover:text-ink')}
+                    className={cn('flex h-9 w-9 items-center justify-center rounded-lg transition-colors', active ? 'bg-ink text-white shadow-xs' : 'text-ink-3 hover:bg-black/[0.05] hover:text-ink')}
                   >
                     <Icon size={16} strokeWidth={1.8} />
                   </button>
@@ -76,8 +70,15 @@ export function ScenarioRail() {
             )
           })}
         </ul>
+        <div className="my-2 h-px w-7 bg-black/[0.08]" />
+        <Tip label="Configure scenario" side="right">
+          <Button size="icon" variant="ghost" className="relative" aria-label="Configure scenario" disabled={!spec} onClick={configure}>
+            <SlidersHorizontal size={15} />
+            {edited && <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-accent" />}
+          </Button>
+        </Tip>
         <Tip label={spec ? `Generate & run · ${spec.title}` : 'Generate & run'} side="right">
-          <Button variant="primary" size="icon" className="mt-2 h-9 w-9 rounded-lg" aria-label="Generate and run" disabled={!spec || busy || conn !== 'open'} onClick={() => launch()}>
+          <Button variant="primary" size="icon" className="mt-1.5 h-9 w-9 rounded-lg" aria-label="Generate and run" disabled={!spec || busy || conn !== 'open'} onClick={() => launch()}>
             <Play size={14} fill="currentColor" />
           </Button>
         </Tip>
@@ -86,95 +87,63 @@ export function ScenarioRail() {
   }
 
   return (
-    <aside className="anim-fade flex w-[300px] shrink-0 flex-col border-r border-border bg-surface">
-      <div className="scroll-y min-h-0 flex-1">
-        <div className="flex items-center justify-between py-2 pl-4 pr-2">
-          <h2 className="label-caps">Scenarios</h2>
-          <Tip label="Collapse panel ( [ )" side="right">
-            <Button size="icon-sm" variant="ghost" aria-label="Collapse scenario panel" onClick={() => togglePanel('left', false)}>
-              <PanelLeftClose size={15} />
-            </Button>
-          </Tip>
-        </div>
-        <ul className="px-2 pb-2">
-          {scenarios.map((s) => {
-            const Icon = ICONS[s.id] ?? Gauge
-            const active = s.id === scenarioId
-            return (
-              <li key={s.id}>
-                <button
-                  onClick={() => set({ scenarioId: s.id, pick: null })}
-                  className={cn('group flex w-full items-center gap-2.5 rounded-lg px-2 py-[7px] text-left transition-colors', active ? 'bg-muted shadow-[inset_0_0_0_1px_rgba(16,24,40,0.04)]' : 'hover:bg-subtle')}
+    <aside className="glass anim-fade absolute bottom-[80px] left-3 top-3 z-20 flex w-[248px] flex-col overflow-hidden rounded-xl" aria-label="Scenarios">
+      <div className="flex items-center justify-between py-1.5 pl-3.5 pr-1.5">
+        <h2 className="label-caps">Scenarios</h2>
+        <Tip label="Collapse panel ( [ )" side="right">
+          <Button size="icon-sm" variant="ghost" aria-label="Collapse scenario panel" onClick={() => togglePanel('left', false)}>
+            <PanelLeftClose size={15} />
+          </Button>
+        </Tip>
+      </div>
+      <ul className="scroll-y min-h-0 flex-1 px-1.5 pb-1.5">
+        {scenarios.map((s) => {
+          const Icon = ICONS[s.id] ?? Gauge
+          const active = s.id === scenarioId
+          return (
+            <li key={s.id}>
+              <button
+                onClick={() => set({ scenarioId: s.id, pick: null })}
+                className={cn('group flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors', active ? 'bg-white shadow-xs' : 'hover:bg-black/[0.04]')}
+              >
+                <span
+                  className={cn(
+                    'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors',
+                    active ? 'border-transparent bg-ink text-white shadow-xs' : 'border-black/[0.08] bg-white/70 text-ink-3 group-hover:text-ink-2',
+                  )}
                 >
-                  <span
-                    className={cn(
-                      'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors',
-                      active ? 'border-transparent bg-ink text-white shadow-xs' : 'border-border bg-surface text-ink-3 group-hover:text-ink-2',
-                    )}
-                  >
-                    <Icon size={15} strokeWidth={1.8} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className={cn('block truncate text-[13px] leading-tight', active ? 'font-semibold text-ink' : 'font-medium text-ink-2')}>{s.title}</span>
-                    <span className="block truncate text-[11.5px] leading-tight text-ink-3">{s.tagline}</span>
-                  </span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
-
-        {spec && (
-          <div className="border-t border-border">
-            <div className="px-4 pb-3 pt-3.5">
-              <div className="flex items-center justify-between">
-                <h2 className="label-caps">Configure</h2>
-                {edited && (
-                  <button className="flex items-center gap-1 text-[11.5px] font-medium text-ink-3 hover:text-ink" onClick={() => resetDraft(spec.id)}>
-                    <RotateCcw size={11} /> Defaults
-                  </button>
-                )}
-              </div>
-              <p className="mt-1.5 text-[12px] leading-relaxed text-ink-2">{spec.description}</p>
-            </div>
-            <div className="space-y-3.5 px-4 pb-4">
-              <IntensitySelector spec={spec} running={status.state === 'running' || status.state === 'warming'} />
-              {scenarioParams.map((p) => (
-                <ParamField key={p.key} spec={p} value={values[p.key]} onChange={(v) => setDraft(spec.id, p.key, v)} net={net} />
-              ))}
-            </div>
-            <div className="border-t border-border">
-              <button className="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-subtle" onClick={() => setShowSim((v) => !v)}>
-                <span className="label-caps">Simulation settings</span>
-                <span className="flex items-center gap-2 text-[11.5px] text-ink-3">
-                  {values.duration as number} min · {String(values.signals) === 'actuated' ? 'actuated' : 'fixed-time'}
-                  <ChevronDown size={14} className={cn('transition-transform', showSim && 'rotate-180')} />
+                  <Icon size={15} strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0">
+                  <span className={cn('block truncate text-[13px] leading-tight', active ? 'font-semibold text-ink' : 'font-medium text-ink-2')}>{s.title}</span>
+                  <span className="block truncate text-[11.5px] leading-tight text-ink-3">{s.tagline}</span>
                 </span>
               </button>
-              {showSim && (
-                <div className="anim-in space-y-3.5 px-4 pb-4 pt-1">
-                  {simParams.map((p) => (
-                    <ParamField key={p.key} spec={p} value={values[p.key]} onChange={(v) => setDraft(spec.id, p.key, v)} net={net} />
-                  ))}
-                </div>
-              )}
-            </div>
-            {spec.assumptions.length > 0 && (
-              <div className="border-t border-border px-4 py-3">
-                <div className="label-caps mb-1">Model assumptions</div>
-                <ul className="space-y-1 text-[11.5px] leading-snug text-ink-3">
-                  {spec.assumptions.map((a) => (
-                    <li key={a}>{a}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+            </li>
+          )
+        })}
+      </ul>
 
-      <div className="border-t border-border bg-surface px-4 py-3">
-        <div className="mb-2.5 flex items-center gap-2">
+      <div className="space-y-2.5 border-t border-black/[0.07] bg-white/60 px-3 py-3">
+        {spec && (
+          <button
+            onClick={configure}
+            className="group flex w-full items-center gap-2.5 rounded-lg border border-accent/30 bg-accent-soft px-2.5 py-2 text-left transition-colors hover:border-accent/60"
+          >
+            <SlidersHorizontal size={15} className="shrink-0 text-accent-strong" />
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center gap-1.5 text-[12.5px] font-semibold text-accent-strong">
+                Configure scenario
+                {edited && <span className="h-1.5 w-1.5 rounded-full bg-accent" title="Edited" />}
+              </span>
+              <span className="tnum block truncate text-[11px] text-ink-2">
+                {rate > 0 && `${num(rate, 0)} trips/h · `}
+                {values.duration as number} min · {String(values.signals) === 'actuated' ? 'actuated' : 'fixed-time'}
+              </span>
+            </span>
+          </button>
+        )}
+        <div className="flex items-center gap-2">
           <label htmlFor="seed" className="text-[12px] font-medium text-ink-2">
             Seed
           </label>
@@ -195,7 +164,7 @@ export function ScenarioRail() {
           <Play size={14} fill="currentColor" />
           {busy ? 'Generating…' : 'Generate & Run'}
         </Button>
-        <p className="mt-2 text-center text-[11px] leading-snug text-ink-3">{seed ? 'Same seed and settings reproduce the run exactly.' : 'A new seed draws a new variation.'}</p>
+        <p className="text-center text-[11px] leading-snug text-ink-3">{seed ? 'Same seed and settings reproduce the run.' : 'A new seed draws a new variation.'}</p>
       </div>
     </aside>
   )

@@ -5,13 +5,16 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, Response
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .. import sumo_env
@@ -179,3 +182,22 @@ async def ws(websocket: WebSocket) -> None:
         pass
     finally:
         service.bus.clients.discard(websocket)
+
+
+# Single-origin hosting (Render): serve the built frontend from the API process.
+# Off unless FLOWSTATE_STATIC_DIR points at a Vite build, so local dev is unchanged.
+# Registered last so the catch-all never shadows /api or /ws.
+_static = os.environ.get("FLOWSTATE_STATIC_DIR")
+STATIC_DIR = Path(_static).resolve() if _static else None
+if STATIC_DIR and (STATIC_DIR / "index.html").is_file():
+    if (STATIC_DIR / "assets").is_dir():
+        app.mount("/assets", StaticFiles(directory=STATIC_DIR / "assets"), name="assets")
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def frontend(path: str) -> FileResponse:
+        if path == "api" or path.startswith("api/"):
+            raise HTTPException(404, "not found")
+        f = (STATIC_DIR / path).resolve()
+        if path and f.is_file() and f.is_relative_to(STATIC_DIR):
+            return FileResponse(f)
+        return FileResponse(STATIC_DIR / "index.html")  # client-side routes

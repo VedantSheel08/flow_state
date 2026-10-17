@@ -35,6 +35,7 @@ from ..network.info import NetInfo
 from ..performance.network_cache import load_network
 from ..scenarios.base import Scenario
 from .demand import DemandGenerator
+from .emergency import EmergencyCorridor
 from .events import Event, EventLog
 from .metrics import Metrics
 from .safety import SafetyObservations
@@ -151,6 +152,7 @@ class Engine:
         self.kpi: dict[str, Any] = {}
         scenario.instantiate(config.seed, self.net)
         self.signals = SignalManager(self, config.signal_mode, scenario.preemption, scenario.tsp)
+        self.corridor = EmergencyCorridor(self, scenario.yield_to_ev)
 
     # ------------------------------------------------------------------ setup
     def start(self) -> None:
@@ -200,6 +202,7 @@ class Engine:
             if e.to in controlled and e.kind in ("street", "entry"):
                 self._approach_lanes.setdefault(e.to, []).extend(self.net.street_segment(e.id))
         self.signals.start()
+        self.corridor.start()
         self.scenario.on_start(self)
         log.info("engine %s started: %s seed=%s signals=%s", label, self.scenario.spec.id, self.config.seed, self.config.signal_mode)
 
@@ -452,6 +455,7 @@ class Engine:
         prof = self.scenario.demand(self.t)
         self.demand.step(self.t, self.dt, prof, self.scenario.density)
         self.scenario.on_step(self, self.t)
+        self.corridor.step(self.t)
         self.signals.step(self.t)
         T.simulationStep()
         self.t = T.simulation.getTime() - self.warmup
@@ -586,6 +590,7 @@ class Engine:
             "incidents": [i.to_dict() for i in self.incidents.values()],
             "tracked": [tr.to_dict() for tr in self.tracked.values()],
             "signals": self.signals.summary(),
+            "emergency": self.corridor.summary(),
             "scenario": self.scenario.status(self),
         }
 
@@ -662,6 +667,7 @@ class Engine:
                                  "pendingNow": len(self.T.simulation.getPendingVehicles()),
                                  "note": "Submitted vehicles may still be pending or be discarded by SUMO; they are not departures. Legacy metrics include warm-up."},
             "signals": self.signals.summary(),
+            "emergency": self.corridor.summary(),
             "scenario": self.scenario.results(self),
             "tracked": [tr.to_dict() for tr in self.tracked.values()],
             "incidents": [i.to_dict() for i in self.incidents.values()],

@@ -7,23 +7,44 @@
   --color-surface: #ffffff;
   --color-subtle: #f8f9fb;
   --color-muted: #f1f3f6;
+  --color-track: #eceef2;
   --color-border: #e6e8ec;
   --color-border-strong: #d3d8df;
   --color-ink: #0c1322;
   --color-ink-2: #46505f;
-  --color-ink-3: #8a93a3;
+  --color-ink-3: #687284;
+  --color-ink-4: #8a93a3;
+  --color-ink-disabled: #a3abb8;
   --color-accent: #2563eb;
   --color-accent-strong: #1d4ed8;
   --color-accent-soft: #eef3ff;
-  --color-good: #12873d;
+  --color-good: #0f7a3a;
   --color-good-soft: #ecfdf3;
+  --color-good-line: #abefc6;
   --color-warn: #b54708;
   --color-warn-soft: #fffaeb;
-  --color-bad: #c4320a;
-  --color-bad-soft: #fef3f2;
+  --color-warn-line: #fedf89;
+  --color-bad: #b42339;
+  --color-bad-soft: #fff1f2;
+  --color-bad-line: #fecdd3;
+  --color-alert: #c4320a;
+  --color-flow: #2a78d6;
+  --color-flow-soft: #e8f1fc;
+  --color-flow-line: #b9d3f3;
+  --color-flow-ink: #1b5fae;
+  --color-fixed: #eb6834;
+  --color-fixed-soft: #fdeee7;
+  --color-fixed-ink: #b84a1b;
+  --color-rl: #1baf7a;
+  --color-rl-soft: #e6f7f0;
+  --color-rl-ink: #0b7a53;
+  --shadow-card: 0 0 0 1px rgb(12 19 34 / 0.08), 0 1px 2px rgb(12 19 34 / 0.04);
+  --shadow-hero: 0 0 0 1px rgb(12 19 34 / 0.08), 0 1px 2px rgb(12 19 34 / 0.04), 0 8px 24px -8px rgb(12 19 34 / 0.12);
+  --shadow-thumb: 0 1px 2px rgb(12 19 34 / 0.08), 0 0 0 1px rgb(12 19 34 / 0.06);
+  --shadow-tip: 0 8px 24px -6px rgb(12 19 34 / 0.35);
   --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
   --shadow-panel: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 12px -2px rgba(16, 24, 40, 0.06);
-  --shadow-float: 0 1px 2px rgba(16, 24, 40, 0.05), 0 12px 28px -8px rgba(16, 24, 40, 0.18);
+  --shadow-float: 0 0 0 1px rgb(12 19 34 / 0.08), 0 1px 2px rgb(12 19 34 / 0.06), 0 8px 24px -6px rgb(12 19 34 / 0.14);
 }
 
 html,
@@ -40,7 +61,7 @@ body {
   font-size: 13px;
   line-height: 1.45;
   letter-spacing: -0.003em;
-  font-feature-settings: 'cv11', 'ss01', 'ss03', 'tnum' 0;
+  font-feature-settings: 'cv11', 'ss01';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -61,21 +82,18 @@ body {
 .label-caps {
   font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--color-ink-3);
 }
 
 /* Frosted floating surface used for everything that sits on the map. */
 .glass {
-  background: rgba(255, 255, 255, 0.86);
-  -webkit-backdrop-filter: blur(14px) saturate(1.5);
-  backdrop-filter: blur(14px) saturate(1.5);
-  border: 1px solid rgba(16, 24, 40, 0.08);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-    0 1px 2px rgba(16, 24, 40, 0.06),
-    0 10px 28px -10px rgba(16, 24, 40, 0.22);
+  background: rgb(255 255 255 / 0.97);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-float);
 }
 
 /* Keyboard hint chip */

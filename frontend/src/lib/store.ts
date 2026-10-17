@@ -1,9 +1,11 @@
 import { create } from 'zustand'
 import type { Health } from './api'
+import { defaultCongestion } from './scenarioPresets'
+import type { RlJob } from './controllerResults'
 import type { CompareJob, CongestionPreset, Kpi, NetworkGeom, RunInfo, RunResults, RunStatus, ScenarioSpec, SimEvent, StatsMessage } from './types'
 
 export type Selection = { kind: 'vehicle'; id: string } | { kind: 'junction'; id: string } | { kind: 'edge'; id: string } | null
-export type View = 'simulate' | 'analyze' | 'runs'
+export type View = 'simulate' | 'results' | 'analyze' | 'runs'
 
 export interface Layers {
   buildings: boolean
@@ -20,8 +22,8 @@ export interface Panels {
   right: boolean
 }
 
-/** Default camera target: Main Street & King Street. */
-export const HOME_JUNCTION = 'n1_1'
+/** Default camera target: John Street & King Street West. */
+export const HOME_JUNCTION = 'n3_3'
 
 const PANELS_KEY = 'flowstate.panels'
 
@@ -65,6 +67,8 @@ interface State {
   view: View
   toasts: Toast[]
   compare: CompareJob | null
+  /** Latest controller comparison on /api/rl (Results tab). */
+  rlJob: RlJob | null
   rightTab: 'overview' | 'inspect' | 'events'
   camMode: CamMode
   focusJunction: string
@@ -79,6 +83,10 @@ interface State {
   congestionPresets: CongestionPreset[] | null
   /** Selected congestion preset id per scenario (null = scenario defaults). */
   congestion: Record<string, string | null>
+  /** The Configure dialog is open. */
+  configOpen: boolean
+  /** Reopen the Configure dialog once a map pick finishes (it closes so the map is clickable). */
+  reopenConfigAfterPick: boolean
 }
 
 interface Actions {
@@ -121,6 +129,7 @@ export const useStore = create<State & Actions>((set, get) => ({
   view: 'simulate',
   toasts: [],
   compare: null,
+  rlJob: null,
   rightTab: 'overview',
   camMode: 'intersection',
   focusJunction: HOME_JUNCTION,
@@ -130,11 +139,14 @@ export const useStore = create<State & Actions>((set, get) => ({
   launch: null,
   congestionPresets: null,
   congestion: {},
+  configOpen: false,
+  reopenConfigAfterPick: false,
 
   set: (p) => set(p),
   setDraft: (scenario, key, value) =>
     set((s) => ({ drafts: { ...s.drafts, [scenario]: { ...(s.drafts[scenario] ?? {}), [key]: value } } })),
-  resetDraft: (scenario) => set((s) => ({ drafts: { ...s.drafts, [scenario]: {} } })),
+  resetDraft: (scenario) =>
+    set((s) => ({ drafts: { ...s.drafts, [scenario]: {} }, congestion: { ...s.congestion, [scenario]: defaultCongestion(scenario, s.congestionPresets) } })),
   select: (sel) => set({ selection: sel, follow: sel?.kind === 'vehicle' ? get().follow : false, rightTab: sel ? 'inspect' : get().rightTab }),
   toast: (tone, text) => {
     const id = toastId++
@@ -179,6 +191,16 @@ export const useStore = create<State & Actions>((set, get) => ({
       return { panels }
     }),
 }))
+
+// The first time a scenario is shown (once presets have loaded), start it on its
+// own congestion preset. An explicit null (preset toggled off) is left alone.
+function seedCongestion(s: State) {
+  if (!s.congestionPresets || s.scenarioId in s.congestion) return
+  useStore.setState({ congestion: { ...s.congestion, [s.scenarioId]: defaultCongestion(s.scenarioId, s.congestionPresets) } })
+}
+useStore.subscribe((s, prev) => {
+  if (s.scenarioId !== prev.scenarioId || s.congestionPresets !== prev.congestionPresets) seedCongestion(s)
+})
 
 export function paramsFor(spec: ScenarioSpec, draft: Record<string, unknown> | undefined): Record<string, unknown> {
   const out: Record<string, unknown> = {}

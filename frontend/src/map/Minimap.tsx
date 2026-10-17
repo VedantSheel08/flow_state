@@ -4,14 +4,43 @@
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Tip } from '../components/ui'
+import { frames } from '../lib/frames'
+import { cn } from '../lib/format'
 import { useStore } from '../lib/store'
 import type { Camera } from './camera'
 import type { Pt } from './geom'
 import { mapApi } from './MapView'
+import { phaseAt, placeOverlays, toneColor, type PlacedOverlay } from './overlays'
 import type { Scene } from './scene'
 
 const W = 184
 const PAD = 8
+/** Gap kept between the dragged inset and the edge of the map. */
+const EDGE = 8
+const POS_KEY = 'flowstate.minimap'
+
+/** Inset position as fractions of the free space inside the map, so it stays in bounds on resize. */
+type Frac = { fx: number; fy: number }
+
+function loadFrac(): Frac | null {
+  try {
+    const v = JSON.parse(localStorage.getItem(POS_KEY) ?? 'null')
+    return v && Number.isFinite(v.fx) && Number.isFinite(v.fy) ? v : null
+  } catch {
+    return null
+  }
+}
+
+function saveFrac(f: Frac | null) {
+  try {
+    if (f) localStorage.setItem(POS_KEY, JSON.stringify(f))
+    else localStorage.removeItem(POS_KEY)
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
 /** Fixed projection from world metres into the inset. */
 function projection(scene: Scene) {
@@ -22,8 +51,49 @@ function projection(scene: Scene) {
 
 const pathOf = (pts: Pt[], p: ReturnType<typeof projection>) => pts.map((q, i) => `${i ? 'L' : 'M'}${p.sx(q[0]).toFixed(1)} ${p.sy(q[1]).toFixed(1)}`).join('')
 
+/** Scenario footprints in the inset: tinted zones and lines, a dot per scene (pulsing while live). */
+function OverlayMarks({ placed, proj }: { placed: PlacedOverlay[]; proj: ReturnType<typeof projection> }) {
+  const [t, setT] = useState(0)
+  useEffect(() => {
+    const iv = setInterval(() => setT(isFinite(frames.renderT) ? Math.floor(frames.renderT) : 0), 1000)
+    return () => clearInterval(iv)
+  }, [])
+  const paths = useMemo(() => placed.map((p) => p.segs.map((s) => pathOf(s.pts, proj)).join('')), [placed, proj])
+  return (
+    <g pointerEvents="none">
+      {placed.map((p, i) => {
+        const phase = phaseAt(p.o, t)
+        if (phase === 'done' || p.o.kind === 'point') return null
+        return <path key={p.o.id} d={paths[i]} stroke={toneColor(p.o)} strokeOpacity={phase === 'planned' ? 0.35 : 0.8} strokeWidth={p.o.kind === 'route' ? 2 : 4} fill="none" strokeLinecap="round" />
+      })}
+      {placed.map((p) => {
+        const phase = phaseAt(p.o, t)
+        if (phase === 'done' || p.o.kind !== 'point') return null
+        const [cx, cy] = [proj.sx(p.x), proj.sy(p.y)]
+        const col = toneColor(p.o)
+        return (
+          <g key={p.o.id}>
+            {phase === 'active' && (
+              <circle cx={cx} cy={cy} r={5} fill="none" stroke={col} strokeWidth={1.5}>
+                <animate attributeName="r" values="5;11" dur="1.6s" repeatCount="indefinite" />
+                <animate attributeName="stroke-opacity" values="0.8;0" dur="1.6s" repeatCount="indefinite" />
+              </circle>
+            )}
+            <circle cx={cx} cy={cy} r={4.2} fill={phase === 'active' ? col : '#FFFFFF'} stroke={col} strokeWidth={1.6} strokeDasharray={phase === 'planned' ? '2 1.5' : undefined} />
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
 export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { readonly current: Camera }; scaleBar: { px: number; label: string } }) {
   const [open, setOpen] = useState(true)
+  const [frac, setFrac] = useState<Frac | null>(loadFrac)
+  // free space the inset can move in: map size minus card size minus the edge gap
+  const [free, setFree] = useState<{ w: number; h: number } | null>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const drag = useRef<{ id: number; x: number; y: number; left: number; top: number } | null>(null)
   const focusId = useStore((s) => s.focusJunction)
   const camMode = useStore((s) => s.camMode)
   const focusOn = useStore((s) => s.focusOn)
@@ -69,10 +139,21 @@ export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { r
     return () => cancelAnimationFrame(raf)
   }, [camRef, proj, open, H])
 
+  const run = useStore((s) => s.run)
+  const scenes = useMemo(() => (run && run.network === scene.id ? placeOverlays(scene, run.overlays) : []), [run, scene])
+
   const onClick = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const wx = x0 + (e.clientX - rect.left - PAD) / k
     const wy = y1 - (e.clientY - rect.top - PAD) / k
+    // a scenario dot (within a few inset pixels) wins over the nearest intersection
+    const t = isFinite(frames.renderT) ? frames.renderT : 0
+    const dot = scenes.find((p) => p.o.kind === 'point' && phaseAt(p.o, t) !== 'done' && Math.hypot(p.x - wx, p.y - wy) * k < 7)
+    if (dot) {
+      useStore.getState().set({ follow: false })
+      mapApi.current?.focus(dot.x, dot.y, Math.max(camRef.current.scale, 5))
+      return
+    }
     let best: { id: string; d: number } | null = null
     for (const j of scene.junctions) {
       const d = Math.hypot(j.x - wx, j.y - wy)
@@ -82,9 +163,58 @@ export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { r
     else mapApi.current?.focus(wx, wy, Math.max(camRef.current.scale, 3))
   }
 
+  // track the map and card sizes so a dragged inset is re-clamped on resize and collapse
+  useEffect(() => {
+    const card = cardRef.current
+    // the map wrapper; offsetParent would be null while the card is hidden on narrow maps
+    const parent = card?.parentElement
+    if (!card || !parent) return
+    const measure = () => setFree({ w: Math.max(0, parent.clientWidth - card.offsetWidth - EDGE * 2), h: Math.max(0, parent.clientHeight - card.offsetHeight - EDGE * 2) })
+    const ro = new ResizeObserver(measure)
+    ro.observe(parent)
+    ro.observe(card)
+    measure()
+    return () => ro.disconnect()
+  }, [])
+
+  const onHandleDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 || (e.target as HTMLElement).closest('button') || !cardRef.current) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, left: cardRef.current.offsetLeft, top: cardRef.current.offsetTop }
+  }
+  const onHandleMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current
+    if (!d || d.id !== e.pointerId || !free) return
+    const fx = free.w ? clamp01((d.left + e.clientX - d.x - EDGE) / free.w) : 0
+    const fy = free.h ? clamp01((d.top + e.clientY - d.y - EDGE) / free.h) : 0
+    setFrac({ fx, fy })
+  }
+  const onHandleUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (drag.current?.id !== e.pointerId) return
+    drag.current = null
+    saveFrac(frac)
+  }
+  const resetPos = () => {
+    setFrac(null)
+    saveFrac(null)
+  }
+
+  const placed = frac && free
   return (
-    <div className="glass absolute bottom-[76px] left-3 z-10 hidden overflow-hidden rounded-xl @[700px]:block">
-      <div className="flex h-8 items-center justify-between gap-3 px-2.5">
+    <div
+      ref={cardRef}
+      className={cn('glass absolute z-[21] hidden overflow-hidden rounded-xl @[700px]:block', !placed && 'bottom-[76px] left-[calc(var(--rail-w,0px)+12px)]')}
+      style={placed ? { left: EDGE + frac.fx * free.w, top: EDGE + frac.fy * free.h } : undefined}
+    >
+      <div
+        className="flex h-8 cursor-grab touch-none select-none items-center justify-between gap-3 px-2.5 active:cursor-grabbing"
+        title="Drag to move · double-click to reset"
+        onPointerDown={onHandleDown}
+        onPointerMove={onHandleMove}
+        onPointerUp={onHandleUp}
+        onPointerCancel={onHandleUp}
+        onDoubleClick={(e) => !(e.target as HTMLElement).closest('button') && resetPos()}
+      >
         <span className="label-caps">Overview</span>
         <span className="flex items-center gap-2">
           <span className="flex flex-col items-start leading-none">
@@ -111,6 +241,7 @@ export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { r
               </g>
             )
           })}
+          <OverlayMarks placed={scenes} proj={proj} />
           <rect ref={viewRef} fill="rgba(37,99,235,0.07)" stroke="#2563EB" strokeWidth={1.3} rx={2} />
         </svg>
       )}

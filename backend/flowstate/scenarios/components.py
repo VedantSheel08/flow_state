@@ -16,7 +16,7 @@ import random
 from typing import TYPE_CHECKING, Any
 
 from ..sim.vtypes import Conditions, base_type
-from .base import BriefingItem, Component, DemandProfile, Marker, bell, fmt_clock
+from .base import BriefingItem, Component, DemandProfile, Marker, Overlay, bell, fmt_clock
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..network.info import NetInfo
@@ -38,8 +38,11 @@ def run_length(sc: "Scenario") -> float:
     return sc.duration or 600.0
 
 
-def pick_edge(rng: random.Random, net: "NetInfo", sc: "Scenario", requested: str = "random", min_lanes: int = 1, classes: tuple[str, ...] = ()) -> str:
+def pick_edge(rng: random.Random, net: "NetInfo", sc: "Scenario", requested: str = "random", min_lanes: int = 1, classes: tuple[str, ...] = (),
+              min_length: float = 0.0) -> str:
     cands = [e for e in net.block_edges(min_lanes, classes) if e not in sc.reserved and e not in sc.protected]
+    if requested in (None, "", "random") and min_length:
+        cands = [e for e in cands if net.edges[e].length >= min_length] or cands
     if requested and requested != "random":
         seg = net.street_segment(requested) if requested in net.edges else []
         main = [e for e in seg if net.edges[e].part != "bay" and e in cands]
@@ -126,7 +129,8 @@ def divert_from_closure(eng: "Engine", edge: str) -> int:
 
     Drivers who merely pass through are re-routed (SUMO's travel times already price the closure in). Drivers whose
     *destination* is on the closed block cannot be: they would wait at the barrier for good and block everyone behind
-    them, so they head for the nearest open block instead.
+    them, so they head for the nearest open block instead. So do drivers boxed in by one-way streets and turn bans,
+    for whom every way to their destination runs over the closed block (a block nearby, else the nearest map exit).
     """
     net, T = eng.net, eng.T
     seg = set(net.street_segment(edge))
@@ -134,6 +138,7 @@ def divert_from_closure(eng: "Engine", edge: str) -> int:
     ex, ey = net.node_pos[net.edges[edge].to]
     open_blocks = sorted((e for e in net.block_edges(1) if e not in closed),
                          key=lambda e: math.dist(net.node_pos[net.edges[e].to], (ex, ey)))
+    exits = sorted(net.exit_edges, key=lambda e: math.dist(net.node_pos[net.edges[e].to], (ex, ey)))
     moved = 0
     for vid in list(eng.vehicles):
         if vid in eng.tracked or base_type(eng.vtype.get(vid, "")) in ("wreck", "bus"):
@@ -146,8 +151,11 @@ def divert_from_closure(eng: "Engine", edge: str) -> int:
             if route[-1] not in seg:
                 T.vehicle.rerouteTraveltime(vid)
                 moved += 1
-                continue
-            for alt in open_blocks[:6]:
+                r2, i2 = T.vehicle.getRoute(vid), T.vehicle.getRouteIndex(vid)
+                if not seg.intersection(r2[i2 + 1:]):
+                    continue
+                # boxed in (one-way streets, turn bans): no way to the destination that avoids the closure
+            for alt in open_blocks[:6] + exits:
                 try:
                     T.vehicle.changeTarget(vid, alt)
                     moved += 1
@@ -368,6 +376,10 @@ class VenueSurge(Component):
         lbl = "Gates open" if self.phase == "arrival" else "Final whistle"
         return [Marker(t=self.start, label=lbl, kind="demand"), Marker(t=self.center, label="Surge peak", kind="demand")]
 
+    def overlays(self) -> list[Overlay]:
+        return [Overlay(id="venue", kind="zone", tone="demand", label=f"{self.poi.name} · {'arrivals' if self.phase == 'arrival' else 'departures'}",
+                        edges=self.edges, tStart=round(self.start, 1), tEnd=round(self.end, 1))]
+
     def briefing(self) -> list[BriefingItem]:
         return [BriefingItem(label="Event traffic", value=f"{self.vehicles} vehicles {'arriving at' if self.phase == 'arrival' else 'leaving'} {self.poi.name}",
                              detail=f"surge {fmt_clock(self.start)}–{fmt_clock(self.end)}, peak {fmt_clock(self.center)}")]
@@ -422,6 +434,10 @@ class DemandSpike(Component):
     def markers(self) -> list[Marker]:
         return [Marker(t=self.t0, label="Demand spike", kind="demand")]
 
+    def overlays(self) -> list[Overlay]:
+        return [Overlay(id=f"spike_{self.edges[0]}", kind="zone", tone="demand", label=f"Demand spike · {self.zone.use} block",
+                        edges=self.edges, tStart=round(self.t0, 1), tEnd=round(self.t0 + self.len, 1))]
+
     def on_step(self, eng, t: float) -> None:
         if t >= self.t0 and not getattr(self, "_said", False):
             self._said = True
@@ -454,7 +470,8 @@ class Accident(Component):
 
     def instantiate(self, rng, sc, net) -> None:
         D = run_length(sc)
-        self.edge = pick_edge(rng, net, sc, self.location)
+        # wrecks plus up to two responding units parked behind them need a block of ~60 m (short downtown blocks are skipped)
+        self.edge = pick_edge(rng, net, sc, self.location, min_length=62.0)
         self.severity = self.sev_req if self.sev_req != "random" else rng.choices(list(SEVERITIES), weights=[0.45, 0.35, 0.2])[0]
         cfg = SEVERITIES[self.severity]
         car = [net.lanes[l].index for l in net.car_lanes(self.edge)]
@@ -469,6 +486,9 @@ class Accident(Component):
         self.car_lanes = car
         L = net.edges[self.edge].length
         self.pos = rng.uniform(0.3, 0.7) * max(30.0, L - 30)
+        # short downtown blocks: leave room behind the wreck(s) for the responding units to park nose-to-tail
+        room = 22.0 + (6.5 if self.severity == "severe" else 0.0) + (12.0 if self.severity != "minor" else 0.0)
+        self.pos = min(max(self.pos, room), max(room, L - 14.0)) if L > room + 14.0 else self.pos
         # a crash late in a short run would never clear: start early enough that 150 s remain before 85 % of the run
         self.t_start = min(D * rng.uniform(*self.window), max(0.05 * D, 0.85 * D - 150.0))
         # clearance is drawn in real-world minutes, then scaled to the run so the whole story (crash, response,
@@ -519,6 +539,12 @@ class Accident(Component):
 
     def markers(self) -> list[Marker]:
         return [Marker(t=self.t_start, label="Collision", kind="incident"), Marker(t=self.t_clear, label="Scene cleared", kind="incident")]
+
+    def overlays(self) -> list[Overlay]:
+        what = "all lanes closed" if self.closed else f"{len(self.lanes)} lane{'s' if len(self.lanes) > 1 else ''} blocked"
+        return [Overlay(id=f"accident_{self.uid}", kind="point", tone="incident", label=f"{SEVERITIES[self.severity]['label']} collision",
+                        edges=[self.edge], pos=round(self.pos + 5.0, 1), tStart=round(self.t_start, 1), tEnd=round(self.t_clear, 1),
+                        detail=f"{self.desc} · {what}")]
 
     def on_step(self, eng: "Engine", t: float) -> None:
         if self.inc is None and t >= self.t_start:
@@ -692,6 +718,10 @@ class Construction(Component):
     def markers(self) -> list[Marker]:
         return [Marker(t=self.t_start, label="Work zone active", kind="incident")]
 
+    def overlays(self) -> list[Overlay]:
+        return [Overlay(id=f"work_{self.edge}", kind="zone", tone="incident", label="Work zone" + (" · road closed" if self.closure == "full" else " · lane closed"),
+                        edges=[self.edge], tStart=round(self.t_start, 1), detail=self.desc)]
+
     def _install(self, eng: "Engine") -> None:
         L = eng.net.edges[self.edge].length
         self.inc = eng.create_incident("construction", self.edge, self.lanes, 2.0, L - 4.0, None, "moderate", self.limit,
@@ -766,6 +796,10 @@ class EmergencyDispatch(Component):
     def markers(self) -> list[Marker]:
         return [Marker(t=c["t"], label=f"EMS call {c['k']}", kind="emergency") for c in self.calls]
 
+    def overlays(self) -> list[Overlay]:
+        return [Overlay(id=f"ems{c['k']}", kind="point", tone="emergency", label=f"EMS call {c['k']}", edges=[c["edge"]], pos=round(c["pos"], 1),
+                        tStart=round(c["t"], 1), tEnd=round(c["t"] + c["onScene"] + 240.0, 1), detail=c["where"]) for c in self.calls]
+
     def on_step(self, eng: "Engine", t: float) -> None:
         for c in self.calls:
             if not c["dispatched"] and t >= c["t"]:
@@ -826,9 +860,12 @@ class Pursuit(Component):
         self.rng = rng
         self.t0 = D * rng.uniform(0.04, 0.1)
         cands = [e for e in net.block_edges(1) if e not in sc.reserved and e not in sc.protected]
-        self.origin = rng.choice(cands)
-        self.cands = cands
         self.station = poi_edges(net, "police")
+        # the theft is reported away from the division, so the first unit has to give chase
+        hq = net.node_pos[net.edges[self.station[0]].to] if self.station else None
+        away = [e for e in cands if hq is None or math.dist(net.node_pos[net.edges[e].to], hq) > 250]
+        self.origin = rng.choice(away or cands)
+        self.cands = cands
         self.retarget_every = rng.uniform(20, 35)
         self.unit_delays = sorted(rng.uniform(8, 40) for _ in range(self.units))
         self.unit_origins = [self.station[0] if k == 0 and self.station else rng.choice(cands) for k in range(self.units)]
@@ -848,10 +885,14 @@ class Pursuit(Component):
 
     def briefing(self) -> list[BriefingItem]:
         return [BriefingItem(label="Stolen vehicle", value=f"Reported {fmt_clock(self.t0)}", detail=self.where),
-                BriefingItem(label="Response", value=f"{self.units} unit{'s' if self.units > 1 else ''}", detail="first unit from Division 52, others on patrol")]
+                BriefingItem(label="Response", value=f"{self.units} unit{'s' if self.units > 1 else ''}", detail="first unit from 52 Division, others on patrol")]
 
     def markers(self) -> list[Marker]:
         return [Marker(t=self.t0, label="Pursuit begins", kind="emergency")]
+
+    def overlays(self) -> list[Overlay]:
+        return [Overlay(id="pursuit", kind="point", tone="emergency", label="Stolen vehicle reported", edges=[self.origin],
+                        tStart=round(self.t0, 1), tEnd=round(self.t0 + 60.0, 1), detail=self.where)]
 
     def _far_target(self, eng: "Engine", from_xy: tuple[float, float]) -> str:
         far = [e for e in self.cands if math.dist(eng.net.node_pos[eng.net.edges[e].to], from_xy) > 280]
@@ -1010,6 +1051,12 @@ class SchoolDismissal(Component):
     def markers(self) -> list[Marker]:
         return [Marker(t=self.bell_t, label="Dismissal bell", kind="demand")]
 
+    def overlays(self) -> list[Overlay]:
+        return [Overlay(id="school_zone", kind="zone", tone="demand", label=f"School zone · {self.zone * 3.6:.0f} km/h", edges=self.edges,
+                        tStart=0.0, detail=self.poi.name),
+                Overlay(id="school_bell", kind="point", tone="demand", label="Dismissal", edges=[self.stop_edges[0] if self.stop_edges else self.edges[0]],
+                        tStart=round(self.bell_t, 1), tEnd=round(self.bell_t + 600.0, 1), detail=self.poi.name)]
+
     def on_start(self, eng: "Engine") -> None:
         for e in self.edges:
             for seg in eng.net.street_segment(e):
@@ -1098,6 +1145,10 @@ class Transit(Component):
                                     detail=f"first departure {fmt_clock(ln['deps'][0]) if ln['deps'] else '—'}"))
         return out
 
+    def overlays(self) -> list[Overlay]:
+        return [Overlay(id=f"line{ln['line']['id']}{ln['dir'][0]}", kind="route", tone="transit", label=f"{ln['line']['name']} {ln['dir']}",
+                        edges=ln["route"], tStart=0.0, color=ln["line"].get("color")) for ln in self.lines]
+
     def on_step(self, eng: "Engine", t: float) -> None:
         for ln in self.lines:
             while ln["next"] < len(ln["deps"]) and t >= ln["deps"][ln["next"]]:
@@ -1179,7 +1230,14 @@ class Weather(Component):
 
     def briefing(self) -> list[BriefingItem]:
         k = self.k
-        return [BriefingItem(label="Conditions", value=k["label"], detail=f"desired speed −{(1 - k['speed']) * 100:.0f}%, headway +{(k['tau'] - 1) * 100:.0f}%, braking −{(1 - k['decel']) * 100:.0f}%")]
+        return [BriefingItem(label="Conditions", value=k["label"], detail=self._effects())]
+
+    def _effects(self) -> str:
+        k = self.k
+        return f"desired speed −{(1 - k['speed']) * 100:.0f}%, headway +{(k['tau'] - 1) * 100:.0f}%, braking −{(1 - k['decel']) * 100:.0f}%"
+
+    def overlays(self) -> list[Overlay]:
+        return [Overlay(id="weather", kind="weather", tone="environment", label=self.k["label"], condition=self.condition, tStart=0.0, detail=self._effects())]
 
     def on_step(self, eng, t: float) -> None:
         if t >= 0 and not getattr(self, "_said", False):
@@ -1207,6 +1265,9 @@ class CorridorMonitor(Component):
         self.acc = {"car": [0.0, 0], "bike": [0.0, 0]}
         self.bike_lane = {"protected": 0, "shared": 0, "invalid": 0}
         self._last = -1.0
+
+    def overlays(self) -> list[Overlay]:
+        return [Overlay(id=f"corridor_{self.street}", kind="route", tone="transit", label=f"{self.name_} corridor", edges=self.edges, tStart=0.0, color="#0F766E")]
 
     def on_step(self, eng: "Engine", t: float) -> None:
         if t < 0 or t - self._last < 1.0:

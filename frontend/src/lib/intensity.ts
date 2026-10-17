@@ -3,7 +3,9 @@
 //   demand  — background trips per hour entering or starting in the district (set at run start)
 //   traffic — live multiplier on all background demand (SUMO spawns trips as Poisson arrivals at demand × traffic)
 // Scenario components (commuter peak, event surges, weather) still shape demand on top.
+// Each scenario's starting settings (lib/scenarioPresets) sit between its defaults and the preset.
 
+import { scenarioParams } from './scenarioPresets'
 import type { CongestionPreset, ParamSpec, ScenarioSpec } from './types'
 
 export type IntensityId = 'light' | 'normal' | 'rush' | 'severe' | 'gridlock'
@@ -76,10 +78,11 @@ function presetValues(preset: CongestionPreset, scenario: string): Record<string
   return out
 }
 
-/** What the run will use: scenario defaults, then the preset, then the user's own edits. */
+/** What the run will use: scenario defaults and starting settings, then the preset, then the user's own edits. */
 export function effectiveValues(spec: ScenarioSpec, draft: Record<string, unknown> | undefined, preset: CongestionPreset | null): Record<string, unknown> {
   const out: Record<string, unknown> = {}
   for (const p of spec.params) out[p.key] = p.default
+  Object.assign(out, scenarioParams(spec))
   if (preset) for (const [k, v] of Object.entries(presetValues(preset, spec.id))) if (k in out) out[k] = v
   if (draft) for (const [k, v] of Object.entries(draft)) out[k] = v
   return out

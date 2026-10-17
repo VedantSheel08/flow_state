@@ -44,6 +44,8 @@ def common(demand: int = 1500, duration: int = 10, bikes: int = 5, preemption: b
     if preemption is not None:
         out.append(ParamSpec(key="preemption", label="Emergency pre-emption", type="bool", default=preemption, group=S,
                              description="Hold or advance signals for approaching emergency vehicles (never skips amber, all-red or walk clearance)."))
+        out.append(ParamSpec(key="yield_to_ev", label="Drivers yield to sirens", type="bool", default=True, group=S,
+                             description="Drivers near a unit with its lights on move out of its lane, slow down beside it and hold back at the junction it is entering."))
     return out
 
 
@@ -94,12 +96,12 @@ def _accident(sc: Scenario) -> Recipe:
 
 
 @scenario(ScenarioSpec(
-    id="ambulance", title="Ambulance Dispatch", category="Emergency", tagline="Calls from St. Mary's Hospital",
+    id="ambulance", title="Ambulance Dispatch", category="Emergency", tagline="Calls from Mount Sinai Hospital",
     description="Emergency calls arrive at random times and places. Each ambulance drives a real SUMO route from the hospital to the scene, stays on scene, then returns. Response time is measured against the free-flow travel time.",
     params=[*common(1600, 10, preemption=True),
             ParamSpec(key="calls", label="Calls", type="int", default=2, min=1, max=4, step=1)],
     measures=["Response time vs. free-flow", "Signal pre-emptions"],
-    assumptions=["Ambulances use SUMO's bluelight device: other drivers yield and red lights may be passed slowly.", "Free-flow time assumes 125 % of the posted limit."],
+    assumptions=["Ambulances use SUMO's bluelight device and red lights may be passed slowly; nearby drivers clear its lane, slow beside it and hold at the junction it enters.", "Free-flow time assumes 125 % of the posted limit."],
 ))
 def _ambulance(sc: Scenario) -> Recipe:
     p = sc.params
@@ -149,7 +151,7 @@ def _construction(sc: Scenario) -> Recipe:
 
 @scenario(ScenarioSpec(
     id="stadium", title="Stadium Event", category="Demand", tagline="Arrival or departure surge",
-    description="A concentrated surge of vehicles and pedestrians to or from Riverside Stadium. Attendance and timing vary with the seed.",
+    description="A concentrated surge of vehicles and pedestrians to or from the Rogers Centre. Attendance and timing vary with the seed.",
     params=[*common(1200, 15),
             ParamSpec(key="phase", label="Phase", type="select", default="departure", options=opt(("arrival", "Arrivals (before the game)"), ("departure", "Departures (after the game)"))),
             ParamSpec(key="attendance", label="Event vehicles", type="int", default=500, min=100, max=1200, step=50, unit="veh")],

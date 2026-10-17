@@ -7,20 +7,16 @@ const TABS: { id: View; label: string }[] = [
   { id: 'simulate', label: 'Simulation' },
   { id: 'analyze', label: 'Analytics' },
   { id: 'runs', label: 'Run history' },
+  { id: 'results', label: 'Results' },
 ]
 
 export function Logo() {
   return (
-    <svg width="24" height="24" viewBox="0 0 32 32" aria-hidden>
-      <defs>
-        <linearGradient id="fs-logo" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#1b2537" />
-          <stop offset="1" stopColor="#0b111d" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="8" fill="url(#fs-logo)" />
-      <path d="M8 21.5c4.5 0 5.5-11 10-11h6" stroke="#fff" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-      <path d="M8 10.5h4M20 21.5h4" stroke="#60A5FA" strokeWidth="2.6" strokeLinecap="round" />
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden>
+      <rect width="24" height="24" rx="6" fill="#0c1322" />
+      <path d="M6 9h7.5a2.5 2.5 0 0 0 0-5" stroke="#2a78d6" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path d="M6 15h12" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+      <path d="M6 20h5" stroke="#eb6834" strokeWidth="2" strokeLinecap="round" />
     </svg>
   )
 }
@@ -49,40 +45,36 @@ export function Header() {
   const networks = useStore((s) => s.networks)
   const panels = useStore((s) => s.panels)
   const togglePanel = useStore((s) => s.togglePanel)
-  const netTitle = networks[run?.network ?? 'district']?.title ?? 'Riverside District'
+  const netTitle = networks[run?.network ?? 'district']?.title ?? 'Downtown Toronto · King West'
   const mapOnly = !panels.left && !panels.right
   return (
-    <header className="relative z-20 flex h-12 shrink-0 items-center border-b border-border bg-surface/95 px-3.5 backdrop-blur">
-      <div className="flex items-center gap-2.5">
+    <header className="relative z-20 flex h-12 shrink-0 items-center gap-7 border-b border-border bg-surface pl-5 pr-4">
+      <div className="flex shrink-0 items-center gap-2.5">
         <Logo />
-        <span className="text-[14.5px] font-semibold tracking-[-0.02em] text-ink">FlowState</span>
-        <span className="hidden rounded-[5px] border border-border px-1.5 py-px text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-3 lg:inline">SUMO twin</span>
+        <span className="text-[14px] font-[650] tracking-[-0.01em] text-ink">FlowState</span>
+        <span className="hidden h-[18px] items-center rounded-[6px] px-[7px] text-[10.5px] font-semibold text-ink-3 shadow-[inset_0_0_0_1px_var(--color-border-strong)] lg:inline-flex">SUMO twin</span>
       </div>
-      <div className="mx-4 h-5 w-px bg-border" />
-      <nav className="flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
+      <nav aria-label="Main" className="flex gap-[22px] self-stretch">
         {TABS.map((t) => (
           <button
             key={t.id}
+            aria-current={view === t.id ? 'page' : undefined}
             onClick={() => set({ view: t.id })}
             className={cn(
-              'h-7 rounded-md px-3 text-[12.5px] font-medium transition-all duration-150',
-              view === t.id ? 'bg-surface text-ink shadow-[0_1px_2px_rgba(16,24,40,0.08),0_0_0_1px_rgba(16,24,40,0.04)]' : 'text-ink-2 hover:text-ink',
+              'inline-flex h-12 items-center px-0.5 text-[13px] font-medium transition-[color,box-shadow] duration-150 ease-out',
+              view === t.id ? 'text-ink shadow-[inset_0_-2px_0_var(--color-ink)]' : 'text-ink-3 hover:text-ink-2',
             )}
           >
             {t.label}
           </button>
         ))}
       </nav>
-      <div className="ml-auto flex items-center gap-3 text-[12px] text-ink-2">
-        <span className="hidden items-center gap-1.5 md:flex">
-          <span className="text-ink-3">Network</span>
-          <span className="font-medium text-ink">{netTitle}</span>
-        </span>
-        <div className="h-4 w-px bg-border" />
+      <div className="ml-auto flex items-center gap-2.5 text-[12px] text-ink-2">
+        <span className="hidden text-ink-3 md:inline">{view === 'results' ? 'rl_grid · 2×2 signalised' : netTitle}</span>
         <Tip label={conn === 'open' ? `Connected to the simulation server (${health?.backend ?? 'TraCI'})` : 'Simulation server unreachable — retrying'}>
-          <span className="flex items-center gap-1.5 rounded-full border border-border bg-subtle px-2 py-[3px]">
+          <span className="flex h-6 items-center gap-1.5 rounded-full bg-subtle px-[9px] shadow-[inset_0_0_0_1px_var(--color-border)]">
             <Dot tone={conn === 'open' ? 'good' : conn === 'connecting' ? 'warn' : 'bad'} />
-            <span className="font-medium text-ink">{conn === 'open' ? `SUMO ${health?.sumo ?? ''}` : conn === 'connecting' ? 'Connecting…' : 'Offline'}</span>
+            <span className="font-medium text-ink-2">{conn === 'open' ? `SUMO ${health?.sumo ?? ''}` : conn === 'connecting' ? 'Connecting…' : 'Offline'}</span>
           </span>
         </Tip>
         {view === 'simulate' && (

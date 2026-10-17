@@ -117,6 +117,13 @@ class DemandGenerator:
                 blocks.setdefault((e.street, e.dir, e.seg), []).append(e.id)
         self._blocks = list(blocks.values())
         self._gateway_w: dict[str, float] = {e: APPROACH_VOLUME_INDEX.get(self.net.edges[e].cls, 0.12) for e in self.net.entry_edges + self.net.exit_edges}
+        # A map edge served only by a couple of side streets (e.g. north of Queen on the Toronto map) attracts
+        # proportionally fewer trips than one with arterials: side weights scale with the side's gateway volume index.
+        self._side_scale: dict[bool, dict[str, float]] = {}
+        for entry, gates in ((True, self.net.entries), (False, self.net.exits)):
+            vol = {s: sum(self._gateway_w.get(e, 0.12) for e in lst) for s, lst in gates.items() if lst}
+            mean = sum(vol.values()) / len(vol) if vol else 1.0
+            self._side_scale[entry] = {s: v / mean for s, v in vol.items()}
 
     # -- trip ends ---------------------------------------------------------
     def _side_edge(self, side: str, entry: bool) -> str | None:
@@ -171,7 +178,8 @@ class DemandGenerator:
 
     def _end(self, weights: dict[str, float], core_bias: float, entry: bool) -> tuple[str | None, bool]:
         keys = list(weights)
-        k = weighted(self.rng, keys, [weights[x] for x in keys])
+        scale = self._side_scale[entry]
+        k = weighted(self.rng, keys, [weights[x] * (1.0 if x == "internal" else scale.get(x, 0.0)) for x in keys])
         if k == "internal":
             return self._zone_edge(core_bias), True
         return self._side_edge(k, entry), False

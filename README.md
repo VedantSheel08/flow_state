@@ -53,17 +53,29 @@ Keyboard: `Space` play/pause · `R` restart same seed · `N` new variation · `H
 
 ## The simulation
 
-**Network.** *Riverside District* is a synthetic, reproducible downtown network generated with `netconvert`
-(`backend/flowstate/network/city.py`):
+**Network.** A real slice of **downtown Toronto**: the Entertainment District / King West, from Front St to
+Queen St and Peter St to Simcoe St (about 520 × 680 m of core streets plus stubs to the map edge). The street pattern
+is imported from OpenStreetMap (`data/osm/toronto_king_west.json`, © OpenStreetMap contributors, ODbL) and
+compiled with `netconvert` (`backend/flowstate/network/toronto.py` + `city.py`):
 
-- 4 × 4 street grid. Arterials (Main, King, Queen) have 2 lanes per direction, a planted median and 38 m
-  left-turn bays with protected-left phasing. Collectors (Front, Church) have painted bike lanes. Local streets
-  are controlled by all-way stops.
-- Sidewalks, crosswalks and walking areas everywhere. Pedestrians use SUMO's striping model.
-- 11 signalised intersections with 4 s amber, 2 s all-red and pedestrian walk / flashing-don't-walk intervals.
-- Points of interest: hospital, police division, school, stadium and park, plus bus lines 501 Queen and 6 Main
-  with far-side stops.
+- The map is rotated about 16° to "Toronto north", so the grid lines up with the screen. Street spacing, names, T-junctions
+  and one-way directions come from OSM: Richmond, Pearl and Mercer run westbound, Adelaide eastbound and Simcoe
+  southbound. Peter St becomes Blue Jays Way south of King, and Duncan St becomes Ed Mirvish Way south of Pearl.
+- Arterials (Front, King, Queen) have 2 lanes per direction, a planted median and left-turn bays with
+  protected-left phasing. Richmond and Adelaide are 3-lane one-way arterials with cycle tracks. Collectors (Peter,
+  John, Simcoe, Wellington) have bike lanes.
+- 32 intersections: 22 signalised, plus two-way stops at side streets (Widmer, Mercer, Pearl, Windsor) and an
+  all-way stop at Duncan & Pearl. Peter and John have peak-period "no left turn" rules at Front, King and Queen.
+- Sidewalks, crosswalks and walking areas everywhere. Pedestrians use SUMO's striping model. Signals have 4 s
+  amber, 2 s all-red and pedestrian walk / flashing-don't-walk intervals.
+- Points of interest: Rogers Centre (stadium), David Pecaut Square (park), Toronto Police 52 Division and Ogden
+  Junior Public School. There is no hospital in this area, so a stand-in "Mount Sinai Hospital" sits inside the
+  map for ambulance runs. The real one is on University Ave, about 0.8 km north-east.
+- Transit: 501 Queen and 504 King streetcars with far-side stops.
 - A variant network, `district_bike`, reallocates King Street's median and turn bays to protected bike lanes.
+- City blocks, buildings and trees are procedural, drawn inside the real block shapes. Run
+  `python tools/fetch_osm.py` to refresh the extract. The original synthetic 4 × 4 grid is kept in `city.py`
+  as the unbuilt `riverside` spec.
 
 **Driver behaviour.** Car following uses IDM; lane changing uses SL2015 with the sublane model (0.8 m lateral
 resolution). Each run draws 8 driver profiles per vehicle class from bounded normal distributions (headway,
@@ -134,8 +146,9 @@ cd frontend && npm test && npm run build
 
 ## Known limitations
 
-- The network is synthetic. An OpenStreetMap import was not added in this iteration. SUMO's `netconvert --osm`
-  plus `geometry.py` would support one, but city layout data (buildings, POIs) would need its own importer.
+- The street network is real (OpenStreetMap) but simplified to straight street lines on the rotated grid. Lane
+  counts follow the product's cross-section classes, and buildings and blocks are procedural, not OSM footprints.
+  The hospital is a stand-in.
 - The weather scenario is a sensitivity model: factors fall within published ranges but are not calibrated.
 - The pursuit model is simplified: re-targeting suspect, units chasing its current or next street, contact rule.
 - School pick-up stops are curb-lane stops. Parking manoeuvres are not modelled.
