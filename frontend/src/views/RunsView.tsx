@@ -110,7 +110,7 @@ export function RunsView() {
   )
 
   return (
-    <div className="scroll-y min-w-0 flex-1 bg-canvas">
+    <div className="view-in scroll-y min-w-0 flex-1 bg-canvas">
       <PageMasthead word="history" kicker={runs && runs.length > 0 ? `Archive · ${runs.length} ${runs.length === 1 ? 'run' : 'runs'} stored` : 'Archive'} title="Run history">
         Every run keeps its scenario, settings and seed. Open one to see its briefing, or reproduce it to regenerate the identical traffic in SUMO.
       </PageMasthead>
@@ -141,7 +141,7 @@ export function RunsView() {
             noun="runs"
             placeholder="Search by scenario, seed, street or event…"
             filterTitles={{ level: 'Outcome', service: 'Scenario', status: 'Signals' }}
-            className="asphalt rounded-[18px] shadow-[0_1px_2px_rgba(12,19,34,0.12),0_18px_44px_-14px_rgba(12,19,34,0.45)]"
+            className="spot asphalt rounded-[18px] shadow-[0_1px_2px_rgba(12,19,34,0.12),0_18px_44px_-14px_rgba(12,19,34,0.45)]"
           />
         )}
       </div>

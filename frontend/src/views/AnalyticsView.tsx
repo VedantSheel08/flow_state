@@ -40,7 +40,7 @@ function TimeChart({ def, data, markers, labels = false }: { def: ChartDef; data
   const rows = useMemo(() => data.map((k) => ({ t: k.t, v: def.get(k) })), [data, def])
   const last = [...rows].reverse().find((r) => r.v != null)?.v ?? null
   return (
-    <div className="rounded-xl border border-transparent bg-surface p-5 shadow-card">
+    <div className="spot rounded-xl border border-transparent bg-surface p-5 shadow-card">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="text-[13px] font-semibold text-ink">{def.title}</div>
@@ -181,7 +181,7 @@ function Comparison() {
   const names = ((job as unknown as { names?: [string, string] })?.names ?? v?.names ?? ['A', 'B']) as [string, string]
   const done = job?.state === 'done' && job.variants[0] && job.variants[1]
   return (
-    <div className="rounded-xl border border-transparent bg-surface shadow-card">
+    <div className="spot rounded-xl border border-transparent bg-surface shadow-card">
       <div className="flex flex-wrap items-center gap-3 border-b border-border px-5 py-4">
         <div className="mr-auto min-w-[260px] flex-1">
           <div className="flex items-center gap-1.5 text-[13px] font-semibold text-ink">
@@ -285,7 +285,7 @@ export function AnalyticsView() {
   const modes = (stats?.kpi as Kpi & { modes?: Record<string, ModeSummary> })?.modes ?? results?.metrics.byMode ?? {}
   if (!run)
     return (
-      <div className="scroll-y flex min-w-0 flex-1 flex-col bg-canvas">
+      <div className="view-in scroll-y flex min-w-0 flex-1 flex-col bg-canvas">
         <PageMasthead word="analytics" kicker="Analytics" title="Live measurements">
           Every chart here fills from SUMO while a scenario runs.
         </PageMasthead>
@@ -302,7 +302,7 @@ export function AnalyticsView() {
       </div>
     )
   return (
-    <div className="scroll-y min-w-0 flex-1 bg-canvas">
+    <div className="view-in scroll-y min-w-0 flex-1 bg-canvas">
       <PageMasthead
         word="analytics"
         kicker={results ? 'Analytics · run complete' : 'Analytics · live'}
@@ -327,7 +327,7 @@ export function AnalyticsView() {
           ))}
         </div>
         <div className={cn('grid grid-cols-1 gap-4 xl:grid-cols-[1fr_1.4fr]')}>
-          <div className="rounded-xl border border-transparent bg-surface p-5 shadow-card">
+          <div className="spot rounded-xl border border-transparent bg-surface p-5 shadow-card">
             <div className="mb-3 text-[15px] font-semibold text-ink">Completed trips by mode</div>
             <ModeTable modes={modes} />
             <div className="mt-2 text-[11px] text-ink-3">Cumulative since the scenario clock started. Trips still under way are not included.</div>

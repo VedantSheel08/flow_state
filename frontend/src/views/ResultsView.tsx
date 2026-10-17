@@ -1,7 +1,7 @@
 import { BadgeCheck, ChevronDown, CircleCheck, FlaskConical, Info, Loader2, Lock, Play, RotateCcw, ShieldCheck, Siren, TriangleAlert } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { PageMasthead } from '../components/PageHeader'
-import { LampHead, SevenSegment, type Aspect } from '../components/ui/traffic'
+import { LampHead, QueueLanes, SevenSegment, type Aspect } from '../components/ui/traffic'
 import { api } from '../lib/api'
 import {
   METRICS,
@@ -86,7 +86,7 @@ function useCountUp(target: number, ms = 900) {
 }
 
 // ---- small pieces ---------------------------------------------------------
-const card = 'rounded-[12px] border border-transparent bg-surface shadow-card'
+const card = 'spot rounded-[12px] border border-transparent bg-surface shadow-card'
 
 function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
   return <div className={cn('text-[12px] font-semibold leading-[1.4] text-ink-3', className)}>{children}</div>
@@ -285,7 +285,21 @@ function StrongestResult({ st, live }: { st: Story; live: boolean }) {
           </div>
         </div>
       </div>
-      <Bars m={m} base={base.mean} fs={fs.mean} size="lg" grow />
+      {k === 'queue_max_veh' ? (
+        <div className="flex max-w-[800px] flex-col gap-2">
+          <QueueLanes
+            lanes={[
+              { label: 'Fixed-time', color: COLOR[BASE], count: Math.round(base.mean) },
+              { label: 'FlowState', color: COLOR[FS], count: Math.round(fs.mean), strong: true },
+            ]}
+          />
+          <p className="tnum m-0 pl-[116px] text-[12px] leading-[1.5] text-ink-3">
+            One block per vehicle queued at the worst moment, averaged over runs. Dashed: the {Math.round(base.mean) - Math.round(fs.mean)} FlowState avoided.
+          </p>
+        </div>
+      ) : (
+        <Bars m={m} base={base.mean} fs={fs.mean} size="lg" grow />
+      )}
       <Cap className="tnum">
         Better in {fs.vs?.better} of {fs.vs?.paired} paired runs, worse in {fs.vs?.worse}.{imp && ` 95% interval: ${imp.lo.toFixed(1)}% to ${imp.hi.toFixed(1)}% better than fixed-time.`}
       </Cap>
@@ -589,7 +603,7 @@ function RunningPanel({ job, controls }: { job: RlJob; controls: ReactNode }) {
   const { done, total } = job.progress
   const left = elapsed != null && done > 0 ? Math.max(0, (elapsed / done) * (total - done)) : null
   return (
-    <section aria-live="polite" className={cn(card, 'flex flex-col gap-5 px-6 pb-6 pt-[22px] shadow-[0_0_0_1px_var(--color-flow-line),0_0_0_4px_rgba(42,120,214,0.1),0_1px_2px_rgba(12,19,34,0.04)]')}>
+    <section aria-live="polite" className={cn(card, 'beam flex flex-col gap-5 px-6 pb-6 pt-[22px] shadow-[0_0_0_1px_var(--color-flow-line),0_0_0_4px_rgba(42,120,214,0.1),0_1px_2px_rgba(12,19,34,0.04)]')}>
       <div className="flex flex-wrap items-center gap-4">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-flow-soft text-flow">
           <Loader2 size={18} className="animate-spin" />
@@ -1199,7 +1213,7 @@ export function ResultsView() {
     if (r) liveJob.start(r.scenarios, r.seeds.length, r.intensity)
   }
   return (
-    <div className="scroll-y min-w-0 flex-1 bg-canvas">
+    <div className="view-in scroll-y min-w-0 flex-1 bg-canvas">
       <PageMasthead
         word="results"
         kicker={isLive ? 'Live SUMO comparison' : `Recorded SUMO evaluation · ${st.runs} paired runs`}

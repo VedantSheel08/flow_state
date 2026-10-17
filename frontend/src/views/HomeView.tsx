@@ -28,7 +28,7 @@ export function HomeView() {
     { title: 'Archive', links: [{ label: 'Run history', onSelect: go('runs') }] },
   ]
   return (
-    <div className="min-w-0 flex-1 overflow-hidden">
+    <div className="view-in min-w-0 flex-1 overflow-hidden">
       <HalftoneWordmarkFooter as="section" preset="asphalt" wordmark="flowstate" crop={0.16} dotGap={6} radius={90} grain={0.5} height="calc(100dvh - 48px)" className="asphalt">
         <div className="hwf-top">
           <div className="hwf-brand">

@@ -139,6 +139,77 @@
   animation-play-state: paused;
 }
 
+/* Cursor glow on cards (21st.dev "Shine Border" pattern): a 1px ring lit
+   around the pointer. Neutral ink, so blue stays FlowState's. */
+.spot {
+  position: relative;
+  --spot: rgb(12 19 34 / 0.5);
+}
+.asphalt .spot,
+.spot.asphalt {
+  --spot: rgb(255 255 255 / 0.42);
+}
+.spot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: radial-gradient(260px circle at var(--mx, -999px) var(--my, -999px), var(--spot), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+@media (hover: hover) {
+  .spot:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Border beam (21st.dev "Border Beam"): a light running round the border
+   while SUMO works. Only on live, in-progress surfaces. */
+@property --beam {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.beam {
+  position: relative;
+}
+.beam::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: conic-gradient(from var(--beam), transparent 0 72%, rgb(42 120 214 / 0.9) 88%, #b9d3f3 94%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: beam 2.6s linear infinite;
+}
+@keyframes beam {
+  to {
+    --beam: 360deg;
+  }
+}
+
+/* Page entrance when switching tabs. */
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.view-in {
+  animation: view-in 260ms var(--ease-out-quint) both;
+}
+
 /* A dashed lane marking: the visual for "equal" and "zero" everywhere. */
 .lane-v {
   background-image: linear-gradient(to bottom, var(--color-lane) 0 10px, transparent 10px 20px);
@@ -304,5 +375,12 @@ input[type='number']::-webkit-inner-spin-button {
   }
   .grow-x[data-shown='true'] {
     opacity: 1;
+  }
+  .beam::after {
+    animation: none;
+    background: rgb(42 120 214 / 0.45);
+  }
+  .view-in {
+    animation: fade-in 160ms ease-out both;
   }
 }

@@ -179,3 +179,96 @@ export function SignalLamp({ aspect, label, className }: { aspect: Aspect; label
     </span>
   )
 }
+
+// ---- queue lanes -----------------------------------------------------------
+export interface QueueLane {
+  label: string
+  color: string
+  /** Vehicles in the queue; one block each. */
+  count: number
+  strong?: boolean
+}
+
+/**
+ * Two-lane approaches stopped at a red signal, one block per queued vehicle.
+ * Shorter queues show the vehicles they avoided as dashed outlines, so the
+ * difference reads as cars, not as a percentage. Cars roll up on mount.
+ */
+export function QueueLanes({ lanes, className }: { lanes: QueueLane[]; className?: string }) {
+  const [shown, setShown] = useState(false)
+  const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  useEffect(() => {
+    const id = requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)))
+    return () => cancelAnimationFrame(id)
+  }, [])
+  const max = Math.max(...lanes.map((l) => l.count))
+  const W = 600
+  const PITCH = 7.2
+  const CAR = 6
+  const STOP = W - 34
+  const ROWS = [4, 14.5]
+  const H = 24
+  const pos = (i: number) => ({ x: STOP - 3 - Math.floor(i / 2) * PITCH - CAR, y: ROWS[i % 2] })
+  return (
+    <div className={cn('flex flex-col gap-2.5', className)}>
+      {lanes.map((lane, li) => (
+        <div key={lane.label} className="flex items-center gap-3">
+          <span className={cn('flex w-[104px] shrink-0 items-center gap-2 text-[13px]', lane.strong ? 'font-medium text-ink' : 'text-ink-3')}>
+            <span className="h-2 w-2 shrink-0 rounded-[2px]" style={{ background: lane.color }} />
+            {lane.label}
+          </span>
+          <svg viewBox={`0 0 ${W} ${H + 2}`} className="block h-auto min-w-0 flex-1" role="img" aria-label={`${lane.label}: ${lane.count} vehicles queued`}>
+            {/* road surface, edge lines and the dashed line between the two lanes */}
+            <rect x={0} y={1} width={STOP} height={H} rx={3} fill="rgb(255 255 255 / 0.035)" />
+            <line x1={0} x2={STOP} y1={1} y2={1} stroke="rgb(255 255 255 / 0.14)" />
+            <line x1={0} x2={STOP} y1={H + 1} y2={H + 1} stroke="rgb(255 255 255 / 0.14)" />
+            <line x1={0} x2={STOP} y1={13} y2={13} stroke="rgb(255 255 255 / 0.18)" strokeDasharray="6 6" />
+            {/* stop line and signal head showing red */}
+            <rect x={STOP} y={1} width={2.5} height={H} fill="rgb(255 255 255 / 0.75)" />
+            <rect x={W - 24} y={1} width={11} height={H} rx={3} fill="#05080f" stroke="rgb(255 255 255 / 0.1)" />
+            <circle cx={W - 18.5} cy={6.5} r={2.6} fill="#ff5a4f" style={{ filter: 'drop-shadow(0 0 3px #ff5a4f)' }} />
+            <circle cx={W - 18.5} cy={13} r={2.6} fill="rgb(255 255 255 / 0.12)" />
+            <circle cx={W - 18.5} cy={19.5} r={2.6} fill="rgb(255 255 255 / 0.12)" />
+            {Array.from({ length: max }, (_, i) => {
+              const { x, y } = pos(i)
+              if (i >= lane.count)
+                return (
+                  <rect
+                    key={i}
+                    x={x + 0.4}
+                    y={y + 0.4}
+                    width={CAR - 0.8}
+                    height={4.7}
+                    rx={1.3}
+                    fill="none"
+                    stroke="rgb(255 255 255 / 0.4)"
+                    strokeWidth={0.8}
+                    strokeDasharray="1.6 1.2"
+                    style={{ opacity: shown ? 1 : 0, transition: reduced ? undefined : `opacity 400ms ease-out ${900 + li * 120}ms` }}
+                  />
+                )
+              const delay = Math.floor(i / 2) * 9 + li * 120
+              return (
+                <rect
+                  key={i}
+                  x={x}
+                  y={y}
+                  width={CAR}
+                  height={5.5}
+                  rx={1.4}
+                  fill={lane.color}
+                  style={{
+                    transform: shown || reduced ? 'none' : 'translateX(-48px)',
+                    opacity: shown || reduced ? 1 : 0,
+                    transition: reduced ? undefined : `transform 620ms cubic-bezier(0.2, 0, 0, 1) ${delay}ms, opacity 240ms ease-out ${delay}ms`,
+                  }}
+                />
+              )
+            })}
+          </svg>
+          <span className={cn('tnum w-10 shrink-0 text-right', lane.strong ? 'font-semibold text-ink' : 'text-ink-2')}>{lane.count}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
