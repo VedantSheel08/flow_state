@@ -1,5 +1,6 @@
 import { Loader2, WifiOff } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, type CSSProperties } from 'react'
+import { ConfigDialog } from './components/ConfigDialog'
 import { Header } from './components/Header'
 import { LaunchProgress } from './components/LaunchProgress'
 import { RightPanel } from './components/RightPanel'
@@ -99,8 +100,11 @@ function MapStage() {
   const conn = useStore((s) => s.connection)
   const run = useStore((s) => s.run)
   const pick = useStore((s) => s.pick)
+  const railOpen = useStore((s) => s.panels.left)
+  // left-anchored map overlays sit beside the floating scenario rail
+  const railStyle = { '--rail-w': railOpen ? '260px' : '64px' } as CSSProperties
   return (
-    <main className="relative min-w-0 flex-1">
+    <main className="relative min-w-0 flex-1" style={railStyle}>
       {net ? (
         <MapView net={net} />
       ) : (
@@ -145,6 +149,7 @@ function MapStage() {
           </div>
         </div>
       )}
+      <ScenarioRail />
       <RunBar />
     </main>
   )
@@ -180,7 +185,6 @@ export default function App() {
         <Header />
         <div className="flex min-h-0 flex-1">
           <div className={cn('flex min-h-0 min-w-0 flex-1', view !== 'simulate' && 'hidden')}>
-            <ScenarioRail />
             <MapStage />
             <RightPanel />
           </div>
@@ -188,6 +192,7 @@ export default function App() {
           {view === 'runs' && <RunsView />}
         </div>
       </div>
+      <ConfigDialog />
       <Toasts />
     </TooltipProvider>
   )

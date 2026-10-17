@@ -4,6 +4,7 @@
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Tip } from '../components/ui'
+import { cn } from '../lib/format'
 import { useStore } from '../lib/store'
 import type { Camera } from './camera'
 import type { Pt } from './geom'
@@ -12,6 +13,32 @@ import type { Scene } from './scene'
 
 const W = 184
 const PAD = 8
+/** Gap kept between the dragged inset and the edge of the map. */
+const EDGE = 8
+const POS_KEY = 'flowstate.minimap'
+
+/** Inset position as fractions of the free space inside the map, so it stays in bounds on resize. */
+type Frac = { fx: number; fy: number }
+
+function loadFrac(): Frac | null {
+  try {
+    const v = JSON.parse(localStorage.getItem(POS_KEY) ?? 'null')
+    return v && Number.isFinite(v.fx) && Number.isFinite(v.fy) ? v : null
+  } catch {
+    return null
+  }
+}
+
+function saveFrac(f: Frac | null) {
+  try {
+    if (f) localStorage.setItem(POS_KEY, JSON.stringify(f))
+    else localStorage.removeItem(POS_KEY)
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
 /** Fixed projection from world metres into the inset. */
 function projection(scene: Scene) {
@@ -24,6 +51,11 @@ const pathOf = (pts: Pt[], p: ReturnType<typeof projection>) => pts.map((q, i) =
 
 export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { readonly current: Camera }; scaleBar: { px: number; label: string } }) {
   const [open, setOpen] = useState(true)
+  const [frac, setFrac] = useState<Frac | null>(loadFrac)
+  // free space the inset can move in: map size minus card size minus the edge gap
+  const [free, setFree] = useState<{ w: number; h: number } | null>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const drag = useRef<{ id: number; x: number; y: number; left: number; top: number } | null>(null)
   const focusId = useStore((s) => s.focusJunction)
   const camMode = useStore((s) => s.camMode)
   const focusOn = useStore((s) => s.focusOn)
@@ -82,9 +114,58 @@ export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { r
     else mapApi.current?.focus(wx, wy, Math.max(camRef.current.scale, 3))
   }
 
+  // track the map and card sizes so a dragged inset is re-clamped on resize and collapse
+  useEffect(() => {
+    const card = cardRef.current
+    // the map wrapper; offsetParent would be null while the card is hidden on narrow maps
+    const parent = card?.parentElement
+    if (!card || !parent) return
+    const measure = () => setFree({ w: Math.max(0, parent.clientWidth - card.offsetWidth - EDGE * 2), h: Math.max(0, parent.clientHeight - card.offsetHeight - EDGE * 2) })
+    const ro = new ResizeObserver(measure)
+    ro.observe(parent)
+    ro.observe(card)
+    measure()
+    return () => ro.disconnect()
+  }, [])
+
+  const onHandleDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 || (e.target as HTMLElement).closest('button') || !cardRef.current) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, left: cardRef.current.offsetLeft, top: cardRef.current.offsetTop }
+  }
+  const onHandleMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current
+    if (!d || d.id !== e.pointerId || !free) return
+    const fx = free.w ? clamp01((d.left + e.clientX - d.x - EDGE) / free.w) : 0
+    const fy = free.h ? clamp01((d.top + e.clientY - d.y - EDGE) / free.h) : 0
+    setFrac({ fx, fy })
+  }
+  const onHandleUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (drag.current?.id !== e.pointerId) return
+    drag.current = null
+    saveFrac(frac)
+  }
+  const resetPos = () => {
+    setFrac(null)
+    saveFrac(null)
+  }
+
+  const placed = frac && free
   return (
-    <div className="glass absolute bottom-[76px] left-3 z-10 hidden overflow-hidden rounded-xl @[700px]:block">
-      <div className="flex h-8 items-center justify-between gap-3 px-2.5">
+    <div
+      ref={cardRef}
+      className={cn('glass absolute z-[21] hidden overflow-hidden rounded-xl @[700px]:block', !placed && 'bottom-[76px] left-[calc(var(--rail-w,0px)+12px)]')}
+      style={placed ? { left: EDGE + frac.fx * free.w, top: EDGE + frac.fy * free.h } : undefined}
+    >
+      <div
+        className="flex h-8 cursor-grab touch-none select-none items-center justify-between gap-3 px-2.5 active:cursor-grabbing"
+        title="Drag to move · double-click to reset"
+        onPointerDown={onHandleDown}
+        onPointerMove={onHandleMove}
+        onPointerUp={onHandleUp}
+        onPointerCancel={onHandleUp}
+        onDoubleClick={(e) => !(e.target as HTMLElement).closest('button') && resetPos()}
+      >
         <span className="label-caps">Overview</span>
         <span className="flex items-center gap-2">
           <span className="flex flex-col items-start leading-none">

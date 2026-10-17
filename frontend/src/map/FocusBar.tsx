@@ -87,7 +87,7 @@ export function FocusBar({ scene, junctions }: { scene: Scene; junctions: NavJun
   if (pick) return null
   const network = camMode === 'network'
   return (
-    <div ref={ref} className="absolute left-3 top-3 z-10 flex items-start gap-2">
+    <div ref={ref} className="absolute left-[calc(var(--rail-w,0px)+12px)] top-3 z-10 flex items-start gap-2">
       <div className="glass flex h-10 items-center gap-0.5 rounded-xl p-1" role="tablist" aria-label="Camera view">
         <ModeButton active={!network} onClick={() => focusOn(focusId)} label="Intersection" hint="Focus one intersection (F toggles)">
           <Crosshair size={14} />
