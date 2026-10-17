@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16T19:15:15.248283-05:00 by Eclipse SUMO netconvert 1.28.0
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <node-files value="..\data\networks\_district_bike\plain.nod.xml"/>
+        <edge-files value="..\data\networks\_district_bike\plain.edg.xml"/>
+    </input>
+
+    <output>
+        <output-file value="..\data\networks\_district_bike\pass1.net.xml"/>
+        <plain-output-prefix value="..\data\networks\_district_bike\p1"/>
+        <output.street-names value="true"/>
+    </output>
+
+    <processing>
+        <offset.disable-normalization value="true"/>
+    </processing>
+
+    <building_defaults>
+        <default.junctions.radius value="7.0"/>
+    </building_defaults>
+
+    <tls_building>
+        <tls.yellow.time value="4"/>
+        <tls.allred.time value="2"/>
+        <tls.left-green.time value="8"/>
+        <tls.crossing-min.time value="6"/>
+        <tls.crossing-clearance.time value="5"/>
+        <tls.default-type value="static"/>
+    </tls_building>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="8"/>
+        <junctions.internal-link-detail value="12"/>
+        <rectangular-lane-cut value="true"/>
+    </junctions>
+
+    <pedestrian>
+        <crossings.guess value="true"/>
+        <walkingareas value="true"/>
+    </pedestrian>
+
+    <report>
+        <xml-validation value="never"/>
+    </report>
+
+</netconvertConfiguration>
+-->
+
+<tlLogics version="1.20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tllogic_file.xsd">
+    <tlLogic id="n0_1" type="static" programID="0" offset="0">
+        <phase duration="34" state="rrrrrgGgGGgrrrrrgGgGGgGrGr"/>
+        <phase duration="5"  state="rrrrrgGgGGgrrrrrgGgGGgrrrr"/>
+        <phase duration="4"  state="rrrrryyyyyyrrrrryyyyyyrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="34" state="ggGggrrrrrrggGggrrrrrrrGrG"/>
+        <phase duration="5"  state="ggGggrrrrrrggGggrrrrrrrrrr"/>
+        <phase duration="4"  state="yyyyyrrrrrryyyyyrrrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n0_2" type="static" programID="0" offset="0">
+        <phase duration="28" state="rrrrgGGgrrrrgGGgGrGr"/>
+        <phase duration="5"  state="rrrrgGGgrrrrgGGgrrrr"/>
+        <phase duration="4"  state="rrrryyygrrrryyygrrrr"/>
+        <phase duration="8"  state="rrrrrrrGrrrrrrrGrrrr"/>
+        <phase duration="4"  state="rrrrrrryrrrrrrryrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="28" state="gGggrrrrgGggrrrrrGrG"/>
+        <phase duration="5"  state="gGggrrrrgGggrrrrrrrr"/>
+        <phase duration="4"  state="yyyyrrrryyyyrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n1_0" type="static" programID="0" offset="0">
+        <phase duration="28" state="ggGgGgrrrrrrggGgGgrrrrrrrGrG"/>
+        <phase duration="5"  state="ggGgGgrrrrrrggGgGgrrrrrrrrrr"/>
+        <phase duration="4"  state="yyyyygrrrrrryyyyygrrrrrrrrrr"/>
+        <phase duration="8"  state="rrrrrGrrrrrrrrrrrGrrrrrrrrrr"/>
+        <phase duration="4"  state="rrrrryrrrrrrrrrrryrrrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="28" state="rrrrrrgGggGgrrrrrrgGggGgGrGr"/>
+        <phase duration="5"  state="rrrrrrgGggGgrrrrrrgGggGgrrrr"/>
+        <phase duration="4"  state="rrrrrryyyyyyrrrrrryyyyyyrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n1_1" type="static" programID="0" offset="0">
+        <phase duration="28" state="ggGgGgrrrrrrrggGgGgrrrrrrrrGrG"/>
+        <phase duration="5"  state="ggGgGgrrrrrrrggGgGgrrrrrrrrrrr"/>
+        <phase duration="4"  state="yyyyygrrrrrrryyyyygrrrrrrrrrrr"/>
+        <phase duration="8"  state="rrrrrGrrrrrrrrrrrrGrrrrrrrrrrr"/>
+        <phase duration="4"  state="rrrrryrrrrrrrrrrrryrrrrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="28" state="rrrrrrgGggGGgrrrrrrgGggGGgGrGr"/>
+        <phase duration="5"  state="rrrrrrgGggGGgrrrrrrgGggGGgrrrr"/>
+        <phase duration="4"  state="rrrrrryyyyyyyrrrrrryyyyyyyrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n1_2" type="static" programID="0" offset="0">
+        <phase duration="22" state="gGgGgrrrrrgGgGgrrrrrrGrG"/>
+        <phase duration="5"  state="gGgGgrrrrrgGgGgrrrrrrrrr"/>
+        <phase duration="4"  state="yyyygrrrrryyyygrrrrrrrrr"/>
+        <phase duration="8"  state="rrrrGrrrrrrrrrGrrrrrrrrr"/>
+        <phase duration="4"  state="rrrryrrrrrrrrryrrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="22" state="rrrrrgGgGgrrrrrgGgGgGrGr"/>
+        <phase duration="5"  state="rrrrrgGgGgrrrrrgGgGgrrrr"/>
+        <phase duration="4"  state="rrrrryyyygrrrrryyyygrrrr"/>
+        <phase duration="8"  state="rrrrrrrrrGrrrrrrrrrGrrrr"/>
+        <phase duration="4"  state="rrrrrrrrryrrrrrrrrryrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n1_3" type="static" programID="0" offset="0">
+        <phase duration="28" state="gGGgrrrrgGGgrrrrrGrG"/>
+        <phase duration="5"  state="gGGgrrrrgGGgrrrrrrrr"/>
+        <phase duration="4"  state="yyygrrrryyygrrrrrrrr"/>
+        <phase duration="8"  state="rrrGrrrrrrrGrrrrrrrr"/>
+        <phase duration="4"  state="rrryrrrrrrryrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="28" state="rrrrgGggrrrrgGggGrGr"/>
+        <phase duration="5"  state="rrrrgGggrrrrgGggrrrr"/>
+        <phase duration="4"  state="rrrryyyyrrrryyyyrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n2_0" type="static" programID="0" offset="0">
+        <phase duration="34" state="gGggGgrrrrrrgGggGgrrrrrrrGrG"/>
+        <phase duration="5"  state="gGggGgrrrrrrgGggGgrrrrrrrrrr"/>
+        <phase duration="4"  state="yyyyyyrrrrrryyyyyyrrrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="34" state="rrrrrrgGggGgrrrrrrgGggGgGrGr"/>
+        <phase duration="5"  state="rrrrrrgGggGgrrrrrrgGggGgrrrr"/>
+        <phase duration="4"  state="rrrrrryyyyyyrrrrrryyyyyyrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n2_1" type="static" programID="0" offset="0">
+        <phase duration="34" state="rrrrrrgGggGGgrrrrrrgGggGGgGrGr"/>
+        <phase duration="5"  state="rrrrrrgGggGGgrrrrrrgGggGGgrrrr"/>
+        <phase duration="4"  state="rrrrrryyyyyyyrrrrrryyyyyyyrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="34" state="gGggGgrrrrrrrgGggGgrrrrrrrrGrG"/>
+        <phase duration="5"  state="gGggGgrrrrrrrgGggGgrrrrrrrrrrr"/>
+        <phase duration="4"  state="yyyyyyrrrrrrryyyyyyrrrrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n2_2" type="static" programID="0" offset="0">
+        <phase duration="28" state="rrrrrrggGgGgrrrrrrggGgGgGrGr"/>
+        <phase duration="5"  state="rrrrrrggGgGgrrrrrrggGgGgrrrr"/>
+        <phase duration="4"  state="rrrrrryyyyygrrrrrryyyyygrrrr"/>
+        <phase duration="8"  state="rrrrrrrrrrrGrrrrrrrrrrrGrrrr"/>
+        <phase duration="4"  state="rrrrrrrrrrryrrrrrrrrrrryrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="28" state="gGggGgrrrrrrgGggGgrrrrrrrGrG"/>
+        <phase duration="5"  state="gGggGgrrrrrrgGggGgrrrrrrrrrr"/>
+        <phase duration="4"  state="yyyyyyrrrrrryyyyyyrrrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n3_1" type="static" programID="0" offset="0">
+        <phase duration="34" state="rrrrrgGgGGgrrrrrgGgGGgGrGr"/>
+        <phase duration="5"  state="rrrrrgGgGGgrrrrrgGgGGgrrrr"/>
+        <phase duration="4"  state="rrrrryyyyyyrrrrryyyyyyrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="34" state="ggGggrrrrrrggGggrrrrrrrGrG"/>
+        <phase duration="5"  state="ggGggrrrrrrggGggrrrrrrrrrr"/>
+        <phase duration="4"  state="yyyyyrrrrrryyyyyrrrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+    <tlLogic id="n3_2" type="static" programID="0" offset="0">
+        <phase duration="28" state="rrrrgGGgrrrrgGGgGrGr"/>
+        <phase duration="5"  state="rrrrgGGgrrrrgGGgrrrr"/>
+        <phase duration="4"  state="rrrryyygrrrryyygrrrr"/>
+        <phase duration="8"  state="rrrrrrrGrrrrrrrGrrrr"/>
+        <phase duration="4"  state="rrrrrrryrrrrrrryrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="28" state="gGggrrrrgGggrrrrrGrG"/>
+        <phase duration="5"  state="gGggrrrrgGggrrrrrrrr"/>
+        <phase duration="4"  state="yyyyrrrryyyyrrrrrrrr"/>
+        <phase duration="2"  state="rrrrrrrrrrrrrrrrrrrr"/>
+    </tlLogic>
+
+    <connection from="church_n0" to="front_e3" fromLane="1" toLane="1" tl="n2_0" linkIndex="12"/>
+    <connection from="church_n0" to="church_n1" fromLane="1" toLane="1" tl="n2_0" linkIndex="13"/>
+    <connection from="church_n0" to="front_w2" fromLane="1" toLane="1" tl="n2_0" linkIndex="14"/>
+    <connection from="church_n0" to="front_e3" fromLane="2" toLane="2" tl="n2_0" linkIndex="15"/>
+    <connection from="church_n0" to="church_n1" fromLane="2" toLane="2" tl="n2_0" linkIndex="16"/>
+    <connection from="church_n0" to="front_w2" fromLane="2" toLane="2" tl="n2_0" linkIndex="17"/>
+    <connection from="church_n1" to="king_e3" fromLane="1" toLane="1" tl="n2_1" linkIndex="13"/>
+    <connection from="church_n1" to="church_n2" fromLane="1" toLane="1" tl="n2_1" linkIndex="14"/>
+    <connection from="church_n1" to="king_w2" fromLane="1" toLane="1" tl="n2_1" linkIndex="15"/>
+    <connection from="church_n1" to="king_e3" fromLane="2" toLane="2" tl="n2_1" linkIndex="16"/>
+    <connection from="church_n1" to="church_n2" fromLane="2" toLane="2" tl="n2_1" linkIndex="17"/>
+    <connection from="church_n1" to="king_w2" fromLane="2" toLane="3" tl="n2_1" linkIndex="18"/>
+    <connection from="church_n2" to="queen_e3" fromLane="1" toLane="1" tl="n2_2" linkIndex="12"/>
+    <connection from="church_n2" to="church_n3" fromLane="1" toLane="1" tl="n2_2" linkIndex="13"/>
+    <connection from="church_n2" to="queen_w2" fromLane="1" toLane="1" tl="n2_2" linkIndex="14"/>
+    <connection from="church_n2" to="queen_e3" fromLane="2" toLane="1" tl="n2_2" linkIndex="15"/>
+    <connection from="church_n2" to="church_n3" fromLane="2" toLane="2" tl="n2_2" linkIndex="16"/>
+    <connection from="church_n2" to="queen_w2" fromLane="2" toLane="2" tl="n2_2" linkIndex="17"/>
+    <connection from="church_s1" to="queen_w2" fromLane="1" toLane="1" tl="n2_2" linkIndex="0"/>
+    <connection from="church_s1" to="church_s2" fromLane="1" toLane="1" tl="n2_2" linkIndex="1"/>
+    <connection from="church_s1" to="queen_e3" fromLane="1" toLane="1" tl="n2_2" linkIndex="2"/>
+    <connection from="church_s1" to="queen_w2" fromLane="2" toLane="1" tl="n2_2" linkIndex="3"/>
+    <connection from="church_s1" to="church_s2" fromLane="2" toLane="2" tl="n2_2" linkIndex="4"/>
+    <connection from="church_s1" to="queen_e3" fromLane="2" toLane="2" tl="n2_2" linkIndex="5"/>
+    <connection from="church_s2" to="king_w2" fromLane="1" toLane="1" tl="n2_1" linkIndex="0"/>
+    <connection from="church_s2" to="church_s3" fromLane="1" toLane="1" tl="n2_1" linkIndex="1"/>
+    <connection from="church_s2" to="king_e3" fromLane="1" toLane="1" tl="n2_1" linkIndex="2"/>
+    <connection from="church_s2" to="king_w2" fromLane="2" toLane="2" tl="n2_1" linkIndex="3"/>
+    <connection from="church_s2" to="church_s3" fromLane="2" toLane="2" tl="n2_1" linkIndex="4"/>
+    <connection from="church_s2" to="king_e3" fromLane="2" toLane="3" tl="n2_1" linkIndex="5"/>
+    <connection from="church_s3" to="front_w2" fromLane="1" toLane="1" tl="n2_0" linkIndex="0"/>
+    <connection from="church_s3" to="church_s4" fromLane="1" toLane="1" tl="n2_0" linkIndex="1"/>
+    <connection from="church_s3" to="front_e3" fromLane="1" toLane="1" tl="n2_0" linkIndex="2"/>
+    <connection from="church_s3" to="front_w2" fromLane="2" toLane="2" tl="n2_0" linkIndex="3"/>
+    <connection from="church_s3" to="church_s4" fromLane="2" toLane="2" tl="n2_0" linkIndex="4"/>
+    <connection from="church_s3" to="front_e3" fromLane="2" toLane="2" tl="n2_0" linkIndex="5"/>
+    <connection from="college_e1" to="main_s1" fromLane="1" toLane="1" tl="n1_3" linkIndex="12"/>
+    <connection from="college_e1" to="college_e2" fromLane="1" toLane="1" tl="n1_3" linkIndex="13"/>
+    <connection from="college_e1" to="main_n4" fromLane="1" toLane="1" tl="n1_3" linkIndex="14"/>
+    <connection from="college_e1" to="main_n4" fromLane="1" toLane="2" tl="n1_3" linkIndex="15"/>
+    <connection from="college_w2" to="main_n4" fromLane="1" toLane="1" tl="n1_3" linkIndex="4"/>
+    <connection from="college_w2" to="college_w3" fromLane="1" toLane="1" tl="n1_3" linkIndex="5"/>
+    <connection from="college_w2" to="main_s1" fromLane="1" toLane="1" tl="n1_3" linkIndex="6"/>
+    <connection from="college_w2" to="main_s1" fromLane="1" toLane="2" tl="n1_3" linkIndex="7"/>
+    <connection from="elm_n1" to="king_e1" fromLane="1" toLane="1" tl="n0_1" linkIndex="11"/>
+    <connection from="elm_n1" to="king_e1" fromLane="1" toLane="2" tl="n0_1" linkIndex="12"/>
+    <connection from="elm_n1" to="elm_n2" fromLane="1" toLane="1" tl="n0_1" linkIndex="13"/>
+    <connection from="elm_n1" to="king_w4" fromLane="1" toLane="1" tl="n0_1" linkIndex="14"/>
+    <connection from="elm_n1" to="king_w4" fromLane="1" toLane="3" tl="n0_1" linkIndex="15"/>
+    <connection from="elm_n2" to="queen_e1" fromLane="1" toLane="1" tl="n0_2" linkIndex="8"/>
+    <connection from="elm_n2" to="elm_n3" fromLane="1" toLane="1" tl="n0_2" linkIndex="9"/>
+    <connection from="elm_n2" to="queen_w4" fromLane="1" toLane="1" tl="n0_2" linkIndex="10"/>
+    <connection from="elm_n2" to="queen_w4" fromLane="1" toLane="2" tl="n0_2" linkIndex="11"/>
+    <connection from="elm_s1" to="queen_w4" fromLane="1" toLane="1" tl="n0_2" linkIndex="0"/>
+    <connection from="elm_s1" to="elm_s2" fromLane="1" toLane="1" tl="n0_2" linkIndex="1"/>
+    <connection from="elm_s1" to="queen_e1" fromLane="1" toLane="1" tl="n0_2" linkIndex="2"/>
+    <connection from="elm_s1" to="queen_e1" fromLane="1" toLane="2" tl="n0_2" linkIndex="3"/>
+    <connection from="elm_s2" to="king_w4" fromLane="1" toLane="1" tl="n0_1" linkIndex="0"/>
+    <connection from="elm_s2" to="king_w4" fromLane="1" toLane="2" tl="n0_1" linkIndex="1"/>
+    <connection from="elm_s2" to="elm_s3" fromLane="1" toLane="1" tl="n0_1" linkIndex="2"/>
+    <connection from="elm_s2" to="king_e1" fromLane="1" toLane="1" tl="n0_1" linkIndex="3"/>
+    <connection from="elm_s2" to="king_e1" fromLane="1" toLane="3" tl="n0_1" linkIndex="4"/>
+    <connection from="front_e1" to="main_s4" fromLane="1" toLane="1" tl="n1_0" linkIndex="18"/>
+    <connection from="front_e1" to="front_e2" fromLane="1" toLane="1" tl="n1_0" linkIndex="19"/>
+    <connection from="front_e1" to="main_n1" fromLane="1" toLane="1" tl="n1_0" linkIndex="20"/>
+    <connection from="front_e1" to="main_s4" fromLane="2" toLane="1" tl="n1_0" linkIndex="21"/>
+    <connection from="front_e1" to="front_e2" fromLane="2" toLane="2" tl="n1_0" linkIndex="22"/>
+    <connection from="front_e1" to="main_n1" fromLane="2" toLane="2" tl="n1_0" linkIndex="23"/>
+    <connection from="front_e2" to="church_s4" fromLane="1" toLane="1" tl="n2_0" linkIndex="18"/>
+    <connection from="front_e2" to="front_e3" fromLane="1" toLane="1" tl="n2_0" linkIndex="19"/>
+    <connection from="front_e2" to="church_n1" fromLane="1" toLane="1" tl="n2_0" linkIndex="20"/>
+    <connection from="front_e2" to="church_s4" fromLane="2" toLane="2" tl="n2_0" linkIndex="21"/>
+    <connection from="front_e2" to="front_e3" fromLane="2" toLane="2" tl="n2_0" linkIndex="22"/>
+    <connection from="front_e2" to="church_n1" fromLane="2" toLane="2" tl="n2_0" linkIndex="23"/>
+    <connection from="front_w1" to="church_n1" fromLane="1" toLane="1" tl="n2_0" linkIndex="6"/>
+    <connection from="front_w1" to="front_w2" fromLane="1" toLane="1" tl="n2_0" linkIndex="7"/>
+    <connection from="front_w1" to="church_s4" fromLane="1" toLane="1" tl="n2_0" linkIndex="8"/>
+    <connection from="front_w1" to="church_n1" fromLane="2" toLane="2" tl="n2_0" linkIndex="9"/>
+    <connection from="front_w1" to="front_w2" fromLane="2" toLane="2" tl="n2_0" linkIndex="10"/>
+    <connection from="front_w1" to="church_s4" fromLane="2" toLane="2" tl="n2_0" linkIndex="11"/>
+    <connection from="front_w2" to="main_n1" fromLane="1" toLane="1" tl="n1_0" linkIndex="6"/>
+    <connection from="front_w2" to="front_w3" fromLane="1" toLane="1" tl="n1_0" linkIndex="7"/>
+    <connection from="front_w2" to="main_s4" fromLane="1" toLane="1" tl="n1_0" linkIndex="8"/>
+    <connection from="front_w2" to="main_n1" fromLane="2" toLane="1" tl="n1_0" linkIndex="9"/>
+    <connection from="front_w2" to="front_w3" fromLane="2" toLane="2" tl="n1_0" linkIndex="10"/>
+    <connection from="front_w2" to="main_s4" fromLane="2" toLane="2" tl="n1_0" linkIndex="11"/>
+    <connection from="king_e0" to="elm_s3" fromLane="1" toLane="1" tl="n0_1" linkIndex="16"/>
+    <connection from="king_e0" to="king_e1" fromLane="1" toLane="1" tl="n0_1" linkIndex="17"/>
+    <connection from="king_e0" to="elm_s3" fromLane="2" toLane="1" tl="n0_1" linkIndex="18"/>
+    <connection from="king_e0" to="king_e1" fromLane="2" toLane="2" tl="n0_1" linkIndex="19"/>
+    <connection from="king_e0" to="king_e1" fromLane="3" toLane="3" tl="n0_1" linkIndex="20"/>
+    <connection from="king_e0" to="elm_n2" fromLane="3" toLane="1" tl="n0_1" linkIndex="21"/>
+    <connection from="king_e1" to="main_s3" fromLane="1" toLane="1" tl="n1_1" linkIndex="19"/>
+    <connection from="king_e1" to="king_e2" fromLane="1" toLane="1" tl="n1_1" linkIndex="20"/>
+    <connection from="king_e1" to="main_n2" fromLane="1" toLane="1" tl="n1_1" linkIndex="21"/>
+    <connection from="king_e1" to="main_s3" fromLane="2" toLane="1" tl="n1_1" linkIndex="22"/>
+    <connection from="king_e1" to="king_e2" fromLane="2" toLane="2" tl="n1_1" linkIndex="23"/>
+    <connection from="king_e1" to="king_e2" fromLane="3" toLane="3" tl="n1_1" linkIndex="24"/>
+    <connection from="king_e1" to="main_n2" fromLane="3" toLane="2" tl="n1_1" linkIndex="25"/>
+    <connection from="king_e2" to="church_s3" fromLane="1" toLane="1" tl="n2_1" linkIndex="19"/>
+    <connection from="king_e2" to="king_e3" fromLane="1" toLane="1" tl="n2_1" linkIndex="20"/>
+    <connection from="king_e2" to="church_n2" fromLane="1" toLane="1" tl="n2_1" linkIndex="21"/>
+    <connection from="king_e2" to="church_s3" fromLane="2" toLane="2" tl="n2_1" linkIndex="22"/>
+    <connection from="king_e2" to="king_e3" fromLane="2" toLane="2" tl="n2_1" linkIndex="23"/>
+    <connection from="king_e2" to="king_e3" fromLane="3" toLane="3" tl="n2_1" linkIndex="24"/>
+    <connection from="king_e2" to="church_n2" fromLane="3" toLane="2" tl="n2_1" linkIndex="25"/>
+    <connection from="king_e3" to="park_s3" fromLane="1" toLane="1" tl="n3_1" linkIndex="16"/>
+    <connection from="king_e3" to="king_e4" fromLane="1" toLane="1" tl="n3_1" linkIndex="17"/>
+    <connection from="king_e3" to="park_s3" fromLane="2" toLane="1" tl="n3_1" linkIndex="18"/>
+    <connection from="king_e3" to="king_e4" fromLane="2" toLane="2" tl="n3_1" linkIndex="19"/>
+    <connection from="king_e3" to="king_e4" fromLane="3" toLane="3" tl="n3_1" linkIndex="20"/>
+    <connection from="king_e3" to="park_n2" fromLane="3" toLane="1" tl="n3_1" linkIndex="21"/>
+    <connection from="king_w0" to="park_n2" fromLane="1" toLane="1" tl="n3_1" linkIndex="5"/>
+    <connection from="king_w0" to="king_w1" fromLane="1" toLane="1" tl="n3_1" linkIndex="6"/>
+    <connection from="king_w0" to="park_n2" fromLane="2" toLane="1" tl="n3_1" linkIndex="7"/>
+    <connection from="king_w0" to="king_w1" fromLane="2" toLane="2" tl="n3_1" linkIndex="8"/>
+    <connection from="king_w0" to="king_w1" fromLane="3" toLane="3" tl="n3_1" linkIndex="9"/>
+    <connection from="king_w0" to="park_s3" fromLane="3" toLane="1" tl="n3_1" linkIndex="10"/>
+    <connection from="king_w1" to="church_n2" fromLane="1" toLane="1" tl="n2_1" linkIndex="6"/>
+    <connection from="king_w1" to="king_w2" fromLane="1" toLane="1" tl="n2_1" linkIndex="7"/>
+    <connection from="king_w1" to="church_s3" fromLane="1" toLane="1" tl="n2_1" linkIndex="8"/>
+    <connection from="king_w1" to="church_n2" fromLane="2" toLane="2" tl="n2_1" linkIndex="9"/>
+    <connection from="king_w1" to="king_w2" fromLane="2" toLane="2" tl="n2_1" linkIndex="10"/>
+    <connection from="king_w1" to="king_w2" fromLane="3" toLane="3" tl="n2_1" linkIndex="11"/>
+    <connection from="king_w1" to="church_s3" fromLane="3" toLane="2" tl="n2_1" linkIndex="12"/>
+    <connection from="king_w2" to="main_n2" fromLane="1" toLane="1" tl="n1_1" linkIndex="6"/>
+    <connection from="king_w2" to="king_w3" fromLane="1" toLane="1" tl="n1_1" linkIndex="7"/>
+    <connection from="king_w2" to="main_s3" fromLane="1" toLane="1" tl="n1_1" linkIndex="8"/>
+    <connection from="king_w2" to="main_n2" fromLane="2" toLane="1" tl="n1_1" linkIndex="9"/>
+    <connection from="king_w2" to="king_w3" fromLane="2" toLane="2" tl="n1_1" linkIndex="10"/>
+    <connection from="king_w2" to="king_w3" fromLane="3" toLane="3" tl="n1_1" linkIndex="11"/>
+    <connection from="king_w2" to="main_s3" fromLane="3" toLane="2" tl="n1_1" linkIndex="12"/>
+    <connection from="king_w3" to="elm_n2" fromLane="1" toLane="1" tl="n0_1" linkIndex="5"/>
+    <connection from="king_w3" to="king_w4" fromLane="1" toLane="1" tl="n0_1" linkIndex="6"/>
+    <connection from="king_w3" to="elm_n2" fromLane="2" toLane="1" tl="n0_1" linkIndex="7"/>
+    <connection from="king_w3" to="king_w4" fromLane="2" toLane="2" tl="n0_1" linkIndex="8"/>
+    <connection from="king_w3" to="king_w4" fromLane="3" toLane="3" tl="n0_1" linkIndex="9"/>
+    <connection from="king_w3" to="elm_s3" fromLane="3" toLane="1" tl="n0_1" linkIndex="10"/>
+    <connection from="main_n0b" to="front_e2" fromLane="1" toLane="1" tl="n1_0" linkIndex="12"/>
+    <connection from="main_n0b" to="front_e2" fromLane="1" toLane="2" tl="n1_0" linkIndex="13"/>
+    <connection from="main_n0b" to="main_n1" fromLane="1" toLane="1" tl="n1_0" linkIndex="14"/>
+    <connection from="main_n0b" to="front_w3" fromLane="1" toLane="1" tl="n1_0" linkIndex="15"/>
+    <connection from="main_n0b" to="main_n1" fromLane="2" toLane="2" tl="n1_0" linkIndex="16"/>
+    <connection from="main_n0b" to="front_w3" fromLane="3" toLane="2" tl="n1_0" linkIndex="17"/>
+    <connection from="main_n1b" to="king_e2" fromLane="1" toLane="1" tl="n1_1" linkIndex="13"/>
+    <connection from="main_n1b" to="king_e2" fromLane="1" toLane="2" tl="n1_1" linkIndex="14"/>
+    <connection from="main_n1b" to="main_n2" fromLane="1" toLane="1" tl="n1_1" linkIndex="15"/>
+    <connection from="main_n1b" to="king_w3" fromLane="1" toLane="1" tl="n1_1" linkIndex="16"/>
+    <connection from="main_n1b" to="main_n2" fromLane="2" toLane="2" tl="n1_1" linkIndex="17"/>
+    <connection from="main_n1b" to="king_w3" fromLane="3" toLane="3" tl="n1_1" linkIndex="18"/>
+    <connection from="main_n2b" to="queen_e2" fromLane="1" toLane="1" tl="n1_2" linkIndex="10"/>
+    <connection from="main_n2b" to="main_n3" fromLane="1" toLane="1" tl="n1_2" linkIndex="11"/>
+    <connection from="main_n2b" to="queen_w3" fromLane="1" toLane="1" tl="n1_2" linkIndex="12"/>
+    <connection from="main_n2b" to="main_n3" fromLane="2" toLane="2" tl="n1_2" linkIndex="13"/>
+    <connection from="main_n2b" to="queen_w3" fromLane="3" toLane="2" tl="n1_2" linkIndex="14"/>
+    <connection from="main_n3b" to="college_e2" fromLane="1" toLane="1" tl="n1_3" linkIndex="8"/>
+    <connection from="main_n3b" to="main_n4" fromLane="1" toLane="1" tl="n1_3" linkIndex="9"/>
+    <connection from="main_n3b" to="main_n4" fromLane="2" toLane="2" tl="n1_3" linkIndex="10"/>
+    <connection from="main_n3b" to="college_w3" fromLane="3" toLane="1" tl="n1_3" linkIndex="11"/>
+    <connection from="main_s0b" to="college_w3" fromLane="1" toLane="1" tl="n1_3" linkIndex="0"/>
+    <connection from="main_s0b" to="main_s1" fromLane="1" toLane="1" tl="n1_3" linkIndex="1"/>
+    <connection from="main_s0b" to="main_s1" fromLane="2" toLane="2" tl="n1_3" linkIndex="2"/>
+    <connection from="main_s0b" to="college_e2" fromLane="3" toLane="1" tl="n1_3" linkIndex="3"/>
+    <connection from="main_s1b" to="queen_w3" fromLane="1" toLane="1" tl="n1_2" linkIndex="0"/>
+    <connection from="main_s1b" to="main_s2" fromLane="1" toLane="1" tl="n1_2" linkIndex="1"/>
+    <connection from="main_s1b" to="queen_e2" fromLane="1" toLane="1" tl="n1_2" linkIndex="2"/>
+    <connection from="main_s1b" to="main_s2" fromLane="2" toLane="2" tl="n1_2" linkIndex="3"/>
+    <connection from="main_s1b" to="queen_e2" fromLane="3" toLane="2" tl="n1_2" linkIndex="4"/>
+    <connection from="main_s2b" to="king_w3" fromLane="1" toLane="1" tl="n1_1" linkIndex="0"/>
+    <connection from="main_s2b" to="king_w3" fromLane="1" toLane="2" tl="n1_1" linkIndex="1"/>
+    <connection from="main_s2b" to="main_s3" fromLane="1" toLane="1" tl="n1_1" linkIndex="2"/>
+    <connection from="main_s2b" to="king_e2" fromLane="1" toLane="1" tl="n1_1" linkIndex="3"/>
+    <connection from="main_s2b" to="main_s3" fromLane="2" toLane="2" tl="n1_1" linkIndex="4"/>
+    <connection from="main_s2b" to="king_e2" fromLane="3" toLane="3" tl="n1_1" linkIndex="5"/>
+    <connection from="main_s3b" to="front_w3" fromLane="1" toLane="1" tl="n1_0" linkIndex="0"/>
+    <connection from="main_s3b" to="front_w3" fromLane="1" toLane="2" tl="n1_0" linkIndex="1"/>
+    <connection from="main_s3b" to="main_s4" fromLane="1" toLane="1" tl="n1_0" linkIndex="2"/>
+    <connection from="main_s3b" to="front_e2" fromLane="1" toLane="1" tl="n1_0" linkIndex="3"/>
+    <connection from="main_s3b" to="main_s4" fromLane="2" toLane="2" tl="n1_0" linkIndex="4"/>
+    <connection from="main_s3b" to="front_e2" fromLane="3" toLane="2" tl="n1_0" linkIndex="5"/>
+    <connection from="park_n1" to="king_e4" fromLane="1" toLane="1" tl="n3_1" linkIndex="11"/>
+    <connection from="park_n1" to="king_e4" fromLane="1" toLane="2" tl="n3_1" linkIndex="12"/>
+    <connection from="park_n1" to="park_n2" fromLane="1" toLane="1" tl="n3_1" linkIndex="13"/>
+    <connection from="park_n1" to="king_w1" fromLane="1" toLane="1" tl="n3_1" linkIndex="14"/>
+    <connection from="park_n1" to="king_w1" fromLane="1" toLane="3" tl="n3_1" linkIndex="15"/>
+    <connection from="park_n2" to="queen_e4" fromLane="1" toLane="1" tl="n3_2" linkIndex="8"/>
+    <connection from="park_n2" to="park_n3" fromLane="1" toLane="1" tl="n3_2" linkIndex="9"/>
+    <connection from="park_n2" to="queen_w1" fromLane="1" toLane="1" tl="n3_2" linkIndex="10"/>
+    <connection from="park_n2" to="queen_w1" fromLane="1" toLane="2" tl="n3_2" linkIndex="11"/>
+    <connection from="park_s1" to="queen_w1" fromLane="1" toLane="1" tl="n3_2" linkIndex="0"/>
+    <connection from="park_s1" to="park_s2" fromLane="1" toLane="1" tl="n3_2" linkIndex="1"/>
+    <connection from="park_s1" to="queen_e4" fromLane="1" toLane="1" tl="n3_2" linkIndex="2"/>
+    <connection from="park_s1" to="queen_e4" fromLane="1" toLane="2" tl="n3_2" linkIndex="3"/>
+    <connection from="park_s2" to="king_w1" fromLane="1" toLane="1" tl="n3_1" linkIndex="0"/>
+    <connection from="park_s2" to="king_w1" fromLane="1" toLane="2" tl="n3_1" linkIndex="1"/>
+    <connection from="park_s2" to="park_s3" fromLane="1" toLane="1" tl="n3_1" linkIndex="2"/>
+    <connection from="park_s2" to="king_e4" fromLane="1" toLane="1" tl="n3_1" linkIndex="3"/>
+    <connection from="park_s2" to="king_e4" fromLane="1" toLane="3" tl="n3_1" linkIndex="4"/>
+    <connection from="queen_e0b" to="elm_s2" fromLane="1" toLane="1" tl="n0_2" linkIndex="12"/>
+    <connection from="queen_e0b" to="queen_e1" fromLane="1" toLane="1" tl="n0_2" linkIndex="13"/>
+    <connection from="queen_e0b" to="queen_e1" fromLane="2" toLane="2" tl="n0_2" linkIndex="14"/>
+    <connection from="queen_e0b" to="elm_n3" fromLane="3" toLane="1" tl="n0_2" linkIndex="15"/>
+    <connection from="queen_e1b" to="main_s2" fromLane="1" toLane="1" tl="n1_2" linkIndex="15"/>
+    <connection from="queen_e1b" to="queen_e2" fromLane="1" toLane="1" tl="n1_2" linkIndex="16"/>
+    <connection from="queen_e1b" to="main_n3" fromLane="1" toLane="1" tl="n1_2" linkIndex="17"/>
+    <connection from="queen_e1b" to="queen_e2" fromLane="2" toLane="2" tl="n1_2" linkIndex="18"/>
+    <connection from="queen_e1b" to="main_n3" fromLane="3" toLane="2" tl="n1_2" linkIndex="19"/>
+    <connection from="queen_e2b" to="church_s2" fromLane="1" toLane="1" tl="n2_2" linkIndex="18"/>
+    <connection from="queen_e2b" to="church_s2" fromLane="1" toLane="2" tl="n2_2" linkIndex="19"/>
+    <connection from="queen_e2b" to="queen_e3" fromLane="1" toLane="1" tl="n2_2" linkIndex="20"/>
+    <connection from="queen_e2b" to="church_n3" fromLane="1" toLane="1" tl="n2_2" linkIndex="21"/>
+    <connection from="queen_e2b" to="queen_e3" fromLane="2" toLane="2" tl="n2_2" linkIndex="22"/>
+    <connection from="queen_e2b" to="church_n3" fromLane="3" toLane="2" tl="n2_2" linkIndex="23"/>
+    <connection from="queen_e3b" to="park_s2" fromLane="1" toLane="1" tl="n3_2" linkIndex="12"/>
+    <connection from="queen_e3b" to="queen_e4" fromLane="1" toLane="1" tl="n3_2" linkIndex="13"/>
+    <connection from="queen_e3b" to="queen_e4" fromLane="2" toLane="2" tl="n3_2" linkIndex="14"/>
+    <connection from="queen_e3b" to="park_n3" fromLane="3" toLane="1" tl="n3_2" linkIndex="15"/>
+    <connection from="queen_w0b" to="park_n3" fromLane="1" toLane="1" tl="n3_2" linkIndex="4"/>
+    <connection from="queen_w0b" to="queen_w1" fromLane="1" toLane="1" tl="n3_2" linkIndex="5"/>
+    <connection from="queen_w0b" to="queen_w1" fromLane="2" toLane="2" tl="n3_2" linkIndex="6"/>
+    <connection from="queen_w0b" to="park_s2" fromLane="3" toLane="1" tl="n3_2" linkIndex="7"/>
+    <connection from="queen_w1b" to="church_n3" fromLane="1" toLane="1" tl="n2_2" linkIndex="6"/>
+    <connection from="queen_w1b" to="church_n3" fromLane="1" toLane="2" tl="n2_2" linkIndex="7"/>
+    <connection from="queen_w1b" to="queen_w2" fromLane="1" toLane="1" tl="n2_2" linkIndex="8"/>
+    <connection from="queen_w1b" to="church_s2" fromLane="1" toLane="1" tl="n2_2" linkIndex="9"/>
+    <connection from="queen_w1b" to="queen_w2" fromLane="2" toLane="2" tl="n2_2" linkIndex="10"/>
+    <connection from="queen_w1b" to="church_s2" fromLane="3" toLane="2" tl="n2_2" linkIndex="11"/>
+    <connection from="queen_w2b" to="main_n3" fromLane="1" toLane="1" tl="n1_2" linkIndex="5"/>
+    <connection from="queen_w2b" to="queen_w3" fromLane="1" toLane="1" tl="n1_2" linkIndex="6"/>
+    <connection from="queen_w2b" to="main_s2" fromLane="1" toLane="1" tl="n1_2" linkIndex="7"/>
+    <connection from="queen_w2b" to="queen_w3" fromLane="2" toLane="2" tl="n1_2" linkIndex="8"/>
+    <connection from="queen_w2b" to="main_s2" fromLane="3" toLane="2" tl="n1_2" linkIndex="9"/>
+    <connection from="queen_w3b" to="elm_n3" fromLane="1" toLane="1" tl="n0_2" linkIndex="4"/>
+    <connection from="queen_w3b" to="queen_w4" fromLane="1" toLane="1" tl="n0_2" linkIndex="5"/>
+    <connection from="queen_w3b" to="queen_w4" fromLane="2" toLane="2" tl="n0_2" linkIndex="6"/>
+    <connection from="queen_w3b" to="elm_s2" fromLane="3" toLane="1" tl="n0_2" linkIndex="7"/>
+</tlLogics>

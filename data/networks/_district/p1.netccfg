@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16T19:15:13.673895-05:00 by Eclipse SUMO netconvert 1.28.0
+-->
+
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <node-files value="..\data\networks\_district\p1.nod.xml"/>
+        <edge-files value="..\data\networks\_district\p1.edg.xml"/>
+        <connection-files value="..\data\networks\_district\p1.con.xml"/>
+        <tllogic-files value="..\data\networks\_district\p1.tll.xml"/>
+    </input>
+
+    <output>
+        <output-file value="..\data\networks\_district\pass1.net.xml"/>
+        <output.street-names value="true"/>
+    </output>
+
+    <processing>
+        <offset.disable-normalization value="true"/>
+    </processing>
+
+    <building_defaults>
+        <default.junctions.radius value="7.0"/>
+    </building_defaults>
+
+    <tls_building>
+        <tls.yellow.time value="4"/>
+        <tls.allred.time value="2"/>
+        <tls.left-green.time value="8"/>
+        <tls.crossing-min.time value="6"/>
+        <tls.crossing-clearance.time value="5"/>
+        <tls.default-type value="static"/>
+    </tls_building>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="8"/>
+        <junctions.internal-link-detail value="12"/>
+        <rectangular-lane-cut value="true"/>
+    </junctions>
+
+    <pedestrian>
+        <crossings.guess value="true"/>
+        <walkingareas value="true"/>
+    </pedestrian>
+
+    <report>
+        <xml-validation value="never"/>
+    </report>
+
+</netconvertConfiguration>

@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-16T19:15:13.659243-05:00 by Eclipse SUMO netconvert 1.28.0
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <node-files value="..\data\networks\_district\plain.nod.xml"/>
+        <edge-files value="..\data\networks\_district\plain.edg.xml"/>
+    </input>
+
+    <output>
+        <output-file value="..\data\networks\_district\pass1.net.xml"/>
+        <plain-output-prefix value="..\data\networks\_district\p1"/>
+        <output.street-names value="true"/>
+    </output>
+
+    <processing>
+        <offset.disable-normalization value="true"/>
+    </processing>
+
+    <building_defaults>
+        <default.junctions.radius value="7.0"/>
+    </building_defaults>
+
+    <tls_building>
+        <tls.yellow.time value="4"/>
+        <tls.allred.time value="2"/>
+        <tls.left-green.time value="8"/>
+        <tls.crossing-min.time value="6"/>
+        <tls.crossing-clearance.time value="5"/>
+        <tls.default-type value="static"/>
+    </tls_building>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="8"/>
+        <junctions.internal-link-detail value="12"/>
+        <rectangular-lane-cut value="true"/>
+    </junctions>
+
+    <pedestrian>
+        <crossings.guess value="true"/>
+        <walkingareas value="true"/>
+    </pedestrian>
+
+    <report>
+        <xml-validation value="never"/>
+    </report>
+
+</netconvertConfiguration>
+-->
+
+<edges version="1.20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
+    <edge id="church_n0" from="fs2" to="n2_0" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="church_n1" from="n2_0" to="n2_1" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="church_n2" from="n2_1" to="n2_2" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="church_n3" from="n2_2" to="n2_3" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="church_n4" from="n2_3" to="fn2" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="church_s0" from="fn2" to="n2_3" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="church_s1" from="n2_3" to="n2_2" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="church_s2" from="n2_2" to="n2_1" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="church_s3" from="n2_1" to="n2_0" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="church_s4" from="n2_0" to="fs2" name="Church Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="college_e0" from="fw3" to="n0_3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="college_e1" from="n0_3" to="n1_3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="college_e2" from="n1_3" to="n2_3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="college_e3" from="n2_3" to="n3_3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="college_e4" from="n3_3" to="fe3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="college_w0" from="fe3" to="n3_3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="college_w1" from="n3_3" to="n2_3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="college_w2" from="n2_3" to="n1_3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="college_w3" from="n1_3" to="n0_3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="college_w4" from="n0_3" to="fw3" name="College Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_n0" from="fs0" to="n0_0" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_n1" from="n0_0" to="n0_1" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_n2" from="n0_1" to="n0_2" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_n3" from="n0_2" to="n0_3" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_n4" from="n0_3" to="fn0" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_s0" from="fn0" to="n0_3" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_s1" from="n0_3" to="n0_2" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_s2" from="n0_2" to="n0_1" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_s3" from="n0_1" to="n0_0" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="elm_s4" from="n0_0" to="fs0" name="Elm Street" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="front_e0" from="fw0" to="n0_0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="front_e1" from="n0_0" to="n1_0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="front_e2" from="n1_0" to="n2_0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="front_e3" from="n2_0" to="n3_0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="front_e4" from="n3_0" to="fe0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="front_w0" from="fe0" to="n3_0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="front_w1" from="n3_0" to="n2_0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="front_w2" from="n2_0" to="n1_0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="front_w3" from="n1_0" to="n0_0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="front_w4" from="n0_0" to="fw0" name="Front Street" priority="2" type="collector" numLanes="3" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.60"/>
+        <lane index="1" allow="bicycle" width="1.80"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.40"/>
+    </edge>
+    <edge id="king_e0" from="fw1" to="king_e0_x" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="king_e0b" from="king_e0_x" to="n0_1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="king_e1" from="n0_1" to="king_e1_x" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="king_e1b" from="king_e1_x" to="n1_1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="king_e2" from="n1_1" to="king_e2_x" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="king_e2b" from="king_e2_x" to="n2_1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="king_e3" from="n2_1" to="king_e3_x" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="king_e3b" from="king_e3_x" to="n3_1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="king_e4" from="n3_1" to="fe1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="king_w0" from="fe1" to="king_w0_x" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="king_w0b" from="king_w0_x" to="n3_1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="king_w1" from="n3_1" to="king_w1_x" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="king_w1b" from="king_w1_x" to="n2_1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="king_w2" from="n2_1" to="king_w2_x" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="king_w2b" from="king_w2_x" to="n1_1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="king_w3" from="n1_1" to="king_w3_x" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="king_w3b" from="king_w3_x" to="n0_1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="king_w4" from="n0_1" to="fw1" name="King Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_n0" from="fs1" to="main_n0_x" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_n0b" from="main_n0_x" to="n1_0" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="main_n1" from="n1_0" to="main_n1_x" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_n1b" from="main_n1_x" to="n1_1" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="main_n2" from="n1_1" to="main_n2_x" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_n2b" from="main_n2_x" to="n1_2" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="main_n3" from="n1_2" to="main_n3_x" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_n3b" from="main_n3_x" to="n1_3" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="main_n4" from="n1_3" to="fn1" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_s0" from="fn1" to="main_s0_x" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_s0b" from="main_s0_x" to="n1_3" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="main_s1" from="n1_3" to="main_s1_x" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_s1b" from="main_s1_x" to="n1_2" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="main_s2" from="n1_2" to="main_s2_x" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_s2b" from="main_s2_x" to="n1_1" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="main_s3" from="n1_1" to="main_s3_x" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="main_s3b" from="main_s3_x" to="n1_0" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="main_s4" from="n1_0" to="fs1" name="Main Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="park_n0" from="fs3" to="n3_0" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="park_n1" from="n3_0" to="n3_1" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="park_n2" from="n3_1" to="n3_2" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="park_n3" from="n3_2" to="n3_3" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="park_n4" from="n3_3" to="fn3" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="park_s0" from="fn3" to="n3_3" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="park_s1" from="n3_3" to="n3_2" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="park_s2" from="n3_2" to="n3_1" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="park_s3" from="n3_1" to="n3_0" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="park_s4" from="n3_0" to="fs3" name="Park Avenue" priority="1" type="local" numLanes="2" speed="11.11">
+        <lane index="0" allow="pedestrian" width="2.40"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.60"/>
+    </edge>
+    <edge id="queen_e0" from="fw2" to="queen_e0_x" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="queen_e0b" from="queen_e0_x" to="n0_2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="queen_e1" from="n0_2" to="queen_e1_x" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="queen_e1b" from="queen_e1_x" to="n1_2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="queen_e2" from="n1_2" to="queen_e2_x" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="queen_e2b" from="queen_e2_x" to="n2_2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="queen_e3" from="n2_2" to="queen_e3_x" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="queen_e3b" from="queen_e3_x" to="n3_2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="queen_e4" from="n3_2" to="fe2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="queen_w0" from="fe2" to="queen_w0_x" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="queen_w0b" from="queen_w0_x" to="n3_2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="queen_w1" from="n3_2" to="queen_w1_x" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="queen_w1b" from="queen_w1_x" to="n2_2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="queen_w2" from="n2_2" to="queen_w2_x" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="queen_w2b" from="queen_w2_x" to="n1_2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="queen_w3" from="n1_2" to="queen_w3_x" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+    <edge id="queen_w3b" from="queen_w3_x" to="n0_2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" allow="emergency passenger taxi bus coach delivery truck" width="3.10"/>
+    </edge>
+    <edge id="queen_w4" from="n0_2" to="fw2" name="Queen Street" priority="3" type="arterial" numLanes="4" speed="13.89">
+        <lane index="0" allow="pedestrian" width="3.00"/>
+        <lane index="1" allow="emergency passenger taxi bus coach delivery truck bicycle" width="3.50"/>
+        <lane index="2" allow="emergency passenger taxi bus coach delivery truck" width="3.30"/>
+        <lane index="3" disallow="all" width="3.10"/>
+    </edge>
+</edges>

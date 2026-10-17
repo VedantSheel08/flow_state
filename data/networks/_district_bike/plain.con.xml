@@ -1,0 +1,537 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<connections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.20" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">
+    <connection from="church_n0" to="front_e3" fromLane="1" toLane="1" />
+    <connection from="church_n0" to="church_n1" fromLane="1" toLane="1" />
+    <connection from="church_n0" to="front_w2" fromLane="1" toLane="1" />
+    <connection from="church_n0" to="front_e3" fromLane="2" toLane="2" />
+    <connection from="church_n0" to="church_n1" fromLane="2" toLane="2" />
+    <connection from="church_n0" to="front_w2" fromLane="2" toLane="2" />
+
+    <connection from="church_n1" to="king_e3" fromLane="1" toLane="1" />
+    <connection from="church_n1" to="church_n2" fromLane="1" toLane="1" />
+    <connection from="church_n1" to="king_w2" fromLane="1" toLane="1" />
+    <connection from="church_n1" to="king_e3" fromLane="2" toLane="2" />
+    <connection from="church_n1" to="church_n2" fromLane="2" toLane="2" />
+    <connection from="church_n1" to="king_w2" fromLane="2" toLane="3" />
+
+    <connection from="church_n2" to="queen_e3" fromLane="1" toLane="1" />
+    <connection from="church_n2" to="church_n3" fromLane="1" toLane="1" />
+    <connection from="church_n2" to="queen_w2" fromLane="1" toLane="1" />
+    <connection from="church_n2" to="queen_e3" fromLane="2" toLane="1" />
+    <connection from="church_n2" to="church_n3" fromLane="2" toLane="2" />
+    <connection from="church_n2" to="queen_w2" fromLane="2" toLane="2" />
+
+    <connection from="church_n3" to="college_e3" fromLane="1" toLane="1" />
+    <connection from="church_n3" to="church_n4" fromLane="1" toLane="1" />
+    <connection from="church_n3" to="college_e3" fromLane="2" toLane="1" />
+    <connection from="church_n3" to="church_n4" fromLane="2" toLane="2" />
+    <connection from="church_n3" to="college_w2" fromLane="2" toLane="1" />
+
+    <connection from="church_n4" />
+
+    <connection from="church_s0" to="college_w2" fromLane="1" toLane="1" />
+    <connection from="church_s0" to="church_s1" fromLane="1" toLane="1" />
+    <connection from="church_s0" to="college_w2" fromLane="2" toLane="1" />
+    <connection from="church_s0" to="church_s1" fromLane="2" toLane="2" />
+    <connection from="church_s0" to="college_e3" fromLane="2" toLane="1" />
+
+    <connection from="church_s1" to="queen_w2" fromLane="1" toLane="1" />
+    <connection from="church_s1" to="church_s2" fromLane="1" toLane="1" />
+    <connection from="church_s1" to="queen_e3" fromLane="1" toLane="1" />
+    <connection from="church_s1" to="queen_w2" fromLane="2" toLane="1" />
+    <connection from="church_s1" to="church_s2" fromLane="2" toLane="2" />
+    <connection from="church_s1" to="queen_e3" fromLane="2" toLane="2" />
+
+    <connection from="church_s2" to="king_w2" fromLane="1" toLane="1" />
+    <connection from="church_s2" to="church_s3" fromLane="1" toLane="1" />
+    <connection from="church_s2" to="king_e3" fromLane="1" toLane="1" />
+    <connection from="church_s2" to="king_w2" fromLane="2" toLane="2" />
+    <connection from="church_s2" to="church_s3" fromLane="2" toLane="2" />
+    <connection from="church_s2" to="king_e3" fromLane="2" toLane="3" />
+
+    <connection from="church_s3" to="front_w2" fromLane="1" toLane="1" />
+    <connection from="church_s3" to="church_s4" fromLane="1" toLane="1" />
+    <connection from="church_s3" to="front_e3" fromLane="1" toLane="1" />
+    <connection from="church_s3" to="front_w2" fromLane="2" toLane="2" />
+    <connection from="church_s3" to="church_s4" fromLane="2" toLane="2" />
+    <connection from="church_s3" to="front_e3" fromLane="2" toLane="2" />
+
+    <connection from="church_s4" />
+
+    <connection from="college_e0" to="elm_s1" fromLane="1" toLane="1" />
+    <connection from="college_e0" to="college_e1" fromLane="1" toLane="1" />
+    <connection from="college_e0" to="elm_n4" fromLane="1" toLane="1" />
+
+    <connection from="college_e1" to="main_s1" fromLane="1" toLane="1" />
+    <connection from="college_e1" to="college_e2" fromLane="1" toLane="1" />
+    <connection from="college_e1" to="main_n4" fromLane="1" toLane="1" />
+    <connection from="college_e1" to="main_n4" fromLane="1" toLane="2" />
+
+    <connection from="college_e2" to="church_s1" fromLane="1" toLane="1" />
+    <connection from="college_e2" to="church_s1" fromLane="1" toLane="2" />
+    <connection from="college_e2" to="college_e3" fromLane="1" toLane="1" />
+    <connection from="college_e2" to="church_n4" fromLane="1" toLane="1" />
+    <connection from="college_e2" to="church_n4" fromLane="1" toLane="2" />
+
+    <connection from="college_e3" to="park_s1" fromLane="1" toLane="1" />
+    <connection from="college_e3" to="college_e4" fromLane="1" toLane="1" />
+    <connection from="college_e3" to="park_n4" fromLane="1" toLane="1" />
+
+    <connection from="college_e4" />
+
+    <connection from="college_w0" to="park_n4" fromLane="1" toLane="1" />
+    <connection from="college_w0" to="college_w1" fromLane="1" toLane="1" />
+    <connection from="college_w0" to="park_s1" fromLane="1" toLane="1" />
+
+    <connection from="college_w1" to="church_n4" fromLane="1" toLane="1" />
+    <connection from="college_w1" to="church_n4" fromLane="1" toLane="2" />
+    <connection from="college_w1" to="college_w2" fromLane="1" toLane="1" />
+    <connection from="college_w1" to="church_s1" fromLane="1" toLane="1" />
+    <connection from="college_w1" to="church_s1" fromLane="1" toLane="2" />
+
+    <connection from="college_w2" to="main_n4" fromLane="1" toLane="1" />
+    <connection from="college_w2" to="college_w3" fromLane="1" toLane="1" />
+    <connection from="college_w2" to="main_s1" fromLane="1" toLane="1" />
+    <connection from="college_w2" to="main_s1" fromLane="1" toLane="2" />
+
+    <connection from="college_w3" to="elm_n4" fromLane="1" toLane="1" />
+    <connection from="college_w3" to="college_w4" fromLane="1" toLane="1" />
+    <connection from="college_w3" to="elm_s1" fromLane="1" toLane="1" />
+
+    <connection from="college_w4" />
+
+    <connection from="elm_n0" to="front_e1" fromLane="1" toLane="1" />
+    <connection from="elm_n0" to="front_e1" fromLane="1" toLane="2" />
+    <connection from="elm_n0" to="elm_n1" fromLane="1" toLane="1" />
+    <connection from="elm_n0" to="front_w4" fromLane="1" toLane="1" />
+    <connection from="elm_n0" to="front_w4" fromLane="1" toLane="2" />
+
+    <connection from="elm_n1" to="king_e1" fromLane="1" toLane="1" />
+    <connection from="elm_n1" to="king_e1" fromLane="1" toLane="2" />
+    <connection from="elm_n1" to="elm_n2" fromLane="1" toLane="1" />
+    <connection from="elm_n1" to="king_w4" fromLane="1" toLane="1" />
+    <connection from="elm_n1" to="king_w4" fromLane="1" toLane="3" />
+
+    <connection from="elm_n2" to="queen_e1" fromLane="1" toLane="1" />
+    <connection from="elm_n2" to="elm_n3" fromLane="1" toLane="1" />
+    <connection from="elm_n2" to="queen_w4" fromLane="1" toLane="1" />
+    <connection from="elm_n2" to="queen_w4" fromLane="1" toLane="2" />
+
+    <connection from="elm_n3" to="college_e1" fromLane="1" toLane="1" />
+    <connection from="elm_n3" to="elm_n4" fromLane="1" toLane="1" />
+    <connection from="elm_n3" to="college_w4" fromLane="1" toLane="1" />
+
+    <connection from="elm_n4" />
+
+    <connection from="elm_s0" to="college_w4" fromLane="1" toLane="1" />
+    <connection from="elm_s0" to="elm_s1" fromLane="1" toLane="1" />
+    <connection from="elm_s0" to="college_e1" fromLane="1" toLane="1" />
+
+    <connection from="elm_s1" to="queen_w4" fromLane="1" toLane="1" />
+    <connection from="elm_s1" to="elm_s2" fromLane="1" toLane="1" />
+    <connection from="elm_s1" to="queen_e1" fromLane="1" toLane="1" />
+    <connection from="elm_s1" to="queen_e1" fromLane="1" toLane="2" />
+
+    <connection from="elm_s2" to="king_w4" fromLane="1" toLane="1" />
+    <connection from="elm_s2" to="king_w4" fromLane="1" toLane="2" />
+    <connection from="elm_s2" to="elm_s3" fromLane="1" toLane="1" />
+    <connection from="elm_s2" to="king_e1" fromLane="1" toLane="1" />
+    <connection from="elm_s2" to="king_e1" fromLane="1" toLane="3" />
+
+    <connection from="elm_s3" to="front_w4" fromLane="1" toLane="1" />
+    <connection from="elm_s3" to="front_w4" fromLane="1" toLane="2" />
+    <connection from="elm_s3" to="elm_s4" fromLane="1" toLane="1" />
+    <connection from="elm_s3" to="front_e1" fromLane="1" toLane="1" />
+    <connection from="elm_s3" to="front_e1" fromLane="1" toLane="2" />
+
+    <connection from="elm_s4" />
+
+    <connection from="front_e0" to="elm_s4" fromLane="1" toLane="1" />
+    <connection from="front_e0" to="front_e1" fromLane="1" toLane="1" />
+    <connection from="front_e0" to="elm_s4" fromLane="2" toLane="1" />
+    <connection from="front_e0" to="front_e1" fromLane="2" toLane="2" />
+    <connection from="front_e0" to="elm_n1" fromLane="2" toLane="1" />
+
+    <connection from="front_e1" to="main_s4" fromLane="1" toLane="1" />
+    <connection from="front_e1" to="front_e2" fromLane="1" toLane="1" />
+    <connection from="front_e1" to="main_n1" fromLane="1" toLane="1" />
+    <connection from="front_e1" to="main_s4" fromLane="2" toLane="1" />
+    <connection from="front_e1" to="front_e2" fromLane="2" toLane="2" />
+    <connection from="front_e1" to="main_n1" fromLane="2" toLane="2" />
+
+    <connection from="front_e2" to="church_s4" fromLane="1" toLane="1" />
+    <connection from="front_e2" to="front_e3" fromLane="1" toLane="1" />
+    <connection from="front_e2" to="church_n1" fromLane="1" toLane="1" />
+    <connection from="front_e2" to="church_s4" fromLane="2" toLane="2" />
+    <connection from="front_e2" to="front_e3" fromLane="2" toLane="2" />
+    <connection from="front_e2" to="church_n1" fromLane="2" toLane="2" />
+
+    <connection from="front_e3" to="park_s4" fromLane="1" toLane="1" />
+    <connection from="front_e3" to="front_e4" fromLane="1" toLane="1" />
+    <connection from="front_e3" to="park_s4" fromLane="2" toLane="1" />
+    <connection from="front_e3" to="front_e4" fromLane="2" toLane="2" />
+    <connection from="front_e3" to="park_n1" fromLane="2" toLane="1" />
+
+    <connection from="front_e4" />
+
+    <connection from="front_w0" to="park_n1" fromLane="1" toLane="1" />
+    <connection from="front_w0" to="front_w1" fromLane="1" toLane="1" />
+    <connection from="front_w0" to="park_n1" fromLane="2" toLane="1" />
+    <connection from="front_w0" to="front_w1" fromLane="2" toLane="2" />
+    <connection from="front_w0" to="park_s4" fromLane="2" toLane="1" />
+
+    <connection from="front_w1" to="church_n1" fromLane="1" toLane="1" />
+    <connection from="front_w1" to="front_w2" fromLane="1" toLane="1" />
+    <connection from="front_w1" to="church_s4" fromLane="1" toLane="1" />
+    <connection from="front_w1" to="church_n1" fromLane="2" toLane="2" />
+    <connection from="front_w1" to="front_w2" fromLane="2" toLane="2" />
+    <connection from="front_w1" to="church_s4" fromLane="2" toLane="2" />
+
+    <connection from="front_w2" to="main_n1" fromLane="1" toLane="1" />
+    <connection from="front_w2" to="front_w3" fromLane="1" toLane="1" />
+    <connection from="front_w2" to="main_s4" fromLane="1" toLane="1" />
+    <connection from="front_w2" to="main_n1" fromLane="2" toLane="1" />
+    <connection from="front_w2" to="front_w3" fromLane="2" toLane="2" />
+    <connection from="front_w2" to="main_s4" fromLane="2" toLane="2" />
+
+    <connection from="front_w3" to="elm_n1" fromLane="1" toLane="1" />
+    <connection from="front_w3" to="front_w4" fromLane="1" toLane="1" />
+    <connection from="front_w3" to="elm_n1" fromLane="2" toLane="1" />
+    <connection from="front_w3" to="front_w4" fromLane="2" toLane="2" />
+    <connection from="front_w3" to="elm_s4" fromLane="2" toLane="1" />
+
+    <connection from="front_w4" />
+
+    <connection from="king_e0" to="elm_s3" fromLane="1" toLane="1" />
+    <connection from="king_e0" to="king_e1" fromLane="1" toLane="1" />
+    <connection from="king_e0" to="elm_s3" fromLane="2" toLane="1" />
+    <connection from="king_e0" to="king_e1" fromLane="2" toLane="2" />
+    <connection from="king_e0" to="king_e1" fromLane="3" toLane="3" />
+    <connection from="king_e0" to="elm_n2" fromLane="3" toLane="1" />
+
+    <connection from="king_e1" to="main_s3" fromLane="1" toLane="1" />
+    <connection from="king_e1" to="king_e2" fromLane="1" toLane="1" />
+    <connection from="king_e1" to="main_n2" fromLane="1" toLane="1" />
+    <connection from="king_e1" to="main_s3" fromLane="2" toLane="1" />
+    <connection from="king_e1" to="king_e2" fromLane="2" toLane="2" />
+    <connection from="king_e1" to="king_e2" fromLane="3" toLane="3" />
+    <connection from="king_e1" to="main_n2" fromLane="3" toLane="2" />
+
+    <connection from="king_e2" to="church_s3" fromLane="1" toLane="1" />
+    <connection from="king_e2" to="king_e3" fromLane="1" toLane="1" />
+    <connection from="king_e2" to="church_n2" fromLane="1" toLane="1" />
+    <connection from="king_e2" to="church_s3" fromLane="2" toLane="2" />
+    <connection from="king_e2" to="king_e3" fromLane="2" toLane="2" />
+    <connection from="king_e2" to="king_e3" fromLane="3" toLane="3" />
+    <connection from="king_e2" to="church_n2" fromLane="3" toLane="2" />
+
+    <connection from="king_e3" to="park_s3" fromLane="1" toLane="1" />
+    <connection from="king_e3" to="king_e4" fromLane="1" toLane="1" />
+    <connection from="king_e3" to="park_s3" fromLane="2" toLane="1" />
+    <connection from="king_e3" to="king_e4" fromLane="2" toLane="2" />
+    <connection from="king_e3" to="king_e4" fromLane="3" toLane="3" />
+    <connection from="king_e3" to="park_n2" fromLane="3" toLane="1" />
+
+    <connection from="king_e4" />
+
+    <connection from="king_w0" to="park_n2" fromLane="1" toLane="1" />
+    <connection from="king_w0" to="king_w1" fromLane="1" toLane="1" />
+    <connection from="king_w0" to="park_n2" fromLane="2" toLane="1" />
+    <connection from="king_w0" to="king_w1" fromLane="2" toLane="2" />
+    <connection from="king_w0" to="king_w1" fromLane="3" toLane="3" />
+    <connection from="king_w0" to="park_s3" fromLane="3" toLane="1" />
+
+    <connection from="king_w1" to="church_n2" fromLane="1" toLane="1" />
+    <connection from="king_w1" to="king_w2" fromLane="1" toLane="1" />
+    <connection from="king_w1" to="church_s3" fromLane="1" toLane="1" />
+    <connection from="king_w1" to="church_n2" fromLane="2" toLane="2" />
+    <connection from="king_w1" to="king_w2" fromLane="2" toLane="2" />
+    <connection from="king_w1" to="king_w2" fromLane="3" toLane="3" />
+    <connection from="king_w1" to="church_s3" fromLane="3" toLane="2" />
+
+    <connection from="king_w2" to="main_n2" fromLane="1" toLane="1" />
+    <connection from="king_w2" to="king_w3" fromLane="1" toLane="1" />
+    <connection from="king_w2" to="main_s3" fromLane="1" toLane="1" />
+    <connection from="king_w2" to="main_n2" fromLane="2" toLane="1" />
+    <connection from="king_w2" to="king_w3" fromLane="2" toLane="2" />
+    <connection from="king_w2" to="king_w3" fromLane="3" toLane="3" />
+    <connection from="king_w2" to="main_s3" fromLane="3" toLane="2" />
+
+    <connection from="king_w3" to="elm_n2" fromLane="1" toLane="1" />
+    <connection from="king_w3" to="king_w4" fromLane="1" toLane="1" />
+    <connection from="king_w3" to="elm_n2" fromLane="2" toLane="1" />
+    <connection from="king_w3" to="king_w4" fromLane="2" toLane="2" />
+    <connection from="king_w3" to="king_w4" fromLane="3" toLane="3" />
+    <connection from="king_w3" to="elm_s3" fromLane="3" toLane="1" />
+
+    <connection from="king_w4" />
+
+    <connection from="main_n0" to="main_n0b" fromLane="1" toLane="1" />
+    <connection from="main_n0" to="main_n0b" fromLane="2" toLane="2" />
+    <connection from="main_n0" to="main_n0b" fromLane="2" toLane="3" />
+
+    <connection from="main_n0b" to="front_e2" fromLane="1" toLane="1" />
+    <connection from="main_n0b" to="front_e2" fromLane="1" toLane="2" />
+    <connection from="main_n0b" to="main_n1" fromLane="1" toLane="1" />
+    <connection from="main_n0b" to="main_n1" fromLane="2" toLane="2" />
+    <connection from="main_n0b" to="front_w3" fromLane="3" toLane="2" />
+
+    <connection from="main_n1" to="main_n1b" fromLane="1" toLane="1" />
+    <connection from="main_n1" to="main_n1b" fromLane="2" toLane="2" />
+    <connection from="main_n1" to="main_n1b" fromLane="2" toLane="3" />
+
+    <connection from="main_n1b" to="king_e2" fromLane="1" toLane="1" />
+    <connection from="main_n1b" to="king_e2" fromLane="1" toLane="2" />
+    <connection from="main_n1b" to="main_n2" fromLane="1" toLane="1" />
+    <connection from="main_n1b" to="main_n2" fromLane="2" toLane="2" />
+    <connection from="main_n1b" to="king_w3" fromLane="3" toLane="3" />
+
+    <connection from="main_n2" to="main_n2b" fromLane="1" toLane="1" />
+    <connection from="main_n2" to="main_n2b" fromLane="2" toLane="2" />
+    <connection from="main_n2" to="main_n2b" fromLane="2" toLane="3" />
+
+    <connection from="main_n2b" to="queen_e2" fromLane="1" toLane="1" />
+    <connection from="main_n2b" to="main_n3" fromLane="1" toLane="1" />
+    <connection from="main_n2b" to="main_n3" fromLane="2" toLane="2" />
+    <connection from="main_n2b" to="queen_w3" fromLane="3" toLane="2" />
+
+    <connection from="main_n3" to="main_n3b" fromLane="1" toLane="1" />
+    <connection from="main_n3" to="main_n3b" fromLane="2" toLane="2" />
+    <connection from="main_n3" to="main_n3b" fromLane="2" toLane="3" />
+
+    <connection from="main_n3b" to="college_e2" fromLane="1" toLane="1" />
+    <connection from="main_n3b" to="main_n4" fromLane="1" toLane="1" />
+    <connection from="main_n3b" to="main_n4" fromLane="2" toLane="2" />
+    <connection from="main_n3b" to="college_w3" fromLane="3" toLane="1" />
+
+    <connection from="main_n4" />
+
+    <connection from="main_s0" to="main_s0b" fromLane="1" toLane="1" />
+    <connection from="main_s0" to="main_s0b" fromLane="2" toLane="2" />
+    <connection from="main_s0" to="main_s0b" fromLane="2" toLane="3" />
+
+    <connection from="main_s0b" to="college_w3" fromLane="1" toLane="1" />
+    <connection from="main_s0b" to="main_s1" fromLane="1" toLane="1" />
+    <connection from="main_s0b" to="main_s1" fromLane="2" toLane="2" />
+    <connection from="main_s0b" to="college_e2" fromLane="3" toLane="1" />
+
+    <connection from="main_s1" to="main_s1b" fromLane="1" toLane="1" />
+    <connection from="main_s1" to="main_s1b" fromLane="2" toLane="2" />
+    <connection from="main_s1" to="main_s1b" fromLane="2" toLane="3" />
+
+    <connection from="main_s1b" to="queen_w3" fromLane="1" toLane="1" />
+    <connection from="main_s1b" to="main_s2" fromLane="1" toLane="1" />
+    <connection from="main_s1b" to="main_s2" fromLane="2" toLane="2" />
+    <connection from="main_s1b" to="queen_e2" fromLane="3" toLane="2" />
+
+    <connection from="main_s2" to="main_s2b" fromLane="1" toLane="1" />
+    <connection from="main_s2" to="main_s2b" fromLane="2" toLane="2" />
+    <connection from="main_s2" to="main_s2b" fromLane="2" toLane="3" />
+
+    <connection from="main_s2b" to="king_w3" fromLane="1" toLane="1" />
+    <connection from="main_s2b" to="king_w3" fromLane="1" toLane="2" />
+    <connection from="main_s2b" to="main_s3" fromLane="1" toLane="1" />
+    <connection from="main_s2b" to="main_s3" fromLane="2" toLane="2" />
+    <connection from="main_s2b" to="king_e2" fromLane="3" toLane="3" />
+
+    <connection from="main_s3" to="main_s3b" fromLane="1" toLane="1" />
+    <connection from="main_s3" to="main_s3b" fromLane="2" toLane="2" />
+    <connection from="main_s3" to="main_s3b" fromLane="2" toLane="3" />
+
+    <connection from="main_s3b" to="front_w3" fromLane="1" toLane="1" />
+    <connection from="main_s3b" to="front_w3" fromLane="1" toLane="2" />
+    <connection from="main_s3b" to="main_s4" fromLane="1" toLane="1" />
+    <connection from="main_s3b" to="main_s4" fromLane="2" toLane="2" />
+    <connection from="main_s3b" to="front_e2" fromLane="3" toLane="2" />
+
+    <connection from="main_s4" />
+
+    <connection from="park_n0" to="front_e4" fromLane="1" toLane="1" />
+    <connection from="park_n0" to="front_e4" fromLane="1" toLane="2" />
+    <connection from="park_n0" to="park_n1" fromLane="1" toLane="1" />
+    <connection from="park_n0" to="front_w1" fromLane="1" toLane="1" />
+    <connection from="park_n0" to="front_w1" fromLane="1" toLane="2" />
+
+    <connection from="park_n1" to="king_e4" fromLane="1" toLane="1" />
+    <connection from="park_n1" to="king_e4" fromLane="1" toLane="2" />
+    <connection from="park_n1" to="park_n2" fromLane="1" toLane="1" />
+    <connection from="park_n1" to="king_w1" fromLane="1" toLane="1" />
+    <connection from="park_n1" to="king_w1" fromLane="1" toLane="3" />
+
+    <connection from="park_n2" to="queen_e4" fromLane="1" toLane="1" />
+    <connection from="park_n2" to="park_n3" fromLane="1" toLane="1" />
+    <connection from="park_n2" to="queen_w1" fromLane="1" toLane="1" />
+    <connection from="park_n2" to="queen_w1" fromLane="1" toLane="2" />
+
+    <connection from="park_n3" to="college_e4" fromLane="1" toLane="1" />
+    <connection from="park_n3" to="park_n4" fromLane="1" toLane="1" />
+    <connection from="park_n3" to="college_w1" fromLane="1" toLane="1" />
+
+    <connection from="park_n4" />
+
+    <connection from="park_s0" to="college_w1" fromLane="1" toLane="1" />
+    <connection from="park_s0" to="park_s1" fromLane="1" toLane="1" />
+    <connection from="park_s0" to="college_e4" fromLane="1" toLane="1" />
+
+    <connection from="park_s1" to="queen_w1" fromLane="1" toLane="1" />
+    <connection from="park_s1" to="park_s2" fromLane="1" toLane="1" />
+    <connection from="park_s1" to="queen_e4" fromLane="1" toLane="1" />
+    <connection from="park_s1" to="queen_e4" fromLane="1" toLane="2" />
+
+    <connection from="park_s2" to="king_w1" fromLane="1" toLane="1" />
+    <connection from="park_s2" to="king_w1" fromLane="1" toLane="2" />
+    <connection from="park_s2" to="park_s3" fromLane="1" toLane="1" />
+    <connection from="park_s2" to="king_e4" fromLane="1" toLane="1" />
+    <connection from="park_s2" to="king_e4" fromLane="1" toLane="3" />
+
+    <connection from="park_s3" to="front_w1" fromLane="1" toLane="1" />
+    <connection from="park_s3" to="front_w1" fromLane="1" toLane="2" />
+    <connection from="park_s3" to="park_s4" fromLane="1" toLane="1" />
+    <connection from="park_s3" to="front_e4" fromLane="1" toLane="1" />
+    <connection from="park_s3" to="front_e4" fromLane="1" toLane="2" />
+
+    <connection from="park_s4" />
+
+    <connection from="queen_e0" to="queen_e0b" fromLane="1" toLane="1" />
+    <connection from="queen_e0" to="queen_e0b" fromLane="2" toLane="2" />
+    <connection from="queen_e0" to="queen_e0b" fromLane="2" toLane="3" />
+
+    <connection from="queen_e0b" to="elm_s2" fromLane="1" toLane="1" />
+    <connection from="queen_e0b" to="queen_e1" fromLane="1" toLane="1" />
+    <connection from="queen_e0b" to="queen_e1" fromLane="2" toLane="2" />
+    <connection from="queen_e0b" to="elm_n3" fromLane="3" toLane="1" />
+
+    <connection from="queen_e1" to="queen_e1b" fromLane="1" toLane="1" />
+    <connection from="queen_e1" to="queen_e1b" fromLane="2" toLane="2" />
+    <connection from="queen_e1" to="queen_e1b" fromLane="2" toLane="3" />
+
+    <connection from="queen_e1b" to="main_s2" fromLane="1" toLane="1" />
+    <connection from="queen_e1b" to="queen_e2" fromLane="1" toLane="1" />
+    <connection from="queen_e1b" to="queen_e2" fromLane="2" toLane="2" />
+    <connection from="queen_e1b" to="main_n3" fromLane="3" toLane="2" />
+
+    <connection from="queen_e2" to="queen_e2b" fromLane="1" toLane="1" />
+    <connection from="queen_e2" to="queen_e2b" fromLane="2" toLane="2" />
+    <connection from="queen_e2" to="queen_e2b" fromLane="2" toLane="3" />
+
+    <connection from="queen_e2b" to="church_s2" fromLane="1" toLane="1" />
+    <connection from="queen_e2b" to="church_s2" fromLane="1" toLane="2" />
+    <connection from="queen_e2b" to="queen_e3" fromLane="1" toLane="1" />
+    <connection from="queen_e2b" to="queen_e3" fromLane="2" toLane="2" />
+    <connection from="queen_e2b" to="church_n3" fromLane="3" toLane="2" />
+
+    <connection from="queen_e3" to="queen_e3b" fromLane="1" toLane="1" />
+    <connection from="queen_e3" to="queen_e3b" fromLane="2" toLane="2" />
+    <connection from="queen_e3" to="queen_e3b" fromLane="2" toLane="3" />
+
+    <connection from="queen_e3b" to="park_s2" fromLane="1" toLane="1" />
+    <connection from="queen_e3b" to="queen_e4" fromLane="1" toLane="1" />
+    <connection from="queen_e3b" to="queen_e4" fromLane="2" toLane="2" />
+    <connection from="queen_e3b" to="park_n3" fromLane="3" toLane="1" />
+
+    <connection from="queen_e4" />
+
+    <connection from="queen_w0" to="queen_w0b" fromLane="1" toLane="1" />
+    <connection from="queen_w0" to="queen_w0b" fromLane="2" toLane="2" />
+    <connection from="queen_w0" to="queen_w0b" fromLane="2" toLane="3" />
+
+    <connection from="queen_w0b" to="park_n3" fromLane="1" toLane="1" />
+    <connection from="queen_w0b" to="queen_w1" fromLane="1" toLane="1" />
+    <connection from="queen_w0b" to="queen_w1" fromLane="2" toLane="2" />
+    <connection from="queen_w0b" to="park_s2" fromLane="3" toLane="1" />
+
+    <connection from="queen_w1" to="queen_w1b" fromLane="1" toLane="1" />
+    <connection from="queen_w1" to="queen_w1b" fromLane="2" toLane="2" />
+    <connection from="queen_w1" to="queen_w1b" fromLane="2" toLane="3" />
+
+    <connection from="queen_w1b" to="church_n3" fromLane="1" toLane="1" />
+    <connection from="queen_w1b" to="church_n3" fromLane="1" toLane="2" />
+    <connection from="queen_w1b" to="queen_w2" fromLane="1" toLane="1" />
+    <connection from="queen_w1b" to="queen_w2" fromLane="2" toLane="2" />
+    <connection from="queen_w1b" to="church_s2" fromLane="3" toLane="2" />
+
+    <connection from="queen_w2" to="queen_w2b" fromLane="1" toLane="1" />
+    <connection from="queen_w2" to="queen_w2b" fromLane="2" toLane="2" />
+    <connection from="queen_w2" to="queen_w2b" fromLane="2" toLane="3" />
+
+    <connection from="queen_w2b" to="main_n3" fromLane="1" toLane="1" />
+    <connection from="queen_w2b" to="queen_w3" fromLane="1" toLane="1" />
+    <connection from="queen_w2b" to="queen_w3" fromLane="2" toLane="2" />
+    <connection from="queen_w2b" to="main_s2" fromLane="3" toLane="2" />
+
+    <connection from="queen_w3" to="queen_w3b" fromLane="1" toLane="1" />
+    <connection from="queen_w3" to="queen_w3b" fromLane="2" toLane="2" />
+    <connection from="queen_w3" to="queen_w3b" fromLane="2" toLane="3" />
+
+    <connection from="queen_w3b" to="elm_n3" fromLane="1" toLane="1" />
+    <connection from="queen_w3b" to="queen_w4" fromLane="1" toLane="1" />
+    <connection from="queen_w3b" to="queen_w4" fromLane="2" toLane="2" />
+    <connection from="queen_w3b" to="elm_s2" fromLane="3" toLane="1" />
+
+    <connection from="queen_w4" />
+
+    <crossing node="n0_0" edges="elm_n1 elm_s3" priority="0" outlineShape="3.70,14.80 -3.70,14.80 -3.60,14.80 -3.72,12.79 -4.06,11.01 -4.14,10.80 4.14,10.80 4.06,11.01 3.72,12.79" />
+    <crossing node="n0_0" edges="front_e1 front_w3" priority="0" outlineShape="13.00,-5.20 13.00,5.30 11.03,5.32 9.29,5.67 9.00,5.79 9.00,-5.79 9.29,-5.67 11.03,-5.32" />
+    <crossing node="n0_0" edges="elm_s4 elm_n0" priority="0" outlineShape="-3.70,-14.80 3.70,-14.80 3.80,-14.80 3.60,-14.80 3.72,-12.79 4.06,-11.01 4.14,-10.80 -4.14,-10.80 -4.06,-11.01 -3.72,-12.79" />
+    <crossing node="n0_0" edges="front_w4 front_e0" priority="0" outlineShape="-13.00,5.30 -13.00,-5.30 -11.03,-5.32 -9.29,-5.67 -9.00,-5.79 -9.00,5.79 -9.29,5.67 -11.03,5.32" />
+    <crossing node="n0_1" edges="elm_n2 elm_s2" priority="1" outlineShape="3.60,178.60 -3.70,178.60 -3.72,176.50 -4.06,174.65 4.08,174.60 3.72,176.50" />
+    <crossing node="n0_1" edges="king_e1 king_w3" priority="1" outlineShape="13.00,151.30 13.00,168.70 11.03,168.72 9.29,169.09 9.00,169.21 9.00,150.79 9.29,150.91 11.03,151.28" />
+    <crossing node="n0_1" edges="elm_s3 elm_n1" priority="1" outlineShape="-3.60,141.40 3.70,141.40 3.72,143.50 4.06,145.35 -4.08,145.40 -3.72,143.50" />
+    <crossing node="n0_1" edges="king_w4 king_e0" priority="1" outlineShape="-13.00,168.70 -13.00,151.30 -11.03,151.28 -9.29,150.91 -9.00,150.79 -9.00,169.21 -9.29,169.09 -11.03,168.72" />
+    <crossing node="n0_2" edges="elm_n3 elm_s1" priority="1" outlineShape="3.60,339.90 -3.70,339.90 -3.72,337.80 -4.06,335.95 4.08,335.90 3.72,337.80" />
+    <crossing node="n0_2" edges="queen_e1 queen_w3b" priority="1" outlineShape="13.00,310.10 13.00,329.90 11.03,330.02 9.29,330.39 9.00,330.51 9.00,309.49 9.29,309.61 11.03,309.98" />
+    <crossing node="n0_2" edges="elm_s2 elm_n2" priority="1" outlineShape="-3.60,300.10 3.70,300.10 3.72,302.20 4.06,304.05 -4.08,304.10 -3.72,302.20" />
+    <crossing node="n0_2" edges="queen_w4 queen_e0b" priority="1" outlineShape="-13.00,329.90 -13.00,310.10 -11.03,309.98 -9.29,309.61 -9.00,309.49 -9.00,330.51 -9.29,330.39 -11.03,330.02" />
+    <crossing node="n0_3" edges="elm_n4 elm_s0" priority="0" outlineShape="3.60,493.00 -3.70,493.00 -3.60,493.00 -3.72,491.03 -4.06,489.29 -4.17,489.00 4.17,489.00 4.06,489.29 3.72,491.03" />
+    <crossing node="n0_3" edges="college_e1 college_w3" priority="0" outlineShape="13.00,476.30 13.00,483.60 11.03,483.72 9.29,484.06 9.00,484.17 9.00,475.83 13.00,476.20 13.00,474.00 6.00,467.00 3.60,467.00 3.72,468.97 4.06,470.71 4.64,472.22 5.46,473.50 6.50,474.54 7.78,475.36 9.00,475.83" />
+    <crossing node="n0_3" edges="elm_s1 elm_n3" priority="0" outlineShape="-3.60,467.00 3.70,467.00 3.72,468.97 4.06,470.71 4.17,471.00 -4.17,471.00 -4.06,470.71 -3.72,468.97" />
+    <crossing node="n0_3" edges="college_w4 college_e0" priority="0" outlineShape="-13.00,483.60 -13.00,476.30 -13.00,476.20 -13.00,476.40 -11.03,476.28 -9.29,475.94 -9.00,475.83 -9.00,484.17 -9.29,484.06 -11.03,483.72" />
+    <crossing node="n1_0" edges="main_n1 main_s3b" priority="1" outlineShape="210.00,14.80 190.00,14.80 189.98,12.79 189.61,11.01 189.52,10.80 210.48,10.80 210.39,11.01 210.02,12.79" />
+    <crossing node="n1_0" edges="front_e2 front_w2" priority="1" outlineShape="219.90,-5.30 219.90,5.30 219.90,5.20 217.80,5.32 215.95,5.67 215.90,-5.69 217.80,-5.32" />
+    <crossing node="n1_0" edges="main_s4 main_n0b" priority="1" outlineShape="190.00,-14.80 210.00,-14.80 210.02,-12.79 210.39,-11.01 210.48,-10.80 189.52,-10.80 189.61,-11.01 189.98,-12.79" />
+    <crossing node="n1_0" edges="front_w3 front_e1" priority="1" outlineShape="180.10,5.30 180.10,-5.30 180.10,-5.20 182.20,-5.32 184.05,-5.67 184.10,5.69 182.20,5.32" />
+    <crossing node="n1_1" edges="main_n2 main_s2b" priority="1" outlineShape="210.00,178.60 190.00,178.60 189.98,176.50 189.61,174.65 210.41,174.60 210.02,176.50" />
+    <crossing node="n1_1" edges="king_e2 king_w2" priority="1" outlineShape="219.90,151.30 219.90,168.70 217.80,168.72 215.95,169.09 215.90,150.89 217.80,151.28" />
+    <crossing node="n1_1" edges="main_s3 main_n1b" priority="1" outlineShape="190.00,141.40 210.00,141.40 210.02,143.50 210.39,145.35 189.59,145.40 189.98,143.50" />
+    <crossing node="n1_1" edges="king_w3 king_e1" priority="1" outlineShape="180.10,168.70 180.10,151.30 182.20,151.28 184.05,150.91 184.10,169.11 182.20,168.72" />
+    <crossing node="n1_2" edges="main_n3 main_s1b" priority="1" outlineShape="210.00,339.90 190.00,339.90 189.98,337.80 189.61,335.95 210.41,335.90 210.02,337.80" />
+    <crossing node="n1_2" edges="queen_e2 queen_w2b" priority="1" outlineShape="219.90,310.10 219.90,329.90 217.80,330.02 215.95,330.39 215.90,309.59 217.80,309.98" />
+    <crossing node="n1_2" edges="main_s2 main_n2b" priority="1" outlineShape="190.00,300.10 210.00,300.10 210.02,302.20 210.39,304.05 189.59,304.10 189.98,302.20" />
+    <crossing node="n1_2" edges="queen_w3 queen_e1b" priority="1" outlineShape="180.10,329.90 180.10,310.10 182.20,309.98 184.05,309.61 184.10,330.41 182.20,330.02" />
+    <crossing node="n1_3" edges="main_n4 main_s0b" priority="1" outlineShape="210.00,493.00 190.00,493.00 189.98,491.03 189.61,489.29 189.49,489.00 210.51,489.00 210.39,489.29 210.02,491.03" />
+    <crossing node="n1_3" edges="college_e2 college_w2" priority="1" outlineShape="219.90,476.40 219.90,483.70 219.90,483.80 219.90,483.60 217.80,483.72 215.95,484.06 215.90,475.92 217.80,476.28" />
+    <crossing node="n1_3" edges="main_s1 main_n3b" priority="1" outlineShape="190.00,467.00 210.00,467.00 210.02,468.97 210.39,470.71 210.51,471.00 189.49,471.00 189.61,470.71 189.98,468.97" />
+    <crossing node="n1_3" edges="college_w3 college_e1" priority="1" outlineShape="180.10,483.60 180.10,476.30 180.10,476.20 180.10,476.40 182.20,476.28 184.05,475.94 184.10,484.08 182.20,483.72" />
+    <crossing node="n2_0" edges="church_n1 church_s3" priority="1" outlineShape="405.20,14.80 394.70,14.80 394.60,14.80 394.80,14.80 394.68,12.79 394.33,11.01 394.25,10.80 405.75,10.80 405.67,11.01 405.32,12.79" />
+    <crossing node="n2_0" edges="front_e3 front_w1" priority="1" outlineShape="414.80,-5.30 414.80,5.30 414.80,5.20 412.79,5.32 411.01,5.67 410.80,5.75 410.80,-5.75 411.01,-5.67 412.79,-5.32" />
+    <crossing node="n2_0" edges="church_s4 church_n0" priority="1" outlineShape="394.80,-14.80 405.30,-14.80 405.40,-14.80 405.20,-14.80 405.32,-12.79 405.67,-11.01 405.75,-10.80 394.25,-10.80 394.33,-11.01 394.68,-12.79" />
+    <crossing node="n2_0" edges="front_w2 front_e2" priority="1" outlineShape="385.20,5.30 385.20,-5.30 385.20,-5.20 387.21,-5.32 388.99,-5.67 389.20,-5.75 389.20,5.75 388.99,5.67 387.21,5.32" />
+    <crossing node="n2_1" edges="church_n2 church_s2" priority="1" outlineShape="405.20,178.60 394.80,178.60 394.68,176.50 394.33,174.65 405.69,174.60 405.32,176.50" />
+    <crossing node="n2_1" edges="king_e3 king_w1" priority="1" outlineShape="414.80,151.30 414.80,168.70 412.79,168.72 411.01,169.09 410.80,169.18 410.80,150.82 411.01,150.91 412.79,151.28" />
+    <crossing node="n2_1" edges="church_s3 church_n1" priority="1" outlineShape="394.80,141.40 405.20,141.40 405.32,143.50 405.67,145.35 394.31,145.40 394.68,143.50" />
+    <crossing node="n2_1" edges="king_w2 king_e2" priority="1" outlineShape="385.20,168.70 385.20,151.30 387.21,151.28 388.99,150.91 389.20,150.82 389.20,169.18 388.99,169.09 387.21,168.72" />
+    <crossing node="n2_2" edges="church_n3 church_s1" priority="1" outlineShape="405.20,339.90 394.80,339.90 394.68,337.80 394.33,335.95 405.69,335.90 405.32,337.80" />
+    <crossing node="n2_2" edges="queen_e3 queen_w1b" priority="1" outlineShape="414.80,310.10 414.80,329.90 412.79,330.02 411.01,330.39 410.80,330.48 410.80,309.52 411.01,309.61 412.79,309.98" />
+    <crossing node="n2_2" edges="church_s2 church_n2" priority="1" outlineShape="394.80,300.10 405.20,300.10 405.32,302.20 405.67,304.05 394.31,304.10 394.68,302.20" />
+    <crossing node="n2_2" edges="queen_w2 queen_e2b" priority="1" outlineShape="385.20,329.90 385.20,310.10 387.21,309.98 388.99,309.61 389.20,309.52 389.20,330.48 388.99,330.39 387.21,330.02" />
+    <crossing node="n2_3" edges="church_n4 church_s0" priority="0" outlineShape="405.20,493.00 394.80,493.00 394.68,491.03 394.33,489.29 394.21,489.00 405.79,489.00 405.67,489.29 405.32,491.03" />
+    <crossing node="n2_3" edges="college_e3 college_w1" priority="0" outlineShape="414.80,476.40 414.80,483.60 412.79,483.72 411.01,484.06 410.80,484.14 410.80,475.86 411.01,475.94 412.79,476.28" />
+    <crossing node="n2_3" edges="church_s1 church_n3" priority="0" outlineShape="394.80,467.00 405.20,467.00 405.32,468.97 405.67,470.71 405.79,471.00 394.21,471.00 394.33,470.71 394.68,468.97" />
+    <crossing node="n2_3" edges="college_w2 college_e2" priority="0" outlineShape="385.20,483.60 385.20,476.40 387.21,476.28 388.99,475.94 389.20,475.86 389.20,484.14 388.99,484.06 387.21,483.72" />
+    <crossing node="n3_0" edges="park_n1 park_s3" priority="0" outlineShape="603.60,14.80 596.30,14.80 596.20,14.80 596.40,14.80 596.28,12.79 595.94,11.01 595.86,10.80 604.14,10.80 604.06,11.01 603.72,12.79" />
+    <crossing node="n3_0" edges="front_e4 front_w0" priority="0" outlineShape="613.00,-5.30 613.00,5.30 611.03,5.32 609.29,5.67 609.00,5.79 609.00,-5.79 609.29,-5.67 611.03,-5.32" />
+    <crossing node="n3_0" edges="park_s4 park_n0" priority="0" outlineShape="596.40,-14.80 603.70,-14.80 603.80,-14.80 603.60,-14.80 603.72,-12.79 604.06,-11.01 604.14,-10.80 595.86,-10.80 595.94,-11.01 596.28,-12.79" />
+    <crossing node="n3_0" edges="front_w1 front_e3" priority="0" outlineShape="587.00,5.30 587.00,-5.30 587.00,-5.20 588.97,-5.32 590.71,-5.67 591.00,-5.79 591.00,5.79 590.71,5.67 588.97,5.32" />
+    <crossing node="n3_1" edges="park_n2 park_s2" priority="1" outlineShape="603.60,178.60 596.30,178.60 596.28,176.50 595.94,174.65 604.08,174.60 603.72,176.50" />
+    <crossing node="n3_1" edges="king_e4 king_w0" priority="1" outlineShape="613.00,151.30 613.00,168.70 611.03,168.72 609.29,169.09 609.00,169.21 609.00,150.79 609.29,150.91 611.03,151.28" />
+    <crossing node="n3_1" edges="park_s3 park_n1" priority="1" outlineShape="596.40,141.40 603.70,141.40 603.72,143.50 604.06,145.35 595.92,145.40 596.28,143.50" />
+    <crossing node="n3_1" edges="king_w1 king_e3" priority="1" outlineShape="587.00,168.70 587.00,151.30 588.97,151.28 590.71,150.91 591.00,150.79 591.00,169.21 590.71,169.09 588.97,168.72" />
+    <crossing node="n3_2" edges="park_n3 park_s1" priority="1" outlineShape="603.60,339.90 596.30,339.90 596.28,337.80 595.94,335.95 604.08,335.90 603.72,337.80" />
+    <crossing node="n3_2" edges="queen_e4 queen_w0b" priority="1" outlineShape="613.00,310.10 613.00,329.90 611.03,330.02 609.29,330.39 609.00,330.51 609.00,309.49 609.29,309.61 611.03,309.98" />
+    <crossing node="n3_2" edges="park_s2 park_n2" priority="1" outlineShape="596.40,300.10 603.70,300.10 603.72,302.20 604.06,304.05 595.92,304.10 596.28,302.20" />
+    <crossing node="n3_2" edges="queen_w1 queen_e3b" priority="1" outlineShape="587.00,329.90 587.00,310.10 588.97,309.98 590.71,309.61 591.00,309.49 591.00,330.51 590.71,330.39 588.97,330.02" />
+    <crossing node="n3_3" edges="park_n4 park_s0" priority="0" outlineShape="603.60,493.00 596.30,493.00 596.28,491.03 595.94,489.29 595.83,489.00 604.17,489.00 604.06,489.29 603.72,491.03" />
+    <crossing node="n3_3" edges="college_e4 college_w0" priority="0" outlineShape="613.00,476.40 613.00,483.60 611.03,483.72 609.29,484.06 609.00,484.17 609.00,475.83 609.29,475.94 611.03,476.28" />
+    <crossing node="n3_3" edges="park_s1 park_n3" priority="0" outlineShape="596.40,467.00 603.70,467.00 603.72,468.97 604.06,470.71 604.17,471.00 595.83,471.00 595.94,470.71 596.28,468.97" />
+    <crossing node="n3_3" edges="college_w1 college_e3" priority="0" outlineShape="587.00,483.60 587.00,476.40 588.97,476.28 590.71,475.94 591.00,475.83 591.00,484.17 590.71,484.06 588.97,483.72" />
+</connections>

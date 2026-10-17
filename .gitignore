@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+frontend/dist/
+data/work/
+data/server.log
+data/server.pid
+data/vite.log
+data/record.log
+data/shots/
+data/runs/
+archive/
