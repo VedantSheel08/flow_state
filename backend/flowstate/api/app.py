@@ -47,6 +47,13 @@ try:  # optional, purely additive: controller comparison API (docs/RL_INTEGRATIO
 except ImportError:  # pragma: no cover - the router needs only fastapi/pydantic; kept optional so FlowState always starts
     logging.getLogger(__name__).info("RL controller API not mounted")
 
+try:  # optional, purely additive: Gemini interpretation layer (docs/GEMINI_INTEGRATION.md); degrades to offline rules without a key
+    from ..intelligence.api import router as intelligence_router
+
+    app.include_router(intelligence_router)
+except ImportError:  # pragma: no cover
+    logging.getLogger(__name__).info("intelligence API not mounted")
+
 
 class RunRequest(BaseModel):
     scenario: str
