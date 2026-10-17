@@ -89,7 +89,7 @@ export function ConfigDialog() {
               options={[
                 { value: 'scenario', label: 'Scenario' },
                 { value: 'simulation', label: 'Simulation' },
-                ...(spec.assumptions.length ? [{ value: 'assumptions' as Tab, label: 'Assumptions' }] : []),
+                ...(spec.assumptions.length ? [{ value: 'assumptions' as Tab, label: 'Model assumptions' }] : []),
               ]}
             />
             {edited && (
