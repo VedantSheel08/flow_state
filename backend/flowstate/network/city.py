@@ -74,6 +74,10 @@ CLASSES: dict[str, dict[str, Any]] = {
 }
 
 CURB_RADIUS = 7.0
+# Type of the mid-block node where a left-turn bay lane begins. A one-in-one-out node has no right-of-way to resolve;
+# with "priority" its internal lanes were where dense queues produced junction collisions (SUMO checks them), with
+# "unregulated" none occurred at these nodes (same flows and occupancy).
+BAY_NODE_TYPE = "unregulated"
 
 
 def half_width(cls: str) -> float:
@@ -247,7 +251,7 @@ def _write_plain(spec: NetworkSpec, prefix: Path) -> list[dict[str, Any]]:
                     L = math.hypot(x1 - x0, y1 - y0)
                     f = 1.0 - cls["bay"] / L
                     mid = f"{rec['id']}_x"
-                    nd = ET.SubElement(nodes, "node", {"id": mid, "x": f"{x0 + (x1 - x0) * f:.2f}", "y": f"{y0 + (y1 - y0) * f:.2f}", "type": "priority"})
+                    nd = ET.SubElement(nodes, "node", {"id": mid, "x": f"{x0 + (x1 - x0) * f:.2f}", "y": f"{y0 + (y1 - y0) * f:.2f}", "type": BAY_NODE_TYPE})
                     coords[mid] = (float(nd.get("x")), float(nd.get("y")))
                     parts = [
                         dict(rec, to=mid, part="main"),

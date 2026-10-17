@@ -35,7 +35,41 @@ Trips are drawn every simulation step from the scenario's current
     down to ``MIN_THROTTLE``. Real drivers avoid, delay or reroute trips into
     a jammed district (peak spreading); without it the open-loop Poisson
     demand would keep feeding a blocked grid. Deferred demand is accumulated
-    in ``deferred`` (vehicles) so results can state how much was held back.
+    in ``deferred`` (vehicles) so results can state how much was held back;
+  - **missed-turn recovery** (:meth:`DemandGenerator.unstick`): a vehicle that
+    has stood for ``UNSTICK_WAIT_S`` on a lane with no connection to its next
+    edge (it could not change into its turn lane through a bumper-to-bumper
+    queue) re-plans from what its lane can reach, as a driver would.
+
+Dense, sustained rush hour
+--------------------------
+A five-minute rush hour used to ramp up *during* the observation and fade
+before its end, after a warm-up of ordinary traffic. Short ``rush_hour`` runs
+(``SUSTAIN_MAX_S``) therefore hold the commuter peak from the first second of
+the warm-up to the end of the run, and switch to the ``DENSE`` settings that
+measurement showed to give congestion concentrated on the arterial corridors
+that stays near a steady density instead of collapsing into gridlock:
+
+* **route choice is static** – ``findRoute`` prices edges with the current
+  congestion, so most origin–destination pairs (first requested after the
+  district has jammed) were planned through side streets; a free-flow cost
+  with collectors ×1.8 and locals ×3 and 8 s per junction keeps trips on the
+  arterials;
+* **either side of the street** – an interior trip end may be on either side
+  of its street (the cheaper approach is used): with U-turns banned, a driver
+  whose destination faces the wrong way otherwise circles the block through
+  collectors and locals (+57 % throughput when allowed);
+* **class-weighted gateways and trip ends** and a **side balance** that loads
+  King, Queen and Main alike (see ``SIDE_BALANCE``);
+* **path admission** – a trip is not released if one of its next
+  ``PATH_LOOKAHEAD`` blocks is already at ``PATH_GATE`` of its storage (a
+  navigation-equipped driver would not enter a jammed street). This is what
+  holds the density steady; raising the gate adds vehicles but lowers
+  throughput and increases teleports and collisions;
+* per-gateway backlog limits (a full Main-south gateway must not silence the
+  empty King and Queen gateways) with small limits on collector and local
+  gateways, and a throttle driven by junctions with several backed-up
+  approaches rather than by any one small block.
 
 Pedestrians walk between block frontages over sidewalks, crosswalks and
 walking areas using SUMO's striping model.
@@ -86,10 +120,47 @@ class DemandGenerator:
     MAX_PERSONS = 450
     JAM_SPACING_M = 7.5  # vehicle length + standstill gap
     GATE_FRACTION = 0.55  # halting vehicles / jam capacity above which a gateway is closed
-    MAX_PENDING = 10  # SUMO insertion backlog above which no new trips are started
+    GATE_BY_CLASS: dict[str, float] | None = None  # per street class override of GATE_FRACTION
+    MAX_PENDING = 10  # SUMO insertion backlog above which no new trips are started (all gateways)
+    PENDING_PER_GATEWAY = 0  # if > 0: instead, no new trip at a gateway that already has this many vehicles waiting to enter
+    PENDING_BY_CLASS: dict[str, int] | None = None  # per street class override of PENDING_PER_GATEWAY
+    MAX_PENDING_TOTAL = 60  # ... with a cap on the whole backlog, since SUMO discards vehicles pending > 180 s
     SPILL_FRACTION = 0.6  # block queue / jam capacity at which the queue has reached the upstream junction
-    THROTTLE_SLOPE = 0.12  # generation-rate reduction per spilled-back block
+    THROTTLE_SLOPE = 0.12  # generation-rate reduction per spilled-back block (or per risky junction)
     MIN_THROTTLE = 0.45
+    THROTTLE_MODE = "block"  # "block": every spilled block counts; "junction": only junctions with >= RISK_BLOCKS spilled approaches
+    RISK_BLOCKS = 3
+    UNSTICK_WAIT_S: float | None = 20.0  # missed-turn recovery after this long stationary (None: off)
+    UNSTICK_PERIOD_S = 5.0
+    SUSTAIN_PEAK = True  # hold the rush-hour peak profile through warm-up and observation of a short run
+    SUSTAIN_MAX_S = 600.0  # ... for runs up to this length (longer runs keep the full ramp / peak / ease shape)
+    GATEWAY_INDEX: dict[str, float] | None = None  # fringe gateway weight by class (default: signals.APPROACH_VOLUME_INDEX)
+    END_INDEX: dict[str, float] | None = None  # relative weight of a street's frontage as an interior trip end, by class (None: uniform)
+    SIDE_BALANCE = 0.0  # 0..1: blend of the seeded per-side fringe weights towards a capacity-proportional split
+    ROUTE_COST_FACTOR: dict[str, float] | None = None  # None: SUMO findRoute; dict: static route cost factor by street class
+    JUNCTION_DELAY_S = 8.0  # time charged for every junction a static route crosses (signals, turns)
+    EITHER_SIDE_DESTINATIONS = False  # an interior trip end may be on either side of its street (the cheaper approach is used)
+    PATH_GATE: float | None = None  # do not release a trip whose next PATH_LOOKAHEAD blocks include one at this storage occupancy
+    PATH_LOOKAHEAD = 8
+
+    # Settings of the dense, sustained rush hour (short rush_hour runs); each overrides the attribute of the same name.
+    DENSE: dict[str, Any] = {
+        "SIDE_BALANCE": 0.8,
+        "GATEWAY_INDEX": {"arterial": 1.0, "arterial_bike": 1.0, "collector": 0.05, "local": 0.01},
+        "END_INDEX": {"arterial": 1.0, "arterial_bike": 1.0, "collector": 0.1, "local": 0.02},
+        "EITHER_SIDE_DESTINATIONS": True,
+        "ROUTE_COST_FACTOR": {"arterial": 1.0, "arterial_bike": 1.0, "collector": 1.8, "local": 3.0},
+        "THROTTLE_MODE": "junction",
+        "RISK_BLOCKS": 2,
+        "SPILL_FRACTION": 0.7,
+        "THROTTLE_SLOPE": 0.2,
+        "MIN_THROTTLE": 0.35,
+        "GATE_FRACTION": 0.7,
+        "GATE_BY_CLASS": {"arterial": 0.7, "arterial_bike": 0.7, "collector": 0.35, "local": 0.2},
+        "PENDING_PER_GATEWAY": 3,
+        "PENDING_BY_CLASS": {"arterial": 3, "arterial_bike": 3, "collector": 1, "local": 1},
+        "PATH_GATE": 0.6,
+    }
 
     def __init__(self, engine: "Engine", rng: random.Random, profiles: dict[str, list[str]]):
         self.engine = engine
@@ -99,14 +170,21 @@ class DemandGenerator:
         self.counter = 0
         self.ped_counter = 0
         self.failed = 0
-        self.metered = 0  # trip starts refused at a full gateway (another origin is drawn)
+        self.metered = 0  # trip starts refused (full gateway, or a jammed path); another origin is drawn
         self.deferred = 0.0  # expected trips held back by the throttle (vehicles)
+        self.offered = 0.0  # expected trips requested by the scenario profile (vehicles), before any guardrail
+        self.replanned = 0  # vehicles that gave up a turn they could not reach and re-planned
         self.throttle = 1.0
         self._throttle_t = -1e9
         self._pending = 0
+        self._pending_at: dict[str, int] = {}
         self._pending_t = -1e9
+        self._unstick_t = -1e9
         self._route_n = 0
-        self._route_cache: dict[tuple[str, str, str], tuple[str, float] | None] = {}
+        self._router = None
+        self._edge_len: dict[str, float] = {}
+        self._route_edges: dict[str, list[str]] = {}
+        self._route_cache: dict[tuple[str, str, str, bool], tuple[str, float] | None] = {}
         self._ped_edges = [e for e in self.net.street_edges if any(self.net.lanes[l].allows_ped for l in self.net.edges[e].lanes)]
         self._zones = [z for z in self.net.zones if z.edges]
         self._gate_cap: dict[str, float] = {}
@@ -116,7 +194,18 @@ class DemandGenerator:
             if e.kind in ("street", "entry") and e.street:
                 blocks.setdefault((e.street, e.dir, e.seg), []).append(e.id)
         self._blocks = list(blocks.values())
-        self._gateway_w: dict[str, float] = {e: APPROACH_VOLUME_INDEX.get(self.net.edges[e].cls, 0.12) for e in self.net.entry_edges + self.net.exit_edges}
+        self._junction_blocks: dict[str, list[list[str]]] = {}
+        for block in self._blocks:
+            node = self.net.edges[block[0]].to
+            if node in self.net.tls_ids:
+                self._junction_blocks.setdefault(node, []).append(block)
+        self._peak_window = self._rush_peak_window()
+        self.dense = self._peak_window is not None
+        if self.dense:
+            for k, v in self.DENSE.items():
+                setattr(self, k, v)
+        gw = self.GATEWAY_INDEX or APPROACH_VOLUME_INDEX
+        self._gateway_w: dict[str, float] = {e: gw.get(self.net.edges[e].cls, 0.12) for e in self.net.entry_edges + self.net.exit_edges}
 
     # -- trip ends ---------------------------------------------------------
     def _side_edge(self, side: str, entry: bool) -> str | None:
@@ -124,6 +213,53 @@ class DemandGenerator:
         if not lst:
             return None
         return weighted(self.rng, lst, [self._gateway_w.get(e, 0.12) for e in lst])
+
+    def _rush_peak_window(self) -> tuple[float, float] | None:
+        """(start, end) of the commuter plateau when this is a short rush-hour run whose peak should be sustained."""
+        sc = self.engine.scenario
+        if not self.SUSTAIN_PEAK or sc.spec.id != "rush_hour" or not sc.duration or sc.duration > self.SUSTAIN_MAX_S:
+            return None
+        for c in sc.components:
+            if getattr(c, "name", "") == "rush_hour" and hasattr(c, "plateau"):
+                return c.start + c.ramp, c.start + c.ramp + c.plateau
+        return None
+
+    def profile(self, t: float, prof: "DemandProfile") -> "DemandProfile":
+        """The demand profile in force at ``t``.
+
+        A rush hour scaled into a short run would ramp up *during* the observation and fade out before it ends,
+        leaving the warm-up empty. For short runs the commuter peak is therefore held from the very start of the
+        warm-up until the end, so the network is loaded before the observation and stays loaded throughout.
+        """
+        if self._peak_window is None:
+            return prof
+        lo, hi = self._peak_window
+        if not lo <= t <= hi:
+            prof = self.engine.scenario.demand(min(max(t, lo), hi))
+        if self.SIDE_BALANCE > 0:
+            prof = self._balanced(prof)
+        return prof
+
+    def _balanced(self, prof: "DemandProfile") -> "DemandProfile":
+        """Temper the dominant compass side and load every arterial gateway about equally.
+
+        Each side's weight is blended towards ``mean x (side's total gateway weight / mean of those)``: a side
+        with two arterial gateways (west/east here) carries twice the trips of one with a single arterial
+        (north/south), so King, Queen and Main are loaded alike instead of the lone north-south arterial
+        taking its whole side.
+        """
+        a = self.SIDE_BALANCE
+        cap = {side: sum(self._gateway_w.get(e, 0.0) for e in self.net.entries.get(side, [])) for side in self.net.entries}
+        mean_cap = sum(cap.values()) / max(1, len(cap))
+        for name in ("origin_w", "dest_w"):
+            w = dict(getattr(prof, name))
+            sides = [k for k in w if k != "internal"]
+            mean = sum(w[k] for k in sides) / len(sides)
+            for k in sides:
+                target = mean * (cap.get(k, mean_cap) / mean_cap if mean_cap else 1.0)
+                w[k] = (1 - a) * w[k] + a * target
+            setattr(prof, name, w)
+        return prof
 
     # -- guardrails --------------------------------------------------------
     def _capacity(self, edge: str) -> float:
@@ -140,34 +276,127 @@ class DemandGenerator:
             seg = self._segment[edge] = self.net.street_segment(edge)
         return seg
 
+    def unstick(self, t: float) -> None:
+        """Missed-turn recovery.
+
+        In a bumper-to-bumper queue a vehicle may be unable to change into its turn lane. It then stands at the end of
+        a lane that has no connection to its next edge and blocks everyone behind it indefinitely (SUMO eventually
+        teleports it). A driver in that position gives up the turn and goes on: the route is re-planned from the
+        edges the lane *can* reach.
+        """
+        if self.UNSTICK_WAIT_S is None or t - self._unstick_t < self.UNSTICK_PERIOD_S:
+            return
+        self._unstick_t = t
+        T = self.engine.T
+        for vid in T.vehicle.getIDList():
+            if T.vehicle.getWaitingTime(vid) < self.UNSTICK_WAIT_S or vid in self.engine.tracked or T.vehicle.getTypeID(vid) == "wreck":
+                continue
+            try:
+                lane = T.vehicle.getLaneID(vid)
+                route = list(T.vehicle.getRoute(vid))
+                i = T.vehicle.getRouteIndex(vid)
+                if lane.startswith(":"):  # on a junction connector: what matters is the lane it feeds
+                    links = T.lane.getLinks(lane)
+                    if not links:
+                        continue
+                    feeds = links[0][0]
+                    nxt_edge = feeds.rsplit("_", 1)[0]
+                    prefix = [route[i]] + ([nxt_edge] if nxt_edge != route[i] else [])  # setRoute starts at the current edge
+                    after = route[i + 2] if nxt_edge != route[i] and i + 2 < len(route) else None
+                    from_lane = feeds
+                else:
+                    prefix = [route[i]]
+                    after = route[i + 1] if i + 1 < len(route) else None
+                    from_lane = lane
+                if after is None:
+                    continue
+                reach = {l[0].rsplit("_", 1)[0] for l in T.lane.getLinks(from_lane)}
+                if not reach or after in reach:
+                    continue  # the lane does connect to where the vehicle wants to go
+                dest = route[-1]
+                vtype = T.vehicle.getTypeID(vid)
+                best = None
+                for e1 in reach:
+                    r = T.simulation.findRoute(e1, dest, vType=vtype)
+                    if r is not None and r.edges and (best is None or r.travelTime < best.travelTime):
+                        best = r
+                if best is None:
+                    continue
+                T.vehicle.setRoute(vid, prefix + list(best.edges))
+                self.replanned += 1
+            except Exception as exc:  # noqa: BLE001 - never let recovery break the run
+                import logging
+
+                logging.getLogger(__name__).debug("unstick %s failed: %r", vid, exc)
+                continue
+
+    def block_occupancy(self, edge: str) -> float:
+        """Vehicles on the block of ``edge`` (main + bay parts) as a share of its jam storage."""
+        stats = self.engine.edge_stats
+        n = sum(stats[e][0] for e in self._seg(edge) if e in stats)
+        return n / self._capacity(edge)
+
+    def path_jammed(self, edges: list[str]) -> bool:
+        gate = self.PATH_GATE
+        if gate is None:
+            return False
+        seen: set[str] = set()
+        for e in edges[: self.PATH_LOOKAHEAD]:
+            if e not in self.net.edges or self.net.edges[e].kind not in ("street", "entry") or e in seen:
+                continue
+            seen.update(self._seg(e))
+            if self.block_occupancy(e) >= gate:
+                return True
+        return False
+
     def crowded(self, edge: str) -> bool:
         """True when the approach queue on ``edge`` (and the blocks upstream of it) is nearly full."""
         stats = self.engine.edge_stats
         halting = sum(stats[e][1] for e in self._seg(edge) if e in stats)
-        return halting >= self.GATE_FRACTION * self._capacity(edge)
+        frac = (self.GATE_BY_CLASS or {}).get(self.net.edges[edge].cls, self.GATE_FRACTION)
+        return halting >= frac * self._capacity(edge)
 
     def update_throttle(self, t: float) -> float:
         """Recompute (at 1 Hz) the generation-rate factor from the number of spilled-back blocks."""
         if t - self._throttle_t >= 1.0:
             self._throttle_t = t
             stats = self.engine.edge_stats
-            spilled = 0
-            for block in self._blocks:
+
+            def spilled(block: list[str]) -> bool:
                 halting = sum(stats[e][1] for e in block if e in stats)
-                if halting and halting >= self.SPILL_FRACTION * self._capacity(block[0]):
-                    spilled += 1
-            self.throttle = max(self.MIN_THROTTLE, 1.0 - self.THROTTLE_SLOPE * spilled)
+                return bool(halting) and halting >= self.SPILL_FRACTION * self._capacity(block[0])
+
+            if self.THROTTLE_MODE == "junction":  # gridlock needs a junction whose approaches are all backed up
+                risk = sum(1 for blocks in self._junction_blocks.values() if sum(spilled(b) for b in blocks) >= self.RISK_BLOCKS)
+            else:
+                risk = sum(1 for block in self._blocks if spilled(block))
+            self.throttle = max(self.MIN_THROTTLE, 1.0 - self.THROTTLE_SLOPE * risk)
         return self.throttle
 
-    def backlogged(self, t: float) -> bool:
+    def backlogged(self, t: float, origin: str | None = None) -> bool:
+        """True when SUMO cannot insert more vehicles (globally, or at this gateway's edge)."""
         if t - self._pending_t >= 1.0:
             self._pending_t = t
-            self._pending = len(self.engine.T.simulation.getPendingVehicles())
+            ids = self.engine.T.simulation.getPendingVehicles()
+            self._pending = len(ids)
+            self._pending_at = {}
+            if self.PENDING_PER_GATEWAY:
+                for vid in ids:
+                    try:
+                        first = self.engine.T.vehicle.getRoute(vid)[0]
+                    except Exception:  # noqa: BLE001
+                        continue
+                    self._pending_at[first] = self._pending_at.get(first, 0) + 1
+        if self.PENDING_PER_GATEWAY:
+            limit = (self.PENDING_BY_CLASS or {}).get(self.net.edges[origin].cls, self.PENDING_PER_GATEWAY) if origin is not None else self.PENDING_PER_GATEWAY
+            return self._pending > self.MAX_PENDING_TOTAL or (origin is not None and self._pending_at.get(origin, 0) >= limit)
         return self._pending > self.MAX_PENDING
 
     def _zone_edge(self, core_bias: float) -> str:
         z = weighted(self.rng, self._zones, [core_bias if z.core else 1.0 for z in self._zones])
-        return self.rng.choice(z.edges)
+        if self.END_INDEX is None:
+            return self.rng.choice(z.edges)
+        return weighted(self.rng, z.edges, [self.net.edges[e].length * self.END_INDEX.get(self.net.edges[e].cls, 1.0) for e in z.edges])
 
     def _end(self, weights: dict[str, float], core_bias: float, entry: bool) -> tuple[str | None, bool]:
         keys = list(weights)
@@ -177,22 +406,64 @@ class DemandGenerator:
         return self._side_edge(k, entry), False
 
     # -- routing -----------------------------------------------------------
-    def route(self, o: str, d: str, vtype: str) -> tuple[str, float] | None:
+    def _static_path(self, o: str, d: str, vtype: str) -> tuple[list[str], float] | None:
+        """Cheapest path under a *static* cost (free-flow time x class factor + a per-junction delay).
+
+        ``findRoute`` prices edges with the current congestion, so an origin-destination pair first requested
+        once the district is jammed is planned around the arterials and through side streets. A static cost makes
+        the route independent of when the pair first appears, and lets collectors and locals be unattractive.
+        """
+        if self._router is None:
+            import sumolib
+
+            from .. import sumo_env  # noqa: F401
+
+            net = sumolib.net.readNet(str(self.net.path))
+            self._edge_len = {}
+            for e in net.getEdges():
+                f = self.ROUTE_COST_FACTOR.get(e.getType(), 1.0)
+                self._edge_len[e.getID()] = e.getLength()
+                e._speed = e.getSpeed() / f
+                e._length = e.getLength() + self.JUNCTION_DELAY_S * e._speed  # cost = length / speed = time*f + delay
+            self._router = net
+        net = self._router
+        try:
+            vclass = self.engine.T.vehicletype.getVehicleClass(vtype)
+            path, _ = net.getOptimalPath(net.getEdge(o), net.getEdge(d), fastest=True, vClass=vclass)
+        except Exception:  # noqa: BLE001
+            return None
+        if not path:
+            return None
+        ids = [e.getID() for e in path]
+        return ids, sum(self._edge_len[i] for i in ids)
+
+    def route(self, o: str, d: str, vtype: str, static: bool = False) -> tuple[str, float] | None:
         vclass_key = vtype.split("@")[0]
-        key = (o, d, vclass_key)
+        static = static and self.ROUTE_COST_FACTOR is not None
+        key = (o, d, vclass_key, static)
         if key in self._route_cache:
             return self._route_cache[key]
         T = self.engine.T
-        try:
-            r = T.simulation.findRoute(o, d, vType=vtype)
-        except Exception:  # noqa: BLE001
-            r = None
+        edges: list[str] = []
+        length = 0.0
+        if static:
+            found = self._static_path(o, d, vtype)
+            if found:
+                edges, length = found
+        else:
+            try:
+                r = T.simulation.findRoute(o, d, vType=vtype)
+            except Exception:  # noqa: BLE001
+                r = None
+            if r is not None and r.edges:
+                edges, length = list(r.edges), r.length
         out = None
-        if r is not None and r.edges and r.length >= self.MIN_TRIP_M:
+        if edges and length >= self.MIN_TRIP_M:
             self._route_n += 1
             rid = f"r{self._route_n}"
-            T.route.add(rid, list(r.edges))
-            out = (rid, r.length)
+            T.route.add(rid, edges)
+            out = (rid, length)
+            self._route_edges[rid] = edges
         self._route_cache[key] = out
         return out
 
@@ -210,8 +481,11 @@ class DemandGenerator:
 
     # -- per step ----------------------------------------------------------
     def step(self, t: float, dt: float, prof: "DemandProfile", density: float) -> None:
+        self.unstick(t)
+        prof = self.profile(t, prof)
         lam = prof.rate * density * dt / 3600.0
         k = self.update_throttle(t)
+        self.offered += lam
         self.deferred += lam * (1.0 - k)
         n = poisson(self.rng, lam * k)
         for _ in range(n):
@@ -234,11 +508,21 @@ class DemandGenerator:
                 d, d_int = self._end(prof.dest_w, prof.core_bias, False)
             if not o or not d or o == d or self.net.reverse(o) == d:
                 continue
-            if tag is None and (self.crowded(o) or self.backlogged(t)):  # scenario-tagged trips are never deferred
+            if tag is None and (self.crowded(o) or self.backlogged(t, o)):  # scenario-tagged trips are never deferred
                 self.metered += 1
                 continue
-            r = self.route(o, d, vtype)
+            r = self.route(o, d, vtype, static=True)
+            if self.EITHER_SIDE_DESTINATIONS and d_int:
+                # parking on the near side avoids circling the block (U-turns are not allowed)
+                other = self.net.reverse(d)
+                if other and other in self.net.edges and self.net.edges[other].kind == "street":
+                    r2 = self.route(o, other, vtype, static=True)
+                    if r2 is not None and (r is None or r2[1] < r[1] - 1e-6):
+                        r, d = r2, other
             if r is None:
+                continue
+            if tag is None and self.path_jammed(self._route_edges.get(r[0], [])):
+                self.metered += 1
                 continue
             vid = f"v{self.counter}"
             self.counter += 1

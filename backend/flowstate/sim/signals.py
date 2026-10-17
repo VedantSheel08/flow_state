@@ -32,24 +32,21 @@ counts of a real city (none is available for this synthetic district).
   are faster (≈1.4 m/s), so this is conservative. This clearance is a hard
   floor for the green of the *cross* street, which is why minor streets
   crossing a wide arterial still receive ~25 s of green.
-* **Cycle length by intersection type** – 80 s for every signal on a
-  coordinated corridor (arterial × arterial, arterial × collector, arterial ×
-  local; a common cycle is what makes progression possible), 40 s (half
-  cycle, still compatible) for collector × collector, which has too little
-  traffic to justify a long cycle. Green is split in proportion to an
-  assumed critical flow ratio per stage (``APPROACH_VOLUME_INDEX`` ÷ through
-  lanes), after the pedestrian and minimum-green floors, Webster-style.
-  Protected lagging lefts are 8 s (≈ 4 vehicles per cycle at 2 s saturation
-  headway; the district's bays see roughly 10 % lefts). The cycle length was
-  chosen by simulation, see "Measured" below.
-* **Split phasing on collectors** – a one-lane collector approach shares its
-  lane between left, through and right. With the permissive lefts of the
-  netconvert phases, opposing left-turners from long queues meet inside the
-  junction and deadlock (SUMO then teleports them after 240 s). At
-  arterial × collector signals the collector's two directions therefore get
-  consecutive greens (``split_minor``); pedestrians keep their WALK across
-  both. Local streets (all-way stop priority, low volume) keep the cheaper
-  shared phase.
+* **Cycle length** – 80 s at every signal, so that a corridor can be coordinated (arterial × arterial,
+  arterial × collector, arterial × local, collector × collector). Green is split in proportion to an
+  assumed critical flow ratio per stage (``APPROACH_VOLUME_INDEX`` ÷ through lanes), after the pedestrian
+  and minimum-green floors, Webster-style. The cycle was chosen by simulation (see "Measured").
+* **Protected lefts** – at arterials the left-turn bay shows its arrow only in the 8 s left phase
+  (≈ 4 vehicles per cycle at 2 s saturation headway; the district's bays see roughly 10 % lefts); there is
+  no permissive left across oncoming traffic, which was the main source of in-junction collisions.
+* **Split phasing on every minor street** – a one-lane approach shares its lane between left, through and
+  right. With the permissive lefts of the netconvert phases, opposing left-turners from long queues meet
+  inside the junction and wait for each other (SUMO then teleports them after 240 s), and a left-turner
+  stranded in the box is later hit by the arterial's protected left. At arterial × collector, arterial ×
+  local and collector × collector signals the two directions of the minor street therefore get consecutive
+  greens (``split_minor``); pedestrians keep their WALK across both. Showing the arrows as lowercase ``g``
+  (yield to anything in the box) was tried and rejected: it removed some collisions but made opposing
+  left-turners yield to each other, raising teleports.
 * **Offsets** – for each corridor (a collector/arterial street with ≥ 2
   signals) the through-green windows are propagated at 85 % of the limit.
   A deterministic search minimises the (squared, so both directions are
@@ -58,35 +55,50 @@ counts of a real city (none is available for this synthetic district).
   grid-offset compromise. Offsets are stored in the ``tlLogic`` ``offset``
   attribute, so SUMO runs the plan open-loop with no controller.
 
-Measured in SUMO (``baseline`` = the previous generic ~90 s plans with all
-offsets 0, run with the same code otherwise; time loss is the mean per car):
+Measured in SUMO (``baseline`` = the previous generic ~90 s plans with all offsets 0; 5-minute
+observation after a 180 s warm-up, six seeds, SUMO's own collision output with junction checks
+on; see ``tests/congestion_probe.py`` and the dense-mode notes in ``demand.py``). Occupancy is
+vehicles as a share of jam storage (7.5 m per vehicle-lane) of the arterial / collector / local
+streets; the district's interior storage is ~1,400 vehicles:
 
-* ``rush_hour`` 15 min, seeds 42/7/99 – AM: time loss 104.9 → 92.5 s, peak
-  queued vehicles 97 → 75, teleports 7 → 0, completed trips 542 → 558. PM:
-  99.1 → 96.4 s, peak queue 91 → 79, teleports 1 → 0. The remaining
-  collisions (2, AM) are sublane lane-change contacts at stop-line discharge
-  (adjacent through lanes, 2–3 s after green), which depend on driver
-  lane-change parameters rather than on timing.
-* Free-flow corridor probe (one car every 7 s end to end, no other traffic):
-  mean delay 81 → 66 s, stops per car 2.31 → 1.84. Progression is uneven:
-  King EB 108 s / 3.1 stops against King WB 49 s / 1.5.
-* Cycle sweep (rush hour, four seeds, an earlier iteration): time loss 91.5 s
-  at C=80, 96.8 s at C=90, 102 s at C=100; without offsets C=80 gives 94.9 s.
-* The other nine scenarios (3 seeds each) are 0–10 % *slower* per car than
-  baseline (e.g. light load 76 → 79 s): legal pedestrian clearance (the old
-  plan allowed 9 s to cross 19.8 m, i.e. ≥ 2.2 m/s) takes green from the
-  arterials. Teleports in the incident scenarios are not fixed by timing:
-  accident 7 → 13, disruption 17 → 12, ambulance 0 → 6 (bluelight vehicle
-  and a left-turner stopped in the same junction box); over all 70 runs
-  36 → 33.
+=================  ========  ============  ======================  =========  ==========  =========
+preset (rush_hr)   code      active mean   occupancy art/col/loc   trips/h    teleports   collisions
+=================  ========  ============  ======================  =========  ==========  =========
+rush_hour          baseline  193           .06 / .11 / .14         2,732      1           18
+rush_hour          this      278           .20 / .04 / .03         4,230      0           3
+severe             baseline  439           .13 / .26 / .37         3,288      6           42
+severe             this      501           .33 / .19 / .10         5,512      0           14
+gridlock_stress    baseline  476           .14 / .28 / .39         3,266      7           39
+gridlock_stress    this      543           .34 / .22 / .13         5,838      0           8
+=================  ========  ============  ======================  =========  ==========  =========
+
+(teleports and collisions are totals over six runs). Also: peak queue and spillback now sit on
+the arterials (5 blocks at >= 80 % of storage, chains of 3 blocks) instead of on collectors and
+locals; the baseline's gridlock population ran away (225 -> 647 vehicles during the observation)
+where this one is nearly flat (490 -> 557).
+
+Two programs per signal. Protected lefts and split local streets each cost 6-10 s of delay per car in
+ordinary traffic (together ~20 s, measured on weather and transit), so the network carries both
+plans and ``SignalManager`` runs the safe one (``"safe"``) only when the generator is in the dense
+rush-hour mode; every other run uses the everyday program ``"0"``. Scenario regression, 12
+scenarios x 3 seeds, mean time loss per car, baseline -> everyday program: accident 81 -> 90 s,
+ambulance 79 -> 84, bike_lanes 69 -> 81, construction 73 -> 79, disruption 96 -> 101, pursuit
+71 -> 86, rush_hour (15 min) AM 105 -> 97 and PM 99 -> 102, school 99 -> 105, stadium 112 -> 114,
+transit 77 -> 85, weather 79 -> 77; teleports over all 36 runs 37 -> 39 (those scenarios block
+roads on purpose). Bike-lane and pursuit are the largest losses (+18 %, +21 %).
+
+Cycle sweep (``rush_hour`` 15 min, an earlier iteration): time loss 91.5 s at C=80, 96.8 s at C=90,
+102 s at C=100.
 
 Known limits: priority strategies (pre-emption, TSP) displace a signal from
 its offset permanently — there is no transition back to the reference
 pattern; demand is not measured, so splits are design-stage estimates;
 offsets give only partial two-way progression on this 200 m grid because the
 arterials' through greens are ~25-30 % of the cycle (pedestrian clearance
-across a 20 m arterial and protected lefts take the rest); one-lane
-collector approaches still see permissive lefts at collector × collector.
+across a 20 m arterial and protected lefts take the rest); split phasing
+and protected lefts cost delay in lighter traffic (see the scenario regression
+in the commit message) and leave right-turn conflicts with cyclists and
+pedestrians (the remaining in-junction collisions) untouched.
 
 On top of either plan two optional priority strategies act through TraCI by
 *holding* or *ending* the current phase early. Neither ever skips an amber,
@@ -104,6 +116,7 @@ New strategies can subclass :class:`SignalPolicy`.
 
 from __future__ import annotations
 
+import dataclasses
 import math
 import random
 import re
@@ -150,14 +163,15 @@ class TypePlan:
     left_green: float  # s of protected left per stage (only where the geometry has a left phase)
     min_green: float  # s, minimum vehicle green (walk + clearance counts)
     split_minor: bool = False  # give each direction of a left-less (single shared lane) street its own green
+    protected_lefts: bool = False  # lefts only on their own arrow: no permissive left across oncoming traffic
 
 
 TYPE_PLANS: dict[str, TypePlan] = {
-    "arterial_arterial": TypePlan(cycle=80, left_green=8.0, min_green=12.0),
-    "arterial_collector": TypePlan(cycle=80, left_green=8.0, min_green=10.0, split_minor=True),
-    "arterial_local": TypePlan(cycle=80, left_green=8.0, min_green=10.0),
-    "collector_collector": TypePlan(cycle=40, left_green=8.0, min_green=8.0),
-    "collector_local": TypePlan(cycle=40, left_green=8.0, min_green=8.0),
+    "arterial_arterial": TypePlan(cycle=80, left_green=8.0, min_green=12.0, protected_lefts=True),
+    "arterial_collector": TypePlan(cycle=80, left_green=8.0, min_green=10.0, split_minor=True, protected_lefts=True),
+    "arterial_local": TypePlan(cycle=80, left_green=8.0, min_green=10.0, split_minor=True, protected_lefts=True),
+    "collector_collector": TypePlan(cycle=80, left_green=8.0, min_green=10.0, split_minor=True),
+    "collector_local": TypePlan(cycle=80, left_green=8.0, min_green=10.0),
     "local_local": TypePlan(cycle=40, left_green=8.0, min_green=8.0),
 }
 CORRIDOR_WEIGHT = {3: 1.0, 2: 0.4}  # street rank -> weight in the offset objective
@@ -421,6 +435,12 @@ def _split_items(d: SignalDesign, items: list[tuple[str, str]]) -> list[tuple[st
     return out
 
 
+def _protect_lefts(d: SignalDesign, items: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    """Left-turn links show red outside the protected left phase (no permissive left across oncoming traffic)."""
+    lefts = {i for i, l in d.links.items() if l.dir in "lL"}
+    return [(role, state if role == LEFT else _set(state, {i for i in lefts if i < len(state) and state[i] in "Gg"}, "r")) for role, state in items]
+
+
 def _stages(d: SignalDesign, roles: list[str], plan: TypePlan) -> list[Stage]:
     stages: list[Stage] = []
     for i, r in enumerate(roles):
@@ -439,6 +459,8 @@ def _stages(d: SignalDesign, roles: list[str], plan: TypePlan) -> list[Stage]:
         st.yellow = yellow_time(v)
         width = st.crossing or 12.0
         st.all_red = all_red_time(width, v)
+        if st.has(LEFT) and plan.protected_lefts:
+            st.items = _protect_lefts(d, st.items)
         if not st.has(LEFT) and plan.split_minor:
             split = _split_items(d, st.items)
             if split is not None:
@@ -670,33 +692,64 @@ def _fmt(x: float) -> str:
     return f"{x:g}"
 
 
-def retime_net(net_path: Path | str, offsets: bool = True) -> dict[str, Any]:
-    """Replace every pre-timed program in ``net_path`` with the engineered one (in place).
+SAFE_PROGRAM = "safe"
 
-    Returns a summary ``{signals: {id: {...}}, corridors: {...}}`` for the network sidecar.
+
+def light_plans() -> dict[str, TypePlan]:
+    """The everyday plan: netconvert's permissive lefts and shared minor-street phase, i.e. TYPE_PLANS without the
+    measures that cost delay in ordinary traffic (protected lefts, split phasing on local streets)."""
+    plans = {k: dataclasses.replace(v, protected_lefts=False) for k, v in TYPE_PLANS.items()}
+    plans["arterial_local"] = dataclasses.replace(plans["arterial_local"], split_minor=False)
+    return plans
+
+
+def _program_block(tid: str, program_id: str, p: SignalProgram) -> str:
+    body = "\n".join(f'        <phase duration="{_fmt(dur)}" state="{state}" name="{name}"/>' for dur, state, name in p.phases)
+    return f'<tlLogic id="{tid}" type="static" programID="{program_id}" offset="{_fmt(p.offset)}">\n{body}\n    </tlLogic>'
+
+
+def _summarise(programs: dict[str, SignalProgram]) -> dict[str, Any]:
+    return {
+        tid: {"type": p.kind, "cycle": p.cycle, "offset": p.offset, "greens": {f"{a}{'+' if sg > 0 else '-'}": [[round(s, 1), round(e, 1)] for s, e in w] for (a, sg), w in p.windows.items()}}
+        for tid, p in programs.items()
+    }
+
+
+def retime_net(net_path: Path | str, offsets: bool = True) -> dict[str, Any]:
+    """Replace every pre-timed program in ``net_path`` with two engineered ones (in place).
+
+    * ``"0"`` – the everyday plan (:func:`light_plans`), run by every scenario;
+    * ``"safe"`` – protected lefts and split phasing on every minor street (``TYPE_PLANS``). It removes the
+      permissive-left conflicts that dense queues turn into in-junction collisions and deadlocks, at the price of
+      6-10 s more delay per car in ordinary traffic, so :class:`SignalManager` selects it only for the dense
+      rush hour (``DemandGenerator.dense``).
+
+    Offsets are optimised separately for each. Returns ``{signals, corridors, programs: {safe: {...}}}`` for the
+    network sidecar (the top-level keys describe program ``"0"``).
     """
     path = Path(net_path)
     designs = read_signal_designs(path)
-    programs = {tid: design_program(d) for tid, d in designs.items()}
-    corridors: dict[str, Any] = {}
-    if offsets:
-        off, corridors = optimize_offsets(designs, programs)
-        for tid, o in off.items():
-            programs[tid].offset = float(o)
+    variants = {"0": light_plans(), SAFE_PROGRAM: TYPE_PLANS}
+    built: dict[str, dict[str, SignalProgram]] = {}
+    reports: dict[str, Any] = {}
+    for pid, plans in variants.items():
+        programs = {tid: design_program(d, plans.get(d.kind, plans["local_local"])) for tid, d in designs.items()}
+        reports[pid] = {}
+        if offsets:
+            off, reports[pid] = optimize_offsets(designs, programs)
+            for tid, o in off.items():
+                programs[tid].offset = float(o)
+        built[pid] = programs
     text = path.read_text(encoding="utf-8")
-    for tid, p in programs.items():
-        body = "\n".join(f'        <phase duration="{_fmt(dur)}" state="{state}" name="{name}"/>' for dur, state, name in p.phases)
-        block = f'<tlLogic id="{tid}" type="static" programID="0" offset="{_fmt(p.offset)}">\n{body}\n    </tlLogic>'
+    for tid in designs:
+        block = "\n    ".join(_program_block(tid, pid, built[pid][tid]) for pid in (SAFE_PROGRAM, "0"))  # "0" last
         pattern = re.compile(rf'<tlLogic id="{re.escape(tid)}"[^>]*>.*?</tlLogic>', re.S)
         text, n = pattern.subn(lambda _m, b=block: b, text, count=1)
         if n != 1:
             raise RuntimeError(f"tlLogic {tid} not found in {path.name}")
     path.write_text(text, encoding="utf-8")
-    summary = {
-        tid: {"type": p.kind, "cycle": p.cycle, "offset": p.offset, "greens": {f"{a}{'+' if sg > 0 else '-'}": [[round(s, 1), round(e, 1)] for s, e in w] for (a, sg), w in p.windows.items()}}
-        for tid, p in programs.items()
-    }
-    return {"signals": summary, "corridors": corridors}
+    return {"signals": _summarise(built["0"]), "corridors": reports["0"],
+            "programs": {SAFE_PROGRAM: {"signals": _summarise(built[SAFE_PROGRAM]), "corridors": reports[SAFE_PROGRAM]}}}
 
 
 @dataclass
@@ -739,8 +792,22 @@ class SignalManager:
     def T(self):
         return self.engine.T
 
+    def _select_program(self, tid: str, program: str) -> None:
+        """Run ``program`` and make the engine's description of the signal (``net.tls_programs``) match it."""
+        T = self.T
+        try:
+            T.trafficlight.setProgram(tid, program)
+            for logic in T.trafficlight.getAllProgramLogics(tid):
+                if logic.programID == program:
+                    self.engine.net.tls_programs[tid] = [(ph.duration, ph.state) for ph in logic.phases]
+        except Exception:  # noqa: BLE001 - a network built before the two-program plans has only "0"
+            pass
+
     def start(self) -> None:
         T = self.T
+        dense = bool(getattr(getattr(self.engine, "demand", None), "dense", False))  # the dense rush hour wants the safe plan
+        net = self.engine.net  # cached and shared between runs: describe this run's programs on a private copy
+        self.engine.net = dataclasses.replace(net, tls_programs=dict(net.tls_programs))
         for tid in T.trafficlight.getIDList():
             info = TlsInfo(tid)
             for idx, links in enumerate(T.trafficlight.getControlledLinks(tid)):
@@ -749,6 +816,8 @@ class SignalManager:
                         info.crossing_links.add(idx)
             if self.mode == "actuated":
                 T.trafficlight.setProgram(tid, "actuated")
+            else:
+                self._select_program(tid, SAFE_PROGRAM if dense else "0")
             self.tls[tid] = info
 
     # -- phase bookkeeping -------------------------------------------------

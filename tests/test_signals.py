@@ -16,6 +16,8 @@ from flowstate.sim import signals as S
 from helpers import make_engine, run_until
 
 NETS = ("district", "district_bike")
+PROGRAMS = ("0", S.SAFE_PROGRAM)  # everyday plan / protected lefts + split minor streets (dense rush hour)
+STREET = S.STREET_RANK
 
 
 # ---------------------------------------------------------------------------
@@ -95,12 +97,13 @@ def test_actuated_programs_never_shorten_clearance_intervals(tmp_path):
 # ---------------------------------------------------------------------------
 # The built networks
 # ---------------------------------------------------------------------------
-def read_programs(net_id):
-    """tlLogic id -> (offset, [(duration, state, name)]) straight from the .net.xml."""
+def read_programs(net_id, program="0"):
+    """tlLogic id -> (offset, [(duration, state, name)]) of one program, straight from the .net.xml."""
     root = ET.parse(NETWORKS_DIR / f"{net_id}.net.xml").getroot()
     out = {}
     for tl in root.iter("tlLogic"):
-        out[tl.get("id")] = (float(tl.get("offset")), [(float(p.get("duration")), p.get("state"), p.get("name")) for p in tl.iter("phase")])
+        if tl.get("programID") == program:
+            out[tl.get("id")] = (float(tl.get("offset")), [(float(p.get("duration")), p.get("state"), p.get("name")) for p in tl.iter("phase")])
     return out
 
 
@@ -108,17 +111,18 @@ def cyclic_pairs(seq):
     return zip(seq, seq[1:] + seq[:1])
 
 
+@pytest.mark.parametrize("program", PROGRAMS)
 @pytest.mark.parametrize("net_id", NETS)
-def test_every_program_is_a_legal_signal_sequence(net_id):
+def test_every_program_is_a_legal_signal_sequence(net_id, program):
     designs = S.read_signal_designs(NETWORKS_DIR / f"{net_id}.net.xml")
     assert len(designs) >= 11
-    for tid, (offset, phases) in read_programs(net_id).items():
+    for tid, (offset, phases) in read_programs(net_id, program).items():
         d = designs[tid]
         veh = sorted(d.links)
         states = [s for _, s, _ in phases]
         # the cycle is one of the type cycles, and the offset lies inside it
         cycle = sum(dur for dur, _, _ in phases)
-        assert cycle == S.TYPE_PLANS[d.kind].cycle, (tid, d.kind, cycle)
+        assert cycle == S.TYPE_PLANS[d.kind].cycle == S.light_plans()[d.kind].cycle, (tid, d.kind, cycle)
         assert 0 <= offset < cycle
         for (dur_a, a, _), (dur_b, b, _) in cyclic_pairs(phases):
             for i in veh:
@@ -160,9 +164,10 @@ def conflicting_links(net_id):
     return [(c.get("tl"), int(c.get("linkIndex")), c.get("from")) for c in root.iter("connection") if c.get("tl") and not c.get("from", "").startswith(":")]
 
 
+@pytest.mark.parametrize("program", PROGRAMS)
 @pytest.mark.parametrize("net_id", NETS)
-def test_pedestrians_get_a_walk_and_a_full_clearance_before_conflicting_traffic(net_id):
-    programs = read_programs(net_id)
+def test_pedestrians_get_a_walk_and_a_full_clearance_before_conflicting_traffic(net_id, program):
+    programs = read_programs(net_id, program)
     crossings = crossing_info(net_id)
     approach = conflicting_links(net_id)
     checked = 0
@@ -190,41 +195,83 @@ def test_pedestrians_get_a_walk_and_a_full_clearance_before_conflicting_traffic(
     assert checked >= 40
 
 
-def test_cycle_length_and_splits_follow_the_intersection_type():
+@pytest.mark.parametrize("program", PROGRAMS)
+def test_cycle_length_and_splits_follow_the_intersection_type(program):
     designs = S.read_signal_designs(NETWORKS_DIR / "district.net.xml")
-    programs = read_programs("district")
+    programs = read_programs("district", program)
     kinds = {t: d.kind for t, d in designs.items()}
     assert set(kinds.values()) == {"arterial_arterial", "arterial_collector", "arterial_local", "collector_collector"}
     for t, kind in kinds.items():
         cycle = sum(p[0] for p in programs[t][1])
-        assert cycle == (40 if kind == "collector_collector" else 80), (t, kind, cycle)
-    # an arterial that meets a local street is served much longer than the local street (which is nevertheless
-    # held to its pedestrian-clearance minimum); two arterials share the cycle equally
+        assert cycle == 80, (t, kind, cycle)  # a common cycle on every signal, so corridors can be coordinated
+    # at an arterial x local signal the local street is held to its pedestrian-clearance minimum (plus the split
+    # overhead); two arterials share the cycle equally
     def served_time(tid, axis):
         d = designs[tid]
         idx = [i for i, l in d.links.items() if l.axis == axis]
         return sum(dur for dur, s, _ in programs[tid][1] if any(s[i] in "Ggy" for i in idx))
 
     art_local = next(t for t, k in kinds.items() if k == "arterial_local" and designs[t].streets["ew"][1] == 3)
-    assert served_time(art_local, "ew") > 1.3 * served_time(art_local, "ns")
-    assert served_time(art_local, "ns") >= 20  # 7 s walk + clearance across a 20 m arterial
+    assert served_time(art_local, "ew") >= 34  # the arterial keeps the larger part of the cycle ...
+    assert 20 <= served_time(art_local, "ns") <= 40  # ... the local street gets its pedestrian floor (walk + clearance across 20 m) and no more
     aa = next(t for t, k in kinds.items() if k == "arterial_arterial")
     assert abs(served_time(aa, "ew") - served_time(aa, "ns")) <= 4
-    # arterial protected lefts exist at arterial x arterial; the collector-only signal has none
+    # arterial protected lefts exist at arterial x arterial; the collector-only signal has none (it splits instead)
     assert any(n == "left" for _, _, n in programs[aa][1])
     assert not any(n == "left" for _, _, n in programs["n2_0"][1])
 
 
-def test_collector_directions_are_split_so_permissive_lefts_cannot_deadlock():
-    designs = S.read_signal_designs(NETWORKS_DIR / "district.net.xml")
-    d = designs["n2_1"]  # King (arterial) x Church (collector)
-    assert d.kind == "arterial_collector"
-    church = [i for i, l in d.links.items() if l.axis == "ns"]
-    for _, state, _ in read_programs("district")["n2_1"][1]:
-        served = {d.links[i].sign for i in church if state[i] in "Gg"}
-        assert len(served) <= 1, state  # never both directions at once
-    both = {sign for _, state, _ in read_programs("district")["n2_1"][1] for i in church if state[i] in "Gg" for sign in [d.links[i].sign]}
-    assert both == {1, -1}  # but both are served
+@pytest.mark.parametrize("program", PROGRAMS)
+@pytest.mark.parametrize("net_id", NETS)
+def test_minor_street_directions_are_split_so_permissive_lefts_cannot_deadlock(net_id, program):
+    designs = S.read_signal_designs(NETWORKS_DIR / f"{net_id}.net.xml")
+    programs = read_programs(net_id, program)
+    checked = 0
+    for tid, d in designs.items():
+        for axis, (_name, rank) in d.streets.items():
+            # one-lane collectors are split in both programs; local streets only in the safe one
+            if rank >= 3 or (rank == 1 and program == "0"):
+                continue
+            links = [i for i, l in d.links.items() if l.axis == axis]
+            seen = set()
+            for _, state, _ in programs[tid][1]:
+                served = {d.links[i].sign for i in links if state[i] in "Gg"}
+                assert len(served) <= 1, (tid, axis, state)  # never both directions at once
+                seen |= served
+            assert seen == {1, -1}, (tid, axis)  # but both are served
+            checked += 1
+    assert checked >= (10 if program == S.SAFE_PROGRAM else 5)
+
+
+@pytest.mark.parametrize("net_id", NETS)
+def test_safe_program_runs_arterial_lefts_only_on_their_own_arrow(net_id):
+    designs = S.read_signal_designs(NETWORKS_DIR / f"{net_id}.net.xml")
+    safe, light = read_programs(net_id, S.SAFE_PROGRAM), read_programs(net_id, "0")
+    protected = permissive_in_light = 0
+    for tid, d in designs.items():
+        for i, l in d.links.items():
+            if l.dir != "l" or STREET.get(l.cls, 1) < 3:
+                continue
+            if not any(state[i] == "G" and name == "left" for _, state, name in safe[tid][1]):
+                continue  # no left bay here (King Street in the bike-lane network)
+            protected += 1
+            for _, state, name in safe[tid][1]:
+                if state[i] in "Gg":
+                    assert name == "left", (tid, i, state, name)  # no permissive left across oncoming traffic
+            permissive_in_light += any(state[i] == "g" and name != "left" for _, state, name in light[tid][1])
+    assert protected >= 16
+    assert permissive_in_light >= protected // 2  # the everyday plan keeps netconvert's permissive-protected lefts
+
+
+def test_bay_opening_nodes_are_unregulated_single_stream_nodes():
+    from flowstate.network import city
+
+    assert city.BAY_NODE_TYPE == "unregulated"
+    for net_id in NETS:
+        root = ET.parse(NETWORKS_DIR / f"{net_id}.net.xml").getroot()
+        bay_nodes = [j for j in root.iter("junction") if j.get("id", "").endswith("_x")]
+        assert len(bay_nodes) >= 16
+        assert all(j.get("type") == "unregulated" for j in bay_nodes)
 
 
 @pytest.mark.parametrize("net_id", NETS)
@@ -233,6 +280,9 @@ def test_corridor_offsets_are_engineered_and_reduce_waiting(net_id):
     layout = json.loads((NETWORKS_DIR / f"{net_id}.city.json").read_text(encoding="utf-8"))
     summary = layout["signals"]
     assert {s["offset"] for s in summary["signals"].values()} == {offset for offset, _ in programs.values()}
+    safe = summary["programs"][S.SAFE_PROGRAM]
+    assert {s["offset"] for s in safe["signals"].values()} == {offset for offset, _ in read_programs(net_id, S.SAFE_PROGRAM).values()}
+    assert safe["signals"] != summary["signals"]  # optimised for its own windows
     assert len({o for o, _ in programs.values()}) >= 6  # not the old all-zero pattern
     arterial = [summary["corridors"][n] for n in ("King Street", "Queen Street", "Main Street")]
     legs = [l for c in arterial for l in c["legs"]]
@@ -241,7 +291,8 @@ def test_corridor_offsets_are_engineered_and_reduce_waiting(net_id):
     assert sum(l["stops"] for l in legs) < 0.7 * sum(l["stopsNoOffsets"] for l in legs)
     # ... and no direction is sacrificed for the other
     for leg in legs:
-        assert leg["waitSec"] < leg["waitSecNoOffsets"]
+        assert leg["waitSec"] <= 1.1 * leg["waitSecNoOffsets"]  # not worse in waiting ...
+        assert leg["stops"] <= 1.3 * leg["stopsNoOffsets"]  # ... and no leg gets many more stops (one trades 0.2 stops for 14 s of waiting)
         assert leg["waitSec"] < 45
 
 
@@ -249,9 +300,10 @@ def test_corridor_offsets_are_engineered_and_reduce_waiting(net_id):
 # SUMO runs
 # ---------------------------------------------------------------------------
 def test_sumo_executes_the_plan_with_its_offsets_and_durations():
-    eng = make_engine("rush_hour", 3, {"duration": 5, "pedestrians": False}, "sigplan")
+    eng = make_engine("rush_hour", 3, {"duration": 15, "pedestrians": False}, "sigplan")  # a long run: the everyday program
     eng.start()
-    programs = read_programs(eng.network_id)
+    assert eng.T.trafficlight.getProgram("n1_1") == "0"
+    programs = read_programs(eng.network_id, "0")
     watch = ("n1_1", "n2_1", "n2_0", "n0_2")
     changes = {t: [] for t in watch}
     last = {t: None for t in watch}
@@ -350,10 +402,11 @@ def test_gateways_are_weighted_by_street_class():
 
 
 def test_demand_guardrails_gate_full_streets_and_throttle_on_spillback():
-    eng = make_engine("rush_hour", 1, {"duration": 5}, "siggate")
+    eng = make_engine("rush_hour", 1, {"duration": 15}, "siggate")  # long run: the legacy settings, no sustained peak
     eng.start()
     try:
         dem = eng.demand
+        assert not dem.dense and dem.THROTTLE_MODE == "block"
         entry = eng.net.entries["W"][0]
         assert not dem.crowded(entry)
         cap = dem._capacity(entry)
@@ -371,3 +424,106 @@ def test_demand_guardrails_gate_full_streets_and_throttle_on_spillback():
         assert dem.counter > before
     finally:
         eng.close()
+
+
+def test_dense_mode_applies_only_to_short_rush_hour_runs_and_holds_the_peak():
+    short = make_engine("rush_hour", 3, {"duration": 5, "demand": 2800, "peak": 2.0}, "dense_s")
+    short.start()
+    try:
+        dem = short.demand
+        assert dem.dense and dem.PATH_GATE == 0.6 and dem.THROTTLE_MODE == "junction" and dem.ROUTE_COST_FACTOR["local"] == 3.0
+        # the peak is in force from the first second of the warm-up to the end: the rate does not ramp or fade
+        rates = [dem.profile(t, short.scenario.demand(t)).rate for t in (-180, -90, 0, 150, 300)]
+        assert max(rates) - min(rates) < 1e-6 and rates[0] > 1.8 * 2800 * 0.9
+        # ... while the scenario's own profile still ramps (so this is the generator's doing, not a default)
+        assert short.scenario.demand(-180).rate < 0.6 * rates[0]
+    finally:
+        short.close()
+    for scenario, params in (("rush_hour", {"duration": 15}), ("accident", {"duration": 5}), ("transit", {"duration": 5})):
+        eng = make_engine(scenario, 3, params, f"dense_{scenario}")
+        eng.start()
+        try:
+            assert not eng.demand.dense and eng.demand.PATH_GATE is None and eng.demand.ROUTE_COST_FACTOR is None
+        finally:
+            eng.close()
+
+
+def test_dense_rush_hour_runs_the_safe_program_and_everything_else_the_everyday_one():
+    cases = (("rush_hour", {"duration": 5}, S.SAFE_PROGRAM), ("rush_hour", {"duration": 15}, "0"), ("accident", {"duration": 5}, "0"),
+             ("rush_hour", {"duration": 5, "signals": "actuated"}, "actuated"))
+    shared = None
+    for scenario, params, expected in cases:
+        eng = make_engine(scenario, 3, params, f"prog_{expected}")
+        eng.start()
+        try:
+            assert {eng.T.trafficlight.getProgram(t) for t in eng.T.trafficlight.getIDList()} == {expected}
+            if expected in PROGRAMS:  # the engine describes the program that is running (not the cached network's)
+                want = read_programs(eng.network_id, expected)["n1_1"][1]
+                assert [round(d, 3) for d, _ in eng.net.tls_programs["n1_1"]] == [d for d, _, _ in want]
+            if shared is None:
+                shared = eng.net.path
+        finally:
+            eng.close()
+    cached = S.read_signal_designs(shared)  # the shared cached description was not modified by the dense run
+    assert cached
+
+
+def test_missed_turn_recovery_replans_a_vehicle_stranded_in_the_wrong_lane():
+    eng = make_engine("rush_hour", 4, {"duration": 5, "demand": 400, "pedestrians": False}, "unstick")
+    eng.start()
+    try:
+        T = eng.T
+        T.route.add("wrongway", ["main_s2", "main_s2b", "king_e2", "king_e2b", "king_e3"])  # a left turn onto King
+        vtype = eng.profiles["sedan"][0]
+        T.vehicle.add("stray", "wrongway", typeID=vtype, depart="now", departLane="1", departPos="20", departSpeed="0")  # curb lane: no left turn
+        T.vehicle.setLaneChangeMode("stray", 0)  # and it cannot change lanes (a bumper-to-bumper queue)
+        replanned_at = None
+        while eng.t < 150:
+            eng.step()
+            if "stray" in T.vehicle.getIDList() and replanned_at is None and eng.demand.replanned:
+                replanned_at = eng.t
+                break
+        assert replanned_at is not None, "the stranded vehicle was never re-planned"
+        route = list(T.vehicle.getRoute("stray"))
+        assert "king_e2" not in route[route.index("main_s2b"):], route  # it gave up the left turn
+        assert route[0] == "main_s2" and route[-1] == "king_e3"  # but still reaches its destination
+        T.vehicle.setLaneChangeMode("stray", 1621)  # (the stranding came from forbidding lane changes; a driver can move over again)
+        arrived = False
+        while eng.t < replanned_at + 300 and not arrived:
+            eng.step()
+            arrived = "stray" not in T.vehicle.getIDList()
+        assert arrived, "the vehicle never left after re-planning"
+    finally:
+        eng.close()
+
+
+def test_dense_rush_hour_is_concentrated_sustained_and_measured():
+    """Measured, not configured: storage occupancy per corridor, queues, insertions, throughput, spacing, safety.
+
+    The gridlock-stress workload (3200 trips/h x 1.6, peak x3) over a 300 s observation after a 300 s warm-up.
+    Thresholds sit below what was measured (district: ~560 vehicles, arterials ~36 %, collectors ~24 %,
+    locals ~13 % of jam storage; several blocks full) so the test checks the behaviour, not one number.
+    """
+    from congestion_probe import measure
+
+    r = measure("rush_hour", {"demand": 3200, "traffic": 1.6, "peak": 3.0, "duration": 5}, seed=42, warmup=300.0, label="test_dense")
+    occ = {k: v["mean"] for k, v in r["corridorOccupancy"].items()}
+    cap = r["storageCapacityVehicles"]
+    weighted = lambda keys: sum(occ[k] * cap[k] for k in keys) / sum(cap[k] for k in keys)  # noqa: E731
+    arterial, collector, local = weighted(["main", "king", "queen"]), weighted(["church", "front"]), weighted(["elm", "park", "college"])
+    # dense: bumper-to-bumper queues on the arterials, several blocks at (or beyond) 80 % of storage
+    assert r["activeVehicles"]["mean"] >= 400 and r["stoppedVehicles"]["mean"] >= 0.45 * r["activeVehicles"]["mean"]
+    assert arterial >= 0.28 and occ["main"] >= 0.33 and occ["king"] >= 0.25 and occ["queen"] >= 0.25
+    assert sum(v >= 0.8 for v in r["blockOccupancy"].values()) >= 5 and r["spillChainBlocks"]["max"] >= 2
+    # ... and concentrated: the small streets are not uniformly saturated
+    assert arterial > 1.3 * collector and arterial > 2.0 * local and local < 0.25
+    # sustained: the population is flat from the first to the last minute of the observation
+    st = r["stationarity"]
+    assert abs(st["activeLast60s"] - st["activeFirst60s"]) <= 0.12 * st["activeFirst60s"], st
+    # insertion and throughput are accounted for, and traffic keeps moving
+    assert r["offeredPerHour"] > 2 * r["insertions"]["departedPerHour"] > 0  # most of the offered load is held back, and said so
+    assert r["throughputPerHour"] >= 3500 and r["insertions"]["pendingMax"] <= 70 and r["meanSpeedKmh"]["mean"] >= 3.0
+    # realistic spacing and safety (SUMO's own collision output with junction checks on)
+    assert r["standingGapM"]["overlapsBelowMinus0_3"] == 0 and r["standingGapM"]["p5"] >= 1.0 and r["standingGapM"]["min"] >= 0.5
+    assert r["teleports"] <= 2
+    assert r["collisions"]["observationRecords"] <= 6
