@@ -802,6 +802,16 @@ function HeadToHead({ d }: { d: DemandResults }) {
   const held = new Set(results.scenarios.filter((s) => s.heldOut).map((s) => s.id))
   const pts = useMemo(() => pairs(d, BASE, FS).map((p) => ({ x: p.a.wait, y: p.b.wait, s: p.s, seed: p.seed })), [d])
   const [hover, setHover] = useState<number | null>(null)
+  // the plot fills its column; height follows width within a readable range
+  const wrap = useRef<HTMLDivElement>(null)
+  const [cw, setCw] = useState(560)
+  useEffect(() => {
+    const el = wrap.current
+    if (!el) return
+    const ro = new ResizeObserver(([e]) => setCw(Math.round(e.contentRect.width)))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
   if (!pts.length) return null
   const wins = pts.filter((p) => p.y < p.x).length
   const losses = pts.filter((p) => p.y > p.x)
@@ -815,8 +825,13 @@ function HeadToHead({ d }: { d: DemandResults }) {
   const step = hi - lo > 300 ? 100 : 50
   const ticks: number[] = []
   for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) ticks.push(t)
-  const S = 440
-  const px = (v: number) => ((v - lo) / (hi - lo)) * S
+  const ML = 60
+  const W = Math.max(300, cw - ML - 16)
+  const S = Math.round(Math.min(500, Math.max(360, W * 0.6)))
+  const TW = ML + W + 16
+  const TH = S + 60
+  const px = (v: number) => ((v - lo) / (hi - lo)) * W
+  const py = (v: number) => ((v - lo) / (hi - lo)) * S
   const hp = hover != null ? pts[hover] : null
   return (
     <section className={cn(card, 'flex flex-wrap gap-8 p-6')}>
@@ -825,21 +840,21 @@ function HeadToHead({ d }: { d: DemandResults }) {
           <H2>Every run, head to head</H2>
           <Cap>Each dot is one seed run twice, once per controller. Below the diagonal, FlowState waited less.</Cap>
         </div>
-        <div className="overflow-x-auto">
-          <div className="relative" style={{ width: 520, height: 500 }}>
-            <svg width={520} height={500} role="img" aria-label={`Paired mean waits: FlowState waited less in ${wins} of ${pts.length} runs`} onMouseLeave={() => setHover(null)}>
+        <div ref={wrap} className="overflow-x-auto">
+          <div className="relative" style={{ width: TW, height: TH }}>
+            <svg width={TW} height={TH} role="img" aria-label={`Paired mean waits: FlowState waited less in ${wins} of ${pts.length} runs`} onMouseLeave={() => setHover(null)}>
               <text x={14} y={4 + S / 2} transform={`rotate(-90 14 ${4 + S / 2})`} textAnchor="middle" fontSize={12} fontWeight={500} fill="#46505f">
                 FlowState wait (s)
               </text>
-              <text x={60 + S / 2} y={488} textAnchor="middle" fontSize={12} fontWeight={500} fill="#46505f">
+              <text x={ML + W / 2} y={S + 48} textAnchor="middle" fontSize={12} fontWeight={500} fill="#46505f">
                 Fixed-time wait (s)
               </text>
-              <g transform="translate(60 4)">
+              <g transform={`translate(${ML} 4)`}>
                 {ticks.map((t) => (
                   <g key={t}>
-                    <line x1={0} x2={S} y1={S - px(t)} y2={S - px(t)} stroke="#f1f3f6" />
+                    <line x1={0} x2={W} y1={S - py(t)} y2={S - py(t)} stroke="#f1f3f6" />
                     <line y1={0} y2={S} x1={px(t)} x2={px(t)} stroke="#f1f3f6" />
-                    <text x={-8} y={S - px(t) + 4} textAnchor="end" fontSize={11} fill="#687284" className="tnum">
+                    <text x={-8} y={S - py(t) + 4} textAnchor="end" fontSize={11} fill="#687284" className="tnum">
                       {t}
                     </text>
                     <text x={px(t)} y={S + 18} textAnchor="middle" fontSize={11} fill="#687284" className="tnum">
@@ -847,11 +862,11 @@ function HeadToHead({ d }: { d: DemandResults }) {
                     </text>
                   </g>
                 ))}
-                <polygon points={`0,${S} ${S},${S} ${S},0`} fill="rgba(42,120,214,0.045)" />
-                <line x1={0} y1={S} x2={S} y2={0} stroke="#8a93a3" strokeWidth={1.5} strokeDasharray="5 5" />
+                <polygon points={`0,${S} ${W},${S} ${W},0`} fill="rgba(42,120,214,0.045)" />
+                <line x1={0} y1={S} x2={W} y2={0} stroke="#8a93a3" strokeWidth={1.5} strokeDasharray="5 5" />
                 <line x1={0} y1={0} x2={0} y2={S} stroke="#d3d8df" />
-                <line x1={0} y1={S} x2={S} y2={S} stroke="#d3d8df" />
-                <text x={S - 12} y={S - 14} textAnchor="end" fontSize={12} fontWeight={600} fill="#46505f">
+                <line x1={0} y1={S} x2={W} y2={S} stroke="#d3d8df" />
+                <text x={W - 12} y={S - 14} textAnchor="end" fontSize={12} fontWeight={600} fill="#46505f">
                   FlowState waited less
                 </text>
                 <text x={12} y={22} fontSize={12} fontWeight={600} fill="#46505f">
@@ -863,9 +878,9 @@ function HeadToHead({ d }: { d: DemandResults }) {
                   const h = held.has(p.s)
                   return (
                     <g key={`${p.s}/${p.seed}`} onMouseEnter={() => setHover(i)} style={{ cursor: 'default' }}>
-                      <circle cx={px(p.x)} cy={S - px(p.y)} r={12} fill="transparent" />
-                      <circle cx={px(p.x)} cy={S - px(p.y)} r={5.5} fill={h ? '#fff' : c} stroke={h ? c : '#fff'} strokeWidth={h ? 2.5 : 2} />
-                      {hover === i && <circle cx={px(p.x)} cy={S - px(p.y)} r={9} fill="none" stroke="#0c1322" strokeWidth={2} />}
+                      <circle cx={px(p.x)} cy={S - py(p.y)} r={12} fill="transparent" />
+                      <circle cx={px(p.x)} cy={S - py(p.y)} r={5.5} fill={h ? '#fff' : c} stroke={h ? c : '#fff'} strokeWidth={h ? 2.5 : 2} />
+                      {hover === i && <circle cx={px(p.x)} cy={S - py(p.y)} r={9} fill="none" stroke="#0c1322" strokeWidth={2} />}
                     </g>
                   )
                 })}
@@ -874,7 +889,7 @@ function HeadToHead({ d }: { d: DemandResults }) {
             {hp && (
               <div
                 className="tnum pointer-events-none absolute z-10 w-[200px] rounded-[10px] bg-ink px-3 py-2.5 text-[12px] leading-[1.5] text-white shadow-tip"
-                style={{ left: Math.min(60 + px(hp.x) + 16, 520 - 200), top: Math.max(0, 4 + S - px(hp.y) - 70) }}
+                style={{ left: Math.min(ML + px(hp.x) + 16, TW - 200), top: Math.max(0, 4 + S - py(hp.y) - 70) }}
               >
                 <div className="font-semibold">
                   {titles[hp.s]} · seed {hp.seed}
@@ -903,7 +918,7 @@ function HeadToHead({ d }: { d: DemandResults }) {
           </div>
         </div>
       </div>
-      <div className="flex min-w-0 flex-[1_1_280px] flex-col gap-5 pt-1">
+      <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-5 pt-1 min-[1280px]:max-w-[300px]">
         <div className="flex flex-col gap-1.5 rounded-[12px] bg-subtle p-6 shadow-[inset_0_0_0_1px_var(--color-track)]">
           <div className="tnum flex items-baseline gap-1.5">
             <span className="text-[64px] font-[650] leading-none tracking-[-0.04em]">{wins}</span>
@@ -911,7 +926,8 @@ function HeadToHead({ d }: { d: DemandResults }) {
           </div>
           <div className="text-[15px] font-semibold">runs FlowState won on mean wait</div>
           <div className="text-ink-2">
-            Fixed-time won {losses.length}.{topN >= 2 && ` ${topN} of those were ${titles[topLoss]?.toLowerCase()}.`}
+            Fixed-time won the other {losses.length}
+            {topN >= 2 ? `, including ${topN} in ${titles[topLoss]?.toLowerCase()}.` : '.'}
           </div>
         </div>
         <div className="flex flex-col gap-2.5 text-[12px] text-ink-2">
@@ -1095,11 +1111,11 @@ function Method({ d, live }: { d: DemandResults; live: boolean }) {
   return (
     <div className={cn(card, 'flex min-w-0 flex-[1_1_340px] flex-col gap-3.5 bg-[#fbfbfc] p-6')}>
       <H2 className="text-[15px]">Method</H2>
-      <dl className="tnum m-0 grid grid-cols-[96px_1fr] gap-x-3 gap-y-2.5 text-[12px] leading-[1.5]">
+      <dl className="tnum m-0 grid grid-cols-[96px_minmax(0,1fr)] gap-x-3 gap-y-2.5 text-[12px] leading-[1.5]">
         {rows.map(([k, v]) => (
           <div key={k} className="contents">
             <dt className="text-ink-3">{k}</dt>
-            <dd className="m-0">{v}</dd>
+            <dd className="m-0 min-w-0 text-pretty [overflow-wrap:anywhere]">{v}</dd>
           </div>
         ))}
       </dl>
