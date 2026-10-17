@@ -22,8 +22,8 @@ export interface Panels {
   right: boolean
 }
 
-/** Default camera target: Main Street & King Street. */
-export const HOME_JUNCTION = 'n1_1'
+/** Default camera target: John Street & King Street West. */
+export const HOME_JUNCTION = 'n3_3'
 
 const PANELS_KEY = 'flowstate.panels'
 

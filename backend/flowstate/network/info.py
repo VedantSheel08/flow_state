@@ -156,7 +156,7 @@ class NetInfo:
         return self.junction_names.get(node, node)
 
     def describe_edge(self, edge_id: str) -> str:
-        """Human description, e.g. 'King Street eastbound between Main Street & Church Street'."""
+        """Human description, e.g. 'King Street West eastbound between John Street and Simcoe Street'."""
         e = self.edges.get(edge_id)
         if e is None:
             return edge_id

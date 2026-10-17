@@ -3,7 +3,7 @@ import { Camera } from '../map/camera'
 import { cycleJunction, focusScale, junctionGrid, shortName, stepJunction, type NavJunction } from '../map/nav'
 import { busLineFor } from '../map/vehicles'
 
-// 4 x 4 street grid like the Riverside District (x: 0..600, y: 0..480)
+// regular 4 x 4 street grid (x: 0..600, y: 0..480)
 const grid: NavJunction[] = []
 for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) grid.push({ id: `n${c}_${r}`, name: `C${c} Street & R${r} Street`, x: c * 200, y: r * 160, control: 'traffic_light' })
 
@@ -40,6 +40,8 @@ describe('intersection navigation', () => {
   it('shortens street names and frames intersections at a detailed scale', () => {
     expect(shortName('Main Street & King Street')).toBe('Main & King')
     expect(shortName('Park Avenue & Queen Street')).toBe('Park & Queen')
+    expect(shortName('John Street & King Street West')).toBe('John & King')
+    expect(shortName('Blue Jays Way & Front Street West')).toBe('Blue Jays Way & Front')
     expect(focusScale(1300, 850)).toBeGreaterThan(6)
     expect(focusScale(100, 100)).toBe(3.2)
   })

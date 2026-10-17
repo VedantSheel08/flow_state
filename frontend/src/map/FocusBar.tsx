@@ -9,7 +9,7 @@ import { cn } from '../lib/format'
 import { useStore } from '../lib/store'
 import { approachSignals, type Approach } from './approach'
 import { mapApi } from './MapView'
-import { CONTROL_LABEL, junctionGrid, readingOrder, shortName, type NavJunction } from './nav'
+import { CONTROL_LABEL, junctionGrid, readingOrder, shortName, streetPart, type NavJunction } from './nav'
 import type { Scene } from './scene'
 
 const LIGHT: Record<string, string> = { G: '#16A34A', g: '#4ADE80', y: '#F5B700', Y: '#F5B700', u: '#F5B700', r: '#EF4444', R: '#EF4444', s: '#EF4444', o: '#CBD2DA', O: '#CBD2DA' }
@@ -182,24 +182,25 @@ function ModeButton({ active, onClick, label, hint, children }: { active: boolea
 
 function JunctionPicker({ junctions, current, onPick }: { junctions: NavJunction[]; current: string | null; onPick: (id: string) => void }) {
   const grid = useMemo(() => junctionGrid(junctions), [junctions])
-  const colName = (c: number) => grid.cells.find((q) => q.c === c)?.name.split('&')[0].trim() ?? ''
-  const rowName = (r: number) => grid.cells.find((q) => q.r === r)?.name.split('&')[1]?.trim() ?? ''
-  const short = (s: string) => s.replace(/\s+(Street|Avenue|Road|Boulevard)$/, '')
+  // a line can change name along its length (Blue Jays Way / Peter, Windsor / Widmer): list every name on it
+  const lineName = (cells: NavJunction[], side: 0 | 1) => [...new Set(cells.map((q) => streetPart(q.name, side)))].join(' / ')
+  const colName = (c: number) => lineName(grid.cells.filter((q) => q.c === c), 0)
+  const rowName = (r: number) => lineName(grid.cells.filter((q) => q.r === r), 1)
   return (
     <div className="glass anim-in absolute left-0 top-12 w-max rounded-xl p-3">
       <div className="mb-2 flex items-baseline justify-between gap-6">
         <span className="label-caps">Intersections</span>
         <span className="text-[11px] text-ink-3">Laid out as on the map</span>
       </div>
-      <div className="grid gap-1" style={{ gridTemplateColumns: `64px repeat(${grid.cols}, 92px)` }}>
+      <div className="grid gap-1" style={{ gridTemplateColumns: `84px repeat(${grid.cols}, 92px)` }}>
         <span />
         {Array.from({ length: grid.cols }, (_, c) => (
-          <span key={c} className="truncate pb-0.5 text-center text-[10.5px] font-semibold uppercase tracking-[0.06em] text-ink-3">
-            {short(colName(c))}
+          <span key={c} title={colName(c)} className="self-end pb-0.5 text-center text-[10.5px] font-semibold uppercase leading-tight tracking-[0.06em] text-ink-3">
+            {colName(c)}
           </span>
         ))}
         {Array.from({ length: grid.rows }, (_, r) => (
-          <Row key={r} label={short(rowName(r))}>
+          <Row key={r} label={rowName(r)}>
             {Array.from({ length: grid.cols }, (_, c) => {
               const cell = grid.cells.find((q) => q.r === r && q.c === c)
               if (!cell) return <span key={c} />
@@ -239,7 +240,7 @@ function JunctionPicker({ junctions, current, onPick }: { junctions: NavJunction
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <>
-      <span className="flex items-center truncate pr-1 text-[10.5px] font-semibold uppercase tracking-[0.06em] text-ink-3">{label}</span>
+      <span title={label} className="flex items-center truncate pr-1 text-[10.5px] font-semibold uppercase tracking-[0.06em] text-ink-3">{label}</span>
       {children}
     </>
   )

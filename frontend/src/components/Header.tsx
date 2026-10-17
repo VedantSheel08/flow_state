@@ -45,7 +45,7 @@ export function Header() {
   const networks = useStore((s) => s.networks)
   const panels = useStore((s) => s.panels)
   const togglePanel = useStore((s) => s.togglePanel)
-  const netTitle = networks[run?.network ?? 'district']?.title ?? 'Riverside District'
+  const netTitle = networks[run?.network ?? 'district']?.title ?? 'Downtown Toronto · King West'
   const mapOnly = !panels.left && !panels.right
   return (
     <header className="relative z-20 flex h-12 shrink-0 items-center gap-7 border-b border-border bg-surface pl-5 pr-4">

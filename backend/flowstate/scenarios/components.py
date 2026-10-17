@@ -885,7 +885,7 @@ class Pursuit(Component):
 
     def briefing(self) -> list[BriefingItem]:
         return [BriefingItem(label="Stolen vehicle", value=f"Reported {fmt_clock(self.t0)}", detail=self.where),
-                BriefingItem(label="Response", value=f"{self.units} unit{'s' if self.units > 1 else ''}", detail="first unit from Division 52, others on patrol")]
+                BriefingItem(label="Response", value=f"{self.units} unit{'s' if self.units > 1 else ''}", detail="first unit from 52 Division, others on patrol")]
 
     def markers(self) -> list[Marker]:
         return [Marker(t=self.t0, label="Pursuit begins", kind="emergency")]
