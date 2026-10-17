@@ -112,7 +112,7 @@ def run_audit(sid: str | Scenario, seed: int, params: dict[str, Any] | None = No
         audit.tracked = res["tracked"]
         audit.incidents = res["incidents"]
         audit.events = [(e.t, e.category, e.message) for e in eng.events._events]
-        audit.extra = {"kpi": res["metrics"], "collisions": res["collisions"], "teleports": res["teleports"]}
+        audit.extra = {"kpi": res["metrics"], "collisions": res["collisions"], "teleports": res["teleports"], "emergency": res["emergency"], "signals": res["signals"]}
     finally:
         eng.close()
     return audit

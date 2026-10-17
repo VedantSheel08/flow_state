@@ -184,8 +184,20 @@ export interface StatsMessage {
   incidents: Incident[]
   tracked: Tracked[]
   signals: { mode: string; preemptions: number; tspExtensions: number; tspSeconds: number }
+  emergency?: EmergencySummary
   scenario: Record<string, unknown>
   status: RunStatus
+}
+
+// drivers making way for units with their lights on (sim/emergency.py)
+export interface EmergencySummary {
+  enabled: boolean
+  yields: number
+  crossHolds: number
+  gapHolds: number
+  laneMoves: number
+  maxConcurrent: number
+  yieldingNow: number
 }
 
 // [id, typeCode, x, y, angle(deg, 0 = north, clockwise), speed m/s, signals bitmask]
@@ -209,6 +221,7 @@ export interface RunResults {
   teleports: number
   collisions: number
   signals: { mode: string; preemptions: number; tspExtensions: number; tspSeconds: number }
+  emergency?: EmergencySummary
   scenario: Record<string, unknown>
   tracked: Tracked[]
   incidents: Incident[]
