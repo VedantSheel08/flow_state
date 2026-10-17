@@ -322,7 +322,9 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
       const [sx, sy] = local(e)
       const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY
       cam.vx = cam.vy = 0
-      cam.zoomAt(Math.exp(-delta * 0.0016), sx, sy)
+      // touchpad pinch (ctrlKey) sends small deltas; boost zoom-out so it isn't sluggish
+      const rate = e.ctrlKey && delta > 0 ? 0.004 : 0.0016
+      cam.zoomAt(Math.exp(-delta * rate), sx, sy)
       useStore.getState().set({ follow: false })
     }
     const onDown = (e: PointerEvent) => {
