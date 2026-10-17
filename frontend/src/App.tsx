@@ -15,6 +15,7 @@ import { connect } from './lib/ws'
 import { MapView, mapApi } from './map/MapView'
 import type { Dir } from './map/nav'
 import { AnalyticsView } from './views/AnalyticsView'
+import { ResultsView } from './views/ResultsView'
 import { RunsView } from './views/RunsView'
 
 function useBootstrap() {
@@ -188,6 +189,7 @@ export default function App() {
             <MapStage />
             <RightPanel />
           </div>
+          {view === 'results' && <ResultsView />}
           {view === 'analyze' && <AnalyticsView />}
           {view === 'runs' && <RunsView />}
         </div>

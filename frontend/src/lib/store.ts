@@ -4,7 +4,7 @@ import { defaultCongestion } from './scenarioPresets'
 import type { CompareJob, CongestionPreset, Kpi, NetworkGeom, RunInfo, RunResults, RunStatus, ScenarioSpec, SimEvent, StatsMessage } from './types'
 
 export type Selection = { kind: 'vehicle'; id: string } | { kind: 'junction'; id: string } | { kind: 'edge'; id: string } | null
-export type View = 'simulate' | 'analyze' | 'runs'
+export type View = 'simulate' | 'results' | 'analyze' | 'runs'
 
 export interface Layers {
   buildings: boolean
