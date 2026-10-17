@@ -1,0 +1,22 @@
+{
+ "fixed30": {
+  "return": -140.2,
+  "mean_wait_s_900s": 52.2
+ },
+ "heuristic": {
+  "return": -108.6,
+  "mean_wait_s_900s": 47.2
+ },
+ "random": {
+  "return": -150.8,
+  "mean_wait_s_900s": 57.4
+ },
+ "always_hold": {
+  "return": -181.3,
+  "mean_wait_s_900s": 71.8
+ },
+ "rl60k": {
+  "return": -138.1,
+  "mean_wait_s_900s": 55.6
+ }
+}

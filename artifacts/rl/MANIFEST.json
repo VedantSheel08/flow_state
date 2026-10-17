@@ -1,0 +1,371 @@
+{
+ "note": "Files with in_git=false are excluded from the repository (intermediate checkpoints). Keep them in external storage (for example a release asset or a shared drive) and restore them to the same relative path; verify with --verify.",
+ "files": [
+  {
+   "path": "artifacts/rl/diagnostics/paired_heldout.json",
+   "bytes": 24086,
+   "sha256": "b3bc1e18e9b2b8bb0a3af3fe546808b1f567fd347f6f4cf29fb1f8eb6ae5f06e",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/diagnostics/paired_heldout.py",
+   "bytes": 1928,
+   "sha256": "35f95d7b5e748af17845ba83c2e735a3c2f2c783679f740c49ad32a15630da36",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/diagnostics/reward_check.json",
+   "bytes": 351,
+   "sha256": "e56b212bab6a146f003b1886f681c6f5a77b38b8da49342075dbe191842ad310",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/diagnostics/reward_check.py",
+   "bytes": 1566,
+   "sha256": "e35c60091e263566123b8bfce6027129c69151af0fa0e8e2467a0d456c339e94",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/evaluation_standard.json",
+   "bytes": 222164,
+   "sha256": "d509dda8e5a88054d7338a5fc8aea4786fc579d737747fc7c6b7bcf4e27f6178",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/evaluation_stress.json",
+   "bytes": 223700,
+   "sha256": "a5cf4304e6c8d13d630d5ce4724e4121919857b8982f6ea505d19365b43242d7",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/fixed_time_tuning.json",
+   "bytes": 745,
+   "sha256": "69aff9fbff1aede93b2853f3f3af08d0e2997abc628f84f1d735ef9757ded9a9",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/heuristic_tuning.json",
+   "bytes": 775,
+   "sha256": "2868d62b606d8ac40b2d47074bf97ce0fc59c543f2df84ca758d0d0e6a47d649",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/rejected/run3/ppo_policy.zip",
+   "bytes": 873552,
+   "sha256": "b58882b7373feaec249c7cb902a7715ae04d840839150cfb1a38769fdb1776e2",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/rejected/run3/validation_seeds_2000-2007.json",
+   "bytes": 927,
+   "sha256": "8db158b296c2eae2e239472b25298255cf749d9c83b89983297d60131877c3ef",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run1/baseline_check_val.json",
+   "bytes": 144974,
+   "sha256": "7d758545e178bd8312a2a30eaef36d22853101db36a377ebc49fb8b344b3a3a2",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run1/best_validation.zip",
+   "bytes": 736369,
+   "sha256": "52fefd0e75c4f0ea478551253a94011d204078550023e2551be71e297d9d7807",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run1/checkpoints/step_120000.zip",
+   "bytes": 736370,
+   "sha256": "3f476ef0620b278b469fdcbe92a8bbeee8147bafa6c937376bca806cd25fb897",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run1/checkpoints/step_30000.zip",
+   "bytes": 736367,
+   "sha256": "08397d84dfc4ccb70ab4eabab57cd569c95134035a87641726f1447ae530b577",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run1/checkpoints/step_60000.zip",
+   "bytes": 736369,
+   "sha256": "52fefd0e75c4f0ea478551253a94011d204078550023e2551be71e297d9d7807",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run1/checkpoints/step_90000.zip",
+   "bytes": 736369,
+   "sha256": "1dc00bed0f4acaae343b83fdacc16ba1314112dd8d519fb47378d5b6a52cd68f",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run1/progress.csv",
+   "bytes": 54443,
+   "sha256": "568e678c73845abb412fed9ce939aee502a778518669e56eb51645acac4e1732",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run1/validation.jsonl",
+   "bytes": 1199,
+   "sha256": "7b6fcb4d1fdb34d4f0812a1749ced1b4f55bf046e31b766562bd199e4946e3aa",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run2/best_validation.zip",
+   "bytes": 739404,
+   "sha256": "76cebf3ae91a9b29d7351b4e4638fb43400111379dcf8eebacc072f7fb653222",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run2/checkpoints/step_30000.zip",
+   "bytes": 739405,
+   "sha256": "1c1cb9c561d290ab12828e56df310f1603076b4cf4970814a3ae744bbfee1ed1",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run2/checkpoints/step_60000.zip",
+   "bytes": 739404,
+   "sha256": "76cebf3ae91a9b29d7351b4e4638fb43400111379dcf8eebacc072f7fb653222",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run2/checkpoints/step_90000.zip",
+   "bytes": 739405,
+   "sha256": "1c52cb3745a04275ca3fdf556729fd6c3b54672ab8e4b3282725a2ddd3f369c5",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run2/progress.csv",
+   "bytes": 17459,
+   "sha256": "b7d65353723ccc707235672fe00a2f01e379d5d4240d1fa7ad4e33708bbb0ea7",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run2/validation.jsonl",
+   "bytes": 917,
+   "sha256": "7375c1f7399821afef328e0507baa8636f4eea2ea34d5c026ca5408389485f75",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run3/best_validation.zip",
+   "bytes": 873552,
+   "sha256": "b58882b7373feaec249c7cb902a7715ae04d840839150cfb1a38769fdb1776e2",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_120000.zip",
+   "bytes": 873552,
+   "sha256": "7b6fd54875f697d553f654ec6fcf00e9246aeaa34308dad2b6a08e9ef5ae1b7a",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_150000.zip",
+   "bytes": 873552,
+   "sha256": "b58882b7373feaec249c7cb902a7715ae04d840839150cfb1a38769fdb1776e2",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_180000.zip",
+   "bytes": 873552,
+   "sha256": "c4a657ca726d0cc797b959970dea04d8353a53db86740478b4be763874898f41",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_210000.zip",
+   "bytes": 873552,
+   "sha256": "f97128e23792d4554f7454a22a86ff560e66fbb5d64f32735f5dc0d10bec80a0",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_240000.zip",
+   "bytes": 873565,
+   "sha256": "9d23a77556be69e9c7f75916b4611162f068b7340c93e6b11192b36ebf260b17",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_270000.zip",
+   "bytes": 873565,
+   "sha256": "f1eab7ba114ce2e248c9c490a565c4192156b8f284af6aa262d52064fcebd3e3",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_30000.zip",
+   "bytes": 873550,
+   "sha256": "3aec992e2656c6a04b59145b3a3250406848f7ea87561acf77c31dc1c2f278be",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_300000.zip",
+   "bytes": 873567,
+   "sha256": "d09b1700b0a8d39cf5273934fe5740602aebde44acd951f5b1e018d6ebf88ffd",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_300240.zip",
+   "bytes": 873568,
+   "sha256": "f12bbad2368c1d4f50105969b1126e921c674bad7c29cbb1a014898d16b2a4c7",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_60000.zip",
+   "bytes": 873549,
+   "sha256": "1060fd5037a4ec2c9056bdac243b33e8e388d1b6f5c7101b19aa2f8cc7473934",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/checkpoints/step_90000.zip",
+   "bytes": 873550,
+   "sha256": "4beca21eee0d9c92ed6ddb64e60325034b965f63930c0d1205efa5127832e968",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run3/diag_validation_seeds.json",
+   "bytes": 155244,
+   "sha256": "217c0c85b284bc3c40ad4c5dc35068c7a891442b1ed6097e80b61bb1f9041a98",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run3/final.zip",
+   "bytes": 873568,
+   "sha256": "f12bbad2368c1d4f50105969b1126e921c674bad7c29cbb1a014898d16b2a4c7",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run3/progress.csv",
+   "bytes": 56962,
+   "sha256": "7adac6b8c935a756b66c2254e580dfe7a5cf9d24aae5ec92f67b6203ae2b3a52",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run3/training_run.json",
+   "bytes": 1147,
+   "sha256": "24b45407d6bfcd6ccb8d38519dbfe1ef4f70d79717a2297dcab38ce0cb0c4aee",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run3/validation.jsonl",
+   "bytes": 3260,
+   "sha256": "e5aa5d168fc3d9ea36abfa3000b115f90e00af86bc98f48263b216e4954ba53f",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run4/best_validation.zip",
+   "bytes": 549825,
+   "sha256": "c85343ec3fd9501c42a50da9844cd5c920c818638e3bd7606f3f90701026302c",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_1000008.zip",
+   "bytes": 549841,
+   "sha256": "baab1d8d8c64ac823d692da0a88aaeb65dcf63bf7a4552dfa840f100f1cbec4f",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_100008.zip",
+   "bytes": 549825,
+   "sha256": "c1378602dc9b867efc03ea4b3c3c60ba8ce235279201bab6c1adc7976540e107",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_1002240.zip",
+   "bytes": 549842,
+   "sha256": "d6150323fb2645d05f2971906c9e52cf99e91c16cae2d171774de2ff57aac4aa",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_200016.zip",
+   "bytes": 549825,
+   "sha256": "e01ff9434f8764009b245bfda11b99e2aac8a82678f51ac7ef842399530c0b1f",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_300000.zip",
+   "bytes": 549825,
+   "sha256": "ac6e260acfa24dc58d97b775e870eb5e43e5d31c430663f36f22e11a5ecd0056",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_400008.zip",
+   "bytes": 549825,
+   "sha256": "c85343ec3fd9501c42a50da9844cd5c920c818638e3bd7606f3f90701026302c",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_500016.zip",
+   "bytes": 549825,
+   "sha256": "67f15ab82eac97e5a9c845e745997cdac79b7e527c6e8bc065e60329ab77e529",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_600000.zip",
+   "bytes": 549826,
+   "sha256": "585bf01abd41f85dd24b401c6b1d12ca44b54e68361124d0a5be269245de5bf3",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_700008.zip",
+   "bytes": 549826,
+   "sha256": "3013c4eb4e59c85a517d1150b9fd3c51944ca3921b7c6c50682236e3f06e395b",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_800016.zip",
+   "bytes": 549838,
+   "sha256": "3fce4aed0dffaa70d0eee53e05156779e0d867a9201ca44ce26a36504cc128e4",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/checkpoints/step_900000.zip",
+   "bytes": 549838,
+   "sha256": "adcc7442d954ff855690d34e1ae7d08a1b03043131f5a3551ac98b8c48f5482b",
+   "in_git": false
+  },
+  {
+   "path": "artifacts/rl/run4/final.zip",
+   "bytes": 549842,
+   "sha256": "d6150323fb2645d05f2971906c9e52cf99e91c16cae2d171774de2ff57aac4aa",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run4/progress.csv",
+   "bytes": 48058,
+   "sha256": "d04d8450e3f4be59d03042f387888e8474f5b752746f02054776dcecc2de7a21",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run4/training_run.json",
+   "bytes": 1367,
+   "sha256": "42bcaad5878d48f4983b268bdf385af1c24636b30bb0a61713e45498ac3fb90c",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/run4/validation.jsonl",
+   "bytes": 3284,
+   "sha256": "302cc2bb2d8936d494f75bb987295c923ff0bbaa7d92c4011fd9be5046328c55",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/RUNS.md",
+   "bytes": 2857,
+   "sha256": "d3c77b9878956f4f39e388e3a1024711065b252dda957a5cb4468c3b81ea3101",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/selection_comparison_seeds2000-2003.json",
+   "bytes": 147693,
+   "sha256": "5ee7c2aa61cb56807b6de0b8eda3dae177c6113bb714f6006977d1b4f7f5f27b",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/validation_records/run3_best_validation.json",
+   "bytes": 1051,
+   "sha256": "36d0e40a7bf94db06f492d0abbbf94ea5db01dccb5987d8441a00a855928d4ff",
+   "in_git": true
+  },
+  {
+   "path": "artifacts/rl/validation_records/run4_best_validation.json",
+   "bytes": 1051,
+   "sha256": "547fc949ff86db742ef66c383019b81452750dce5692f0aea815d16c9720f41f",
+   "in_git": true
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "best_green_s": 30,
+ "table": {
+  "15": {
+   "mean_wait_s": 83.27978669726903,
+   "mean_travel_s": 185.93002117504508
+  },
+  "20": {
+   "mean_wait_s": 84.2882535811178,
+   "mean_travel_s": 183.07221399286618
+  },
+  "25": {
+   "mean_wait_s": 82.3386205277643,
+   "mean_travel_s": 179.52305737541624
+  },
+  "30": {
+   "mean_wait_s": 81.95351315816593,
+   "mean_travel_s": 177.07396965818688
+  },
+  "40": {
+   "mean_wait_s": 87.72365251732383,
+   "mean_travel_s": 182.7944046058627
+  },
+  "50": {
+   "mean_wait_s": 94.32366438761186,
+   "mean_travel_s": 188.72837768619715
+  }
+ },
+ "scenarios": [
+  "balanced",
+  "ns_heavy",
+  "ew_heavy",
+  "pulse"
+ ],
+ "seeds": "1000..1002",
+ "note": "training seeds only"
+}

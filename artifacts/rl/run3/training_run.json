@@ -1,0 +1,64 @@
+{
+ "config": {
+  "seed": 3,
+  "total_steps": 300000,
+  "n_envs": 6,
+  "n_steps": 180,
+  "batch_size": 270,
+  "n_epochs": 10,
+  "learning_rate": 0.0003,
+  "final_lr_fraction": 0.15,
+  "gamma": 0.97,
+  "gae_lambda": 0.95,
+  "ent_coef": 0.005,
+  "clip_range": 0.2,
+  "net_arch": [
+   128,
+   128
+  ],
+  "validate_every": 30000,
+  "validation_scenarios": [
+   "balanced",
+   "ns_heavy",
+   "ew_heavy",
+   "pulse"
+  ],
+  "validation_seeds": [
+   2000,
+   2001
+  ],
+  "intensity_range": [
+   0.7,
+   1.2
+  ],
+  "shared_policy": true,
+  "norm_reward": true,
+  "out_dir": "artifacts/rl/run3"
+ },
+ "hardware": {
+  "cpu": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "logical_cores": 8,
+  "python": "3.12.3",
+  "torch": "2.14.1+cpu",
+  "cuda": false
+ },
+ "stable_baselines3": "2.9.0",
+ "train_wall_seconds": 2270,
+ "timesteps": 300240,
+ "best_validation": {
+  "wait": 77.43461873538152,
+  "step": 150000
+ },
+ "seed_pools": {
+  "train": [
+   1000,
+   1999
+  ],
+  "validation": [
+   2000,
+   2001
+  ],
+  "test": "3000+ (not used here)"
+ }
+}

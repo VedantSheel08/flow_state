@@ -1,0 +1,30 @@
+{
+ "best": {
+  "margin": 6.0,
+  "hold_s": 20.0,
+  "weight": 0.25
+ },
+ "best_mean_wait_s": 69.06641672274748,
+ "table": {
+  "margin=1,hold=14": 83.96057865413444,
+  "margin=1,hold=20": 76.19098942937954,
+  "margin=1,hold=28": 75.13901835820612,
+  "margin=3,hold=14": 79.90743050470856,
+  "margin=3,hold=20": 72.1365321016191,
+  "margin=3,hold=28": 73.11104157177586,
+  "margin=6,hold=14": 79.08364208431574,
+  "margin=6,hold=20": 69.06641672274748,
+  "margin=6,hold=28": 77.61483966812355,
+  "margin=10,hold=14": 78.31166399238712,
+  "margin=10,hold=20": 70.82987484392144,
+  "margin=10,hold=28": 70.26220012772656
+ },
+ "scenarios": [
+  "balanced",
+  "ns_heavy",
+  "ew_heavy",
+  "pulse"
+ ],
+ "seeds": "1000..1002",
+ "note": "training seeds only"
+}

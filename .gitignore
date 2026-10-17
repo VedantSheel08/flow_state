@@ -37,3 +37,7 @@ service-account*.json
 
 # Reproducible netconvert scratch output; keep final networks and sidecars.
 data/networks/_*/
+
+# RL experiments: intermediate checkpoints and raw trainer stdout stay out of git (listed with SHA-256 in artifacts/rl/MANIFEST.json)
+artifacts/rl/run*/checkpoints/
+artifacts/rl/run*/train_stdout.log

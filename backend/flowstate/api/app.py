@@ -40,6 +40,13 @@ app = FastAPI(title="FlowState API", version="2.0", lifespan=lifespan)
 app.add_middleware(GZipMiddleware, minimum_size=2048)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
+try:  # optional, purely additive: controller comparison API (docs/RL_INTEGRATION_CONTRACT.md)
+    from ..rl.api import router as rl_router
+
+    app.include_router(rl_router)
+except ImportError:  # pragma: no cover - the router needs only fastapi/pydantic; kept optional so FlowState always starts
+    logging.getLogger(__name__).info("RL controller API not mounted")
+
 
 class RunRequest(BaseModel):
     scenario: str

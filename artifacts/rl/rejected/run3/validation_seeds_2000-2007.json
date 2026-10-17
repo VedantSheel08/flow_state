@@ -1,0 +1,45 @@
+{
+ "passed": false,
+ "reason": "mean wait 72.9 s is worse than the better baseline (66.3 s); more teleports or collisions than the better baseline",
+ "validation_seeds": [
+  2000,
+  2001,
+  2002,
+  2003,
+  2004,
+  2005,
+  2006,
+  2007
+ ],
+ "scenarios": [
+  "balanced",
+  "ns_heavy",
+  "ew_heavy",
+  "pulse"
+ ],
+ "intensity": 1.0,
+ "results": {
+  "fixed_time": {
+   "mean_wait_s": 75.76055665825862,
+   "mean_travel_s": 171.03998084333864,
+   "teleports": 3,
+   "collisions": 0,
+   "episodes": 32
+  },
+  "queue_heuristic": {
+   "mean_wait_s": 66.2876118592223,
+   "mean_travel_s": 158.8250196244086,
+   "teleports": 0,
+   "collisions": 0,
+   "episodes": 32
+  },
+  "rl_ppo": {
+   "mean_wait_s": 72.88011766169095,
+   "mean_travel_s": 168.67494122241123,
+   "teleports": 7,
+   "collisions": 0,
+   "episodes": 32
+  }
+ },
+ "checkpoint_source": "artifacts\\rl\\run3\\best_validation.zip"
+}

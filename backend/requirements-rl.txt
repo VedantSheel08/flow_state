@@ -1,0 +1,7 @@
+# Extra packages for the reinforcement-learning tooling (flowstate.rl). The API router itself needs none of these;
+# the experiments (training, evaluation, comparisons) do.
+numpy>=1.26
+scipy>=1.11
+gymnasium>=1.0
+stable-baselines3>=2.3
+torch>=2.2  # CPU build is enough: pip install torch --index-url https://download.pytorch.org/whl/cpu

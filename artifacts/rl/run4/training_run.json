@@ -1,0 +1,84 @@
+{
+ "config": {
+  "seed": 4,
+  "total_steps": 1000000,
+  "n_envs": 6,
+  "n_steps": 180,
+  "batch_size": 540,
+  "n_epochs": 10,
+  "learning_rate": 0.0003,
+  "final_lr_fraction": 0.15,
+  "gamma": 0.97,
+  "gae_lambda": 0.95,
+  "ent_coef": 0.005,
+  "clip_range": 0.2,
+  "net_arch": [
+   128,
+   128
+  ],
+  "validate_every": 100000,
+  "validation_scenarios": [
+   "balanced",
+   "ns_heavy",
+   "ew_heavy",
+   "pulse"
+  ],
+  "validation_seeds": [
+   2000,
+   2001,
+   2002,
+   2003
+  ],
+  "intensity_range": [
+   0.7,
+   1.2
+  ],
+  "agent_mode": true,
+  "blend": 0.5,
+  "shared_policy": false,
+  "norm_reward": true,
+  "out_dir": "artifacts/rl/run4"
+ },
+ "hardware": {
+  "cpu": "Intel64 Family 6 Model 142 Stepping 10, GenuineIntel",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "logical_cores": 8,
+  "python": "3.12.3",
+  "torch": "2.14.1+cpu",
+  "cuda": false
+ },
+ "stable_baselines3": "2.9.0",
+ "train_wall_seconds": 2726,
+ "timesteps": 1002240,
+ "best_validation": {
+  "wait": 84.4944537944802,
+  "step": 400008
+ },
+ "seed_pools": {
+  "train": [
+   1000,
+   1999
+  ],
+  "selection": [
+   2000,
+   2001,
+   2002,
+   2003
+  ],
+  "gate": [
+   2004,
+   2005,
+   2006,
+   2007,
+   2008,
+   2009,
+   2010,
+   2011,
+   2012,
+   2013,
+   2014,
+   2015
+  ],
+  "test": "3000+ (not used here)"
+ }
+}

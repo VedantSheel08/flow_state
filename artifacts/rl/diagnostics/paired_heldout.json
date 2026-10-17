@@ -1,0 +1,1302 @@
+{
+ "standard": {
+  "queue_heuristic - fixed_time | all | mean_wait_s": {
+   "mean_diff": -4.89,
+   "ci95": [
+    -9.29,
+    0.0
+   ],
+   "wilcoxon_p": 0.0031,
+   "n": 50
+  },
+  "queue_heuristic - fixed_time | all | mean_travel_s": {
+   "mean_diff": -6.82,
+   "ci95": [
+    -11.57,
+    -1.97
+   ],
+   "wilcoxon_p": 0.0013,
+   "n": 50
+  },
+  "queue_heuristic - fixed_time | all | throughput_vph": {
+   "mean_diff": 14.4,
+   "ci95": [
+    -12.08,
+    38.96
+   ],
+   "wilcoxon_p": 0.0607,
+   "n": 50
+  },
+  "queue_heuristic - fixed_time | all | teleports": {
+   "mean_diff": 0.24,
+   "ci95": [
+    -0.12,
+    0.8
+   ],
+   "wilcoxon_p": 0.5311,
+   "n": 50
+  },
+  "queue_heuristic - fixed_time | balanced | mean_wait_s": {
+   "mean_diff": 2.4,
+   "ci95": [
+    -4.46,
+    8.91
+   ],
+   "wilcoxon_p": 0.6953,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | balanced | mean_travel_s": {
+   "mean_diff": 3.39,
+   "ci95": [
+    -3.61,
+    11.08
+   ],
+   "wilcoxon_p": 0.5566,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | balanced | throughput_vph": {
+   "mean_diff": -46.0,
+   "ci95": [
+    -89.2,
+    -7.2
+   ],
+   "wilcoxon_p": 0.084,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | balanced | teleports": {
+   "mean_diff": -0.2,
+   "ci95": [
+    -0.6,
+    0.0
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ew_heavy | mean_wait_s": {
+   "mean_diff": -23.0,
+   "ci95": [
+    -30.2,
+    -16.67
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ew_heavy | mean_travel_s": {
+   "mean_diff": -25.59,
+   "ci95": [
+    -32.33,
+    -19.97
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ew_heavy | throughput_vph": {
+   "mean_diff": 66.0,
+   "ci95": [
+    33.6,
+    100.8
+   ],
+   "wilcoxon_p": 0.0059,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ew_heavy | teleports": {
+   "mean_diff": -0.1,
+   "ci95": [
+    -0.3,
+    0.0
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ns_heavy | mean_wait_s": {
+   "mean_diff": -9.26,
+   "ci95": [
+    -12.06,
+    -6.48
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ns_heavy | mean_travel_s": {
+   "mean_diff": -13.62,
+   "ci95": [
+    -17.38,
+    -9.76
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ns_heavy | throughput_vph": {
+   "mean_diff": 79.2,
+   "ci95": [
+    64.0,
+    98.81
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ns_heavy | teleports": {
+   "mean_diff": 0.0,
+   "ci95": [
+    -0.3,
+    0.3
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | pulse | mean_wait_s": {
+   "mean_diff": -5.9,
+   "ci95": [
+    -10.32,
+    -1.8
+   ],
+   "wilcoxon_p": 0.0371,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | pulse | mean_travel_s": {
+   "mean_diff": -7.72,
+   "ci95": [
+    -12.48,
+    -2.96
+   ],
+   "wilcoxon_p": 0.0098,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | pulse | throughput_vph": {
+   "mean_diff": 35.6,
+   "ci95": [
+    10.4,
+    62.4
+   ],
+   "wilcoxon_p": 0.0312,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | pulse | teleports": {
+   "mean_diff": -0.1,
+   "ci95": [
+    -0.3,
+    0.0
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | rush_ramp | mean_wait_s": {
+   "mean_diff": 11.33,
+   "ci95": [
+    0.83,
+    26.1
+   ],
+   "wilcoxon_p": 0.084,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | rush_ramp | mean_travel_s": {
+   "mean_diff": 9.42,
+   "ci95": [
+    -1.67,
+    24.74
+   ],
+   "wilcoxon_p": 0.1934,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | rush_ramp | throughput_vph": {
+   "mean_diff": -62.8,
+   "ci95": [
+    -138.8,
+    7.6
+   ],
+   "wilcoxon_p": 0.1289,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | rush_ramp | teleports": {
+   "mean_diff": 1.6,
+   "ci95": [
+    0.0,
+    3.9
+   ],
+   "wilcoxon_p": 0.1875,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | all | mean_wait_s": {
+   "mean_diff": 3.69,
+   "ci95": [
+    0.29,
+    6.72
+   ],
+   "wilcoxon_p": 0.0008,
+   "n": 50
+  },
+  "rl_ppo - queue_heuristic | all | mean_travel_s": {
+   "mean_diff": 6.72,
+   "ci95": [
+    3.06,
+    10.01
+   ],
+   "wilcoxon_p": 0.0001,
+   "n": 50
+  },
+  "rl_ppo - queue_heuristic | all | throughput_vph": {
+   "mean_diff": -19.6,
+   "ci95": [
+    -39.76,
+    0.96
+   ],
+   "wilcoxon_p": 0.0368,
+   "n": 50
+  },
+  "rl_ppo - queue_heuristic | all | teleports": {
+   "mean_diff": -0.2,
+   "ci95": [
+    -0.64,
+    0.08
+   ],
+   "wilcoxon_p": 0.3951,
+   "n": 50
+  },
+  "rl_ppo - queue_heuristic | balanced | mean_wait_s": {
+   "mean_diff": 0.25,
+   "ci95": [
+    -5.45,
+    5.55
+   ],
+   "wilcoxon_p": 0.7695,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | balanced | mean_travel_s": {
+   "mean_diff": 1.43,
+   "ci95": [
+    -5.52,
+    8.07
+   ],
+   "wilcoxon_p": 0.7695,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | balanced | throughput_vph": {
+   "mean_diff": 18.8,
+   "ci95": [
+    -30.8,
+    65.6
+   ],
+   "wilcoxon_p": 0.3691,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | balanced | teleports": {
+   "mean_diff": 0.2,
+   "ci95": [
+    0.0,
+    0.6
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ew_heavy | mean_wait_s": {
+   "mean_diff": 13.12,
+   "ci95": [
+    8.88,
+    17.53
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ew_heavy | mean_travel_s": {
+   "mean_diff": 16.99,
+   "ci95": [
+    11.99,
+    21.85
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ew_heavy | throughput_vph": {
+   "mean_diff": -61.2,
+   "ci95": [
+    -88.8,
+    -34.0
+   ],
+   "wilcoxon_p": 0.0039,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ew_heavy | teleports": {
+   "mean_diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "wilcoxon_p": null,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ns_heavy | mean_wait_s": {
+   "mean_diff": 8.31,
+   "ci95": [
+    4.98,
+    11.92
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ns_heavy | mean_travel_s": {
+   "mean_diff": 11.75,
+   "ci95": [
+    7.27,
+    16.84
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ns_heavy | throughput_vph": {
+   "mean_diff": -52.0,
+   "ci95": [
+    -81.6,
+    -24.8
+   ],
+   "wilcoxon_p": 0.0117,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ns_heavy | teleports": {
+   "mean_diff": 0.1,
+   "ci95": [
+    0.0,
+    0.3
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | pulse | mean_wait_s": {
+   "mean_diff": 2.23,
+   "ci95": [
+    -0.36,
+    4.82
+   ],
+   "wilcoxon_p": 0.1934,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | pulse | mean_travel_s": {
+   "mean_diff": 4.99,
+   "ci95": [
+    1.0,
+    8.75
+   ],
+   "wilcoxon_p": 0.0488,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | pulse | throughput_vph": {
+   "mean_diff": -24.4,
+   "ci95": [
+    -52.8,
+    7.6
+   ],
+   "wilcoxon_p": 0.1836,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | pulse | teleports": {
+   "mean_diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "wilcoxon_p": null,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | rush_ramp | mean_wait_s": {
+   "mean_diff": -5.44,
+   "ci95": [
+    -17.34,
+    3.43
+   ],
+   "wilcoxon_p": 0.5566,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | rush_ramp | mean_travel_s": {
+   "mean_diff": -1.53,
+   "ci95": [
+    -13.1,
+    7.91
+   ],
+   "wilcoxon_p": 0.8457,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | rush_ramp | throughput_vph": {
+   "mean_diff": 20.8,
+   "ci95": [
+    -32.81,
+    75.6
+   ],
+   "wilcoxon_p": 0.5566,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | rush_ramp | teleports": {
+   "mean_diff": -1.3,
+   "ci95": [
+    -3.1,
+    -0.1
+   ],
+   "wilcoxon_p": 0.125,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | all | mean_wait_s": {
+   "mean_diff": -1.19,
+   "ci95": [
+    -3.66,
+    1.33
+   ],
+   "wilcoxon_p": 0.2115,
+   "n": 50
+  },
+  "rl_ppo - fixed_time | all | mean_travel_s": {
+   "mean_diff": -0.1,
+   "ci95": [
+    -2.94,
+    2.73
+   ],
+   "wilcoxon_p": 0.6322,
+   "n": 50
+  },
+  "rl_ppo - fixed_time | all | throughput_vph": {
+   "mean_diff": -5.2,
+   "ci95": [
+    -21.6,
+    10.56
+   ],
+   "wilcoxon_p": 0.9089,
+   "n": 50
+  },
+  "rl_ppo - fixed_time | all | teleports": {
+   "mean_diff": 0.04,
+   "ci95": [
+    -0.12,
+    0.2
+   ],
+   "wilcoxon_p": 0.6234,
+   "n": 50
+  },
+  "rl_ppo - fixed_time | balanced | mean_wait_s": {
+   "mean_diff": 2.64,
+   "ci95": [
+    -1.56,
+    6.99
+   ],
+   "wilcoxon_p": 0.4316,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | balanced | mean_travel_s": {
+   "mean_diff": 4.82,
+   "ci95": [
+    -0.63,
+    9.94
+   ],
+   "wilcoxon_p": 0.3223,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | balanced | throughput_vph": {
+   "mean_diff": -27.2,
+   "ci95": [
+    -61.6,
+    4.0
+   ],
+   "wilcoxon_p": 0.1992,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | balanced | teleports": {
+   "mean_diff": 0.0,
+   "ci95": [
+    -0.6,
+    0.6
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ew_heavy | mean_wait_s": {
+   "mean_diff": -9.88,
+   "ci95": [
+    -14.46,
+    -5.42
+   ],
+   "wilcoxon_p": 0.0039,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ew_heavy | mean_travel_s": {
+   "mean_diff": -8.6,
+   "ci95": [
+    -13.36,
+    -3.85
+   ],
+   "wilcoxon_p": 0.0195,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ew_heavy | throughput_vph": {
+   "mean_diff": 4.8,
+   "ci95": [
+    -18.8,
+    30.0
+   ],
+   "wilcoxon_p": 0.9766,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ew_heavy | teleports": {
+   "mean_diff": -0.1,
+   "ci95": [
+    -0.3,
+    0.0
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ns_heavy | mean_wait_s": {
+   "mean_diff": -0.95,
+   "ci95": [
+    -4.98,
+    3.38
+   ],
+   "wilcoxon_p": 0.5566,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ns_heavy | mean_travel_s": {
+   "mean_diff": -1.88,
+   "ci95": [
+    -6.59,
+    3.09
+   ],
+   "wilcoxon_p": 0.4922,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ns_heavy | throughput_vph": {
+   "mean_diff": 27.2,
+   "ci95": [
+    -2.0,
+    52.01
+   ],
+   "wilcoxon_p": 0.0664,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ns_heavy | teleports": {
+   "mean_diff": 0.1,
+   "ci95": [
+    0.0,
+    0.3
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | pulse | mean_wait_s": {
+   "mean_diff": -3.66,
+   "ci95": [
+    -7.57,
+    -0.5
+   ],
+   "wilcoxon_p": 0.0488,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | pulse | mean_travel_s": {
+   "mean_diff": -2.73,
+   "ci95": [
+    -6.36,
+    0.94
+   ],
+   "wilcoxon_p": 0.1934,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | pulse | throughput_vph": {
+   "mean_diff": 11.2,
+   "ci95": [
+    -14.4,
+    34.8
+   ],
+   "wilcoxon_p": 0.2832,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | pulse | teleports": {
+   "mean_diff": -0.1,
+   "ci95": [
+    -0.3,
+    0.0
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | rush_ramp | mean_wait_s": {
+   "mean_diff": 5.89,
+   "ci95": [
+    0.22,
+    11.96
+   ],
+   "wilcoxon_p": 0.1934,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | rush_ramp | mean_travel_s": {
+   "mean_diff": 7.88,
+   "ci95": [
+    1.3,
+    14.78
+   ],
+   "wilcoxon_p": 0.1309,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | rush_ramp | throughput_vph": {
+   "mean_diff": -42.0,
+   "ci95": [
+    -91.2,
+    5.6
+   ],
+   "wilcoxon_p": 0.1973,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | rush_ramp | teleports": {
+   "mean_diff": 0.3,
+   "ci95": [
+    -0.1,
+    0.8
+   ],
+   "wilcoxon_p": 0.5,
+   "n": 10
+  }
+ },
+ "stress": {
+  "queue_heuristic - fixed_time | all | mean_wait_s": {
+   "mean_diff": -5.38,
+   "ci95": [
+    -10.63,
+    -0.12
+   ],
+   "wilcoxon_p": 0.0201,
+   "n": 50
+  },
+  "queue_heuristic - fixed_time | all | mean_travel_s": {
+   "mean_diff": -6.31,
+   "ci95": [
+    -12.08,
+    -0.69
+   ],
+   "wilcoxon_p": 0.029,
+   "n": 50
+  },
+  "queue_heuristic - fixed_time | all | throughput_vph": {
+   "mean_diff": -10.0,
+   "ci95": [
+    -41.84,
+    21.36
+   ],
+   "wilcoxon_p": 0.6851,
+   "n": 50
+  },
+  "queue_heuristic - fixed_time | all | teleports": {
+   "mean_diff": 1.56,
+   "ci95": [
+    0.54,
+    2.96
+   ],
+   "wilcoxon_p": 0.0008,
+   "n": 50
+  },
+  "queue_heuristic - fixed_time | balanced | mean_wait_s": {
+   "mean_diff": -0.95,
+   "ci95": [
+    -6.48,
+    5.45
+   ],
+   "wilcoxon_p": 0.5566,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | balanced | mean_travel_s": {
+   "mean_diff": -0.62,
+   "ci95": [
+    -9.14,
+    8.51
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | balanced | throughput_vph": {
+   "mean_diff": -44.8,
+   "ci95": [
+    -105.2,
+    5.6
+   ],
+   "wilcoxon_p": 0.2754,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | balanced | teleports": {
+   "mean_diff": 3.3,
+   "ci95": [
+    0.0,
+    9.4
+   ],
+   "wilcoxon_p": 0.25,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ew_heavy | mean_wait_s": {
+   "mean_diff": -11.39,
+   "ci95": [
+    -18.76,
+    -4.45
+   ],
+   "wilcoxon_p": 0.0195,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ew_heavy | mean_travel_s": {
+   "mean_diff": -9.77,
+   "ci95": [
+    -19.13,
+    -0.24
+   ],
+   "wilcoxon_p": 0.1055,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ew_heavy | throughput_vph": {
+   "mean_diff": -41.2,
+   "ci95": [
+    -90.4,
+    8.8
+   ],
+   "wilcoxon_p": 0.1855,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ew_heavy | teleports": {
+   "mean_diff": 0.1,
+   "ci95": [
+    -0.3,
+    0.5
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ns_heavy | mean_wait_s": {
+   "mean_diff": -19.57,
+   "ci95": [
+    -27.84,
+    -11.57
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ns_heavy | mean_travel_s": {
+   "mean_diff": -23.7,
+   "ci95": [
+    -32.84,
+    -14.53
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ns_heavy | throughput_vph": {
+   "mean_diff": 92.8,
+   "ci95": [
+    43.2,
+    145.2
+   ],
+   "wilcoxon_p": 0.0098,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | ns_heavy | teleports": {
+   "mean_diff": 0.5,
+   "ci95": [
+    0.0,
+    1.2
+   ],
+   "wilcoxon_p": 0.5,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | pulse | mean_wait_s": {
+   "mean_diff": -5.97,
+   "ci95": [
+    -14.8,
+    3.04
+   ],
+   "wilcoxon_p": 0.1602,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | pulse | mean_travel_s": {
+   "mean_diff": -7.64,
+   "ci95": [
+    -17.65,
+    3.16
+   ],
+   "wilcoxon_p": 0.1602,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | pulse | throughput_vph": {
+   "mean_diff": 22.0,
+   "ci95": [
+    -46.8,
+    77.21
+   ],
+   "wilcoxon_p": 0.2031,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | pulse | teleports": {
+   "mean_diff": 1.3,
+   "ci95": [
+    0.3,
+    2.4
+   ],
+   "wilcoxon_p": 0.0625,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | rush_ramp | mean_wait_s": {
+   "mean_diff": 11.0,
+   "ci95": [
+    -5.37,
+    25.85
+   ],
+   "wilcoxon_p": 0.1934,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | rush_ramp | mean_travel_s": {
+   "mean_diff": 10.16,
+   "ci95": [
+    -6.06,
+    24.92
+   ],
+   "wilcoxon_p": 0.2324,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | rush_ramp | throughput_vph": {
+   "mean_diff": -78.8,
+   "ci95": [
+    -151.61,
+    4.01
+   ],
+   "wilcoxon_p": 0.1309,
+   "n": 10
+  },
+  "queue_heuristic - fixed_time | rush_ramp | teleports": {
+   "mean_diff": 2.6,
+   "ci95": [
+    0.3,
+    5.0
+   ],
+   "wilcoxon_p": 0.0938,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | all | mean_wait_s": {
+   "mean_diff": 6.81,
+   "ci95": [
+    -0.11,
+    13.18
+   ],
+   "wilcoxon_p": 0.0037,
+   "n": 50
+  },
+  "rl_ppo - queue_heuristic | all | mean_travel_s": {
+   "mean_diff": 9.27,
+   "ci95": [
+    1.14,
+    16.26
+   ],
+   "wilcoxon_p": 0.0007,
+   "n": 50
+  },
+  "rl_ppo - queue_heuristic | all | throughput_vph": {
+   "mean_diff": -30.24,
+   "ci95": [
+    -60.0,
+    -0.8
+   ],
+   "wilcoxon_p": 0.0098,
+   "n": 50
+  },
+  "rl_ppo - queue_heuristic | all | teleports": {
+   "mean_diff": -0.36,
+   "ci95": [
+    -1.94,
+    1.08
+   ],
+   "wilcoxon_p": 0.415,
+   "n": 50
+  },
+  "rl_ppo - queue_heuristic | balanced | mean_wait_s": {
+   "mean_diff": 4.71,
+   "ci95": [
+    -18.48,
+    21.89
+   ],
+   "wilcoxon_p": 0.1602,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | balanced | mean_travel_s": {
+   "mean_diff": 5.71,
+   "ci95": [
+    -23.77,
+    26.75
+   ],
+   "wilcoxon_p": 0.1934,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | balanced | throughput_vph": {
+   "mean_diff": -30.8,
+   "ci95": [
+    -66.8,
+    9.2
+   ],
+   "wilcoxon_p": 0.1953,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | balanced | teleports": {
+   "mean_diff": -0.3,
+   "ci95": [
+    -8.5,
+    6.9
+   ],
+   "wilcoxon_p": 0.5625,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ew_heavy | mean_wait_s": {
+   "mean_diff": 12.52,
+   "ci95": [
+    7.96,
+    16.47
+   ],
+   "wilcoxon_p": 0.0039,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ew_heavy | mean_travel_s": {
+   "mean_diff": 15.84,
+   "ci95": [
+    10.5,
+    21.04
+   ],
+   "wilcoxon_p": 0.002,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ew_heavy | throughput_vph": {
+   "mean_diff": -42.4,
+   "ci95": [
+    -80.01,
+    -3.99
+   ],
+   "wilcoxon_p": 0.0918,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ew_heavy | teleports": {
+   "mean_diff": -0.2,
+   "ci95": [
+    -0.5,
+    0.0
+   ],
+   "wilcoxon_p": 0.5,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ns_heavy | mean_wait_s": {
+   "mean_diff": 10.02,
+   "ci95": [
+    -3.05,
+    23.84
+   ],
+   "wilcoxon_p": 0.2324,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ns_heavy | mean_travel_s": {
+   "mean_diff": 11.61,
+   "ci95": [
+    -1.84,
+    24.73
+   ],
+   "wilcoxon_p": 0.1309,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ns_heavy | throughput_vph": {
+   "mean_diff": -39.6,
+   "ci95": [
+    -95.61,
+    18.01
+   ],
+   "wilcoxon_p": 0.2422,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | ns_heavy | teleports": {
+   "mean_diff": 0.2,
+   "ci95": [
+    -0.7,
+    1.0
+   ],
+   "wilcoxon_p": 0.75,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | pulse | mean_wait_s": {
+   "mean_diff": 3.4,
+   "ci95": [
+    -9.39,
+    17.32
+   ],
+   "wilcoxon_p": 0.8457,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | pulse | mean_travel_s": {
+   "mean_diff": 8.23,
+   "ci95": [
+    -7.34,
+    25.31
+   ],
+   "wilcoxon_p": 0.375,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | pulse | throughput_vph": {
+   "mean_diff": -28.4,
+   "ci95": [
+    -107.21,
+    54.41
+   ],
+   "wilcoxon_p": 0.5078,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | pulse | teleports": {
+   "mean_diff": -1.0,
+   "ci95": [
+    -2.1,
+    0.2
+   ],
+   "wilcoxon_p": 0.25,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | rush_ramp | mean_wait_s": {
+   "mean_diff": 3.39,
+   "ci95": [
+    -13.6,
+    18.07
+   ],
+   "wilcoxon_p": 0.4316,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | rush_ramp | mean_travel_s": {
+   "mean_diff": 4.96,
+   "ci95": [
+    -12.56,
+    19.6
+   ],
+   "wilcoxon_p": 0.2754,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | rush_ramp | throughput_vph": {
+   "mean_diff": -10.0,
+   "ci95": [
+    -89.21,
+    90.0
+   ],
+   "wilcoxon_p": 0.3594,
+   "n": 10
+  },
+  "rl_ppo - queue_heuristic | rush_ramp | teleports": {
+   "mean_diff": -0.5,
+   "ci95": [
+    -2.0,
+    1.0
+   ],
+   "wilcoxon_p": 0.5742,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | all | mean_wait_s": {
+   "mean_diff": 1.43,
+   "ci95": [
+    -5.11,
+    7.37
+   ],
+   "wilcoxon_p": 0.3829,
+   "n": 50
+  },
+  "rl_ppo - fixed_time | all | mean_travel_s": {
+   "mean_diff": 2.96,
+   "ci95": [
+    -4.71,
+    9.73
+   ],
+   "wilcoxon_p": 0.146,
+   "n": 50
+  },
+  "rl_ppo - fixed_time | all | throughput_vph": {
+   "mean_diff": -40.24,
+   "ci95": [
+    -68.8,
+    -12.24
+   ],
+   "wilcoxon_p": 0.0089,
+   "n": 50
+  },
+  "rl_ppo - fixed_time | all | teleports": {
+   "mean_diff": 1.2,
+   "ci95": [
+    0.46,
+    2.24
+   ],
+   "wilcoxon_p": 0.0003,
+   "n": 50
+  },
+  "rl_ppo - fixed_time | balanced | mean_wait_s": {
+   "mean_diff": 3.76,
+   "ci95": [
+    -21.36,
+    21.37
+   ],
+   "wilcoxon_p": 0.1602,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | balanced | mean_travel_s": {
+   "mean_diff": 5.09,
+   "ci95": [
+    -24.89,
+    25.92
+   ],
+   "wilcoxon_p": 0.1602,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | balanced | throughput_vph": {
+   "mean_diff": -75.6,
+   "ci95": [
+    -116.0,
+    -31.6
+   ],
+   "wilcoxon_p": 0.0156,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | balanced | teleports": {
+   "mean_diff": 3.0,
+   "ci95": [
+    0.4,
+    7.4
+   ],
+   "wilcoxon_p": 0.0625,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ew_heavy | mean_wait_s": {
+   "mean_diff": 1.13,
+   "ci95": [
+    -7.91,
+    9.63
+   ],
+   "wilcoxon_p": 0.9219,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ew_heavy | mean_travel_s": {
+   "mean_diff": 6.07,
+   "ci95": [
+    -4.41,
+    15.44
+   ],
+   "wilcoxon_p": 0.2754,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ew_heavy | throughput_vph": {
+   "mean_diff": -83.6,
+   "ci95": [
+    -130.4,
+    -32.0
+   ],
+   "wilcoxon_p": 0.0195,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ew_heavy | teleports": {
+   "mean_diff": -0.1,
+   "ci95": [
+    -0.4,
+    0.2
+   ],
+   "wilcoxon_p": 1.0,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ns_heavy | mean_wait_s": {
+   "mean_diff": -9.55,
+   "ci95": [
+    -16.98,
+    -1.14
+   ],
+   "wilcoxon_p": 0.084,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ns_heavy | mean_travel_s": {
+   "mean_diff": -12.08,
+   "ci95": [
+    -20.5,
+    -2.69
+   ],
+   "wilcoxon_p": 0.0371,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ns_heavy | throughput_vph": {
+   "mean_diff": 53.2,
+   "ci95": [
+    18.8,
+    82.8
+   ],
+   "wilcoxon_p": 0.0352,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | ns_heavy | teleports": {
+   "mean_diff": 0.7,
+   "ci95": [
+    0.0,
+    1.8
+   ],
+   "wilcoxon_p": 0.25,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | pulse | mean_wait_s": {
+   "mean_diff": -2.57,
+   "ci95": [
+    -12.15,
+    7.12
+   ],
+   "wilcoxon_p": 0.625,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | pulse | mean_travel_s": {
+   "mean_diff": 0.59,
+   "ci95": [
+    -10.16,
+    10.93
+   ],
+   "wilcoxon_p": 0.9219,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | pulse | throughput_vph": {
+   "mean_diff": -6.4,
+   "ci95": [
+    -55.2,
+    44.4
+   ],
+   "wilcoxon_p": 0.9434,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | pulse | teleports": {
+   "mean_diff": 0.3,
+   "ci95": [
+    -0.2,
+    0.9
+   ],
+   "wilcoxon_p": 0.5,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | rush_ramp | mean_wait_s": {
+   "mean_diff": 14.39,
+   "ci95": [
+    2.11,
+    25.09
+   ],
+   "wilcoxon_p": 0.0488,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | rush_ramp | mean_travel_s": {
+   "mean_diff": 15.12,
+   "ci95": [
+    2.71,
+    25.81
+   ],
+   "wilcoxon_p": 0.1309,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | rush_ramp | throughput_vph": {
+   "mean_diff": -88.8,
+   "ci95": [
+    -159.2,
+    -5.2
+   ],
+   "wilcoxon_p": 0.0977,
+   "n": 10
+  },
+  "rl_ppo - fixed_time | rush_ramp | teleports": {
+   "mean_diff": 2.1,
+   "ci95": [
+    0.9,
+    3.8
+   ],
+   "wilcoxon_p": 0.0078,
+   "n": 10
+  }
+ }
+}
