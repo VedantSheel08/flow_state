@@ -6,6 +6,7 @@ import { useStore } from '../lib/store'
 import type { JunctionDetail, Kpi, SimEvent, Tracked, VehicleDetail } from '../lib/types'
 import { mapApi } from '../map/MapView'
 import { Sparkline } from './Sparkline'
+import { SlidingNumber } from './ui/traffic'
 import { Badge, Button, Empty, Section, Slider, Tip } from './ui'
 
 const TABS = [
@@ -89,7 +90,7 @@ function Metric({ label, value, unit, series, color, hint }: { label: string; va
       <div className="min-w-0">
         <div className="truncate text-[11.5px] text-ink-3">{label}</div>
         <div className="tnum text-[17px] font-semibold leading-tight tracking-[-0.01em] text-ink">
-          {value}
+          <SlidingNumber value={value} />
           {unit && <span className="ml-1 text-[11.5px] font-normal text-ink-3">{unit}</span>}
         </div>
       </div>

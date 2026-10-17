@@ -49,22 +49,22 @@ export function ScenarioBanner({ scene }: { scene: Scene }) {
   const WIcon = cond ? WEATHER_ICON[cond] : undefined
   if (!cur && !WIcon && !target) return null
   return (
-    <div className="pointer-events-none absolute bottom-[78px] left-1/2 z-10 flex max-w-[calc(100%-24px)] -translate-x-1/2 justify-center" data-testid="scenario-banner">
-      <div className="glass pointer-events-auto flex h-9 min-w-0 items-center gap-2.5 rounded-xl pl-3 pr-1.5 text-[12px]">
+    <div className="pointer-events-none absolute left-1/2 top-[62px] z-10 flex max-w-[min(560px,calc(100%-24px))] -translate-x-1/2 justify-center" data-testid="scenario-banner">
+      <div className="vms pointer-events-auto flex h-10 min-w-0 items-center gap-3 pl-3.5 pr-1.5 text-[12px]">
         {WIcon && cond && (
           <Tip side="top" label={weather?.detail ?? 'Drivers slow down and keep longer gaps'}>
-            <span className="flex shrink-0 items-center gap-1.5 font-semibold text-[#0369A1]">
+            <span className="flex shrink-0 items-center gap-1.5 font-semibold text-[#8cc8ff]">
               <WIcon size={15} strokeWidth={2} />
               {WEATHER_LABEL[cond] ?? cond}
             </span>
           </Tip>
         )}
-        {WIcon && cur && <span className="h-4 w-px shrink-0 bg-black/[0.1]" />}
+        {WIcon && cur && <span className="h-4 w-px shrink-0 bg-white/[0.12]" />}
         {cur && (
           <span className="flex min-w-0 items-center gap-1.5">
             <span className={cur.when === 'now' ? 'pulse h-2 w-2 shrink-0 rounded-full' : 'h-2 w-2 shrink-0 rounded-full'} style={{ background: MARK_TONE[cur.m.kind] ?? '#475467' }} />
-            <span className="truncate font-medium text-ink">{cur.m.label}</span>
-            <span className="tnum shrink-0 text-ink-3">{cur.when === 'now' ? 'now' : cur.when === 'next' ? `in ${clock(cur.m.t - t)}` : `at ${clock(cur.m.t)}`}</span>
+            <span className="vms-led min-w-0 truncate !text-[14px]">{cur.m.label}</span>
+            <span className="vms-led shrink-0 !text-[14px] opacity-60">{cur.when === 'now' ? 'now' : cur.when === 'next' ? `in ${clock(cur.m.t - t)}` : `at ${clock(cur.m.t)}`}</span>
           </span>
         )}
         {target ? (
@@ -75,7 +75,7 @@ export function ScenarioBanner({ scene }: { scene: Scene }) {
                 useStore.getState().set({ follow: false })
                 mapApi.current?.focus(target.x, target.y, 6)
               }}
-              className="flex h-7 shrink-0 items-center gap-1 rounded-lg bg-black/[0.05] px-2 text-[11.5px] font-medium text-ink-2 hover:bg-black/[0.09] hover:text-ink"
+              className="flex h-7 shrink-0 items-center gap-1 rounded-lg bg-white/[0.08] px-2 text-[11.5px] font-medium text-white/80 hover:bg-white/[0.14] hover:text-white"
             >
               <Crosshair size={12} /> Show
             </button>

@@ -1,6 +1,7 @@
-import { BadgeCheck, ChevronDown, CircleCheck, CircleMinus, FlaskConical, Info, Loader2, Lock, Play, RotateCcw, ShieldCheck, Siren, TriangleAlert } from 'lucide-react'
+import { BadgeCheck, ChevronDown, CircleCheck, FlaskConical, Info, Loader2, Lock, Play, RotateCcw, ShieldCheck, Siren, TriangleAlert } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { PageMasthead } from '../components/PageHeader'
+import { LampHead, SevenSegment, type Aspect } from '../components/ui/traffic'
 import { api } from '../lib/api'
 import {
   METRICS,
@@ -115,13 +116,34 @@ function Pill({ tone, children }: { tone: Verdict | 'warn' | 'live'; children: R
   return <span className={cn('inline-flex h-[22px] shrink-0 items-center gap-[5px] whitespace-nowrap rounded-full pl-1.5 pr-2 text-[12px] font-[550]', t)}>{children}</span>
 }
 
+/** Verdicts read like a signal: go, caution, stop. The lit lamp's position and the label both carry it. */
+const ASPECT: Record<Verdict, Aspect> = { better: 'go', unclear: 'caution', worse: 'stop' }
+
 function VerdictBadge({ v, label }: { v: Verdict; label?: string }) {
-  const Icon = v === 'better' ? CircleCheck : v === 'worse' ? TriangleAlert : CircleMinus
   return (
     <Pill tone={v}>
-      <Icon size={13} strokeWidth={2.5} />
+      <LampHead aspect={ASPECT[v]} size={4} className="-ml-0.5" />
       {label ?? VERDICT_LABEL[v]}
     </Pill>
+  )
+}
+
+function SignalKey() {
+  const items: [Verdict, string][] = [
+    ['better', 'Clear improvement'],
+    ['unclear', 'No clear difference'],
+    ['worse', 'Clearly worse'],
+  ]
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12.5px] text-ink-3">
+      {items.map(([v, l]) => (
+        <span key={v} className="flex items-center gap-1.5">
+          <LampHead aspect={ASPECT[v]} size={5} />
+          {l}
+        </span>
+      ))}
+      <span>· the 95% interval must exclude zero. Lower is better, except throughput.</span>
+    </div>
   )
 }
 
@@ -580,9 +602,11 @@ function RunningPanel({ job, controls }: { job: RlJob; controls: ReactNode }) {
       </div>
       <div className="flex flex-col gap-2">
         <div className="tnum flex items-baseline justify-between">
-          <span>
-            <b className="text-[20px] font-[650] tracking-[-0.02em]">{done}</b>
-            <span className="text-[14px] text-ink-3"> / {total} runs</span>
+          <span className="flex items-center gap-2.5">
+            <span className="rounded-lg bg-[#080d17] px-2.5 py-1.5 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.06)]">
+              <SevenSegment value={String(done).padStart(String(total).length, ' ')} height={22} />
+            </span>
+            <span className="text-[14px] text-ink-3">of {total} runs</span>
           </span>
           <Cap className="tnum">{elapsed != null ? `${left != null ? `about ${Math.ceil(left)} s left · ` : ''}${Math.floor(elapsed)} s elapsed` : 'Running'}</Cap>
         </div>
@@ -689,8 +713,8 @@ function Tile({ k, d }: { k: MetricKey; d: DemandResults }) {
   if (!base || !fs) return null
   return (
     <article className={cn(card, 'flex flex-col gap-3.5 p-5')}>
-      <div className="flex items-center justify-between gap-2">
-        <span className="font-medium text-ink-2">{m.label}</span>
+      <div className="flex flex-wrap items-center justify-between gap-x-1.5 gap-y-1.5">
+        <span className="whitespace-nowrap font-medium text-ink-2">{m.label}</span>
         <VerdictBadge v={verdict(m, fs.vs)} />
       </div>
       <div className="flex items-baseline gap-2.5">
@@ -1249,7 +1273,7 @@ export function ResultsView() {
           <section className="flex flex-col gap-4">
             <div className="flex flex-wrap items-baseline justify-between gap-4">
               <H2>Headline measures</H2>
-              <Cap>Lower is better, except throughput. A verdict needs the 95% interval to exclude zero.</Cap>
+              <SignalKey />
             </div>
             <div className="grid grid-cols-[repeat(auto-fit,minmax(232px,1fr))] gap-4">
               {HERO.map((key) => (

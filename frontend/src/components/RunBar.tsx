@@ -7,6 +7,7 @@ import { useStore } from '../lib/store'
 import type { Marker } from '../lib/types'
 import { ICONS } from './ScenarioRail'
 import { Button, Segmented, Tip } from './ui'
+import { SevenSegment } from './ui/traffic'
 
 const SPEEDS = [1, 2, 4, 8, 16]
 const MARK: Record<string, string> = { incident: '#DC2626', emergency: '#2563EB', demand: '#D97706', transit: '#7C3AED', event: '#475467' }
@@ -56,12 +57,12 @@ function SimClock({ runId, running, dur }: { runId: string; running: boolean; du
   const t = useSimClock()
   const wall = useWallElapsed(runId, running)
   return (
-    <div className="flex w-[104px] shrink-0 flex-col leading-tight">
-      <span className="tnum text-[15px] font-semibold text-ink">
-        {clock(Math.max(0, t))}
-        <span className="text-[12px] font-normal text-ink-3"> / {clock(dur)}</span>
+    <div className="flex shrink-0 items-center gap-2.5 rounded-[10px] bg-black/30 py-1.5 pl-2.5 pr-3 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.06)]">
+      <SevenSegment value={clock(Math.max(0, t))} height={24} />
+      <span className="flex flex-col leading-tight">
+        <span className="tnum text-[11px] font-medium text-ink-2">/ {clock(dur)}</span>
+        <span className="tnum whitespace-nowrap text-[10.5px] text-ink-3">{clock(wall)} real</span>
       </span>
-      <span className="tnum whitespace-nowrap text-[10.5px] text-ink-3">sim · {clock(wall)} real</span>
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { ArrowRight, Play } from 'lucide-react'
 import HalftoneWordmarkFooter, { type FooterColumn } from '../components/ui/halftone-wordmark-footer'
 import { METRICS, results, verdict, type MetricKey } from '../lib/controllerResults'
 import { useStore, type View } from '../lib/store'
+import { MessageSign } from '../components/ui/traffic'
 
 const pct = (p: number) => `${p > 0 ? '+' : p < 0 ? '−' : ''}${Math.abs(p).toFixed(1)}%`
 
@@ -73,11 +74,18 @@ export function HomeView() {
           </div>
         </div>
 
-        <div className="hwf-rule !justify-between">
-          <span className="tnum">
-            {h.runs} paired runs: {h.wins.join(', ')}
-            {h.losses.length > 0 && <span className="opacity-60"> · clearly worse in {h.losses.join(', ')}</span>}
-          </span>
+        <div className="relative z-[1] mx-[clamp(20px,3.4vw,44px)] mt-10 max-w-[760px]">
+          <MessageSign
+            messages={[
+              `${h.runs} paired SUMO runs vs fixed-time`,
+              ...h.wins,
+              ...h.losses.map((l) => `clearly worse: ${l} (held out)`),
+              'same seed = identical vehicles',
+            ]}
+            lead={<span className="hwf-kicker shrink-0 !text-[9.5px] !text-white/45">Results</span>}
+          />
+        </div>
+        <div className="hwf-rule !justify-end">
           <span className="flex items-center gap-2">
             <span className={conn === 'open' ? 'h-1.5 w-1.5 rounded-full bg-good' : 'h-1.5 w-1.5 rounded-full bg-warn'} />
             {conn === 'open' ? `SUMO ${health?.sumo ?? ''} connected` : 'Connecting to SUMO'}

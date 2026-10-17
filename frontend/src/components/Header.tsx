@@ -2,7 +2,8 @@ import { Expand, PanelLeft, PanelRight, Shrink } from 'lucide-react'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useStore, type View } from '../lib/store'
 import { cn } from '../lib/format'
-import { Dot, Tip } from './ui'
+import { Tip } from './ui'
+import { SignalLamp } from './ui/traffic'
 
 const TABS: { id: View; label: string }[] = [
   { id: 'simulate', label: 'Simulation' },
@@ -110,9 +111,11 @@ export function Header() {
       <div className="ml-auto flex items-center gap-2.5 text-[12px] text-ink-2">
         <span className="hidden text-ink-3 md:inline">{view === 'results' ? 'rl_grid · 2×2 signalised' : netTitle}</span>
         <Tip label={conn === 'open' ? `Connected to the simulation server (${health?.backend ?? 'TraCI'})` : 'Simulation server unreachable — retrying'}>
-          <span className="flex h-6 items-center gap-1.5 rounded-full bg-subtle px-[9px] shadow-[inset_0_0_0_1px_var(--color-border)]">
-            <Dot tone={conn === 'open' ? 'good' : conn === 'connecting' ? 'warn' : 'bad'} />
-            <span className="font-medium text-ink-2">{conn === 'open' ? `SUMO ${health?.sumo ?? ''}` : conn === 'connecting' ? 'Connecting…' : 'Offline'}</span>
+          <span className="flex h-7 items-center rounded-full bg-subtle py-0.5 pl-1 pr-[10px] shadow-[inset_0_0_0_1px_var(--color-border)]">
+            <SignalLamp
+              aspect={conn === 'open' ? 'go' : conn === 'connecting' ? 'caution' : 'stop'}
+              label={<span className="font-medium text-ink-2">{conn === 'open' ? `SUMO ${health?.sumo ?? ''}` : conn === 'connecting' ? 'Connecting…' : 'Offline'}</span>}
+            />
           </span>
         </Tip>
         {view === 'simulate' && (

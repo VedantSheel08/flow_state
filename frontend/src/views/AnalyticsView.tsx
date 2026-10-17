@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { PageMasthead } from '../components/PageHeader'
 import { Badge, Button, Empty, Segmented } from '../components/ui'
+import { SevenSegment, SignalLamp, SlidingNumber } from '../components/ui/traffic'
 import { api } from '../lib/api'
 import { clock, cn, num, secs } from '../lib/format'
 import { useStore } from '../lib/store'
@@ -35,7 +36,7 @@ const CHARTS: ChartDef[] = [
 
 const compact = (v: number) => (Math.abs(v) >= 1000 ? `${(v / 1000).toFixed(v % 1000 ? 1 : 0)}k` : String(v))
 
-function TimeChart({ def, data, markers }: { def: ChartDef; data: Kpi[]; markers: { t: number; label: string }[] }) {
+function TimeChart({ def, data, markers, labels = false }: { def: ChartDef; data: Kpi[]; markers: { t: number; label: string }[]; labels?: boolean }) {
   const rows = useMemo(() => data.map((k) => ({ t: k.t, v: def.get(k) })), [data, def])
   const last = [...rows].reverse().find((r) => r.v != null)?.v ?? null
   return (
@@ -46,7 +47,7 @@ function TimeChart({ def, data, markers }: { def: ChartDef; data: Kpi[]; markers
           <div className="text-pretty text-[12px] leading-[1.45] text-ink-3">{def.note}</div>
         </div>
         <div className="tnum shrink-0 text-[24px] font-[650] leading-none tracking-[-0.02em] text-ink">
-          {num(last, def.unit === 'km/h' ? 1 : 0)}
+          <SlidingNumber value={num(last, def.unit === 'km/h' ? 1 : 0)} />
           <span className="ml-1 text-[12px] font-medium tracking-normal text-ink-3">{def.unit}</span>
         </div>
       </div>
@@ -57,7 +58,13 @@ function TimeChart({ def, data, markers }: { def: ChartDef; data: Kpi[]; markers
             <XAxis dataKey="t" type="number" domain={['dataMin', 'dataMax']} tickFormatter={(t) => clock(t)} tick={{ fontSize: 11, fill: '#687284' }} tickLine={false} axisLine={{ stroke: '#e6e8ec' }} minTickGap={40} />
             <YAxis tick={{ fontSize: 11, fill: '#687284' }} tickLine={false} axisLine={false} width={48} allowDecimals={false} tickFormatter={compact} />
             {markers.map((m, i) => (
-              <ReferenceLine key={i} x={m.t} stroke="#8a93a3" strokeDasharray="5 5" />
+              <ReferenceLine
+                key={i}
+                x={m.t}
+                stroke="#8a93a3"
+                strokeDasharray="5 5"
+                label={labels ? { value: m.label.length > 22 ? `${m.label.slice(0, 21)}…` : m.label, position: 'insideTopLeft', fontSize: 10, fill: '#687284', offset: 6 } : undefined}
+              />
             ))}
             <Tooltip
               cursor={{ stroke: '#0c1322', strokeWidth: 1, strokeOpacity: 0.25 }}
@@ -296,14 +303,27 @@ export function AnalyticsView() {
     )
   return (
     <div className="scroll-y min-w-0 flex-1 bg-canvas">
-      <PageMasthead word="analytics" kicker={results ? 'Analytics · run complete' : 'Analytics · live'} title={run.title}>
+      <PageMasthead
+        word="analytics"
+        kicker={results ? 'Analytics · run complete' : 'Analytics · live'}
+        title={run.title}
+        right={
+          <div className="flex items-center gap-3.5 rounded-[12px] bg-black/35 py-2.5 pl-3 pr-4 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.07)]">
+            <SevenSegment value={clock(data[data.length - 1]?.t ?? 0)} height={26} />
+            <span className="flex flex-col gap-1 leading-none">
+              <span className="tnum text-[12px] font-medium text-ink-2">of {clock(run.duration)} simulated</span>
+              {results ? <span className="text-[12px] text-ink-3">Run complete</span> : <SignalLamp aspect="go" label={<span className="text-[12px] text-ink-2">Live</span>} />}
+            </span>
+          </div>
+        }
+      >
         Seed <span className="tnum font-semibold text-ink">{run.seed}</span> with {run.signalMode === 'actuated' ? 'actuated' : 'fixed-time'} signals.{' '}
         <span className="tnum">{clock(data[data.length - 1]?.t ?? 0)}</span> of <span className="tnum">{clock(run.duration)}</span> simulated. Dashed lines mark scenario events.
       </PageMasthead>
       <div className="mx-auto flex max-w-[1312px] flex-col gap-8 px-6 pb-16 pt-8 min-[1100px]:px-8">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {CHARTS.map((c) => (
-            <TimeChart key={c.key} def={c} data={data} markers={run.markers} />
+            <TimeChart key={c.key} def={c} data={data} markers={run.markers} labels={c.key === CHARTS[0].key} />
           ))}
         </div>
         <div className={cn('grid grid-cols-1 gap-4 xl:grid-cols-[1fr_1.4fr]')}>
