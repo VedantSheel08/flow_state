@@ -1,0 +1,17 @@
+[Unit]
+Description=FlowState simulation API
+After=network.target
+[Service]
+User=flowstate
+WorkingDirectory=/opt/flowstate/app
+Environment=PYTHONPATH=/opt/flowstate/app/backend FLOWSTATE_BACKEND=traci FLOWSTATE_RUNS_DIR=/var/lib/flowstate/runs
+Environment=FLOWSTATE_ALLOWED_ORIGINS=https://flowstate.nyc,https://www.flowstate.nyc FLOWSTATE_MAX_WS_CLIENTS=25
+ExecStart=/opt/flowstate/venv/bin/python -m uvicorn flowstate.api.app:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=always
+RestartSec=3
+MemoryMax=10G
+CPUQuota=600%
+NoNewPrivileges=true
+ProtectSystem=full
+[Install]
+WantedBy=multi-user.target
