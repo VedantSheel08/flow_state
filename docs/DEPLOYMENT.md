@@ -99,3 +99,16 @@ explicit allowed-origin/access policy with the backend owner. No policy changed 
 Sources: [Vercel Vite](https://vercel.com/docs/frameworks/frontend/vite),
 [Vite browser environment variables](https://vite.dev/guide/env-and-mode),
 [Vercel limits](https://vercel.com/docs/limits).
+
+## Production backend package (branch `deploy/production-backend`)
+
+`deployment/backend/` holds a Dockerfile, a compose file (API + Caddy for automatic
+HTTPS/WSS) and `.env.example`. The API reads `FLOWSTATE_ALLOWED_ORIGINS` (CORS and
+`/ws` origin check), `FLOWSTATE_MAX_WS_CLIENTS` and an optional
+`FLOWSTATE_ACCESS_TOKEN` (bearer token for non-GET requests). Unset, behaviour is
+unchanged for local development. Origin checks stop other websites, not scripted
+clients, and the UI does not send a token, so this is not real authentication.
+
+Frontend: the Vercel project's Production env needs
+`VITE_FLOWSTATE_API_URL=https://<api-domain>` (origin only, no `/api`), then redeploy.
+(`VITE_API_BASE_URL`/`VITE_WS_URL` above are superseded by this variable on `main`.)

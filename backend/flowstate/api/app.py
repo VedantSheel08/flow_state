@@ -5,13 +5,14 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 
 from .. import sumo_env
@@ -38,7 +39,23 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="FlowState API", version="2.0", lifespan=lifespan)
 app.add_middleware(GZipMiddleware, minimum_size=2048)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+# Access policy (all optional; unset keeps the open local-development behaviour).
+#   FLOWSTATE_ALLOWED_ORIGINS  comma-separated browser origins allowed for CORS and /ws
+#   FLOWSTATE_ACCESS_TOKEN     if set, state-changing requests need "Authorization: Bearer <token>"
+#   FLOWSTATE_MAX_WS_CLIENTS   cap on simultaneous WebSocket viewers (default 25)
+ALLOWED_ORIGINS = [o.strip().rstrip("/") for o in os.environ.get("FLOWSTATE_ALLOWED_ORIGINS", "").split(",") if o.strip()]
+ACCESS_TOKEN = os.environ.get("FLOWSTATE_ACCESS_TOKEN", "")
+MAX_WS_CLIENTS = int(os.environ.get("FLOWSTATE_MAX_WS_CLIENTS", "25"))
+
+app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS or ["*"], allow_methods=["*"], allow_headers=["*"])
+
+
+@app.middleware("http")
+async def require_token(request: Request, call_next):
+    if ACCESS_TOKEN and request.method not in ("GET", "HEAD", "OPTIONS") and request.headers.get("authorization") != f"Bearer {ACCESS_TOKEN}":
+        return JSONResponse({"detail": "missing or invalid access token"}, status_code=401)
+    return await call_next(request)
 
 
 class RunRequest(BaseModel):
@@ -168,6 +185,10 @@ def compare_job(job_id: str) -> dict[str, Any]:
 
 @app.websocket("/ws")
 async def ws(websocket: WebSocket) -> None:
+    origin = (websocket.headers.get("origin") or "").rstrip("/")
+    if (ALLOWED_ORIGINS and origin not in ALLOWED_ORIGINS) or len(service.bus.clients) >= MAX_WS_CLIENTS:
+        await websocket.close(code=1008)
+        return
     await websocket.accept()
     snap = service.snapshot()
     await websocket.send_text(json.dumps({"type": "hello", **snap}, default=str))

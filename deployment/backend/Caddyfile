@@ -1,0 +1,7 @@
+# Automatic HTTPS; proxies HTTP and WebSocket upgrades (/ws) to the API container.
+{$API_DOMAIN} {
+	encode gzip
+	reverse_proxy api:8000 {
+		flush_interval -1
+	}
+}
