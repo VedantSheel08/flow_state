@@ -47,3 +47,22 @@ Config is in `deploy/vultr/` (Dockerfile, compose with loopback-bound ports 8000
 ## Known limits
 Tiger/Timescale and Gemini unverified; emissions are HBEFA3 estimates for an assumed fleet (cross-check vs SUMO output 1.0016); 5 seeds per suite (only throughput clearly significant); RL per-decision explanations not recorded; synthetic district is not Toronto (default bike share ~5% vs observed median 13.8%).
 Cleanup for the owner: `D:\tmp_sig_nets`, `D:\tmp_base_wt`, `D:\tmp_integ_site`, `D:\tmp_integ_pgdata`, and git-ignored `data/benchmarks/{v1,ambulance-preemption,rush-am-fixed-vs-actuated}`.
+
+## Merge instructions (final integration agent)
+1. Base: this branch already contains `0b49c08` and `0c5abd9` (task/signals) on top of `0de23f6`. Merge task/signals and task/integrations together, or signals first, then integrations; git sees the shared history, so no duplicate conflict is expected there. Other agents' branches (RL, traffic realism, frontend, deployment) were never touched.
+2. Files this branch adds are all new paths (`backend/flowstate/experiments/**`, `tests/test_{experiments,assistant,toronto}.py`, `deploy/vultr/**`, `data/{toronto,benchmarks/v2,verification}/**`, `docs/{INTEGRATIONS,DATA_CONTRACT,HANDOFF}.md`, `docs/openapi-experiments.json`, `backend/requirements-integrations.txt`). The only edited shared file is `.gitignore` (appended entries); resolve by keeping both sides.
+3. Mount in `app.py` with two additive lines, after the app is created (does not touch any deployment file):
+   `app.include_router(flowstate.experiments.api.router)` and `app.include_router(flowstate.experiments.assistant_api.router)`. Both are required; `api.mount()` registers only the first.
+4. Deployment: `deploy/vultr/` is self-contained. If the deployment agent has its own Docker/compose files, keep theirs and port the invariants (secrets only in server `.env`, experiments service separate from the live simulator, loopback-bound ports). Do not deploy without owner approval.
+5. After merge run: `PYTHONPATH=<psycopg+pgserver site>;backend python -m pytest tests -q` (Windows-style paths).
+
+## Proven vs needs live credentials
+| Integration | Proven here | Needs live credentials / not proven |
+|---|---|---|
+| PostgreSQL storage | Real PostgreSQL 18.4: schema, COPY ingest, all queries, SUMO round trip | — |
+| SQLite fallback | Dead DB URL → falls back, API serves stored runs | — |
+| Tiger Cloud / TimescaleDB hypertables | — | `FLOWSTATE_DATABASE_URL` for a Tiger service (never connected) |
+| Emissions | Matches SUMO `--emission-output` within 0.16% | Remains HBEFA3 estimate, assumed fleet |
+| Gemini | Request/validation logic via mock transport; offline fallback end-to-end through SUMO | `GEMINI_API_KEY` (never called live; model id unconfirmed) |
+| Toronto data | Live City of Toronto CKAN fetch + pinned snapshot | — |
+| Vultr | Config files only (YAML syntax checked) | Docker build, Vultr account/credit, deploy approval |
