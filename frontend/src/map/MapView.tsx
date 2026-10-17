@@ -250,9 +250,11 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
         vehicles.some((v) => ANIMATED_CODES.has(v.code)) ||
         placed.some((p) => p.o.kind === 'point' && phaseAt(p.o, simT) === 'active')
       const changed = dirty.current || moving || t !== lastT || animated
-      dirty.current = false
+      // a 0x0 canvas (hidden or mid-resize) gives a device-pixel ratio of 0 and caches empty layers
+      const drawable = canvas.width > 0 && canvas.height > 0
+      dirty.current = changed && !drawable
       lastT = t
-      if (changed) {
+      if (changed && drawable) {
         try {
           const tr = performance.now()
           const visible = render(ctx, scene, cam, rs, canvas.width / Math.max(1, cam.width))
