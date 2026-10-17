@@ -6,6 +6,8 @@
     - when an event happens at an intersection map dot will be pinned and start pulsing (not tested yet)
 - created a devpost
 - senarious will show on map ex rain will cover map and car crashs will show
+- render infrastructure set up but website not deployed
+    - i think vedant set up rate limits and stuff on another branch so will hold off making public for now
 
 # Issues
 police waits for cars + lights (working on this rn)
