@@ -44,7 +44,7 @@ function TabNav({ view, onChange }: { view: View; onChange: (v: View) => void })
   useLayoutEffect(() => {
     const measure = () => {
       const el = refs.current[view]
-      if (el) setThumb({ x: el.offsetLeft, w: el.offsetWidth })
+      setThumb(el ? { x: el.offsetLeft, w: el.offsetWidth } : null)
     }
     measure()
     document.fonts?.ready.then(measure)
@@ -94,8 +94,16 @@ export function Header() {
   return (
     <header className="relative z-20 flex h-12 shrink-0 items-center gap-6 border-b border-border bg-surface pl-5 pr-4">
       <div className="flex shrink-0 items-center gap-2.5">
-        <Logo />
-        <span className="text-[14px] font-[650] tracking-[-0.01em] text-ink">FlowState</span>
+        <button
+          type="button"
+          aria-label="FlowState home"
+          aria-current={view === 'home' ? 'page' : undefined}
+          onClick={() => set({ view: 'home' })}
+          className="-ml-1 flex items-center gap-2.5 rounded-lg py-1 pl-1 pr-1.5 transition-[background-color,scale] duration-150 ease-out hover:bg-muted active:scale-[0.96] motion-reduce:active:scale-100"
+        >
+          <Logo />
+          <span className="text-[14px] font-[650] tracking-[-0.01em] text-ink">FlowState</span>
+        </button>
         <span className="hidden h-[18px] items-center rounded-[6px] px-[7px] text-[10.5px] font-semibold text-ink-3 shadow-[inset_0_0_0_1px_var(--color-border-strong)] lg:inline-flex">SUMO twin</span>
       </div>
       <TabNav view={view} onChange={(v) => set({ view: v })} />

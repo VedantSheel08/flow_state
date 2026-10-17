@@ -1,6 +1,6 @@
 import { Play, Repeat, SlidersHorizontal } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { PageHeader } from '../components/PageHeader'
+import { PageMasthead } from '../components/PageHeader'
 import { ICONS } from '../components/ScenarioRail'
 import { Button, Empty, Tip } from '../components/ui'
 import { launch } from '../lib/actions'
@@ -18,13 +18,10 @@ export function RunsView() {
   }, [])
   return (
     <div className="scroll-y min-w-0 flex-1 bg-canvas">
-      <div className="mx-auto flex max-w-[1312px] flex-col gap-8 px-6 pb-16 pt-10 min-[1100px]:px-8">
-        <PageHeader
-          title="Run history"
-          right={runs && runs.length > 0 ? <span className="tnum text-[13px] text-ink-3">{runs.length} {runs.length === 1 ? 'run' : 'runs'} stored</span> : undefined}
-        >
-          Every run keeps its scenario, settings and seed. Reproduce one to regenerate the identical traffic in SUMO.
-        </PageHeader>
+      <PageMasthead word="history" kicker={runs && runs.length > 0 ? `Archive · ${runs.length} ${runs.length === 1 ? 'run' : 'runs'} stored` : 'Archive'} title="Run history">
+        Every run keeps its scenario, settings and seed. Reproduce one to regenerate the identical traffic in SUMO.
+      </PageMasthead>
+      <div className="mx-auto flex max-w-[1312px] flex-col gap-8 px-6 pb-16 pt-8 min-[1100px]:px-8">
         <div className="overflow-x-auto rounded-xl border border-transparent bg-surface shadow-card">
           {runs === null && (
             <div className="flex flex-col gap-3 p-5" aria-busy="true">

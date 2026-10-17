@@ -1,5 +1,6 @@
 import { BadgeCheck, ChevronDown, CircleCheck, CircleMinus, FlaskConical, Info, Loader2, Lock, Play, RotateCcw, ShieldCheck, Siren, TriangleAlert } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { PageMasthead } from '../components/PageHeader'
 import { api } from '../lib/api'
 import {
   METRICS,
@@ -1175,16 +1176,11 @@ export function ResultsView() {
   }
   return (
     <div className="scroll-y min-w-0 flex-1 bg-canvas">
-      <main className="mx-auto flex max-w-[1312px] flex-col gap-12 px-6 pb-[72px] pt-10 min-[1100px]:px-8">
-        <section className="flex flex-wrap items-end justify-between gap-6">
-          <div className="flex min-w-0 flex-[999_1_560px] flex-col gap-2.5">
-            <Eyebrow className={cn('flex items-center gap-2', isLive && 'text-flow-ink')}>
-              <span className={cn('h-1.5 w-1.5 rounded-full', isLive ? 'bg-flow shadow-[0_0_0_3px_rgba(42,120,214,0.18)]' : 'bg-ink-3')} />
-              {isLive ? 'Live SUMO comparison' : `Recorded SUMO evaluation, ${st.runs} paired runs`}
-            </Eyebrow>
-            <h1 className="m-0 text-balance text-[36px] font-[650] leading-[1.12] tracking-[-0.025em]">FlowState vs fixed-time signals</h1>
-            <Summary d={d} st={st} live={isLive} />
-          </div>
+      <PageMasthead
+        word="results"
+        kicker={isLive ? 'Live SUMO comparison' : `Recorded SUMO evaluation · ${st.runs} paired runs`}
+        title="FlowState vs fixed-time signals"
+        right={
           <div className="flex flex-wrap justify-end gap-5">
             {live && (
               <Toggle
@@ -1217,11 +1213,14 @@ export function ResultsView() {
               />
             )}
           </div>
-        </section>
-
+        }
+      >
+        <Summary d={d} st={st} live={isLive} />
+      </PageMasthead>
+      <main className="mx-auto flex max-w-[1312px] flex-col gap-12 px-6 pb-[72px] pt-10 min-[1100px]:px-8">
         {isLive && job ? <Receipt job={job} onBack={() => setSource('recorded')} onRerun={rerun} /> : null}
 
-        <div className={cn('-mt-4', running && 'opacity-[0.72] transition-opacity')}>
+        <div className={cn(running && 'opacity-[0.72] transition-opacity')}>
           <Hero key={`${isLive ? 'live' : level}`} st={st} live={isLive} rec={rec} />
         </div>
 

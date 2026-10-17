@@ -15,6 +15,7 @@ import { connect } from './lib/ws'
 import { MapView, mapApi } from './map/MapView'
 import type { Dir } from './map/nav'
 import { AnalyticsView } from './views/AnalyticsView'
+import { HomeView } from './views/HomeView'
 import { ResultsView } from './views/ResultsView'
 import { RunsView } from './views/RunsView'
 
@@ -189,6 +190,7 @@ export default function App() {
             <MapStage />
             <RightPanel />
           </div>
+          {view === 'home' && <HomeView />}
           {view === 'results' && <ResultsView />}
           {view === 'analyze' && <AnalyticsView />}
           {view === 'runs' && <RunsView />}

@@ -89,6 +89,16 @@
   box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06), 0 2px 4px rgb(12 19 34 / 0.18), 0 12px 32px -8px rgb(12 19 34 / 0.45);
 }
 
+/* Small tracked mono line from the halftone print (Home, page mastheads). */
+.hwf-kicker {
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+  font-size: 10.5px;
+  line-height: 1.6;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+
 /* A dashed lane marking: the visual for "equal" and "zero" everywhere. */
 .lane-v {
   background-image: linear-gradient(to bottom, var(--color-lane) 0 10px, transparent 10px 20px);

@@ -5,7 +5,7 @@ import type { RlJob } from './controllerResults'
 import type { CompareJob, CongestionPreset, Kpi, NetworkGeom, RunInfo, RunResults, RunStatus, ScenarioSpec, SimEvent, StatsMessage } from './types'
 
 export type Selection = { kind: 'vehicle'; id: string } | { kind: 'junction'; id: string } | { kind: 'edge'; id: string } | null
-export type View = 'simulate' | 'results' | 'analyze' | 'runs'
+export type View = 'home' | 'simulate' | 'results' | 'analyze' | 'runs'
 
 export interface Layers {
   buildings: boolean
@@ -126,7 +126,7 @@ export const useStore = create<State & Actions>((set, get) => ({
   follow: false,
   layers: { buildings: true, labels: true, pedestrians: true, flow: false, signals: true },
   pick: null,
-  view: 'simulate',
+  view: 'home',
   toasts: [],
   compare: null,
   rlJob: null,

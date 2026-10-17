@@ -1,7 +1,7 @@
 import { ArrowDownRight, ArrowUpRight, FlaskConical, Loader2, Minus } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { PageHeader } from '../components/PageHeader'
+import { PageMasthead } from '../components/PageHeader'
 import { Badge, Button, Empty, Segmented } from '../components/ui'
 import { api } from '../lib/api'
 import { clock, cn, num, secs } from '../lib/format'
@@ -278,7 +278,11 @@ export function AnalyticsView() {
   const modes = (stats?.kpi as Kpi & { modes?: Record<string, ModeSummary> })?.modes ?? results?.metrics.byMode ?? {}
   if (!run)
     return (
-      <div className="flex flex-1 items-center justify-center">
+      <div className="scroll-y flex min-w-0 flex-1 flex-col bg-canvas">
+        <PageMasthead word="analytics" kicker="Analytics" title="Live measurements">
+          Every chart here fills from SUMO while a scenario runs.
+        </PageMasthead>
+        <div className="flex flex-1 items-center justify-center">
         <Empty title="No run to analyse yet">
           Start a scenario in Simulation and its live measurements chart here.
           <div className="mt-4">
@@ -287,15 +291,16 @@ export function AnalyticsView() {
             </Button>
           </div>
         </Empty>
+        </div>
       </div>
     )
   return (
     <div className="scroll-y min-w-0 flex-1 bg-canvas">
-      <div className="mx-auto flex max-w-[1312px] flex-col gap-8 px-6 pb-16 pt-10 min-[1100px]:px-8">
-        <PageHeader title={run.title} right={results ? <Badge tone="neutral">Run complete</Badge> : <Badge tone="neutral">Live</Badge>}>
-          Seed <span className="tnum font-semibold text-ink">{run.seed}</span> with {run.signalMode === 'actuated' ? 'actuated' : 'fixed-time'} signals.{' '}
-          <span className="tnum">{clock(data[data.length - 1]?.t ?? 0)}</span> of <span className="tnum">{clock(run.duration)}</span> simulated. Dashed lines mark scenario events.
-        </PageHeader>
+      <PageMasthead word="analytics" kicker={results ? 'Analytics · run complete' : 'Analytics · live'} title={run.title}>
+        Seed <span className="tnum font-semibold text-ink">{run.seed}</span> with {run.signalMode === 'actuated' ? 'actuated' : 'fixed-time'} signals.{' '}
+        <span className="tnum">{clock(data[data.length - 1]?.t ?? 0)}</span> of <span className="tnum">{clock(run.duration)}</span> simulated. Dashed lines mark scenario events.
+      </PageMasthead>
+      <div className="mx-auto flex max-w-[1312px] flex-col gap-8 px-6 pb-16 pt-8 min-[1100px]:px-8">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {CHARTS.map((c) => (
             <TimeChart key={c.key} def={c} data={data} markers={run.markers} />
