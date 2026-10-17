@@ -6,6 +6,8 @@ import asyncio
 import json
 import logging
 import os
+import time
+from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -51,11 +53,56 @@ MAX_WS_CLIENTS = int(os.environ.get("FLOWSTATE_MAX_WS_CLIENTS", "25"))
 app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS or ["*"], allow_methods=["*"], allow_headers=["*"])
 
 
+# Abuse limits, independent of the Origin header (which scripted clients can spoof).
+#   FLOWSTATE_RATE_LIMIT        state-changing requests per client IP per minute (default 30)
+#   FLOWSTATE_START_LIMIT       run/compare starts per client IP per minute (default 6)
+#   FLOWSTATE_MAX_WS_PER_IP     simultaneous WebSocket viewers per client IP (default 4)
+#   FLOWSTATE_MAX_DURATION_MIN  longest simulated run a client may request (default 15)
+RATE_LIMIT = int(os.environ.get("FLOWSTATE_RATE_LIMIT", "30"))
+START_LIMIT = int(os.environ.get("FLOWSTATE_START_LIMIT", "6"))
+MAX_WS_PER_IP = int(os.environ.get("FLOWSTATE_MAX_WS_PER_IP", "4"))
+MAX_DURATION_MIN = float(os.environ.get("FLOWSTATE_MAX_DURATION_MIN", "15"))
+_hits: dict[tuple[str, str], deque[float]] = defaultdict(deque)
+_ws_per_ip: dict[str, int] = defaultdict(int)
+
+
+def _client_ip(request: Request | WebSocket) -> str:
+    peer = request.client.host if request.client else "?"
+    fwd = request.headers.get("x-forwarded-for")
+    # Only trust the header when it comes from the local reverse proxy, which overwrites it.
+    return fwd.split(",")[0].strip() if fwd and peer in ("127.0.0.1", "::1") else peer
+
+
+def _over_limit(ip: str, bucket: str, limit: int) -> bool:
+    now = time.monotonic()
+    q = _hits[(ip, bucket)]
+    while q and now - q[0] > 60:
+        q.popleft()
+    if len(q) >= limit:
+        return True
+    q.append(now)
+    return False
+
+
 @app.middleware("http")
-async def require_token(request: Request, call_next):
-    if ACCESS_TOKEN and request.method not in ("GET", "HEAD", "OPTIONS") and request.headers.get("authorization") != f"Bearer {ACCESS_TOKEN}":
-        return JSONResponse({"detail": "missing or invalid access token"}, status_code=401)
+async def protect(request: Request, call_next):
+    if request.method not in ("GET", "HEAD", "OPTIONS"):
+        if ACCESS_TOKEN and request.headers.get("authorization") != f"Bearer {ACCESS_TOKEN}":
+            return JSONResponse({"detail": "missing or invalid access token"}, status_code=401)
+        ip = _client_ip(request)
+        starts = request.url.path in ("/api/runs", "/api/compare")
+        if _over_limit(ip, "write", RATE_LIMIT) or (starts and _over_limit(ip, "start", START_LIMIT)):
+            return JSONResponse({"detail": "too many requests, slow down"}, status_code=429, headers={"Retry-After": "30"})
     return await call_next(request)
+
+
+def _check_duration(params: dict[str, Any]) -> None:
+    try:
+        minutes = float(params.get("duration", 0) or 0)
+    except (TypeError, ValueError):
+        raise HTTPException(400, "duration must be a number") from None
+    if minutes > MAX_DURATION_MIN:
+        raise HTTPException(400, f"duration is limited to {MAX_DURATION_MIN:g} minutes on this server")
 
 
 class RunRequest(BaseModel):
@@ -126,6 +173,7 @@ def network(network_id: str) -> Response:
 
 @app.post("/api/runs")
 def start_run(req: RunRequest) -> dict[str, Any]:
+    _check_duration(req.params)
     return _guard(service.start_run, req.scenario, req.params, req.seed, req.speed, req.congestion)
 
 
@@ -172,6 +220,9 @@ def junction(jid: str) -> dict[str, Any]:
 
 @app.post("/api/compare")
 def compare(req: CompareRequest) -> dict[str, Any]:
+    _check_duration(req.params)
+    if any(j.get("state") == "running" for j in service.jobs.values()):
+        raise HTTPException(409, "a comparison is already running")
     return _guard(service.start_compare, req.scenario, req.params, req.seed, req.key, req.values)
 
 
@@ -189,6 +240,18 @@ async def ws(websocket: WebSocket) -> None:
     if (ALLOWED_ORIGINS and origin not in ALLOWED_ORIGINS) or len(service.bus.clients) >= MAX_WS_CLIENTS:
         await websocket.close(code=1008)
         return
+    ip = _client_ip(websocket)
+    if _ws_per_ip[ip] >= MAX_WS_PER_IP:
+        await websocket.close(code=1008)
+        return
+    _ws_per_ip[ip] += 1
+    try:
+        await _serve_ws(websocket)
+    finally:
+        _ws_per_ip[ip] -= 1
+
+
+async def _serve_ws(websocket: WebSocket) -> None:
     await websocket.accept()
     snap = service.snapshot()
     await websocket.send_text(json.dumps({"type": "hello", **snap}, default=str))
