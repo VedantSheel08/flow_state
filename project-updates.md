@@ -1,4 +1,4 @@
-### Project changes
+# Project changes
 
 - moving configurations to a popup
 - creating reasonable preset configurations for each senario
@@ -8,7 +8,8 @@
 - senarious will show on map ex rain will cover map and car crashs will show
 
 # Issues
-police waits for cars + lights
+police waits for cars + lights (working on this rn)
 senarios dont really show ex car crash will work but wont show on map, severe weather wont show like rain on the map (fixed)
   - car crash just shows 4 cars together looks a bit weird
 the map is good however the intersections are a repetitive structure, we should try to add even diagonals curves roundabounts etc.
+ui not fully good
