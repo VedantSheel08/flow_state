@@ -5,9 +5,9 @@ import { Dot, Tip } from './ui'
 
 const TABS: { id: View; label: string }[] = [
   { id: 'simulate', label: 'Simulation' },
-  { id: 'results', label: 'Results' },
   { id: 'analyze', label: 'Analytics' },
   { id: 'runs', label: 'Run history' },
+  { id: 'results', label: 'Results' },
 ]
 
 export function Logo() {
