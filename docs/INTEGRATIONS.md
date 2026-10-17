@@ -85,3 +85,10 @@ Measured against it (3 seeds each):
 3. Build the Docker image and deploy to Vultr (needs approval).
 4. 5 seeds gives limited power; most controller differences other than throughput are not significant.
 5. Stale pre-v2-schema output under `data/benchmarks/{v1,ambulance-preemption,rush-am-fixed-vs-actuated}` is git-ignored and safe to delete; scratch dirs `D:\tmp_sig_nets`, `D:\tmp_base_wt`, `D:\tmp_integ_site`, `D:\tmp_integ_pgdata` too (my sandbox blocked `rm -rf`).
+
+## Verification log (latest pass)
+
+- Full suite with real PostgreSQL available: **132 passed, 0 skipped** (the previous "3 skipped" were caused by a bad PYTHONPATH, not missing software). Run with `psycopg[binary]` and `pixeltable-pgserver` installed, or set `FLOWSTATE_TEST_PG_URL`.
+- Credentials found in this environment: **none** (`FLOWSTATE_DATABASE_URL`, `TIGER_DATABASE_URL`, `GEMINI_API_KEY`, `GOOGLE_API_KEY` all unset). So Tiger Cloud/TimescaleDB and live Gemini remain unverified; the local fallback is verified: with an unreachable `FLOWSTATE_DATABASE_URL` the API logs "falling back to SQLite" and still serves stored runs.
+- Emissions: `python -m flowstate.experiments.verify_emissions` reruns a SUMO experiment with SUMO's own `--emission-output` XML and integrates it. Result (`data/verification/emissions.json`): recorder/SUMO-XML = 1.0016 for CO2 and 1.0016 for fuel (boundary-step difference), 3.14 g CO2 per g fuel. The stored numbers are SUMO's output; they remain HBEFA3 model estimates for an assumed fleet.
+- API contract: `docs/openapi-experiments.json` generated from the app; every endpoint exercised against real stored runs (see DATA_CONTRACT.md).

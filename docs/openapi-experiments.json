@@ -1,0 +1,1102 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "FlowState experiments",
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/api/experiments/status": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Status",
+    "operationId": "status_api_experiments_status_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Status Api Experiments Status Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "List Experiments",
+    "operationId": "list_experiments_api_experiments_get",
+    "parameters": [
+     {
+      "name": "scenario",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Scenario"
+      }
+     },
+     {
+      "name": "controller",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Controller"
+      }
+     },
+     {
+      "name": "suite",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Suite"
+      }
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "name": "seed",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Seed"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 500,
+       "minimum": 1,
+       "default": 50,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Experiments Api Experiments Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/compare": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Compare",
+    "operationId": "compare_api_experiments_compare_get",
+    "parameters": [
+     {
+      "name": "baseline",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Baseline"
+      }
+     },
+     {
+      "name": "candidate",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Candidate"
+      }
+     },
+     {
+      "name": "step",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "number",
+       "maximum": 300,
+       "minimum": 1,
+       "default": 5.0,
+       "title": "Step"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Compare Api Experiments Compare Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/controllers": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Controllers",
+    "description": "Controllers on identical situations: per-controller mean/std over seeds, paired per-seed deltas against ``baseline``.",
+    "operationId": "controllers_api_experiments_controllers_get",
+    "parameters": [
+     {
+      "name": "scenario",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Scenario"
+      }
+     },
+     {
+      "name": "baseline",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "fixed",
+       "title": "Baseline"
+      }
+     },
+     {
+      "name": "params_hash",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Params Hash"
+      }
+     },
+     {
+      "name": "suite",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Suite"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Controllers Api Experiments Controllers Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/run": {
+   "post": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Run",
+    "operationId": "run_api_experiments_run_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/flowstate__experiments__api__RunRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Run Api Experiments Run Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/jobs/{job_id}": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Job",
+    "operationId": "job_api_experiments_jobs__job_id__get",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Job Api Experiments Jobs  Job Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/{experiment_id}": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Get Experiment",
+    "operationId": "get_experiment_api_experiments__experiment_id__get",
+    "parameters": [
+     {
+      "name": "experiment_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Experiment Id"
+      }
+     },
+     {
+      "name": "detail",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "pattern": "^(full|summary)$",
+       "default": "full",
+       "title": "Detail"
+      }
+     },
+     {
+      "name": "step",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "maximum": 300,
+         "minimum": 1
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Step"
+      }
+     },
+     {
+      "name": "heat_bucket",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "number",
+       "maximum": 300,
+       "minimum": 5,
+       "default": 30.0,
+       "title": "Heat Bucket"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Experiment Api Experiments  Experiment Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/{experiment_id}/kpi": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Kpi",
+    "operationId": "kpi_api_experiments__experiment_id__kpi_get",
+    "parameters": [
+     {
+      "name": "experiment_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Experiment Id"
+      }
+     },
+     {
+      "name": "metrics",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Metrics"
+      }
+     },
+     {
+      "name": "step",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "maximum": 300,
+         "minimum": 1
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Step"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Kpi Api Experiments  Experiment Id  Kpi Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/{experiment_id}/heatmap": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Heatmap",
+    "operationId": "heatmap_api_experiments__experiment_id__heatmap_get",
+    "parameters": [
+     {
+      "name": "experiment_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Experiment Id"
+      }
+     },
+     {
+      "name": "metric",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "halting",
+       "title": "Metric"
+      }
+     },
+     {
+      "name": "bucket",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "number",
+       "maximum": 300,
+       "minimum": 5,
+       "default": 30.0,
+       "title": "Bucket"
+      }
+     },
+     {
+      "name": "top",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 500,
+         "minimum": 1
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "default": 60,
+       "title": "Top"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Heatmap Api Experiments  Experiment Id  Heatmap Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/{experiment_id}/signals": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Signals",
+    "operationId": "signals_api_experiments__experiment_id__signals_get",
+    "parameters": [
+     {
+      "name": "experiment_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Experiment Id"
+      }
+     },
+     {
+      "name": "tls",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Tls"
+      }
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Kind"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 5000,
+       "minimum": 1,
+       "default": 500,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Signals Api Experiments  Experiment Id  Signals Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/{experiment_id}/safety": {
+   "get": {
+    "tags": [
+     "experiments"
+    ],
+    "summary": "Safety",
+    "operationId": "safety_api_experiments__experiment_id__safety_get",
+    "parameters": [
+     {
+      "name": "experiment_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Experiment Id"
+      }
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Kind"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Safety Api Experiments  Experiment Id  Safety Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/assistant/status": {
+   "get": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Status",
+    "operationId": "status_api_experiments_assistant_status_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Status Api Experiments Assistant Status Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/assistant/plan": {
+   "post": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Plan",
+    "operationId": "plan_api_experiments_assistant_plan_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PlanRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Plan Api Experiments Assistant Plan Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/assistant/run": {
+   "post": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Run",
+    "operationId": "run_api_experiments_assistant_run_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/flowstate__experiments__assistant_api__RunRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Run Api Experiments Assistant Run Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiments/assistant/runs/{run_id}": {
+   "get": {
+    "tags": [
+     "assistant"
+    ],
+    "summary": "Get Run",
+    "operationId": "get_run_api_experiments_assistant_runs__run_id__get",
+    "parameters": [
+     {
+      "name": "run_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Run Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Run Api Experiments Assistant Runs  Run Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "PlanRequest": {
+    "properties": {
+     "text": {
+      "type": "string",
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Text"
+     }
+    },
+    "type": "object",
+    "required": [
+     "text"
+    ],
+    "title": "PlanRequest"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   },
+   "flowstate__experiments__api__RunRequest": {
+    "properties": {
+     "scenario": {
+      "type": "string",
+      "title": "Scenario"
+     },
+     "controller": {
+      "type": "string",
+      "title": "Controller",
+      "default": "fixed"
+     },
+     "seed": {
+      "type": "integer",
+      "maximum": 2147483647.0,
+      "minimum": 0.0,
+      "title": "Seed",
+      "default": 42
+     },
+     "params": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Params"
+     },
+     "warmup": {
+      "type": "number",
+      "maximum": 900.0,
+      "minimum": 0.0,
+      "title": "Warmup",
+      "default": 90.0
+     },
+     "suite": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Suite"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     }
+    },
+    "type": "object",
+    "required": [
+     "scenario"
+    ],
+    "title": "RunRequest"
+   },
+   "flowstate__experiments__assistant_api__RunRequest": {
+    "properties": {
+     "planId": {
+      "type": "string",
+      "title": "Planid"
+     }
+    },
+    "type": "object",
+    "required": [
+     "planId"
+    ],
+    "title": "RunRequest"
+   }
+  }
+ }
+}

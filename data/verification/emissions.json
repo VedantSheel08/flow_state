@@ -1,0 +1,34 @@
+{
+ "scenario": "rush_hour",
+ "seed": 7,
+ "controller": "fixed",
+ "warmup_s": 60.0,
+ "engine": {
+  "sumo": "SUMO 1.28.0",
+  "backend": "traci",
+  "stepLength": 0.25,
+  "revision": "494d434",
+  "emissionClasses": [
+   "HBEFA3/Bus",
+   "HBEFA3/HDV_D_EU4",
+   "HBEFA3/LDV_D_EU4",
+   "HBEFA3/PC_G_EU4",
+   "Zero"
+  ],
+  "emissionModel": "HBEFA3"
+ },
+ "recorder": {
+  "co2_total_g": 76535.11336277936,
+  "fuel_total_g": 24346.925863221837
+ },
+ "sumo_emission_output": {
+  "co2_total_g": 76410.33451727813,
+  "fuel_total_g": 24306.968550064084
+ },
+ "ratio_recorder_to_sumo": {
+  "co2": 1.0016330100671529,
+  "fuel": 1.0016438624617239
+ },
+ "co2_g_per_fuel_g": 3.143522668641808,
+ "reading": "Ratios near 1 mean the stored numbers are SUMO's own output, integrated per step; ~3.1 g CO2 per g fuel is the carbon content of petrol/diesel."
+}
