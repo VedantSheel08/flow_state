@@ -176,7 +176,12 @@ class ResponderGuard:
     * a unit whose stop is in a lane it never reached (blocked lane change) gets the stop moved to its own lane;
     * a unit wedged inside a junction (SUMO's bluelight device makes nearby cars yield to it, and a car that yields
       inside the junction can lock the unit in) is placed on the far side after ``JUNCTION_STUCK_S`` instead of waiting
-      for SUMO's 240 s teleport. Each of these is counted in ``rescues`` and reported in the results.
+      for SUMO's 240 s teleport;
+    * a unit held at the stop line by a car wedged inside the junction (a left-turner that yields to the unit's
+      stream while the unit waits for the box to clear: neither moves until SUMO teleports both) gets that car
+      moved out after the same ``JUNCTION_STUCK_S``.
+      Unit rescues are counted in ``rescues``, moved background cars in ``blocker_clears``; both are reported in the results
+      and each blocker clear is announced as a warning event, so they cannot hide congestion.
     """
 
     PERIOD = 2.0
@@ -189,7 +194,9 @@ class ResponderGuard:
         self.reroutes = 0
         self.stop_fixes = 0
         self.rescues = 0
+        self.blocker_clears = 0  # background cars moved out of a junction to free a unit; NOT SUMO teleports
         self.failures = 0
+        self._box_lanes: dict[str, list[str]] = {}
 
     def step(self, eng: "Engine", t: float, scenes: dict[str, str | None]) -> None:
         """``scenes`` maps each active unit to the edge it is heading for (its scene is allowed to be closed), or None."""
@@ -214,7 +221,7 @@ class ResponderGuard:
                 self.failures += 1
                 log.debug("responder guard failed for %s: %s", vid, e)
 
-    def _leave_junction(self, eng: "Engine", vid: str) -> None:
+    def _leave_junction(self, eng: "Engine", vid: str, blocker_of: str | None = None) -> None:
         T = eng.T
         route, idx = T.vehicle.getRoute(vid), T.vehicle.getRouteIndex(vid)
         nxt = route[idx + 1] if idx + 1 < len(route) else None
@@ -224,10 +231,29 @@ class ResponderGuard:
                 continue
             if any(T.vehicle.getLanePosition(v) < 15.0 for v in T.lane.getLastStepVehicleIDs(target)):
                 continue
+            waited = T.vehicle.getWaitingTime(vid)
             T.vehicle.moveTo(vid, target, 2.0)
-            self.rescues += 1
-            eng.emit("emergency", f"{eng.label(vid).split(' →')[0]} cleared a junction deadlock", "warning", vehicle=vid)
+            if blocker_of is None:
+                self.rescues += 1
+                eng.emit("emergency", f"{eng.label(vid).split(' →')[0]} cleared a junction deadlock", "warning", vehicle=vid)
+            else:
+                self.blocker_clears += 1
+                eng.emit("traffic", f"Car {vid} moved out of a junction after {waited:.0f} s deadlocked with {eng.label(blocker_of).split(' →')[0]}", "warning", vehicle=vid)
             return
+
+    def _clear_blocker(self, eng: "Engine", vid: str) -> None:
+        """Move out a car that has been stuck inside the junction the unit is waiting to enter."""
+        T = eng.T
+        edge = eng.net.edges.get(T.vehicle.getRoadID(vid))
+        if edge is None or T.lane.getLength(T.vehicle.getLaneID(vid)) - T.vehicle.getLanePosition(vid) > 5.0:
+            return
+        lanes = self._box_lanes.get(edge.to)
+        if lanes is None:
+            lanes = self._box_lanes[edge.to] = [lid for lid in T.lane.getIDList() if lid.startswith(f":{edge.to}_")]
+        for lid in lanes:
+            for other in T.lane.getLastStepVehicleIDs(lid):
+                if not other.startswith(("inc", "resp", "amb", "police")) and T.vehicle.getWaitingTime(other) >= self.JUNCTION_STUCK_S:
+                    self._leave_junction(eng, other, blocker_of=vid)
 
     def _unstick(self, eng: "Engine", vid: str) -> None:
         T = eng.T
@@ -237,6 +263,8 @@ class ResponderGuard:
             if T.vehicle.getWaitingTime(vid) >= self.JUNCTION_STUCK_S:
                 self._leave_junction(eng, vid)
             return
+        if T.vehicle.getWaitingTime(vid) >= self.JUNCTION_STUCK_S:
+            self._clear_blocker(eng, vid)
         stops = T.vehicle.getStops(vid, 1)
         if not stops:
             return
@@ -677,7 +705,7 @@ class Accident(Component):
                              "start": round(self.t_start, 1), "clearance": round(self.clearance, 1), "peakQueue": self.peak_queue,
                              "obstructed": self.obstructed, "closed": self.closed, "cleared": bool(self.inc and self.inc.cleared),
                              "responders": len(self._responders), "firstResponse": min(on_scene) if on_scene else None,
-                             "responderReroutes": self.guard.reroutes, "responderRescues": self.guard.rescues}}
+                             "responderReroutes": self.guard.reroutes, "responderRescues": self.guard.rescues, "blockerClears": self.guard.blocker_clears}}
 
 
 class Construction(Component):
@@ -838,7 +866,7 @@ class EmergencyDispatch(Component):
                  "freeFlow": c["ff"], "failed": c["failed"], "edge": c["edge"]} for c in self.calls]
         done = [r for r in rows if r["responseTime"] is not None]
         return {"ems": rows, "meanResponse": round(sum(r["responseTime"] for r in done) / len(done), 1) if done else None,
-                "emsGuard": {"reroutes": self.guard.reroutes, "rescues": self.guard.rescues, "stopFixes": self.guard.stop_fixes}}
+                "emsGuard": {"reroutes": self.guard.reroutes, "rescues": self.guard.rescues, "blockerClears": self.guard.blocker_clears, "stopFixes": self.guard.stop_fixes}}
 
     def status(self, eng) -> dict[str, Any]:
         return {"ems": [{"call": c["k"], "state": "pending" if not c["dispatched"] else ("on scene" if c["arrived"] is not None else "en route")} for c in self.calls]}
@@ -1014,7 +1042,7 @@ class Pursuit(Component):
     def results(self, eng) -> dict[str, Any]:
         return {"pursuit": {"outcome": self.state, "duration": None if self.stopped_at is None else round(self.stopped_at - self.t0, 1),
                             "closestApproach": None if self.min_dist is None else round(self.min_dist, 1), "units": len(self.spawned_units),
-                            "unitsRequested": self.units, "rescues": self.guard.rescues, "routingFailures": self.retarget_failures + len(self.unit_failures - set(self.spawned_units))}}
+                            "unitsRequested": self.units, "rescues": self.guard.rescues, "blockerClears": self.guard.blocker_clears, "routingFailures": self.retarget_failures + len(self.unit_failures - set(self.spawned_units))}}
 
 
 # ---------------------------------------------------------------------------
