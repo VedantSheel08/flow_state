@@ -1,10 +1,12 @@
-import { AlertTriangle, Check, Info, Minus, ShieldCheck } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { AlertTriangle, Check, Info, Loader2, Minus, Play, ShieldCheck } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CartesianGrid, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from 'recharts'
-import { Badge, Segmented, Tip } from '../components/ui'
+import { Badge, Button, Segmented, Tip } from '../components/ui'
+import { api } from '../lib/api'
 import {
   METRICS,
   VERDICT_LABEL,
+  fromLive,
   improvementPct,
   pairs,
   results,
@@ -12,12 +14,15 @@ import {
   verdict,
   type ControllerId,
   type DemandLevel,
+  type DemandResults,
   type MetricDef,
   type MetricKey,
+  type RlInfo,
   type SummaryGroup,
   type Verdict,
 } from '../lib/controllerResults'
 import { cn, num } from '../lib/format'
+import { useStore } from '../lib/store'
 
 // Categorical slots from the dataviz reference palette (validated light mode, all pairs).
 const COLOR: Record<ControllerId, string> = { queue_heuristic: '#2a78d6', fixed_time: '#eb6834', rl_ppo: '#1baf7a' }
@@ -111,10 +116,9 @@ function HeroTile({ k, group }: { k: MetricKey; group: SummaryGroup }) {
 
 // ---------------------------------------------------------------------------
 /** Dot-and-interval rows: FlowState's change vs fixed-time per traffic pattern, oriented so right = better. */
-function ScenarioChart({ level, k }: { level: DemandLevel; k: MetricKey }) {
-  const d = results.demand[level]
+function ScenarioChart({ d, k }: { d: DemandResults; k: MetricKey }) {
   const m = METRICS[k]
-  const rows = results.scenarios.map((s) => {
+  const rows = patternsIn(d).map((s) => {
     const g = d.perScenario[s.id]
     const base = g?.[BASE]?.metrics[k]
     const fs = g?.[FS]?.metrics[k]
@@ -190,8 +194,7 @@ function Row({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-function PairedScatter({ level }: { level: DemandLevel }) {
-  const d = results.demand[level]
+function PairedScatter({ d }: { d: DemandResults }) {
   const titles = Object.fromEntries(results.scenarios.map((s) => [s.id, s.title]))
   const pts = useMemo(() => pairs(d, BASE, FS).map((p) => ({ x: p.a.wait, y: p.b.wait, s: p.s, seed: p.seed })), [d])
   const wins = pts.filter((p) => p.y < p.x).length
@@ -278,9 +281,9 @@ function PairedScatter({ level }: { level: DemandLevel }) {
 }
 
 // ---------------------------------------------------------------------------
-function DetailTable({ level }: { level: DemandLevel }) {
-  const g = results.demand[level].overall
-  const cols: ControllerId[] = ['fixed_time', 'queue_heuristic', 'rl_ppo']
+function DetailTable({ d }: { d: DemandResults }) {
+  const g = d.overall
+  const cols = (['fixed_time', 'queue_heuristic', 'rl_ppo'] as ControllerId[]).filter((c) => g[c])
   return (
     <div className="rounded-xl border border-border bg-surface shadow-xs">
       <div className="border-b border-border px-4 py-3">
@@ -391,30 +394,122 @@ function Controllers() {
 }
 
 // ---------------------------------------------------------------------------
-function headline(level: DemandLevel) {
-  const d = results.demand[level]
+function patternsIn(d: DemandResults) {
+  return results.scenarios.filter((s) => d.perScenario[s.id])
+}
+
+function headline(d: DemandResults) {
   const fs = d.overall[FS]?.metrics
-  const wait = fs?.mean_wait_s?.vs?.pct
-  const queue = fs?.queue_max_veh?.vs?.pct
   const m = METRICS.mean_wait_s
-  const wins = results.scenarios.filter((s) => verdict(m, d.perScenario[s.id]?.[FS]?.metrics.mean_wait_s?.vs) === 'better')
-  const losses = results.scenarios.filter((s) => verdict(m, d.perScenario[s.id]?.[FS]?.metrics.mean_wait_s?.vs) === 'worse')
-  const tp = METRICS.teleports
-  const teleports = verdict(tp, fs?.teleports?.vs) === 'worse' ? { fs: fs?.teleports?.mean ?? 0, base: d.overall[BASE]?.metrics.teleports?.mean ?? 0 } : null
-  return { wait, queue, wins, losses, teleports, runs: fs?.mean_wait_s?.vs?.paired ?? 0 }
+  const pats = patternsIn(d)
+  const wins = pats.filter((s) => verdict(m, d.perScenario[s.id]?.[FS]?.metrics.mean_wait_s?.vs) === 'better')
+  const losses = pats.filter((s) => verdict(m, d.perScenario[s.id]?.[FS]?.metrics.mean_wait_s?.vs) === 'worse')
+  const teleports = verdict(METRICS.teleports, fs?.teleports?.vs) === 'worse' ? { fs: fs?.teleports?.mean ?? 0, base: d.overall[BASE]?.metrics.teleports?.mean ?? 0 } : null
+  return { wait: fs?.mean_wait_s?.vs?.pct, queue: fs?.queue_max_veh?.vs?.pct, wins, losses, teleports, patterns: pats.length, runs: fs?.mean_wait_s?.vs?.paired ?? 0 }
+}
+
+const SEED_OPTIONS = [3, 6]
+
+/** Fresh comparisons through /api/rl; renders nothing on backends without it. */
+function LivePanel({ info, level, onShow }: { info: RlInfo; level: DemandLevel; onShow: () => void }) {
+  const job = useStore((s) => s.rlJob)
+  const set = useStore((s) => s.set)
+  const [pattern, setPattern] = useState('all')
+  const [nSeeds, setNSeeds] = useState(3)
+  const [error, setError] = useState<string | null>(null)
+  const running = job?.status === 'queued' || job?.status === 'running'
+  const adaptive = info.controllers.find((c) => c.id === info.default_controller)
+
+  useEffect(() => {
+    if (!job || (job.status !== 'queued' && job.status !== 'running')) return
+    const iv = setInterval(() => {
+      api
+        .rlCompareJob(job.id)
+        .then((j) => {
+          set({ rlJob: j })
+          if (j.status === 'done') onShow()
+        })
+        .catch((e) => setError((e as Error).message))
+    }, 1500)
+    return () => clearInterval(iv)
+  }, [job, set, onShow])
+
+  const start = async () => {
+    setError(null)
+    const base = 10000 + Math.floor(Math.random() * 80000)
+    try {
+      const j = await api.rlCompare({
+        controllers: ['fixed_time', info.default_controller],
+        scenarios: pattern === 'all' ? info.scenarios.map((s) => s.id) : [pattern],
+        seeds: Array.from({ length: nSeeds }, (_, i) => base + i),
+        intensity: info.intensity[level],
+        baseline: 'fixed_time',
+        include_series: false,
+      })
+      set({ rlJob: j })
+    } catch (e) {
+      setError((e as Error).message)
+    }
+  }
+  const pct = job ? (job.progress.done / Math.max(1, job.progress.total)) * 100 : 0
+  return (
+    <div className="mt-3 rounded-xl border border-border bg-surface p-4 shadow-xs">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="mr-auto min-w-[260px]">
+          <div className="text-[13px] font-semibold text-ink">Run a fresh comparison</div>
+          <div className="text-[11.5px] text-ink-3">
+            Fixed-time vs {results.controllers[info.default_controller as ControllerId]?.title ?? adaptive?.title ?? info.default_controller} on new random seeds the controller has never seen, simulated in SUMO on this server now.
+          </div>
+        </div>
+        <Segmented
+          size="sm"
+          value={pattern}
+          onChange={setPattern}
+          options={[{ value: 'all', label: 'All patterns' }, ...info.scenarios.map((s) => ({ value: s.id, label: s.title.replace(' (held out)', '') }))]}
+        />
+        <Segmented size="sm" value={nSeeds} onChange={setNSeeds} options={SEED_OPTIONS.map((n) => ({ value: n, label: `${n} seeds` }))} />
+        <Button variant="primary" size="sm" onClick={start} disabled={running}>
+          {running ? <Loader2 size={13} className="animate-spin" /> : <Play size={12} />}
+          {running ? 'Running…' : 'Run in SUMO'}
+        </Button>
+      </div>
+      {running && job && (
+        <div className="mt-3 flex items-center gap-3 text-[12px]">
+          <div className="h-1.5 flex-1 rounded-full bg-muted">
+            <div className="h-full rounded-full bg-accent transition-[width]" style={{ width: `${pct}%` }} />
+          </div>
+          <span className="tnum text-ink-3">
+            {job.progress.done} / {job.progress.total} runs
+          </span>
+        </div>
+      )}
+      {job?.status === 'failed' && <div className="mt-2 text-[12px] text-bad">The comparison failed on the server. {job.error?.split('\n').slice(-1)[0]}</div>}
+      {error && <div className="mt-2 text-[12px] text-bad">{error}</div>}
+    </div>
+  )
 }
 
 export function ResultsView() {
   const [level, setLevel] = useState<DemandLevel>('standard')
   const [k, setK] = useState<MetricKey>('mean_wait_s')
-  const d = results.demand[level]
-  const h = headline(level)
+  const [info, setInfo] = useState<RlInfo | null>(null)
+  const job = useStore((s) => s.rlJob)
+  const [source, setSource] = useState<'recorded' | 'live'>(job?.status === 'done' ? 'live' : 'recorded')
+  useEffect(() => {
+    api.rlInfo().then(setInfo).catch(() => setInfo(null))
+  }, [])
+  const showLive = useCallback(() => setSource('live'), [])
+  const live = useMemo(() => (job?.status === 'done' && job.result ? fromLive(job.result) : null), [job])
+  const isLive = source === 'live' && live != null
+  const d = isLive ? live : results.demand[level]
+  const h = headline(d)
+  const fallbacks = isLive ? (job?.result?.fallbacks ?? []) : []
   return (
     <div className="scroll-y min-w-0 flex-1 bg-canvas">
       <div className="mx-auto max-w-[1280px] px-6 py-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-[760px]">
-            <div className="label-caps">Results · recorded SUMO evaluation</div>
+            <div className="label-caps">Results · {isLive ? 'live SUMO comparison' : 'recorded SUMO evaluation'}</div>
             <h1 className="mt-0.5 text-[22px] font-semibold tracking-[-0.015em] text-ink">FlowState vs fixed-time signals</h1>
             <p className="mt-1 text-[13px] leading-relaxed text-ink-2">
               Across <b className="tnum font-semibold text-ink">{h.runs}</b> paired runs, FlowState{' '}
@@ -429,7 +524,7 @@ export function ResultsView() {
                   and peak queues by <b className="tnum font-semibold text-ink">{h.queue > 0 ? '+' : ''}{h.queue.toFixed(1)}%</b>
                 </>
               )}
-              . It clearly cut waiting in <b className="font-semibold text-ink">{h.wins.length} of {results.scenarios.length}</b> traffic patterns
+              . It clearly cut waiting in <b className="font-semibold text-ink">{h.wins.length} of {h.patterns}</b> traffic {h.patterns === 1 ? 'pattern' : 'patterns'}
               {h.losses.length > 0 && (
                 <>
                   {' '}
@@ -446,15 +541,37 @@ export function ResultsView() {
               )}
             </p>
           </div>
-          <Segmented
-            value={level}
-            onChange={setLevel}
-            options={[
-              { value: 'standard', label: 'Standard peak', title: `Demand ×${results.demand.standard.intensity}` },
-              { value: 'stress', label: 'Over-saturated', title: `Demand ×${results.demand.stress.intensity}` },
-            ]}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            {live && (
+              <Segmented
+                value={source}
+                onChange={setSource}
+                options={[
+                  { value: 'recorded', label: 'Recorded evaluation' },
+                  { value: 'live', label: 'Your live run' },
+                ]}
+              />
+            )}
+            {!isLive && (
+              <Segmented
+                value={level}
+                onChange={setLevel}
+                options={[
+                  { value: 'standard', label: 'Standard peak', title: `Demand ×${results.demand.standard.intensity}` },
+                  { value: 'stress', label: 'Over-saturated', title: `Demand ×${results.demand.stress.intensity}` },
+                ]}
+              />
+            )}
+          </div>
         </div>
+
+        {info && <LivePanel info={info} level={level} onShow={showLive} />}
+
+        {fallbacks.length > 0 && (
+          <div className="mt-3 rounded-xl border border-warn/30 bg-warn-soft px-4 py-2.5 text-[12px] text-warn">
+            {fallbacks.map((f) => `${f.requested} was not available, so ${f.used} ran instead: ${f.reason}`).join(' ')}
+          </div>
+        )}
 
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {HERO.map((key) => (
@@ -470,25 +587,32 @@ export function ResultsView() {
             </div>
             <Segmented size="sm" value={k} onChange={setK} options={SCENARIO_METRICS.map((x) => ({ value: x, label: METRICS[x].label }))} />
           </div>
-          <ScenarioChart level={level} k={k} />
+          <ScenarioChart d={d} k={k} />
         </div>
 
         <div className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-[1.25fr_1fr]">
-          <PairedScatter level={level} />
+          <PairedScatter d={d} />
           <Controllers />
         </div>
 
         <div className="mt-3">
-          <DetailTable level={level} />
+          <DetailTable d={d} />
         </div>
 
         <div className="mt-3 flex gap-2 rounded-xl border border-border bg-subtle px-4 py-3 text-[11.5px] leading-relaxed text-ink-2">
           <Info size={14} className="mt-0.5 shrink-0 text-ink-3" />
           <div>
             <b className="font-medium text-ink">How these numbers were made.</b> SUMO runs of a {results.network.description.replace('2 x 2', '2×2')}, demand ×{d.intensity},{' '}
-            {results.scenarios.length} traffic patterns × {d.seeds.length} held-out seeds ({d.seeds[0]}–{d.seeds[d.seeds.length - 1]}) per strategy. The same seed produces
-            exactly the same vehicles for every strategy, so each comparison is paired. Results are from the 2×2 evaluation grid, not the district map in the Simulation tab.
-            Source: <code className="text-[11px]">{results.source.files.join(', ')}</code> at <code className="text-[11px]">{results.source.commit}</code>.
+            {h.patterns} traffic {h.patterns === 1 ? 'pattern' : 'patterns'} × {d.seeds.length} {isLive ? 'fresh random' : 'held-out'} seeds ({d.seeds[0]}–{d.seeds[d.seeds.length - 1]}) per strategy
+            {isLive && d.wallSeconds != null ? `, computed on this server in ${Math.round(d.wallSeconds)} s` : ''}. The same seed produces exactly the same vehicles for every strategy, so each
+            comparison is paired. Results are from the 2×2 evaluation grid, not the district map in the Simulation tab.{' '}
+            {isLive ? (
+              'Nothing here was tuned on these seeds.'
+            ) : (
+              <>
+                Source: <code className="text-[11px]">{results.source.files.join(', ')}</code> at <code className="text-[11px]">{results.source.commit}</code>.
+              </>
+            )}
           </div>
         </div>
       </div>

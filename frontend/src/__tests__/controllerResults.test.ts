@@ -1,7 +1,22 @@
 import { describe, expect, it } from 'vitest'
-import { METRICS, improvementPct, pairs, results, verdict, type VsBaseline } from '../lib/controllerResults'
+import { METRICS, fromLive, improvementPct, pairs, results, verdict, type RlResult, type VsBaseline } from '../lib/controllerResults'
+import live from './rlCompareResult.fixture.json'
 
-const vs = (diff: number, lo: number, hi: number): VsBaseline => ({ diff, ci95: [lo, hi], pct: null, p: null, better: 0, worse: 0, paired: 10 })
+const vs = (diff: number, lo: number, hi: number, paired = 10): VsBaseline => ({ diff, ci95: [lo, hi], pct: null, p: null, better: 0, worse: 0, paired })
+
+describe('live comparisons', () => {
+  const d = fromLive(live as unknown as RlResult)
+  it('converts a real /api/rl result', () => {
+    expect(d.seeds).toEqual([4100])
+    expect(Object.keys(d.perScenario)).toEqual(['balanced'])
+    expect(pairs(d, 'fixed_time', 'queue_heuristic')).toHaveLength(1)
+    expect(d.overall.queue_heuristic?.metrics.mean_wait_s?.vs?.paired).toBe(1)
+  })
+  it('never calls a single paired run a clear result', () => {
+    expect(verdict(METRICS.mean_wait_s, d.overall.queue_heuristic?.metrics.mean_wait_s?.vs)).toBe('unclear')
+    expect(verdict(METRICS.mean_wait_s, vs(-5, -9, -1, 2))).toBe('unclear')
+  })
+})
 
 describe('verdict', () => {
   it('is unclear when the interval crosses zero', () => {

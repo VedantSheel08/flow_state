@@ -104,9 +104,11 @@ export const scale = (m: MetricDef, v: number | null | undefined) => (v == null 
 
 export type Verdict = 'better' | 'worse' | 'unclear'
 
-/** Clear only when the paired 95% interval of the difference excludes zero. */
+export const MIN_PAIRED = 3
+
+/** Clear only when the paired 95% interval of the difference excludes zero, over enough paired runs to have one. */
 export function verdict(m: MetricDef, vs: VsBaseline | undefined): Verdict {
-  if (!vs) return 'unclear'
+  if (!vs || vs.paired < MIN_PAIRED) return 'unclear'
   const [lo, hi] = vs.ci95
   if (lo <= 0 && hi >= 0) return 'unclear'
   const lower = hi < 0
@@ -122,6 +124,90 @@ export function improvementPct(m: MetricDef, base: number, vs: VsBaseline): { mi
   const a = (sign * vs.ci95[0] * 100) / base
   const b = (sign * vs.ci95[1] * 100) / base
   return { mid: (sign * vs.diff * 100) / base, lo: Math.min(a, b), hi: Math.max(a, b) }
+}
+
+// ---- live comparisons: /api/rl (docs/RL_INTEGRATION_CONTRACT.md on task/rl-signal-control) ----
+
+export interface RlInfo {
+  scenarios: { id: string; title: string; description: string; held_out: boolean }[]
+  intensity: { standard: number; stress: number; range: [number, number] }
+  controllers: { id: string; title: string; available: boolean; status: string; note?: string }[]
+  default_controller: string
+}
+
+export interface RlCompareRequest {
+  controllers: string[]
+  scenarios: string[]
+  seeds: number[]
+  intensity: number
+  baseline: string
+  include_series: boolean
+}
+
+interface RawStats {
+  mean: number
+  std: number
+  min: number
+  max: number
+  vs_baseline?: { mean_diff: number; ci95: [number, number]; pct_change: number | null; wilcoxon_p: number | null; better_in: number; worse_in: number; paired: number }
+}
+type RawGroup = Record<string, { n: number; metrics: Record<string, RawStats> }>
+
+export interface RlResult {
+  request: RlCompareRequest
+  fallbacks: { requested: string; used: string; reason: string }[]
+  summary: { baseline: string; overall: RawGroup; per_scenario: Record<string, RawGroup> }
+  episodes: { requested_controller: string; scenario: string; seed: number; mean_wait_s: number; mean_travel_s: number; queue_max_veh: number; teleports: number }[]
+  wall_seconds: number
+  caveat: string
+}
+
+export interface RlJob {
+  id: string
+  status: 'queued' | 'running' | 'done' | 'failed'
+  progress: { done: number; total: number }
+  result: RlResult | null
+  error: string | null
+}
+
+function group(raw: RawGroup): SummaryGroup {
+  const out: SummaryGroup = {}
+  for (const [c, v] of Object.entries(raw)) {
+    const metrics: ControllerSummary['metrics'] = {}
+    for (const [k, m] of Object.entries(v.metrics)) {
+      const vs = m.vs_baseline
+      metrics[k as MetricKey] = {
+        mean: m.mean,
+        std: m.std,
+        min: m.min,
+        max: m.max,
+        vs: vs && { diff: vs.mean_diff, ci95: vs.ci95, pct: vs.pct_change, p: vs.wilcoxon_p, better: vs.better_in, worse: vs.worse_in, paired: vs.paired },
+      }
+    }
+    out[c as ControllerId] = { n: v.n, metrics }
+  }
+  return out
+}
+
+/** A finished live comparison in the shape the recorded results use. */
+export function fromLive(r: RlResult): DemandResults {
+  return {
+    intensity: r.request.intensity,
+    seeds: r.request.seeds,
+    episodes: r.episodes.length,
+    wallSeconds: r.wall_seconds,
+    overall: group(r.summary.overall),
+    perScenario: Object.fromEntries(Object.entries(r.summary.per_scenario).map(([s, g]) => [s, group(g)])),
+    runs: r.episodes.map((e) => ({
+      c: e.requested_controller as ControllerId,
+      s: e.scenario,
+      seed: e.seed,
+      wait: e.mean_wait_s,
+      travel: e.mean_travel_s,
+      queueMax: e.queue_max_veh,
+      teleports: e.teleports,
+    })),
+  }
 }
 
 /** Paired runs (same scenario + seed => identical vehicles) for two controllers. */

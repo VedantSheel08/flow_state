@@ -22,6 +22,8 @@ ui not fully good
     - headline tiles, per-pattern chart with 95% intervals, every-run scatter, full table, controllers + safety limits
     - only says "clear improvement" when the interval doesn't cross zero; shows losses too (rush-hour ramp, more teleports under stress)
     - data is copied from `task/rl-signal-control` (commit 109108e) by `frontend/scripts/extract_controller_results.py` - rerun it if Vedant updates the evaluation
-    - not live yet: once `/api/rl` is merged, the tab can also run fresh comparisons
+    - **live mode ready**: if the server has Vedant's `/api/rl` router, a "Run a fresh comparison" panel appears (fixed-time vs FlowState on new random seeds, live progress). Without it, the tab just shows the recorded results, so nothing breaks before the merge
+    - tested against Vedant's branch running locally (not merged): all 5 patterns x 3 fresh seeds ran in ~15 s, 8% less waiting / 14% smaller peak queues, rush-hour ramp still worse
+    - needs `numpy scipy gymnasium` on the server for comparisons (torch only if the RL policy ever passes its gate)
 - crash scenes look like crashes now (frontend renderer only, backend untouched)
 - UI/design polish: Krishna doing this in Claude Design

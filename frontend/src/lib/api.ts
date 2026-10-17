@@ -1,3 +1,4 @@
+import type { RlCompareRequest, RlInfo, RlJob } from './controllerResults'
 import { apiUrl } from './endpoints'
 import type { CompareJob, CongestionPreset, JunctionDetail, Kpi, NetworkGeom, RunInfo, RunRecord, RunStatus, ScenarioSpec, SimEvent, VehicleDetail } from './types'
 
@@ -65,4 +66,8 @@ export const api = {
   compare: (scenario: string, params: Record<string, unknown>, seed: number, key: string, values: unknown[]) =>
     req<CompareJob>('POST', '/api/compare', { scenario, params, seed, key, values }),
   compareJob: (id: string) => req<CompareJob>('GET', `/api/compare/${id}`),
+  // controller comparison on the 2x2 evaluation grid; absent (404) on backends without the RL router
+  rlInfo: () => req<RlInfo>('GET', '/api/rl/info'),
+  rlCompare: (body: RlCompareRequest) => req<RlJob>('POST', '/api/rl/compare', body),
+  rlCompareJob: (id: string) => req<RlJob>('GET', `/api/rl/compare/${encodeURIComponent(id)}`),
 }
