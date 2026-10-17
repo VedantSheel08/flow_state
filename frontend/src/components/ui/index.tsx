@@ -12,14 +12,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLBut
     <button
       ref={ref}
       className={cn(
-        'inline-flex shrink-0 select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-lg font-medium transition-[background-color,box-shadow,color,transform] duration-100 active:translate-y-px disabled:pointer-events-none disabled:opacity-45',
+        'inline-flex shrink-0 select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-lg font-medium transition-[background-color,box-shadow,color,scale] duration-150 ease-out active:scale-[0.96] disabled:pointer-events-none disabled:opacity-45',
         size === 'md' && 'h-8 px-3 text-[13px]',
         size === 'sm' && 'h-7 px-2.5 text-[12px]',
         size === 'icon' && 'h-8 w-8',
         size === 'icon-sm' && 'h-7 w-7',
-        variant === 'primary' &&
-          'bg-[linear-gradient(180deg,#222d40,#0c1322)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_1px_2px_rgba(16,24,40,0.24),0_0_0_1px_rgba(12,19,34,0.9)] hover:bg-[linear-gradient(180deg,#2b3850,#141d2e)]',
-        variant === 'secondary' && 'border border-border-strong bg-surface text-ink shadow-xs hover:border-[#c5ccd5] hover:bg-subtle',
+        variant === 'primary' && 'bg-ink text-white shadow-[0_1px_2px_rgba(12,19,34,0.2),inset_0_1px_0_rgba(255,255,255,0.08)] hover:bg-[#1d2638]',
+        variant === 'secondary' && 'bg-surface text-ink shadow-[inset_0_0_0_1px_var(--color-border-strong),0_1px_2px_rgba(12,19,34,0.04)] hover:bg-subtle active:bg-muted',
         variant === 'ghost' && 'text-ink-2 hover:bg-muted hover:text-ink',
         variant === 'danger' && 'border border-border-strong bg-surface text-bad hover:bg-bad-soft',
         className,
@@ -81,16 +80,16 @@ export function Slider({ value, min, max, step, onChange, onCommit, disabled }: 
 
 export function Segmented<T extends string | number>({ value, options, onChange, size = 'md', className }: { value: T; options: { value: T; label: ReactNode; title?: string }[]; onChange: (v: T) => void; size?: 'sm' | 'md'; className?: string }) {
   return (
-    <div className={cn('inline-flex rounded-lg border border-black/[0.06] bg-black/[0.035] p-0.5', className)}>
+    <div className={cn('inline-flex gap-0.5 rounded-lg bg-track p-0.5', className)}>
       {options.map((o) => (
         <button
           key={String(o.value)}
           title={o.title}
           onClick={() => onChange(o.value)}
           className={cn(
-            'rounded-md px-2 font-medium tnum transition-all duration-100',
+            'rounded-md px-2.5 font-medium tnum transition-[background-color,color,box-shadow] duration-150 ease-out',
             size === 'sm' ? 'h-6 text-[11.5px]' : 'h-7 text-[12px]',
-            o.value === value ? 'bg-surface text-ink shadow-[0_1px_2px_rgba(16,24,40,0.1),0_0_0_1px_rgba(16,24,40,0.04)]' : 'text-ink-2 hover:text-ink',
+            o.value === value ? 'bg-surface text-ink shadow-thumb' : 'text-ink-2 hover:text-ink',
           )}
         >
           {o.label}
@@ -112,9 +111,9 @@ export function Badge({ children, tone = 'neutral' }: { children: ReactNode; ton
         'inline-flex h-5 items-center rounded-full px-2 text-[11px] font-medium',
         tone === 'neutral' && 'bg-muted text-ink-2',
         tone === 'accent' && 'bg-accent-soft text-accent-strong',
-        tone === 'good' && 'bg-good-soft text-good',
-        tone === 'warn' && 'bg-warn-soft text-warn',
-        tone === 'bad' && 'bg-bad-soft text-bad',
+        tone === 'good' && 'bg-good-soft text-good shadow-[inset_0_0_0_1px_var(--color-good-line)]',
+        tone === 'warn' && 'bg-warn-soft text-warn shadow-[inset_0_0_0_1px_var(--color-warn-line)]',
+        tone === 'bad' && 'bg-bad-soft text-bad shadow-[inset_0_0_0_1px_var(--color-bad-line)]',
       )}
     >
       {children}
