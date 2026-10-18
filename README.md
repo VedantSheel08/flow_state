@@ -80,8 +80,9 @@ compiled with `netconvert` (`backend/flowstate/network/toronto.py` + `city.py`):
 **Driver behaviour.** Car following uses IDM; lane changing uses SL2015 with the sublane model (0.8 m lateral
 resolution). Each run draws 8 driver profiles per vehicle class from bounded normal distributions (headway,
 acceleration, deceleration, gap, lane-change eagerness) using the run seed. SUMO adds per-vehicle desired-speed
-factors. Vehicle dimensions follow North-American averages. Emergency vehicles get no priority from the simulation: they
-stop at red lights and other drivers do not pull over; clearing their path is left to the signal controller.
+factors. Vehicle dimensions follow North-American averages. Emergency vehicles use SUMO's bluelight device: with their
+lights on, nearby drivers slow and move aside. They still stop at red lights and get no signal pre-emption; clearing
+their path at signals is left to the signal controller.
 
 **Demand.** Trips are Poisson arrivals from a time-varying origin–destination model: network fringe by compass
 side, or city-block frontages (driveways and parking). Scenarios can add venue attractors and generators.

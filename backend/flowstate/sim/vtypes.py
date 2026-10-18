@@ -10,11 +10,13 @@ Behaviour uses models built into SUMO:
   lateral movement, so cyclists keep right and cars pass them within a lane.
 * **Desired speed** — SUMO draws a per-vehicle ``speedFactor`` from
   ``normc(mean, dev, min, max)``; drivers do not all target the limit.
-* **Emergency vehicles** — ``vClass=emergency``. They get no priority from
-  the simulation: they stop at red lights and drivers around them do not make
-  way (clearing their path is left to the signal controller). With its lights
-  on a unit drives above the limit; with them off it switches to its
-  ``@quiet`` variant, which keeps to the limit.
+* **Emergency vehicles** — ``vClass=emergency`` with SUMO's *bluelight*
+  device: with the lights on, drivers within its reaction distance slow and
+  move aside (rescue lane). Units still stop at red lights and get no signal
+  pre-emption (clearing their path at signals is left to the signal
+  controller). With its lights on a unit drives above the limit; with them off
+  it switches to its ``@quiet`` variant, which keeps to the limit, and
+  ``Engine._lights_off`` sets the device's reaction distance to zero.
 
 Each run draws ``PROFILES`` driver profiles per class from bounded normal
 distributions using the run seed (``Class@k`` type ids), so two drivers of the
@@ -69,9 +71,11 @@ TYPES: list[TypeDef] = [
     TypeDef("bike", "bicycle", 1.75, 0.65, 1.7, 8.0, (1.0, 0.2), (3.0, 0.3), (1.0, 0.2), (1.2, 0.3), "normc(0.75,0.12,0.5,1.0)",
             {"latAlignment": "right", "minGapLat": "0.35", "maxSpeedLat": "0.8", "jmCrossingGap": "4"}, lc={"lcSpeedGain": (0.8, 0.3)}),
     TypeDef("ambulance", "emergency", 6.6, 2.3, 2.8, 30, (2.4, 0.0), (5.0, 0.0), (0.9, 0.0), (2.0, 0.0), "normc(1.25,0.02,1.2,1.3)",
-            {"latAlignment": "center", "minGapLat": "0.5", "maxSpeedLat": "1.5", "lcStrategic": "2"}, profiles=1),
+            {"latAlignment": "center", "minGapLat": "0.5", "maxSpeedLat": "1.5", "lcStrategic": "2"},
+            params={"has.bluelight.device": "true", "device.bluelight.reactiondist": "70"}, profiles=1),
     TypeDef("police", "emergency", 5.05, 1.95, 1.55, 40, (3.0, 0.0), (5.5, 0.0), (0.8, 0.0), (2.0, 0.0), "normc(1.3,0.02,1.25,1.35)",
-            {"latAlignment": "center", "minGapLat": "0.5", "maxSpeedLat": "1.5", "lcStrategic": "2"}, profiles=1),
+            {"latAlignment": "center", "minGapLat": "0.5", "maxSpeedLat": "1.5", "lcStrategic": "2"},
+            params={"has.bluelight.device": "true", "device.bluelight.reactiondist": "60"}, profiles=1),
     TypeDef("suspect", "passenger", 4.75, 1.84, 1.45, 40, (3.2, 0.0), (5.5, 0.0), (0.7, 0.0), (1.6, 0.0), "normc(1.3,0.03,1.2,1.4)",
             {"latAlignment": "center", "minGapLat": "0.4", "maxSpeedLat": "1.6", "lcAssertive": "3", "lcSpeedGain": "3", "lcStrategic": "1.5", "impatience": "1"}, profiles=1),
     TypeDef("wreck", "passenger", 4.75, 1.84, 1.45, 1, (0.5, 0.0), (4.5, 0.0), (1.0, 0.0), (2.5, 0.0), "1", profiles=1),

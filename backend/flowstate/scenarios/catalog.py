@@ -95,7 +95,7 @@ def _accident(sc: Scenario) -> Recipe:
     params=[*common(1600, 10),
             ParamSpec(key="calls", label="Calls", type="int", default=2, min=1, max=4, step=1)],
     measures=["Response time vs. free-flow"],
-    assumptions=["Ambulances get no priority from the simulation: they stop at red lights and other drivers do not pull over; clearing their path is left to the signal controller.", "Free-flow time assumes 125 % of the posted limit."],
+    assumptions=["Nearby drivers slow and move aside for an ambulance with its lights on (SUMO's bluelight device); it still stops at red lights and gets no signal pre-emption, so clearing its path at signals is left to the signal controller.", "Free-flow time assumes 125 % of the posted limit."],
 ))
 def _ambulance(sc: Scenario) -> Recipe:
     p = sc.params

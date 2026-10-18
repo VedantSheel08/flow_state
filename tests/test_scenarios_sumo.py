@@ -7,10 +7,11 @@ Every test drives a full SUMO run and inspects what SUMO did. ``FLOWSTATE_SWEEP_
 import os
 
 import pytest
-from scenario_audit import Audit, custom_scenario, run_audit
+from scenario_audit import Audit, custom_scenario, is_owned, run_audit
 
 from flowstate.scenarios.catalog import CATALOG
 from flowstate.scenarios.components import Construction, EmergencyDispatch, poi_edges
+from flowstate.sim.vtypes import EMERGENCY_TYPES, TYPE_BY_ID
 
 SEEDS = [int(s) for s in os.environ.get("FLOWSTATE_SWEEP_SEEDS", "1,2").split(",")]
 # Gridlock teleports of ordinary vehicles that no scenario component owns. SUMO's junction model can wedge a ring of
@@ -186,6 +187,59 @@ def test_ambulance_drives_around_a_closed_street():
     assert not a.roads["amb1"] & closed_block, f"ambulance used the closed block {closed_block & a.roads['amb1']}"
     civilians = {v for v, roads in a.roads.items() if v.startswith("v") and roads & closed_block}
     assert len(civilians) <= 3, f"{len(civilians)} cars drove on the closed block"
+
+
+def watch_drivers_ahead(near: dict, ahead: float = 60.0):
+    """Record civilians on an active unit's street within ``ahead`` m in front of it: peak lateral offset and speeds."""
+    def watch(eng, audit):
+        T = eng.T
+        for ev in eng.emergency_active():
+            road = T.vehicle.getRoadID(ev)
+            if road.startswith(":"):
+                continue
+            pos = T.vehicle.getLanePosition(ev)
+            for v in T.edge.getLastStepVehicleIDs(road):
+                if v == ev or is_owned(eng, v) or not 0 < T.vehicle.getLanePosition(v) - pos <= ahead:
+                    continue
+                r = near.setdefault(v, {"lat": 0.0, "v0": T.vehicle.getSpeed(v), "vmin": T.vehicle.getSpeed(v)})
+                r["lat"] = max(r["lat"], abs(T.vehicle.getLateralLanePosition(v)))
+                r["vmin"] = min(r["vmin"], T.vehicle.getSpeed(v))
+    return watch
+
+
+def test_drivers_make_way_for_an_ambulance(monkeypatch):
+    """With its lights on an ambulance's bluelight device makes drivers ahead move aside; without it they mostly don't.
+
+    Lights off resets the device's reaction distance to zero.
+    """
+    stats = {}
+    for device in (True, False):
+        with monkeypatch.context() as m:
+            if not device:
+                for k in EMERGENCY_TYPES:
+                    m.setattr(TYPE_BY_ID[k], "params", {})
+            near, quiet = {}, {}
+            for seed in SEEDS:
+                watch = watch_drivers_ahead(near)
+
+                def on_step(eng, audit, watch=watch):
+                    watch(eng, audit)
+                    for q in eng._quiet & set(eng.vehicles):
+                        if device and q not in quiet:
+                            quiet[q] = eng.T.vehicle.getParameter(q, "device.bluelight.reactiondist")
+
+                a = run_audit("ambulance", seed, {"calls": 2}, duration=10, on_step=on_step, label=f"amb_yield_{seed}_{device}")
+                assert not a.owned_teleports and len(a.emergency_collisions) <= 1, (seed, a.owned_teleports, a.emergency_collisions)
+        moving = [r for r in near.values() if r["v0"] > 3]
+        stats[device] = {"near": len(near), "shifted": sum(r["lat"] > 0.3 for r in near.values()) / max(len(near), 1),
+                         "slowdown": sum(1 - r["vmin"] / r["v0"] for r in moving) / max(len(moving), 1), "quiet": quiet}
+    on, off = stats[True], stats[False]
+    print(f"drivers ahead of an ambulance, device on {on} / off {off}")
+    assert on["near"] >= 5, "too few drivers ahead of an ambulance to judge"
+    assert on["shifted"] >= 0.75, f"only {on['shifted']:.0%} of drivers ahead moved aside"
+    assert on["shifted"] >= off["shifted"] + 0.3, (on, off)
+    assert on["slowdown"] >= off["slowdown"] - 0.05, (on, off)  # slowing is modest; it must at least not get worse
+    assert on["quiet"] and all(float(d) == 0 for d in on["quiet"].values()), on["quiet"]
 
 
 def test_responders_and_construction_never_meet_on_the_same_block():

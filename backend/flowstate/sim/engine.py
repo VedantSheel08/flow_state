@@ -232,7 +232,11 @@ class Engine:
         return [v for v, tr in self.tracked.items() if tr.kind in ("ambulance", "police", "responder") and v in self.vehicles and tr.data.get("priority", True)]
 
     def _lights_off(self) -> None:
-        """A unit that turns its lights off switches to its ``@quiet`` type and keeps to the limit again."""
+        """A unit that turns its lights off switches to its ``@quiet`` type and keeps to the limit again.
+
+        Its bluelight device stays attached across the type switch, so its reaction distance drops to zero and drivers
+        stop making way for it.
+        """
         for vid, tr in self.tracked.items():
             if tr.kind in ("ambulance", "police", "responder") and vid in self.vehicles and vid not in self._quiet and not tr.data.get("priority", True):
                 self._quiet.add(vid)
@@ -240,6 +244,7 @@ class Engine:
                 try:
                     self.T.vehicle.setType(vid, quiet)
                     self.vtype[vid] = quiet
+                    self.T.vehicle.setParameter(vid, "device.bluelight.reactiondist", "0")
                 except Exception as e:  # noqa: BLE001
                     log.debug("could not switch %s to %s: %s", vid, quiet, e)
 
