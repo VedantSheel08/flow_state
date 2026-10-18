@@ -1,4 +1,5 @@
 import { Expand, PanelLeft, PanelRight, Shrink } from 'lucide-react'
+import logo from '../assets/flowstate-logo.png'
 import { useStore, type View } from '../lib/store'
 import { cn } from '../lib/format'
 import { Tip } from './ui'
@@ -9,17 +10,6 @@ const TABS: { id: View; label: string }[] = [
   { id: 'runs', label: 'Run history' },
   { id: 'results', label: 'Results' },
 ]
-
-export function Logo() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden>
-      <rect width="24" height="24" rx="6" fill="#0c1322" />
-      <path d="M6 9h7.5a2.5 2.5 0 0 0 0-5" stroke="#2a78d6" strokeWidth="2" fill="none" strokeLinecap="round" />
-      <path d="M6 15h12" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6 20h5" stroke="#eb6834" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  )
-}
 
 function PanelToggle({ label, active, onClick, children }: { label: string; active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -47,9 +37,8 @@ export function Header() {
   const mapOnly = !panels.left && !panels.right
   return (
     <header className="relative z-20 flex h-12 shrink-0 items-center gap-7 border-b border-border bg-surface pl-5 pr-4">
-      <div className="flex shrink-0 items-center gap-2.5">
-        <Logo />
-        <span className="text-[14px] font-[650] tracking-[-0.01em] text-ink">FlowState</span>
+      <div className="flex shrink-0 items-center">
+        <img src={logo} alt="FlowState" className="h-6 w-auto select-none" draggable={false} />
       </div>
       <nav aria-label="Main" className="flex gap-[22px] self-stretch">
         {TABS.map((t) => (
