@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -33,15 +34,16 @@ PPO_CHECKPOINT = "run4/best_validation.zip"  # the per-junction (v2 observation)
 # Same palette as the lab's map (BGR order for OpenCV): light land, curb bed, kerb line, grey asphalt, yellow centre line.
 LAND, CURB_BED, KERB, ASPHALT, YELLOW = (230, 234, 232), (225, 222, 220), (195, 188, 183), (107, 99, 94), (59, 185, 226)
 CAR_BGR = [(235, 232, 229), (191, 182, 170), (179, 160, 141), (163, 185, 199), (144, 149, 169), (154, 168, 147)]  # the lab's fixed car colours
-SCALE = 3.0  # camera pixels per metre
+SCALE = 4.5  # camera pixels per metre: 3 px/m merged queued cars (79% precision), 4.5 px/m separates them (99% / 99%), 6 px/m only costs more time
 VIEW_M = 160.0  # camera footprint, metres per side
-SIZE = int(VIEW_M * SCALE)
-CAR_AREA_PX = 4.5 * 1.8 * SCALE * SCALE  # a passenger car as it appears in the image
+STOP_OVERLAP = float(os.environ.get("FLOWSTATE_STOP_OVERLAP", 0.88))  # share of a car's box that must sit on last second's foreground to call it stopped
 REGION_M = 80.0  # queue estimation window upstream of each stop line (what the camera covers)
 
 
 class Perception:
-    def __init__(self) -> None:
+    def __init__(self, ppm: float | None = None) -> None:
+        self.scale = float(ppm or os.environ.get("FLOWSTATE_CAMERA_PPM", SCALE))  # camera pixels per metre
+        self.size = int(VIEW_M * self.scale)
         self._ppo: Any = None
         self._ppo_err: str | None = None
         self._cv: Any = None
@@ -110,7 +112,7 @@ class Perception:
 
     def camera_status(self) -> dict[str, Any]:
         cv = self._cv2()
-        return {"available": cv is not None, "reason": self._cv_err, "synthetic": True, "footprintM": VIEW_M, "pixelsPerMetre": SCALE,
+        return {"available": cv is not None, "reason": self._cv_err, "synthetic": True, "footprintM": VIEW_M, "pixelsPerMetre": self.scale,
                 "note": "rendered from the simulation, not real footage: an upper bound on real camera accuracy"}
 
     def _geometry(self, sim: Any) -> dict[str, Any]:
@@ -121,7 +123,7 @@ class Perception:
         return self._geom
 
     def _px(self, x: float, y: float, c: tuple[float, float]) -> tuple[int, int]:
-        return int(round(SIZE / 2 + (x - c[0]) * SCALE)), int(round(SIZE / 2 - (y - c[1]) * SCALE))
+        return int(round(self.size / 2 + (x - c[0]) * self.scale)), int(round(self.size / 2 - (y - c[1]) * self.scale))
 
     def _background(self, sim: Any, jid: str) -> tuple[np.ndarray, tuple[float, float]]:
         """The empty scene in the same palette as the lab's map (light land, curb bed, kerb line, grey asphalt, dashed lane lines, yellow centre line, stop bars)."""
@@ -129,11 +131,11 @@ class Perception:
         g = self._geometry(sim)
         c = tuple(next(j["c"] for j in g["junctions"] if j["id"] == jid))
         if jid not in self._bg:
-            img = np.full((SIZE, SIZE, 3), LAND, np.uint8)
+            img = np.full((self.size, self.size, 3), LAND, np.uint8)
             px = lambda pts: np.array([self._px(x, y, c) for x, y in pts], np.int32)  # noqa: E731
             for color, extra in ((CURB_BED, 5.2), (KERB, 0.7), (ASPHALT, 0.05)):  # curb bed, then kerb line, then asphalt on top
                 for ln in g["lanes"]:
-                    cv.polylines(img, [px(ln["s"])], False, color, max(1, int((ln["w"] + extra) * SCALE)))
+                    cv.polylines(img, [px(ln["s"])], False, color, max(1, int((ln["w"] + extra) * self.scale)))
                 for j in g["junctions"]:
                     cv.fillPoly(img, [px(j["s"])], color)
             edges: dict[str, list[dict[str, Any]]] = {}
@@ -144,7 +146,7 @@ class Perception:
                 lanes = sorted(lanes, key=lambda l: l["id"])
                 for a_, b_ in zip(lanes, lanes[1:]):  # dashed divider halfway between neighbouring lanes
                     if len(a_["s"]) == len(b_["s"]):
-                        self._dashed(img, px([((p[0] + q[0]) / 2, (p[1] + q[1]) / 2) for p, q in zip(a_["s"], b_["s"])]), (246, 250, 250), 2.5 * SCALE, 3.5 * SCALE)
+                        self._dashed(img, px([((p[0] + q[0]) / 2, (p[1] + q[1]) / 2) for p, q in zip(a_["s"], b_["s"])]), (246, 250, 250), 2.5 * self.scale, 3.5 * self.scale)
                 inner = lanes[-1]  # the left edge of the last lane is the centre line
                 (x0, y0), (x1, y1) = inner["s"][0], inner["s"][-1]
                 L = float(np.hypot(x1 - x0, y1 - y0)) or 1.0
@@ -190,7 +192,7 @@ class Perception:
             rad = np.radians(ang)  # SUMO angle: degrees clockwise from north; (x, y) is the front bumper
             fx, fy = np.sin(rad), np.cos(rad)
             cx_, cy_ = x - fx * length / 2, y - fy * length / 2
-            rect = ((SIZE / 2 + (cx_ - c[0]) * SCALE, SIZE / 2 - (cy_ - c[1]) * SCALE), (1.8 * SCALE, length * SCALE), ang)
+            rect = ((self.size / 2 + (cx_ - c[0]) * self.scale, self.size / 2 - (cy_ - c[1]) * self.scale), (1.8 * self.scale, length * self.scale), ang)
             box = cv.boxPoints(rect).astype(np.int32)
             cv.fillPoly(img, [box + np.array([2, 2])], (60, 62, 66))  # shadow
             cv.fillPoly(img, [box], col)
@@ -201,38 +203,63 @@ class Perception:
         return np.clip(noisy, 0, 255).astype(np.uint8)
 
     def _detect(self, frame: np.ndarray, bg: np.ndarray) -> tuple[np.ndarray, list[dict[str, Any]]]:
+        """Foreground blobs of |frame - empty road|. No morphological close: it would bridge the small gap between two queued cars."""
         cv = self._cv2()
         diff = cv.absdiff(cv.cvtColor(frame, cv.COLOR_BGR2GRAY), cv.cvtColor(bg, cv.COLOR_BGR2GRAY))
-        diff = cv.GaussianBlur(diff, (5, 5), 0)
+        diff = cv.GaussianBlur(diff, (3, 3), 0)
         _, mask = cv.threshold(diff, 22, 255, cv.THRESH_BINARY)
         mask = cv.morphologyEx(mask, cv.MORPH_OPEN, np.ones((3, 3), np.uint8))
-        mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, np.ones((3, 3), np.uint8))
         n, labels, stats, cents = cv.connectedComponentsWithStats(mask, connectivity=8)
         blobs = []
+        floor = 0.35 * (getattr(self, "_car_px", None) or 4.5 * 1.8 * self.scale * self.scale)
         for k in range(1, n):
             x, y, w, h, area = (int(v) for v in stats[k])
-            if area < 0.35 * (getattr(self, "_car_px", None) or CAR_AREA_PX):
+            if area < floor:
                 continue
-            blobs.append({"box": [x, y, w, h], "area": area, "centroid": [round(float(cents[k][0]), 1), round(float(cents[k][1]), 1)], "label": k})
+            ys, xs = np.nonzero(labels[y:y + h, x:x + w] == k)
+            rect = cv.minAreaRect(np.stack([xs + x, ys + y], axis=1).astype(np.float32))
+            blobs.append({"box": [x, y, w, h], "area": area, "centroid": [round(float(cents[k][0]), 1), round(float(cents[k][1]), 1)], "label": k, "rect": rect})
         return mask, blobs
+
+    def _cars_in(self, b: dict[str, Any]) -> list[np.ndarray]:
+        """One oriented box (4 pixel corners) per car in a blob. A lone car is the blob's own minimum-area rectangle. Touching cars have merged into one blob,
+        so it is cut into the number of cars its area implies (area / one calibrated car), split across the lanes first (its short side / one car width)
+        and then along them, giving equal cells aligned with the blob."""
+        cv = self._cv2()
+        (cx, cy), (w, h), ang = b["rect"]
+        n = max(1, int(round(b["area"] / self._car_area())))
+        if n == 1 or n > 60:
+            return [cv.boxPoints(b["rect"])]
+        th = np.radians(ang)
+        u, v = np.array([np.cos(th), np.sin(th)]), np.array([-np.sin(th), np.cos(th)])  # the rectangle's width and height directions
+        along, across, la, lb = (u, v, w, h) if w >= h else (v, u, h, w)
+        ny = max(1, min(4, int(round(lb / (1.9 * self.scale)))))
+        nx = max(1, int(round(n / ny)))
+        cars = []
+        for i in range(nx):
+            for j in range(ny):
+                c = np.array([cx, cy]) + along * ((i + 0.5) / nx - 0.5) * la + across * ((j + 0.5) / ny - 0.5) * lb
+                hl, hw = la / nx / 2, lb / ny / 2
+                cars.append(np.array([c - along * hl - across * hw, c + along * hl - across * hw, c + along * hl + across * hw, c - along * hl + across * hw]))
+        return cars
+
+    @property
+    def _car_fallback(self) -> float:
+        return 4.5 * 1.8 * self.scale * self.scale
 
     def _car_area(self) -> float:
         """Blob area (px) of one isolated passenger car as THIS pipeline sees it (shadow, blur and threshold included), measured on a plain road
         patch with every palette colour."""
         if getattr(self, "_car_px", None) is None:
-            plain = np.full((SIZE, SIZE, 3), ASPHALT, np.uint8)
+            plain = np.full((self.size, self.size, 3), ASPHALT, np.uint8)
             areas = []
             for i in range(7):
                 veh = [[i, 0, 0, 0.0, 0, 0, 0]]  # centre of the view, heading north, vtype car; id selects the colour
                 _, blobs = self._detect(self._render(veh, plain, (0.0, 0.0), 10.0 + i), plain)
                 if len(blobs) == 1:
                     areas.append(blobs[0]["area"])
-            self._car_px = float(np.median(areas)) if areas else CAR_AREA_PX
+            self._car_px = float(np.median(areas)) if areas else self._car_fallback
         return self._car_px
-
-    def _vehicles_in(self, area: float) -> int:
-        """Cars in a blob, from its area. Touching cars merge, so this is an estimate (it is accurate on average but noisy in dense jams)."""
-        return max(1, int(round(area / self._car_area())))
 
     def camera_view(self, sim: Any, jid: str, poses_now: list[list[float]], poses_prev: list[list[float]] | None, t: float) -> dict[str, Any]:
         cv = self._cv2()
@@ -245,33 +272,46 @@ class Perception:
             ref = self._ref[jid] = cv.GaussianBlur(bg, (3, 3), 0)
         frame = self._render(poses_now, bg, c, t)
         mask_now, blobs = self._detect(frame, ref)
-        stopped_frac = {}
-        if poses_prev is not None:  # a blob that sits on the same pixels one second earlier is a stopped vehicle
-            prev_mask, _ = self._detect(self._render(poses_prev, bg, c, t - 1.0), ref)
-            _, labels = cv.connectedComponents(mask_now, connectivity=8)
-            for b in blobs:
-                sel = labels == b["label"]
-                stopped_frac[b["label"]] = float(((prev_mask > 0) & sel).sum() / max(1, sel.sum()))
-        self._car_area()
+        prev_mask = self._detect(self._render(poses_prev, bg, c, t - 1.0), ref)[0] if poses_prev is not None else None
+        S, Z = self.scale, self.size
+        to_world = lambda px, py: (c[0] + (px - Z / 2) / S, c[1] - (py - Z / 2) / S)  # noqa: E731
+        cars: list[dict[str, Any]] = []
         for b in blobs:
-            b["estimatedVehicles"] = self._vehicles_in(b["area"])
-            b["stopped"] = stopped_frac.get(b["label"], 0.0) >= 0.88 if poses_prev is not None else None
-            b["stationaryOverlap"] = round(stopped_frac.get(b["label"], 0.0), 2)
-            b.pop("label")
-        # ground truth from SUMO for the same footprint
-        truth = [(int(v[0]), v[1] / 10.0, v[2] / 10.0, v[5] / 10.0) for v in poses_now if abs(v[1] / 10.0 - c[0]) <= VIEW_M / 2 and abs(v[2] / 10.0 - c[1]) <= VIEW_M / 2]
-        used, matched = set(), 0
-        for b in blobs:
-            bx = c[0] + (b["centroid"][0] - SIZE / 2) / SCALE
-            by = c[1] - (b["centroid"][1] - SIZE / 2) / SCALE
-            best = min(((i, np.hypot(tx - bx, ty - by)) for i, (_, tx, ty, _) in enumerate(truth) if i not in used), key=lambda p: p[1], default=None)
-            # a vehicle's reference point is its front bumper, so allow up to a vehicle length between blob centroid and that point
-            if best and best[1] <= 5.0:
-                used.add(best[0])
-                matched += 1
-                b["matchedTruth"] = True
-            else:
-                b["matchedTruth"] = False
+            polys = self._cars_in(b)
+            for poly in polys:
+                x0, y0 = np.floor(poly.min(axis=0)).astype(int).clip(0, Z - 1)
+                x1, y1 = np.ceil(poly.max(axis=0)).astype(int).clip(0, Z - 1)
+                stopped, overlap = None, 0.0
+                if prev_mask is not None:  # a car that sits on the same pixels one second earlier is stopped
+                    cell = np.zeros((y1 - y0 + 1, x1 - x0 + 1), np.uint8)
+                    cv.fillPoly(cell, [np.round(poly - [x0, y0]).astype(np.int32)], 255)
+                    inside = cell > 0
+                    overlap = float((prev_mask[y0:y1 + 1, x0:x1 + 1][inside] > 0).mean()) if inside.any() else 0.0
+                    stopped = overlap >= STOP_OVERLAP
+                ctr = poly.mean(axis=0)
+                cars.append({"poly": np.round(poly, 1).tolist(), "box": [int(x0), int(y0), int(x1 - x0), int(y1 - y0)], "centroid": [round(float(ctr[0]), 1), round(float(ctr[1]), 1)],
+                             "stopped": stopped, "stationaryOverlap": round(overlap, 2), "split": len(polys) > 1})
+        # ground truth: SUMO's own vehicles in the footprint, at their centres (SUMO reports the front bumper)
+        truth = []
+        for v in poses_now:
+            x, y = v[1] / 10.0, v[2] / 10.0
+            if abs(x - c[0]) > VIEW_M / 2 or abs(y - c[1]) > VIEW_M / 2:
+                continue
+            length = {0: 4.5, 1: 8.0, 2: 6.0}.get(int(v[4]), 4.5)
+            r = np.radians(v[3])
+            truth.append((int(v[0]), x - np.sin(r) * length / 2, y - np.cos(r) * length / 2, v[5] / 10.0))
+        pairs = sorted(((float(np.hypot(*(np.array(to_world(*d["centroid"])) - [tx, ty]))), i, k) for i, d in enumerate(cars) for k, (_, tx, ty, _) in enumerate(truth)))
+        used_d, used_t, matched = set(), set(), 0
+        for dist, i, k in pairs:
+            if dist > 2.5:
+                break
+            if i in used_d or k in used_t:
+                continue
+            used_d.add(i)
+            used_t.add(k)
+            matched += 1
+        for i, d in enumerate(cars):
+            d["matchedTruth"] = i in used_d
         approaches = []
         for a in self._geometry(sim)["approaches"]:
             if not a["key"].startswith(jid + ":"):
@@ -285,23 +325,20 @@ class Perception:
                 return -2.0 <= float(d @ u) <= REGION_M and abs(float(d @ n_)) <= 7.0
 
             truth_q = sum(1 for _, tx, ty, sp in truth if sp < 0.1 and inside(tx, ty))
-            det_q = 0
-            for bl in blobs:
-                bx = c[0] + (bl["centroid"][0] - SIZE / 2) / SCALE
-                by = c[1] - (bl["centroid"][1] - SIZE / 2) / SCALE
-                if bl.get("stopped") and inside(bx, by):
-                    det_q += bl["estimatedVehicles"]
+            det_q = sum(1 for d in cars if d["stopped"] and inside(*to_world(*d["centroid"])))
             approaches.append({"approach": a["key"], "cameraQueue": det_q, "sumoQueue": truth_q, "error": det_q - truth_q})
         ok, jpg = cv.imencode(".jpg", frame, [cv.IMWRITE_JPEG_QUALITY, 80])
         ok2, mjpg = cv.imencode(".png", mask_now)
         self.timing["camera"].append((time.perf_counter() - t0) * 1000)
-        return {"available": True, "synthetic": True, "junction": jid, "t": t, "size": SIZE, "pixelsPerMetre": SCALE, "footprintM": VIEW_M,
+        return {"available": True, "synthetic": True, "junction": jid, "t": t, "size": Z, "pixelsPerMetre": S, "footprintM": VIEW_M,
                 "frame": "data:image/jpeg;base64," + base64.b64encode(jpg.tobytes()).decode(), "mask": "data:image/png;base64," + base64.b64encode(mjpg.tobytes()).decode(),
-                "detections": blobs, "truthVehiclesInView": len(truth), "matched": matched, "countEstimate": sum(b["estimatedVehicles"] for b in blobs),
-                "precision": round(matched / len(blobs), 3) if blobs else None, "recall": round(matched / len(truth), 3) if truth else None,
+                "detections": cars, "blobs": len(blobs), "mergedBlobs": sum(1 for b in blobs if len(self._cars_in(b)) > 1), "splitCars": sum(1 for d in cars if d["split"]),
+                "truthVehiclesInView": len(truth), "matched": matched, "countEstimate": len(cars),
+                "precision": round(matched / len(cars), 3) if cars else None, "recall": round(matched / len(truth), 3) if truth else None,
                 "approaches": approaches, "latencyMs": round(self.timing["camera"][-1], 2),
-                "method": "background subtraction (|frame - empty road| > 22) -> open/close -> connected components; a blob that overlaps >= 88% with the previous second's blob is 'stopped'; vehicles = area / one car",
-                "limits": "queued cars can merge into one blob, so counts use area / car area; real footage adds weather, glare, shadows and occlusion that this render does not"}
+                "method": "background subtraction (|frame - empty road| > 22) -> connected components -> one oriented box per car: a lone car is its blob's rectangle; touching cars "
+                          "(merged blobs) are cut along the lane into the number of cars the blob area implies; a car whose box overlaps >= 88% with the previous second's foreground is 'stopped'",
+                "limits": "cars that touch are separated by an area-based cut, not by seeing the gap, so dense jams can be over- or under-split; real footage adds weather, glare, shadows and occlusion that this render does not"}
 
     # ------------------------------------------------------------------------------------------------ forecaster
     def forecaster_view(self, sim: Any) -> dict[str, Any]:

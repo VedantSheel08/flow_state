@@ -19,7 +19,7 @@ from .forecast import lab_dir
 SYSTEM = ("You are FlowState's traffic analyst. Answer in at most 5 sentences for a city-planning audience. Use ONLY numbers present in the "
           "FACTS JSON (quote them exactly or rounded to one decimal). These are SUMO simulations on a small 2x2 signalised grid, not a real "
           "city. Distinguish measured values from forecasts. If a paired difference's 95% CI includes zero, say the difference is not clear. "
-          "Never claim the ML controller helped unless the facts show it. If the user asks for a scenario, fill scenario_request with one "
+          "Be accurate about what is learned: only the queue forecaster is a trained model; the signal controllers and the ambulance corridor are hand-written rules, and PPO is a rejected shadow model. Never claim the forecast-assisted controller helped unless the facts show it. If the user asks for a scenario, fill scenario_request with one "
           "of the scenario ids in FACTS.scenarios; otherwise set it to null.")
 SCHEMA = {"type": "object", "properties": {
     "answer": {"type": "string"},
@@ -150,7 +150,7 @@ def deterministic(question: str, F: dict[str, Any]) -> tuple[str, dict[str, Any]
             sc = "rush_ramp" if any(w in q for w in ("rush", "peak", "heavy", "busy")) else "pulse" if "pulse" in q else "balanced"
         inten = 1.18 if any(w in q for w in ("heavy", "stress", "gridlock", "congest", "rush")) else 1.0
         req = {"scenario": sc, "intensity": inten, "left": "queue_heuristic", "right": "ml_forecast"}
-        parts.append(f"Proposed paired run: {SCENARIOS[sc].title} at demand intensity {inten}, heuristic without ML on the left and with the ML forecast on the right.")
+        parts.append(f"Proposed paired run: {SCENARIOS[sc].title} at demand intensity {inten}, heuristic only on the left and with the ML forecast on the right.")
     if "live" in F and any(w in q for w in ("why", "congest", "queue", "bottleneck", "jam", "now")):
         L = F["live"]
         w = L["worstApproachesNow"]
@@ -186,7 +186,7 @@ def deterministic(question: str, F: dict[str, Any]) -> tuple[str, dict[str, Any]
         if d:
             lo, hi = d["ci95"]
             verdict = "lower (better)" if hi < 0 else "higher (worse)" if lo > 0 else "not clearly different"
-            parts.append(f"Across {d['pairs']} held-out paired episodes, ML-assisted mean wait differs from the plain heuristic by {d['mean_diff']} s "
+            parts.append(f"Across {d['pairs']} held-out paired episodes, the forecast-assisted mean wait differs from the plain heuristic by {d['mean_diff']} s "
                          f"(95% CI {lo} to {hi}): {verdict}.")
     if not parts:
         parts.append("I can explain the measured comparison, the current live congestion, or propose a scenario to run. All numbers come from SUMO runs on a 2x2 grid.")

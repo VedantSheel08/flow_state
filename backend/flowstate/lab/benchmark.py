@@ -7,7 +7,7 @@ Everything is computed from the stored dataset (real SUMO runs, split by seed ra
 * split-conformal style intervals: signed residual quantiles on the *validation* seeds, per bin of predicted occupancy (Mondrian),
   then coverage measured on the *test* seeds - reported even where it falls short;
 * warning quality (precision / recall of "will be at least half full") for observed-persistence, model point and model upper bound;
-* a regime-shift check: forecast accuracy inside recorded replays where the ML controller itself was driving.
+* a regime-shift check: forecast accuracy inside recorded replays where the forecast-assisted controller itself was driving.
 """
 
 from __future__ import annotations
@@ -127,7 +127,7 @@ def _cluster_bootstrap(e: np.ndarray, err_model: np.ndarray, err_base: np.ndarra
 
 
 def regime_shift_check() -> dict[str, Any]:
-    """Accuracy of the live forecasts recorded while the ML controller was in control (traffic the model never saw in training)."""
+    """Accuracy of the live forecasts recorded while the forecast-assisted controller was in control (traffic the model never saw in training)."""
     from .record import replays_dir
 
     rows = []

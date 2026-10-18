@@ -1,7 +1,7 @@
 """Tuning and paired held-out evaluation of the forecast-aware controller.
 
 * ``tune``: a small grid of (beta, bound, spill) on *training-side* seeds 1100-1105 (never used for the final numbers).
-* ``evaluate_paired``: fixed-time, the plain heuristic and the ML-assisted heuristic on fresh seeds 3100-3111 x all five scenarios
+* ``evaluate_paired``: fixed-time, the plain heuristic and the forecast-assisted heuristic on fresh seeds 3100-3111 x all five scenarios
   (the rush-hour ramp is never trained on). Identical demand per (scenario, seed), checked by hash. Reports paired differences
   with a bootstrap 95 % CI and win/loss counts, whatever they show.
 """
@@ -110,8 +110,8 @@ def evaluate_paired(workers: int = 4, rerun: tuple[str, ...] | None = None) -> d
                "ev_rule_effect_on_heuristic": paired(rows, "queue_heuristic", "queue_heuristic_ev"),
                "ev_rule_effect_on_ml": paired(rows, "ml_forecast", "ml_forecast_ev"),
                "ml_vs_heuristic_both_with_ev": paired(rows, "queue_heuristic_ev", "ml_forecast_ev"),
-               "arms": {"fixed_time": "pre-timed, ignores ambulances", "queue_heuristic": "no ML, no ambulance priority", "queue_heuristic_ev": "no ML, lights ahead of ambulances green",
-                        "ml_forecast": "ML forecast, no ambulance priority", "ml_forecast_ev": "ML forecast + lights ahead of ambulances green"},
+               "arms": {"fixed_time": "pre-timed, ignores ambulances", "queue_heuristic": "heuristic only, no ambulance priority", "queue_heuristic_ev": "heuristic only + green corridor along the ambulance route",
+                        "ml_forecast": "forecast-assisted, no ambulance priority", "ml_forecast_ev": "forecast-assisted + green corridor along the ambulance route"},
                "ml_vs_heuristic_wait_by_scenario": per_scenario,
                "ml_influence": {"decisions": sum(r["ml"]["decisions"] for r in ml_rows), "changed": sum(r["ml"]["changed"] for r in ml_rows),
                                 "switchedEarlier": sum(r["ml"]["switchedEarlier"] for r in ml_rows), "heldLonger": sum(r["ml"]["heldLonger"] for r in ml_rows)},

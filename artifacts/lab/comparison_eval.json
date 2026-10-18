@@ -1676,10 +1676,10 @@
   },
   "arms": {
    "fixed_time": "pre-timed, ignores ambulances",
-   "queue_heuristic": "no ML, no ambulance priority",
-   "queue_heuristic_ev": "no ML, lights ahead of ambulances green",
-   "ml_forecast": "ML forecast, no ambulance priority",
-   "ml_forecast_ev": "ML forecast + lights ahead of ambulances green"
+   "queue_heuristic": "heuristic only, no ambulance priority",
+   "queue_heuristic_ev": "heuristic only + green corridor along the ambulance route",
+   "ml_forecast": "forecast-assisted, no ambulance priority",
+   "ml_forecast_ev": "forecast-assisted + green corridor along the ambulance route"
   },
   "ml_vs_heuristic_wait_by_scenario": {
    "balanced": {

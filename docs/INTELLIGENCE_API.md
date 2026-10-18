@@ -11,7 +11,7 @@ latest live report, or leave the default, which makes `/live` return 404.
 |---|---|---|
 | `observed` (`kind: "observed"`) | Detector measurements at time `t`: queue, vehicles, mean wait, downstream occupancy, signal green, and `emergencyVehicles` (each ambulance's state: moving, stopped at a red light, stuck behind queued cars, green ahead, with metres to its next signal) | SUMO |
 | `predicted` (`kind: "prediction"`) | Forecasts made at `madeAtT` for `targetT = madeAtT + 30` or `+ 60`, with the model id, version and sha256, and a calibrated 90% interval when one is bound to the artifact. `null` when no model is available (never zeros) | model |
-| `interventions` (`kind: "controller_intervention"`) | The controller in use, whether ML is in control, whether it clears lights ahead of ambulances (`emergencyGreen`), and for each decision the ML changed, its **evidence**: base vs forecast-adjusted demand of the green and waiting stage, the forecast values behind the shift, and any exit forecast to be full | controller log |
+| `interventions` (`kind: "controller_intervention"`) | The controller in use, whether the forecast is steering the signals, whether it clears lights ahead of ambulances (`emergencyGreen`), and for each decision the ML changed, its **evidence**: base vs forecast-adjusted demand of the green and waiting stage, the forecast values behind the shift, and any exit forecast to be full | controller log |
 
 `warnings[]` carry `basis: "observed"` (`bottleneck_now`: measured queue at least 50% of the approach) or `basis: "predicted"`
 (`spillback_risk`). A predicted warning states its rule (`point forecast >= tau x capacity`) and that rule's held-out precision and recall. Those are
@@ -45,7 +45,7 @@ view.
 * `python -m flowstate.lab.cli health [--deep]` (exit 1 if unusable) and `GET /health` run these checks: artifact present, manifest present and schema
   supported, hash matches, feature schema matches the code, artifact loads, outputs finite and in range, latency within budget (best of 5), golden
   vectors reproduced, calibration bound, and with `deep` flat evaluation equal to scikit-learn. Status: `ok`, `degraded` (usable, for example no
-  calibration) or `unavailable`. When the model is unavailable the lab disables the ML controller and returns `predicted: null`. It does not crash.
+  calibration) or `unavailable`. When the model is unavailable the lab disables the forecast-assisted controller and returns `predicted: null`. It does not crash.
 
 ## Reproducible commands (from `backend/`, using the repo `.venv`)
 

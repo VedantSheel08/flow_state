@@ -42,8 +42,8 @@ export interface Comparison {
   }
 }
 export const LABEL: Record<string, string> = {
-  fixed_time: 'Fixed-time (30 s)', queue_heuristic: 'Queue heuristic · no ML', ml_forecast: 'Queue heuristic + ML forecast',
-  queue_heuristic_ev: 'Queue heuristic + ambulance green', ml_forecast_ev: 'ML forecast + ambulance green',
+  fixed_time: 'Fixed-time (30 s)', queue_heuristic: 'Heuristic only', ml_forecast: 'Forecast-assisted',
+  queue_heuristic_ev: 'Heuristic + ambulance corridor', ml_forecast_ev: 'Forecast-assisted + ambulance corridor',
 }
 export const SHORT: Record<string, string> = { fixed_time: 'Fixed-time', queue_heuristic: 'No ML', ml_forecast: 'ML', queue_heuristic_ev: 'No ML + ambulance green', ml_forecast_ev: 'ML + ambulance green' }
 export const STATUS_COLOR = ['#34d399', '#f43f5e', '#f59e0b', '#22d3ee']

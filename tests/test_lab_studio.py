@@ -120,9 +120,13 @@ def test_perception_views_are_consistent_with_sumo():
             sim.frames.clear()
         cam, ppo, fc = views["cam"], views["ppo"], views["fc"]
         assert cam["available"] and cam["synthetic"] and cam["frame"].startswith("data:image/jpeg;base64,") and cam["mask"].startswith("data:image/png;base64,")
-        assert 60 < P._car_px < 250 and len(cam["approaches"]) == 4 and cam["truthVehiclesInView"] > 0
-        assert cam["precision"] is None or cam["precision"] >= 0.85  # blobs that are not vehicles would show up here
-        assert abs(sum(a["error"] for a in cam["approaches"])) <= 8  # queue estimate close to SUMO's own count
+        ideal = 4.5 * 1.8 * P.scale ** 2
+        assert 0.6 * ideal < P._car_px < 2.2 * ideal and len(cam["approaches"]) == 4 and cam["truthVehiclesInView"] > 0
+        assert all(len(d["poly"]) == 4 for d in cam["detections"]) and cam["countEstimate"] == len(cam["detections"])  # one oriented box per car
+        assert cam["precision"] is None or cam["precision"] >= 0.9  # boxes that are not on a real car would show up here
+        assert cam["recall"] is None or cam["recall"] >= 0.9
+        assert abs(cam["countEstimate"] - cam["truthVehiclesInView"]) <= 4
+        assert abs(sum(a["error"] for a in cam["approaches"])) <= 6  # queue estimate close to SUMO's own count
         assert len(fc["matrix"]) == 16 and len(fc["matrix"][0]) == len(fc["features"]) == 19
         assert len(OBS_NAMES) == 33
         if ppo["available"]:

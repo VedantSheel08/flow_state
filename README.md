@@ -29,8 +29,7 @@ python -m flowstate.cli serve --port 8000                # terminal 1
 cd frontend && npm install && npm run dev                # terminal 2
 ```
 
-**Intelligence Lab** (forecasting and ML vs non-ML signal control, standalone): `.
-un-lab.ps1`, then open <http://localhost:5176>. See [docs/INTELLIGENCE_LAB.md](docs/INTELLIGENCE_LAB.md). **FlowState Studio** (polished ML comparison, ambulance behaviour, and what the AI sees): `.un-studio.ps1`, then open <http://localhost:5178>; see [docs/STUDIO.md](docs/STUDIO.md).
+**Intelligence Lab** (queue forecasting and a forecast-assisted signal heuristic, compared with the plain heuristic on real SUMO runs; standalone): `.\run-lab.ps1`, then open <http://localhost:5176>. A light-mode redesign of the lab lives on the `task/intelligence-ui-v2` branch. Only the queue forecaster is a trained model: the controllers and the ambulance green corridor are hand-written rules, and the PPO agent failed validation and controls nothing. See [docs/INTELLIGENCE_LAB.md](docs/INTELLIGENCE_LAB.md) (results and what is learned vs a rule) and [docs/STUDIO.md](docs/STUDIO.md) (an earlier dark prototype: `.\run-studio.ps1`, <http://localhost:5178>).
 
 ## Using it
 

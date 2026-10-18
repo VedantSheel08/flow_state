@@ -1,6 +1,18 @@
 # FlowState Intelligence Lab
 
-Standalone local demo of queue forecasting and ML-assisted signal control on real SUMO runs. It is separate from the production app.
+Standalone local demo of queue forecasting and forecast-assisted signal control (a rule-based heuristic that uses a trained queue forecaster) on real SUMO runs. It is separate from the production app.
+
+## What is learned and what is a rule
+
+| Component | What it really is |
+|---|---|
+| **Queue forecaster** | A **trained model** (gradient-boosted trees) fitted on 256 SUMO episodes and scored on held-out seeds. |
+| **Forecast-assisted controller** | A **hand-written queue heuristic** that uses the forecaster's output in two bounded rules. Only the forecaster is learned; the control logic is rules with one parameter tuned by a small grid search. |
+| **Ambulance green corridor** | A **hand-written rule** (route-aware preemption through SafeSignal). No model decides it. |
+| **PPO agent** | A real **trained RL policy** that failed its validation gate (worse than the heuristic). It is shown as a shadow observer and controls nothing. |
+| **Camera detection** | **Classical OpenCV** (background subtraction and contours), not a trained detector, run on images rendered from the simulation. |
+| **Gemini** | An external language model that only explains measured results; it is outside the control loop. |
+| **Simulation** | Real SUMO traffic physics. |
 
 ```powershell
 .\run-lab.ps1        # API http://127.0.0.1:8015, UI http://localhost:5176
@@ -21,7 +33,7 @@ See also: [STUDIO.md](STUDIO.md) (the separate Studio app), [INTELLIGENCE_API.md
 * **Live:** one SUMO worker process streams 1 s frames over `/ws/live`. Start, pause, resume, stop and speed 1-16x are supported. The frame
   queue is bounded, so a slow browser loses frames and never slows SUMO.
 * **Comparison:** two independent SUMO processes run the same route file (SHA-256 checked) and SUMO seed. The browser plays them back in sync,
-  with a scrubbable timeline and ticks wherever the ML changed a decision. New pairs can be recorded from the UI (about 10 s).
+  with a scrubbable timeline and ticks wherever the forecast changed a decision. New pairs can be recorded from the UI (about 10 s).
 * **Gemini:** `/api/lab/ask` goes through the existing `GuardedGemini` (server-side key, cache, rate limit, timeouts, breakers).
   A Gemini answer is accepted only if every number in it appears in the measured facts. Otherwise, and whenever no key is configured,
   a deterministic answer built from the same facts is returned. Gemini is never in the control loop.
@@ -39,7 +51,7 @@ detector-like features: counts, halts, waiting, downstream occupancy, signal sta
 * Inference: trees are evaluated as flat NumPy arrays and match scikit-learn to 1e-13. Each control decision takes about 8 ms
   (16 approaches x 2 horizons, single thread).
 
-## Ambulances and ML-assisted control (`artifacts/lab/comparison_eval.json`)
+## Ambulances and forecast-assisted control (`artifacts/lab/comparison_eval.json`)
 
 **Ambulances.** As on main, the simulator gives emergency vehicles no priority: they stop at red lights and wait in the same queues as other cars, and no driver pulls over.
 The lab's controllers are blind to them by default. A controller whose id ends in `_ev` (`queue_heuristic_ev`, `ml_forecast_ev`) wraps the base controller with a **route-aware green corridor**:
@@ -53,7 +65,7 @@ pass queued cars, and every decision is logged (`emergencyLog` in the replay). 3
 
 Five arms were each run on 60 paired episodes (5 scenarios x seeds 3100-3111, never used for training or tuning), with identical demand per pair (checked by hash).
 
-**Forecast alone** (`queue_heuristic` -> `ml_forecast`, neither gives ambulances priority):
+**Forecast alone** (`queue_heuristic` -> `ml_forecast` = forecast-assisted; neither gives ambulances priority):
 
 | Metric | Left | Right | Mean Δ | 95% CI |
 |---|---|---|---|---|
@@ -84,7 +96,7 @@ The forecast does not reliably improve waiting, travel time, throughput or queue
 A large, consistent win for ambulances (better in 60 of 60 pairs for travel time and for time in queues), **paid for by everyone else**: their mean wait rises by about
 5.5 s and queues grow, because the held greens starve the cross streets. Ambulances still sit in queues for about 36 s on average.
 
-**The demo pair** (`queue_heuristic` -> `ml_forecast_ev`: ML forecast plus the corridor):
+**The demo pair** (`queue_heuristic` -> `ml_forecast_ev`: forecast-assisted plus the corridor):
 
 | Metric | Left | Right | Mean Δ | 95% CI |
 |---|---|---|---|---|

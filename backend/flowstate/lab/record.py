@@ -143,7 +143,7 @@ def index() -> dict[str, Any]:
 
 
 DEFAULT_PAIRS = [
-    ("queue_heuristic", "ml_forecast_ev", "rush_ramp", 3100, 1.18),  # the demo pair: ML forecast + lights cleared ahead of ambulances
+    ("queue_heuristic", "ml_forecast_ev", "rush_ramp", 3100, 1.18),  # the demo pair: forecast-assisted + green corridor for ambulances
     ("queue_heuristic", "ml_forecast_ev", "pulse", 3101, 1.18),
     ("queue_heuristic", "ml_forecast_ev", "balanced", 3102, 1.0),
     ("queue_heuristic", "ml_forecast_ev", "ns_heavy", 3103, 1.18),

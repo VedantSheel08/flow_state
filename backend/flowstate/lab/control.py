@@ -1,4 +1,4 @@
-"""Forecast-aware signal control: the verified queue-responsive heuristic, with bounded adjustments from the ML forecast.
+"""Forecast-aware signal control: the verified queue-responsive heuristic (hand-written rules), with bounded adjustments from a trained queue forecast.
 
 The base rule is unchanged (:class:`flowstate.rl.controllers.QueueResponsive`, tuned parameters). The forecast enters in two
 places only, both bounded:
@@ -23,7 +23,7 @@ from ..rl.controllers import Controller, QueueResponsive, make, tuned_heuristic
 
 class ForecastAware(QueueResponsive):
     id = "ml_forecast"
-    title = "Queue heuristic + ML forecast"
+    title = "Queue heuristic + forecast"
     description = ("The verified queue-responsive heuristic, with demand shifted by the 30 s queue forecast (bounded) and predicted "
                    "spillback treated as a blocked exit. Same SafeSignal layer.")
 
@@ -163,9 +163,9 @@ def ml_params() -> dict[str, float]:
 CONTROLLERS = {
     "fixed_time": "Fixed-time (30 s greens)",
     "queue_heuristic": "Queue-responsive heuristic (no ML)",
-    "ml_forecast": "Queue heuristic + ML forecast",
-    "queue_heuristic_ev": "Queue heuristic + emergency green",
-    "ml_forecast_ev": "Queue heuristic + ML forecast + emergency green",
+    "ml_forecast": "Queue heuristic + forecast",
+    "queue_heuristic_ev": "Queue heuristic + ambulance corridor",
+    "ml_forecast_ev": "Queue heuristic + forecast + ambulance corridor",
 }
 # Emergency vehicles: the simulator gives them no priority (as on main). A controller only turns the lights ahead of one green when its id ends in
 # ``_ev``; this is the existing queue-heuristic emergency rule (switch to the ambulance's stage as soon as SafeSignal allows, hold while it is on the

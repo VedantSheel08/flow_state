@@ -49,7 +49,7 @@ MAE in vehicles; skill = 1 - MAE/MAE(persistence). Intervals are 90% and were fi
 3. **Interval coverage is calibrated to the predicted level.** Coverage is 0.90 overall and 0.88-0.93 in every scenario, junction and predicted-occupancy bin, with the
    weakest cells at 0.877 to 0.888 (rush_ramp, junction A1, and predicted at least half full at 60 s). Conditioned on the *true* severity, coverage is lower (0.80-0.83 in
    light and spillback) because that conditioning uses the outcome. This is a known property of the method, and it is why the benchmark reports both.
-4. **ML-assisted control** (separate from forecast accuracy): no measurable improvement over the plain heuristic on 60 held-out episodes. See
+4. **Forecast-assisted control** (separate from forecast accuracy): no measurable improvement over the plain heuristic on 60 held-out episodes. See
    `INTELLIGENCE_LAB.md`. Better forecasts did not turn into better signal timing with this controller, so stronger controllers should consume the
    `predicted` block, with its intervals and alert rules, rather than the lab's `ForecastAware` rule.
 

@@ -1,6 +1,6 @@
 # FlowState Studio
 
-A separate app for looking at the ML comparison properly and for seeing what the AI components actually receive. It does not change the lab app (`lab/`, port 5176).
+A separate (earlier, dark-themed) app for looking at the forecast-assisted comparison properly and for seeing what the AI components actually receive. It does not change the lab app (`lab/`, port 5176).
 
 ```powershell
 .\run-studio.ps1        # Studio UI http://localhost:5178, its own API http://127.0.0.1:8017
@@ -13,7 +13,7 @@ The Studio talks to its own backend instance, so its live session never replaces
 As on main, the simulator gives an ambulance **no priority**: it stops at red lights and queues behind other cars, and no driver pulls over. In the Compare tab:
 
 * **Left** (no ML) has no ambulance priority.
-* **Right** (ML forecast + ambulance green) has a controller that holds the lights green along the ambulance's route (next three junctions, 450 m) as SafeSignal allows. The ambulance still waits in any queue in front of it, and everyone else pays for the held greens (see the Results tab).
+* **Right** (forecast-assisted + ambulance corridor) has a controller that holds the lights green along the ambulance's route (next three junctions, 450 m) as SafeSignal allows. The ambulance still waits in any queue in front of it, and everyone else pays for the held greens (see the Results tab).
 
 Each ambulance is outlined and labelled with its measured state: **moving**, **stopped at a red light** (halted within 12 m of a red or amber stop line), **stuck behind queued cars** (halted anywhere else) or **moving, green light ahead**. The state comes from SUMO's own speed and next-signal values, recorded every simulated second. Per-ambulance timelines and totals sit under the maps.
 
@@ -29,7 +29,7 @@ The green corridor is a rule (route-aware preemption), not machine learning, and
 
 | Panel | What it shows |
 |---|---|
-| **Computer vision** | A **synthetic** overhead camera: the SUMO state is rendered, in the same palette as the lab's map (light land, curbs, grey asphalt, lane markings), to a noisy image (shadows, blur, illumination drift) and analysed with classical OpenCV: background subtraction, contours, and frame-to-frame overlap to tell stopped from moving. Camera-derived queue counts are scored against SUMO's own count (measured on stress traffic at two intersections over 620 simulated seconds: mean queue error +0.2 vehicles, mean absolute error 1.8, and 3.9 on approaches with a queue of 10 or more, about 27% of those queues; blob precision 99.5%). Touching cars merge into one blob, so counts use blob area divided by one car's calibrated area. It is an *upper bound* for a real camera (no weather, glare or occlusion). The road-reconstruction prototype on `task/vision` is a separate tool and is not used here. |
+| **Computer vision** | A **synthetic** overhead camera: the SUMO state is rendered (4.5 px per metre, in the same palette as the lab's map, with noise, shadows and illumination drift) and analysed with classical OpenCV: background subtraction, connected components, then **one oriented box per car**. A lone car is its blob's rectangle; cars that still touch are cut along the lane into the number their area implies. Stopped vs moving comes from the overlap with the previous second. Every box is scored against SUMO's own vehicle list. Measured on stress traffic at two intersections over 620 simulated seconds (52 frames, about 42 cars in view): **per-car precision 98.9%, recall 99.3%**, count error +0.21 cars (mean absolute 0.48), queue-count error -0.1 vehicles (mean absolute 1.1; 1.6 on queues of 10+). 3 px/m was tried first and merged queued cars (79% precision); 6 px/m was no better and slower. Compute time was 190-320 ms per frame on a busy machine. It is an *upper bound* for a real camera (no weather, glare or occlusion), and a trained detector would be the next step. The road-reconstruction prototype on `task/vision` is a separate tool and is not used here. |
 | **Queue forecaster** | The exact 16 x 19 feature matrix it is given, its 30 s and 60 s predictions with the 90% calibrated intervals, and its global feature importance. |
 | **PPO agent** | The 33-number observation each junction's policy receives, its action probabilities, and whether it agrees with the active controller. The checkpoint (`run4/best_validation.zip`) **failed its publication gate**, so it is a shadow only and never controls anything. It loads only if `torch` and `stable-baselines3` are installed. |
 | **Gemini** | The exact system prompt and measured-facts JSON it is sent (size in tokens), its draft, the number-grounding verdict (every number must appear in the facts), and the answer shown. With no key, or on any error, the answer is built from the same facts and says so. Gemini never sees raw simulation state or any control API. |
