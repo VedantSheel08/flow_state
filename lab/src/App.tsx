@@ -21,9 +21,13 @@ export default function App() {
   const [replay, setReplay] = useState<string | null>(null)
   const [liveOn, setLiveOn] = useState(false)
   const [proposal, setProposal] = useState<Record<string, unknown> | null>(null)
-  const [assistant, setAssistant] = useState(false)
-  const [technical, setTechnical] = useState(false)
-  const [diagnostic, setDiagnostic] = useState<'forecast' | 'perf'>('forecast')
+  const [advanced, setAdvanced] = useState(false)
+  const [advancedTab, setAdvancedTab] = useState<
+    'run' | 'forecast' | 'perf' | 'assistant'
+  >('run')
+  const [advancedTarget, setAdvancedTarget] = useState<HTMLDivElement | null>(
+    null,
+  )
   useEffect(() => {
     Promise.all([
       getJSON<Geometry>('/api/lab/geometry'),
@@ -36,12 +40,19 @@ export default function App() {
       .catch((e) => setErr(String(e)))
   }, [])
   const onReplay = useCallback((id: string | null) => setReplay(id), [])
+  const inspectApproach = useCallback(() => {
+    setAdvanced(true)
+    setAdvancedTab('run')
+    requestAnimationFrame(() =>
+      document.getElementById('advanced')?.scrollIntoView({ block: 'start' }),
+    )
+  }, [])
   if (err)
     return (
       <div className="boot">
         <span className="eyebrow">FlowState / Intelligence Lab</span>
         <h1>The lab is offline.</h1>
-        <p>Start the local lab API on port 8015, then reconnect.</p>
+        <p>Start the configured local lab API, then reconnect.</p>
         <p className="small muted">{err}</p>
         <button onClick={() => location.reload()}>Reconnect</button>
       </div>
@@ -79,22 +90,16 @@ export default function App() {
           </span>
           <button
             className="quiet"
-            aria-expanded={assistant}
-            aria-controls="assistant"
+            aria-expanded={advanced && advancedTab === 'assistant'}
+            aria-controls="advanced"
             onClick={() => {
-              setAssistant(!assistant)
-              if (!assistant)
-                requestAnimationFrame(() =>
-                  document
-                    .getElementById('assistant')
-                    ?.scrollIntoView({
-                      behavior: matchMedia('(prefers-reduced-motion: reduce)')
-                        .matches
-                        ? 'instant'
-                        : 'smooth',
-                      block: 'start',
-                    }),
-                )
+              setAdvanced(true)
+              setAdvancedTab('assistant')
+              requestAnimationFrame(() =>
+                document
+                  .getElementById('advanced')
+                  ?.scrollIntoView({ block: 'start' }),
+              )
             }}
           >
             Ask FlowState <span aria-hidden="true">↗</span>
@@ -107,10 +112,10 @@ export default function App() {
             <span className="eyebrow">
               Traffic intelligence · Experimental lab
             </span>
-            <h1>Can prediction keep traffic moving?</h1>
+            <h1>Does forecasting improve traffic?</h1>
             <p>
-              The same traffic. Two signal controllers. See what machine
-              learning changes, and what the measurements say.
+              Compare the same traffic with and without ML. Predict queues,
+              adjust signals, and measure whether the change helps.
             </p>
           </div>
           <div className="lab-caption">
@@ -147,6 +152,11 @@ export default function App() {
             mlAvailable={status.mlAvailable}
             onReplay={onReplay}
             pending={proposal}
+            active={tab === 'compare'}
+            advancedTarget={
+              tab === 'compare' && advancedTab === 'run' ? advancedTarget : null
+            }
+            onInspect={inspectApproach}
           />
         </section>
         <section hidden={tab !== 'live'} aria-label="Live simulation">
@@ -155,62 +165,74 @@ export default function App() {
             scenarios={status.scenarios}
             mlAvailable={status.mlAvailable}
             onSnapshot={setLiveOn}
-          />
-        </section>
-        <section
-          id="assistant"
-          className="assistant-section"
-          hidden={!assistant}
-        >
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">Interpret the evidence</span>
-              <h2>Ask FlowState</h2>
-            </div>
-            <button className="quiet" onClick={() => setAssistant(false)}>
-              Close
-            </button>
-          </div>
-          <AskPanel
-            replay={tab === 'compare' ? replay : null}
-            live={tab === 'live' && liveOn}
-            gemini={status.gemini}
-            onProposal={(p) => {
-              setProposal(p)
-              setTab('compare')
-            }}
+            advancedTarget={
+              tab === 'live' && advancedTab === 'run' ? advancedTarget : null
+            }
+            onInspect={inspectApproach}
           />
         </section>
         <details
+          id="advanced"
           className="disclosure diagnostics"
-          open={technical}
-          onToggle={(e) => setTechnical(e.currentTarget.open)}
+          open={advanced}
+          onToggle={(e) => setAdvanced(e.currentTarget.open)}
         >
           <summary>
-            Model & runtime details{' '}
-            <span>Forecast accuracy, feature importance, worker timing</span>
+            Advanced{' '}
+            <span>Run details, intersections, model, runtime & Gemini</span>
           </summary>
-          {technical && (
+          {advanced && (
             <div className="disclosure-body">
               <div className="segmented" aria-label="Diagnostics">
                 <button
-                  className={diagnostic === 'forecast' ? 'on' : ''}
-                  onClick={() => setDiagnostic('forecast')}
+                  className={advancedTab === 'run' ? 'on' : ''}
+                  aria-pressed={advancedTab === 'run'}
+                  onClick={() => setAdvancedTab('run')}
+                >
+                  Run & intersections
+                </button>
+                <button
+                  className={advancedTab === 'forecast' ? 'on' : ''}
+                  aria-pressed={advancedTab === 'forecast'}
+                  onClick={() => setAdvancedTab('forecast')}
                 >
                   Forecast model
                 </button>
                 <button
-                  className={diagnostic === 'perf' ? 'on' : ''}
-                  onClick={() => setDiagnostic('perf')}
+                  className={advancedTab === 'perf' ? 'on' : ''}
+                  aria-pressed={advancedTab === 'perf'}
+                  onClick={() => setAdvancedTab('perf')}
                 >
                   Runtime performance
                 </button>
+                <button
+                  className={advancedTab === 'assistant' ? 'on' : ''}
+                  aria-pressed={advancedTab === 'assistant'}
+                  onClick={() => setAdvancedTab('assistant')}
+                >
+                  Ask FlowState
+                </button>
               </div>
-              {diagnostic === 'forecast' ? (
-                <ForecastView />
-              ) : (
-                <PerfView replay={replay} />
-              )}
+              <div ref={setAdvancedTarget} hidden={advancedTab !== 'run'} />
+              {advancedTab === 'forecast' && <ForecastView />}
+              {advancedTab === 'perf' && <PerfView replay={replay} />}
+              <div hidden={advancedTab !== 'assistant'}>
+                <AskPanel
+                  replay={tab === 'compare' ? replay : null}
+                  live={tab === 'live' && liveOn}
+                  gemini={status.gemini}
+                  onProposal={(p) => {
+                    setProposal(p)
+                    setTab('compare')
+                    setAdvanced(false)
+                    requestAnimationFrame(() =>
+                      document
+                        .getElementById('record-pair')
+                        ?.scrollIntoView({ block: 'start' }),
+                    )
+                  }}
+                />
+              </div>
             </div>
           )}
         </details>

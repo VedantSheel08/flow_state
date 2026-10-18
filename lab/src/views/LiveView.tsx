@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Chart from '../components/Chart'
 import MapCanvas, { type DrawData } from '../components/MapCanvas'
 import { fmt, wsURL } from '../lib/api'
@@ -16,6 +17,8 @@ interface Props {
   scenarios: { id: string; title: string; description: string }[]
   mlAvailable: boolean
   onSnapshot: (live: boolean) => void
+  advancedTarget?: HTMLElement | null
+  onInspect?: () => void
 }
 interface ObsMsg extends Obs {
   mlChanged?: number[]
@@ -28,6 +31,8 @@ export default function LiveView({
   scenarios,
   mlAvailable,
   onSnapshot,
+  advancedTarget,
+  onInspect,
 }: Props) {
   const [cfg, setCfg] = useState({
     scenario: 'rush_ramp',
@@ -47,6 +52,13 @@ export default function LiveView({
   } | null>(null)
   const [end, setEnd] = useState<Record<string, unknown> | null>(null)
   const [sel, setSel] = useState<number | null>(null)
+  const inspect = useCallback(
+    (approach: number | null) => {
+      setSel(approach)
+      if (approach !== null) onInspect?.()
+    },
+    [onInspect],
+  )
   const [connected, setConnected] = useState(false)
   const [, setTick] = useState(0)
   const ws = useRef<WebSocket | null>(null)
@@ -282,16 +294,15 @@ export default function LiveView({
           <div className="section-heading">
             <h2>Live traffic</h2>
             <span>
-              {CONTROLLER_LABEL[activeController]}{' '}
-              · {cur?.t ?? 0}s
+              {CONTROLLER_LABEL[activeController]} · {cur?.t ?? 0}s
             </span>
           </div>
           <MapCanvas
             geom={geom}
             source={source}
-            onPick={setSel}
+            onPick={inspect}
             label={`${CONTROLLER_LABEL[activeController]} · t = ${cur?.t ?? 0} s`}
-            accent={activeController === 'ml_forecast' ? '#39bca6' : '#8c9eab'}
+            accent={activeController === 'ml_forecast' ? '#5486b8' : '#8c9eab'}
           />
           <div className="map-legend">
             <span>
@@ -311,7 +322,7 @@ export default function LiveView({
               measured queue
             </span>
             <span>
-              <i className="bar dash" style={{ borderColor: '#65afa1' }} />
+              <i className="bar dash" style={{ borderColor: '#8aa6c1' }} />
               forecast queue (+30 s)
             </span>
             {activeController === 'ml_forecast' && (
@@ -328,11 +339,6 @@ export default function LiveView({
             <Tile label="Halted on approaches" v={kp?.[KPI.halting]} d={0} />
             <Tile label="Mean current wait" v={kp?.[KPI.meanWaitNow]} u="s" />
             <Tile label="Arrived" v={kp?.[KPI.arrived]} d={0} />
-            <Tile label="CO₂ so far (est.)" v={kp?.[KPI.co2Kg]} u="kg" />
-            <Tile
-              label="Teleports / collisions"
-              text={kp ? `${kp[KPI.teleports]} / ${kp[KPI.collisions]}` : '—'}
-            />
           </div>
           <div className="card">
             <h4>
@@ -343,106 +349,123 @@ export default function LiveView({
               series={[
                 {
                   name: 'halted vehicles',
-                  color: '#3a9c87',
+                  color: '#5486b8',
                   points: kpis.current.map(([t, k]) => [t, k[KPI.halting]]),
                 },
               ]}
             />
           </div>
-          <details className="disclosure">
-            <summary>
-              Live technical details{' '}
-              <span>Forecasts, approach data & timing</span>
-            </summary>
-            <div className="disclosure-body">
-              <div className="card">
-                <h4>
-                  Forecast vs reality{' '}
-                  <small>
-                    {started?.controller &&
-                    (started.controller as { mlInControl?: boolean })
-                      .mlInControl
-                      ? 'forecast is used by the controller'
-                      : 'shadow mode: shown, not used for control'}
-                  </small>
-                </h4>
-                {c30 ? (
-                  <p className="small">
-                    Live check (this run, {c30.n} approach-samples): 30 s
-                    forecast MAE <b>{fmt(c30.mae, 2)}</b> veh vs persistence{' '}
-                    {fmt(c30.pers, 2)}
-                    {c60 && (
-                      <>
-                        {' '}
-                        · 60 s MAE <b>{fmt(c60.mae, 2)}</b> vs{' '}
-                        {fmt(c60.pers, 2)}
-                      </>
-                    )}
-                  </p>
-                ) : (
-                  <p className="small muted">
-                    Accumulating: the first check needs 30 s of simulated time.
-                  </p>
-                )}
-                {sel !== null && (
-                  <Chart
-                    height={110}
-                    yLabel={`${selKey} halted vehicles`}
-                    series={[
-                      {
-                        name: 'measured',
-                        color: '#9aabb6',
-                        points: obs.current.map((o) => [o.t, o.q[sel]]),
-                      },
-                      {
-                        name: 'predicted (+30 s, plotted at target time)',
-                        color: '#3a9c87',
-                        dash: true,
-                        points: obs.current
-                          .filter((o) => o.p30)
-                          .map((o) => [o.t + 30, o.p30![sel]]),
-                      },
-                    ]}
+          {advancedTarget &&
+            createPortal(
+              <section className="live-details">
+                <h2>Live forecasts, intersections & timing</h2>
+                <div className="tiles two">
+                  <Tile
+                    label="CO₂ so far (estimate)"
+                    v={kp?.[KPI.co2Kg]}
+                    u="kg"
                   />
+                  <Tile
+                    label="Teleports / collisions"
+                    text={
+                      kp ? `${kp[KPI.teleports]} / ${kp[KPI.collisions]}` : '—'
+                    }
+                  />
+                </div>
+                <div className="disclosure-body">
+                  <div className="card">
+                    <h4>
+                      Forecast vs reality{' '}
+                      <small>
+                        {started?.controller &&
+                        (started.controller as { mlInControl?: boolean })
+                          .mlInControl
+                          ? 'forecast is used by the controller'
+                          : 'shadow mode: shown, not used for control'}
+                      </small>
+                    </h4>
+                    {c30 ? (
+                      <p className="small">
+                        Live check (this run, {c30.n} approach-samples): 30 s
+                        forecast MAE <b>{fmt(c30.mae, 2)}</b> veh vs persistence{' '}
+                        {fmt(c30.pers, 2)}
+                        {c60 && (
+                          <>
+                            {' '}
+                            · 60 s MAE <b>{fmt(c60.mae, 2)}</b> vs{' '}
+                            {fmt(c60.pers, 2)}
+                          </>
+                        )}
+                      </p>
+                    ) : (
+                      <p className="small muted">
+                        Accumulating: the first check needs 30 s of simulated
+                        time.
+                      </p>
+                    )}
+                    {sel !== null && (
+                      <Chart
+                        height={110}
+                        yLabel={`${selKey} halted vehicles`}
+                        series={[
+                          {
+                            name: 'measured',
+                            color: '#9aabb6',
+                            points: obs.current.map((o) => [o.t, o.q[sel]]),
+                          },
+                          {
+                            name: 'predicted (+30 s, plotted at target time)',
+                            color: '#5486b8',
+                            dash: true,
+                            points: obs.current
+                              .filter((o) => o.p30)
+                              .map((o) => [o.t + 30, o.p30![sel]]),
+                          },
+                        ]}
+                      />
+                    )}
+                    <ApproachTable
+                      geom={geom}
+                      last={last}
+                      sel={sel}
+                      onSel={setSel}
+                    />
+                  </div>
+                  {ml && (
+                    <div className="card ml">
+                      <h4>ML influence</h4>
+                      <p className="small">
+                        The forecast changed <b>{ml.changed}</b> of{' '}
+                        {ml.decisions} eligible signal decisions (vs. what the
+                        plain heuristic would have done). SafeSignal limits
+                        applied to all.
+                      </p>
+                    </div>
+                  )}
+                  {last?.timing && (
+                    <div className="card">
+                      <h4>Worker timing</h4>
+                      <p className="small mono">
+                        SUMO step {fmt(last.timing.sumo_step?.mean_ms, 2)} ms
+                        (p95 {fmt(last.timing.sumo_step?.p95_ms, 2)}) ·
+                        observation {fmt(last.timing.observation?.mean_ms, 2)}{' '}
+                        ms · inference {fmt(last.timing.inference?.mean_ms, 2)}{' '}
+                        ms
+                      </p>
+                    </div>
+                  )}
+                </div>
+                {end && (
+                  <div className="card">
+                    <h4>Run finished</h4>
+                    <Metrics
+                      m={(end as { metrics: Record<string, number> }).metrics}
+                    />
+                  </div>
                 )}
-                <ApproachTable
-                  geom={geom}
-                  last={last}
-                  sel={sel}
-                  onSel={setSel}
-                />
-              </div>
-              {ml && (
-                <div className="card ml">
-                  <h4>ML influence</h4>
-                  <p className="small">
-                    The forecast changed <b>{ml.changed}</b> of {ml.decisions}{' '}
-                    eligible signal decisions (vs. what the plain heuristic
-                    would have done). SafeSignal limits applied to all.
-                  </p>
-                </div>
-              )}
-              {last?.timing && (
-                <div className="card">
-                  <h4>Worker timing</h4>
-                  <p className="small mono">
-                    SUMO step {fmt(last.timing.sumo_step?.mean_ms, 2)} ms (p95{' '}
-                    {fmt(last.timing.sumo_step?.p95_ms, 2)}) · observation{' '}
-                    {fmt(last.timing.observation?.mean_ms, 2)} ms · inference{' '}
-                    {fmt(last.timing.inference?.mean_ms, 2)} ms
-                  </p>
-                </div>
-              )}
-            </div>
-          </details>
-          {end && (
-            <div className="card">
-              <h4>Run finished</h4>
-              <Metrics
-                m={(end as { metrics: Record<string, number> }).metrics}
-              />
-            </div>
-          )}
+              </section>,
+              advancedTarget,
+            )}
         </div>
       </div>
     </div>

@@ -207,7 +207,7 @@ export default function MapCanvas({
             ctx.setLineDash([5, 4])
             ctx.lineWidth = Math.max(2, 1.2 * v.scale)
             ctx.strokeStyle =
-              d.forecast[i] >= a.cap * 0.5 ? '#87d8c8' : '#65afa1'
+              d.forecast[i] >= a.cap * 0.5 ? '#9abde0' : '#8aa6c1'
             line(d.forecast[i])
             ctx.setLineDash([])
           }
@@ -272,7 +272,7 @@ export default function MapCanvas({
             const jn = geom.junctions.find((j) => j.id === geom.controlled[k])
             if (!jn) continue
             const [sx, sy] = toScreen(jn.c[0], jn.c[1], v, w, h)
-            ctx.strokeStyle = '#39bca6'
+            ctx.strokeStyle = '#5486b8'
             ctx.lineWidth = 2
             ctx.beginPath()
             ctx.arc(sx, sy, 16 * Math.max(1, v.scale / 1.2), 0, Math.PI * 2)
