@@ -9,8 +9,7 @@ const ROADS = [
   'M-120 520 C 210 410, 390 570, 650 470 S 1010 290, 1190 410',
 ]
 const CARS: { road: number; color: string; dur: number; delay: number }[] = [
-  { road: 0, color: GREEN, dur: 26, delay: 0 }, { road: 1, color: AMBER, dur: 30, delay: -6 }, { road: 1, color: GREEN, dur: 38, delay: -22 },
-  { road: 2, color: ROSE, dur: 28, delay: -10 }, { road: 3, color: AMBER, dur: 32, delay: -4 },
+  { road: 0, color: GREEN, dur: 34, delay: 0 }, { road: 1, color: AMBER, dur: 40, delay: -12 }, { road: 2, color: ROSE, dur: 38, delay: -20 },
 ]
 // soft colour and white glows at irregular places; each drifts on its own slow loop
 const GLOWS: { x: number; y: number; w: number; h: number; color: string; o: number; dx: number; dy: number; dur: number }[] = [
@@ -27,7 +26,7 @@ const GLOWS: { x: number; y: number; w: number; h: number; color: string; o: num
 export function FlowBackdrop() {
   const still = typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   return (
-    <div className="absolute inset-0 overflow-hidden opacity-60 [mask-image:linear-gradient(to_bottom,#000_0%,#000_55%,transparent_100%)]" aria-hidden>
+    <div className="absolute inset-0 overflow-hidden opacity-50 [mask-image:linear-gradient(to_bottom,#000_0%,#000_55%,transparent_100%)]" aria-hidden>
       <style>{GLOWS.map((g, i) => `@keyframes fb-drift-${i}{50%{transform:translate3d(${g.dx}px,${g.dy}px,0)}}`).join('')}</style>
       {GLOWS.map((g, i) => (
         <div key={i} className="absolute rounded-full will-change-transform"

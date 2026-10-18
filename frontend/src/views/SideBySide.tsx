@@ -76,7 +76,8 @@ function SimMap({ scene, net, side, subject, focus, clock, mode, view, onFree, l
     const roads = net.edges.map((e) => e.lanes.find((l) => l.role === 'car')?.shape).filter((sh): sh is number[] => !!sh && sh.length >= 4)
     let current: (typeof signalled)[number] | null = null
     let roadsCache: HTMLCanvasElement | null = null, miniAt = 0
-    let raf = 0, visible = true, lastTs = 0, lastKey = ''
+    let raf = 0, visible = true, lastTs = 0, lastKey = '', prevMode = ''
+    const own: SharedView = { cx: 0, cy: 0, scale: 0 } // this map's follow camera: the two maps must not fight over one
     let held: [number, number] | null = focus?.x != null && focus.y != null ? [focus.x, focus.y] : null
     let drag: { x: number; y: number; cx: number; cy: number } | null = null
     const io = new IntersectionObserver((e) => { visible = e.some((x) => x.isIntersecting) })
@@ -103,9 +104,11 @@ function SimMap({ scene, net, side, subject, focus, clock, mode, view, onFree, l
       const jumped = Math.abs(t - lastT.current) > 2
       lastT.current = t
       cam.setViewport(w, h)
-      const v = view.current, m = modeRef.current
+      const m = modeRef.current
+      const v = m === 'network' || m === 'free' ? view.current : own
+      if (m !== prevMode) { if (m === 'junction' || m === 'follow') own.scale = 0; prevMode = m }
       const ts = performance.now()
-      const ease = 1 - Math.exp(-Math.min(0.25, lastTs ? (ts - lastTs) / 1000 : 0.016) * 8) // frame-rate independent glide
+      const ease = 1 - Math.exp(-Math.min(0.25, lastTs ? (ts - lastTs) / 1000 : 0.016) * 3.5) // frame-rate independent, gentle glide
       lastTs = ts
       if (m === 'network') {
         v.scale = Math.min(w / (rx1 - rx0 + 60), h / (ry1 - ry0 + 60))
@@ -126,9 +129,10 @@ function SimMap({ scene, net, side, subject, focus, clock, mode, view, onFree, l
         v.cy = jumped ? ty : v.cy + (ty - v.cy) * ease
       } else if (m === 'follow') {
         const [hx, hy] = held ?? [(rx0 + rx1) / 2, (ry0 + ry1) / 2]
-        if (!v.scale || v.scale < 3) v.scale = Math.min(w, h) / 120
-        v.cx = jumped ? hx : v.cx + (hx - v.cx) * Math.max(ease, 0.2)
-        v.cy = jumped ? hy : v.cy + (hy - v.cy) * Math.max(ease, 0.2)
+        if (!v.scale) { v.scale = Math.min(w, h) / 150; v.cx = hx; v.cy = hy }
+        // ignore sub-metre wobble so the view stays still while the ambulance waits
+        const dx = hx - v.cx, dy = hy - v.cy
+        if (jumped) { v.cx = hx; v.cy = hy } else if (Math.hypot(dx, dy) > 0.3) { v.cx += dx * ease; v.cy += dy * ease }
       }
       cam.jump(v.cx, v.cy, v.scale)
       const key = `${t.toFixed(3)}|${v.cx.toFixed(2)}|${v.cy.toFixed(2)}|${v.scale.toFixed(4)}|${w}|${h}`
@@ -196,15 +200,17 @@ function SimMap({ scene, net, side, subject, focus, clock, mode, view, onFree, l
       v.cx = Math.max(rx0 - 40, Math.min(rx1 + 40, v.cx))
       v.cy = Math.max(ry0 - 40, Math.min(ry1 + 40, v.cy))
     }
+    const takeOver = () => { if (modeRef.current === 'junction' || modeRef.current === 'follow') Object.assign(view.current, own) }
     const onWheel = (e: WheelEvent) => {
       e.preventDefault()
-      if (modeRef.current !== 'free') freeRef.current()
+      if (modeRef.current !== 'free') { takeOver(); freeRef.current(); modeRef.current = 'free' }
       const v = view.current
       v.scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v.scale * Math.exp(-e.deltaY * 0.0016)))
     }
     const onDown = (e: PointerEvent) => {
       if (e.button !== 0) return
       cv.setPointerCapture(e.pointerId)
+      takeOver()
       drag = { x: e.clientX, y: e.clientY, cx: view.current.cx, cy: view.current.cy }
       cv.style.cursor = 'grabbing'
     }
@@ -510,7 +516,8 @@ function Replay({ data }: { data: Loaded }) {
 function Player({ data, example, setExample }: { data: Loaded; example: number | null; setExample: (id: number) => void }) {
   const { asset, net, scene } = data
   const units = asset.ambulances
-  const [mode, setMode] = useState<ViewMode>('junction')
+  const home: ViewMode = units.length ? 'follow' : 'junction'
+  const [mode, setMode] = useState<ViewMode>(home)
   const [playing, setPlaying] = useState(true)
   const view = useRef<SharedView>({ cx: 300, cy: 300, scale: 0 })
   const win = useMemo<[number, number]>(() => (example != null ? windowFor(asset, example) : [asset.left.frames[0].t, asset.left.frames[asset.left.frames.length - 1].t]), [asset, example])
@@ -575,9 +582,9 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
         </button>
         <input type="range" aria-label="Replay position" min={win[0]} max={win[1]} step={0.1} value={t} onChange={(e) => seek(Number(e.target.value))} className="min-w-0 flex-1 accent-[#0c1322]" />
         <span className="tnum w-[70px] shrink-0 text-right text-[12px] text-ink-3">{(t - win[0]).toFixed(0)} / {(win[1] - win[0]).toFixed(0)} s</span>
-        <button type="button" onClick={() => setMode((m) => (m === 'junction' ? 'network' : 'junction'))} aria-pressed={mode === 'network'}
+        <button type="button" onClick={() => setMode((m) => (m === home ? 'network' : home))} aria-pressed={mode === 'network'}
           className={cn('h-9 shrink-0 rounded-full px-4 text-[13px] font-[550] transition-colors', mode === 'network' ? 'bg-ink text-white' : 'bg-white/70 text-ink-2 hover:bg-white')}>
-          {mode === 'network' ? 'Back to intersection' : mode === 'free' ? 'Recentre' : 'Whole map'}
+          {mode === 'network' ? (home === 'follow' ? 'Back to ambulance' : 'Back to intersection') : mode === 'free' ? 'Recentre' : 'Whole map'}
         </button>
       </div>
 
