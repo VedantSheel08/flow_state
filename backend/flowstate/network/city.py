@@ -352,7 +352,7 @@ def _write_plain(spec: NetworkSpec, prefix: Path) -> list[dict[str, Any]]:
                         "numLanes": str(len(lanes)), "speed": f"{cls['speed']:.2f}", "name": name, "type": st.cls,
                     }
                     if st.oneway:
-                        attrs["spreadType"] = "roadCenter"
+                        attrs["shape"] = _oneway_shape(st, coords[r["from"]], coords[r["to"]], r["kind"] == "footway")
                     e = ET.SubElement(edges, "edge", attrs)
                     for idx, ld in enumerate(lanes):
                         attrs = {"index": str(idx), "width": f"{ld.width:.2f}"}
@@ -431,6 +431,25 @@ def _exclusive_left(spec: NetworkSpec, records: list[dict[str, Any]], pass1: Pat
         if (lane == car[-1]) != is_left:
             root.remove(c)
     tree.write(con_path, encoding="UTF-8", xml_declaration=True)
+
+
+def _oneway_shape(st: Street, a: tuple[float, float], b: tuple[float, float], footway: bool) -> str:
+    """Geometry line of one half of a one-way street: the line between the carriageway and
+    the far sidewalk. The traffic edge spreads its lanes to the right of it and the reverse
+    footway spreads its sidewalk to the other side, so the street stays centred on its axis.
+
+    Placing both on that line (instead of pairing them with spreadType "roadCenter") lets
+    netconvert build the far sidewalk's walking areas at the corners; paired, it runs them
+    across the junction to its centre."""
+    lanes = ONEWAY_LANES[st.cls]
+    carriage, far = sum(l.width for l in lanes), lanes[0].width
+    off = (far - carriage) / 2  # to the right of the traffic direction
+    if footway:
+        off = -off  # same line, measured to the right of the footway's own direction
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    L = math.hypot(dx, dy)
+    nx, ny = dy / L * off, -dx / L * off
+    return f"{a[0] + nx:.2f},{a[1] + ny:.2f} {b[0] + nx:.2f},{b[1] + ny:.2f}"
 
 
 def _restore_footway_width(spec: NetworkSpec, records: list[dict[str, Any]], prefix: Path) -> None:
