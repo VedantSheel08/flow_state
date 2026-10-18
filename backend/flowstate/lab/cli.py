@@ -35,6 +35,7 @@ def main() -> None:
     pr.add_argument("--intensity", type=float, default=1.4)
     pr.add_argument("--scenario", default="rush_ramp")
     sub.add_parser("export")
+    sub.add_parser("mapgeom")
     s = sub.add_parser("serve")
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=8015)
@@ -83,6 +84,14 @@ def main() -> None:
         from .profile import run as prun
 
         print(json.dumps(prun(a.scenario, a.intensity), indent=1))
+    elif a.cmd == "mapgeom":
+        from pathlib import Path
+
+        from .forecast import lab_dir
+        from .mapgeom import build
+
+        g = build(lab_dir() / "grid-network.json")
+        print(json.dumps({"edges": len(g["edges"]), "junctions": len(g["junctions"]), "crossings": len(g["crossings"]), "buildings": len(g["city"]["buildings"]), "trees": len(g["city"]["trees"])}))
     elif a.cmd == "export":
         from .export import build
 

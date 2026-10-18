@@ -182,3 +182,36 @@ def test_studio_api_meta_and_story(monkeypatch):
         # the right side's lights were cleared for ambulances, so it spent less time stopped at reds than the left side
         t = s["sides"]
         assert (t["right"]["totals"]["ev_stopped_red_s"] or 0) <= (t["left"]["totals"]["ev_stopped_red_s"] or 0) + 1.0
+
+
+def test_grid_map_geometry_matches_the_simulation():
+    """The map description for main's renderer: same coordinates and signal links as the simulation, plus generated decoration."""
+    import json
+    import xml.etree.ElementTree as ET
+
+    from flowstate.lab.mapgeom import build
+    from flowstate.rl.network import build_net
+    import tempfile
+    from pathlib import Path
+
+    g = build()
+    assert g["id"] == "rl_grid" and len(g["edges"]) == 24 and g["roadBounds"] == [0.0, 0.0, 600.0, 600.0]
+    roles = {ln["role"] for e in g["edges"] for ln in e["lanes"]}
+    assert roles == {"car", "sidewalk"} and len(g["crossings"]) > 0  # display-only sidewalks and crossings
+    assert len(g["city"]["buildings"]) > 40 and len(g["city"]["trees"]) > 100 and {b["use"] for b in g["city"]["blocks"]} == {"park", "residential", "commercial"}
+    assert all(c["tls"] is None for c in g["crossings"])  # the simulation has no pedestrian signals
+    # every simulation signal link of every junction appears on exactly one car lane, in the simulation's numbering
+    sim = ET.parse(build_net(Path(tempfile.gettempdir()) / "fs-mapgeom")).getroot()
+    expect: dict[str, set[int]] = {}
+    for c in sim.iter("connection"):
+        if c.get("tl") and not c.get("from", "").startswith(":"):
+            expect.setdefault(c.get("tl"), set()).add(int(c.get("linkIndex")))
+    got: dict[str, list[int]] = {}
+    for e in g["edges"]:
+        for ln in e["lanes"]:
+            if ln["tls"]:
+                got.setdefault(ln["tls"], []).extend(ln["links"])
+    assert {k: sorted(v) for k, v in got.items()} == {k: sorted(v) for k, v in expect.items()}
+    # the artifact shipped to the lab is this geometry
+    shipped = json.loads((Path(__file__).resolve().parents[1] / "artifacts" / "lab" / "grid-network.json").read_text())
+    assert shipped["city"]["buildings"] == g["city"]["buildings"] and shipped["bounds"] == g["bounds"]

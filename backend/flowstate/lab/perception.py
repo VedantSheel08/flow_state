@@ -218,9 +218,8 @@ class Perception:
 
     def _car_area(self) -> float:
         """Blob area (px) of one isolated passenger car as THIS pipeline sees it (shadow, blur and threshold included), measured on a plain road
-        patch with every palette colour; used to turn a blob's area into a vehicle count instead of assuming the geometric footprint."""
+        patch with every palette colour."""
         if getattr(self, "_car_px", None) is None:
-            cv = self._cv2()
             plain = np.full((SIZE, SIZE, 3), ASPHALT, np.uint8)
             areas = []
             for i in range(7):
@@ -230,6 +229,10 @@ class Perception:
                     areas.append(blobs[0]["area"])
             self._car_px = float(np.median(areas)) if areas else CAR_AREA_PX
         return self._car_px
+
+    def _vehicles_in(self, area: float) -> int:
+        """Cars in a blob, from its area. Touching cars merge, so this is an estimate (it is accurate on average but noisy in dense jams)."""
+        return max(1, int(round(area / self._car_area())))
 
     def camera_view(self, sim: Any, jid: str, poses_now: list[list[float]], poses_prev: list[list[float]] | None, t: float) -> dict[str, Any]:
         cv = self._cv2()
@@ -249,9 +252,9 @@ class Perception:
             for b in blobs:
                 sel = labels == b["label"]
                 stopped_frac[b["label"]] = float(((prev_mask > 0) & sel).sum() / max(1, sel.sum()))
-        car_px = self._car_area()
+        self._car_area()
         for b in blobs:
-            b["estimatedVehicles"] = max(1, int(round(b["area"] / car_px)))
+            b["estimatedVehicles"] = self._vehicles_in(b["area"])
             b["stopped"] = stopped_frac.get(b["label"], 0.0) >= 0.88 if poses_prev is not None else None
             b["stationaryOverlap"] = round(stopped_frac.get(b["label"], 0.0), 2)
             b.pop("label")
