@@ -1050,11 +1050,11 @@ function Method({ d, live }: { d: DemandResults; live: boolean }) {
   return (
     <div className={cn(card, 'flex min-w-0 flex-[1_1_340px] flex-col gap-3.5 bg-[#fbfbfc] p-6')}>
       <H2 className="text-[15px]">Method</H2>
-      <dl className="tnum m-0 grid grid-cols-[96px_1fr] gap-x-3 gap-y-2.5 text-[12px] leading-[1.5]">
+      <dl className="tnum m-0 grid grid-cols-[96px_minmax(0,1fr)] gap-x-3 gap-y-2.5 text-[12px] leading-[1.5]">
         {rows.map(([k, v]) => (
           <div key={k} className="contents">
             <dt className="text-ink-3">{k}</dt>
-            <dd className="m-0">{v}</dd>
+            <dd className="m-0 min-w-0 text-pretty [overflow-wrap:anywhere]">{v}</dd>
           </div>
         ))}
       </dl>
