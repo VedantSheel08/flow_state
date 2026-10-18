@@ -10,11 +10,20 @@ import {
 import { cn, num } from '../lib/format'
 import type { NetworkGeom } from '../lib/types'
 import { BASE, COLOR, FS, card, signed } from '../lib/resultsTheme'
-import { Cap, Eyebrow, H2 } from './resultsUi'
+import { Cap, H2 } from './resultsUi'
 
 type Loaded = { asset: DemoAsset; net: NetworkGeom; scene: Scene }
 const SPEEDS = [1, 2, 4]
 const panel = 'rounded-[22px] bg-white/60 shadow-[0_10px_40px_-14px_rgb(12_19_34/0.2),inset_0_0_0_1px_rgb(255_255_255/0.75),0_0_0_1px_rgb(12_19_34/0.05)] backdrop-blur-2xl'
+const frame = 'rounded-[30px] shadow-[0_18px_60px_-22px_rgb(12_19_34/0.3),0_0_0_1px_rgb(110_120_135/0.28)]'
+// Frosted border: bands along each edge blur the map beneath them and fade out towards the middle.
+const FADE = 'bg-[rgb(110_120_135/0.16)]'
+const EDGES = [
+  `inset-x-0 top-0 h-9 ${FADE} [mask-image:linear-gradient(to_bottom,#000_45%,transparent)]`,
+  `inset-x-0 bottom-0 h-9 ${FADE} [mask-image:linear-gradient(to_top,#000_45%,transparent)]`,
+  `inset-y-0 left-0 w-9 ${FADE} [mask-image:linear-gradient(to_right,#000_45%,transparent)]`,
+  `inset-y-0 right-0 w-9 ${FADE} [mask-image:linear-gradient(to_left,#000_45%,transparent)]`,
+]
 const LEFT_COLOR = COLOR[BASE]
 const RIGHT_COLOR = COLOR[FS]
 
@@ -168,16 +177,10 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label 
 function AmbulanceTag({ side, id, t, span }: { side: DemoSide; id: number; t: number; span: UnitSide }) {
   const e = evState(side.frames, id, t)
   const here = locate(side.frames, id, t)
-  const stuck = here && e && (e.status === 1 || e.status === 2)
   const text = here
     ? e ? `Ambulance ${STATUS_TEXT[e.status] ?? 'moving'}${e.metresToSignal > 0 && e.status !== 0 ? ` · ${Math.round(e.metresToSignal)} m to signal` : ''}` : 'Ambulance moving'
     : span.last != null && t > span.last ? `Ambulance arrived · ${secs(span.travelS)} trip` : 'Ambulance not yet on the network'
-  return (
-    <div className="flex items-center gap-2 text-[12px] font-[550] leading-none text-ink">
-      <span className={cn('inline-block h-2 w-2 shrink-0 rounded-full', stuck ? 'bg-[#ff3b30]' : here ? 'bg-[#34c759]' : 'bg-ink-4')} />
-      <span className="tnum truncate">{text}</span>
-    </div>
-  )
+  return <div className="tnum truncate text-[13px] leading-none text-ink-2">{text}</div>
 }
 
 function Kpi({ label, left, right, unit = 's', digits = 0, lowerIsBetter = true }: { label: string; left: number; right: number; unit?: string; digits?: number; lowerIsBetter?: boolean }) {
@@ -187,7 +190,7 @@ function Kpi({ label, left, right, unit = 's', digits = 0, lowerIsBetter = true 
     <div className={cn('flex min-w-0 flex-col gap-2 p-5', panel)}>
       <span className="text-[12px] font-[550] text-ink-3">{label}</span>
       <div className="tnum flex flex-wrap items-baseline gap-x-2">
-        <span className={cn('text-[30px] font-[650] leading-none tracking-[-0.03em]', same ? 'text-ink' : good ? 'text-good' : 'text-bad')}>{num(right, digits)}{unit}</span>
+        <span className={cn('text-[30px] font-[650] leading-none tracking-[-0.03em]', same || good ? 'text-ink' : 'text-bad')}>{num(right, digits)}{unit}</span>
         <span className="text-[13px] text-ink-4">from {num(left, digits)}{unit}</span>
       </div>
     </div>
@@ -227,7 +230,7 @@ function Aggregate({ asset }: { asset: DemoAsset }) {
                   <div className="text-[14px] font-[550] text-ink">{AGG_LABEL[k] ?? k}</div>
                   <div className="tnum text-[12px] text-ink-3">{num(s.left_mean, 1)} → {num(s.right_mean, 1)} · better in {s.better} of {runs} runs</div>
                 </div>
-                <span className={cn('tnum shrink-0 rounded-full px-2.5 py-1 text-[13px] font-semibold', !sure || s.pct == null ? 'bg-muted text-ink-3' : good ? 'bg-good-soft text-good' : 'bg-bad-soft text-bad')}>
+                <span className={cn('tnum shrink-0 rounded-full px-2.5 py-1 text-[13px] font-semibold', !sure || s.pct == null ? 'bg-white/60 text-ink-3' : good ? 'bg-white/80 text-good' : 'bg-white/80 text-bad')}>
                   {s.pct == null ? '—' : signed(s.pct)}
                 </span>
               </div>
@@ -247,10 +250,10 @@ function Units({ asset, example, onPick }: { asset: DemoAsset; example: number |
         const stopped = (s: DemoUnit['left']) => s.stoppedRedS + s.stoppedQueueS
         return (
           <button key={u.id} type="button" onClick={() => onPick(u.id)} aria-pressed={on}
-            className={cn('flex flex-col gap-1.5 p-5 text-left transition-shadow', on ? 'rounded-[22px] bg-flow-soft/80 shadow-[0_0_0_2px_var(--color-flow)] backdrop-blur-2xl' : cn(panel, 'hover:bg-white/80'))}>
-            <span className="flex items-center justify-between text-[13px] font-semibold text-ink">Ambulance {i + 1}{on && <span className="text-[11px] font-[550] text-flow-ink">Showing</span>}</span>
+            className={cn('flex flex-col gap-1.5 p-5 text-left transition-shadow', on ? 'rounded-[22px] bg-white/85 shadow-[0_0_0_2px_#0c1322] backdrop-blur-2xl' : cn(panel, 'hover:bg-white/80'))}>
+            <span className="flex items-center justify-between text-[13px] font-semibold text-ink">Ambulance {i + 1}{on && <span className="text-[11px] font-[550] text-ink-3">Showing</span>}</span>
             <span className="tnum text-[20px] font-[650] leading-none tracking-[-0.02em]">{secs(u.left.travelS)} → {secs(u.right.travelS)}</span>
-            <span className={cn('tnum text-[13px] font-[550]', u.savedS > 0 ? 'text-good' : u.savedS < 0 ? 'text-bad' : 'text-ink-3')}>
+            <span className={cn('tnum text-[13px] font-[550]', u.savedS < 0 ? 'text-bad' : 'text-ink-2')}>
               {u.savedS === 0 ? 'Same' : `${Math.abs(u.savedS).toFixed(0)} s ${u.savedS > 0 ? 'faster' : 'slower'}`}
             </span>
             <span className="tnum text-[12px] text-ink-3">Stopped {secs(stopped(u.left))} → {secs(stopped(u.right))}</span>
@@ -286,7 +289,6 @@ export function SideBySide() {
 }
 
 /** Choosing another ambulance remounts the player, which restarts the replay at that ambulance's window. */
-const glass = 'bg-white/75 shadow-[0_1px_2px_rgb(12_19_34/0.08),0_0_0_1px_rgb(12_19_34/0.06)] backdrop-blur-xl'
 
 function Segmented<T extends string | number>({ value, onChange, options, label }: { value: T | null; onChange: (v: T) => void; options: { v: T; label: string }[]; label: string }) {
   return (
@@ -337,35 +339,27 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
   const tot = asset.totals
   const avg = asset.aggregate.metrics.ev_travel_mean_s
   const sides = [
-    { name: 'Without FlowState', sub: 'Fixed-time signals', color: LEFT_COLOR, side: asset.left, span: unit?.left, label: 'Fixed-time map' },
-    { name: 'With FlowState', sub: 'Adaptive signals', color: RIGHT_COLOR, side: asset.right, span: unit?.right, label: 'FlowState map' },
+    { name: 'Fixed-time', sub: 'Standard signals', color: LEFT_COLOR, side: asset.left, span: unit?.left, label: 'Fixed-time map' },
+    { name: 'FlowState', sub: 'Adaptive signals', color: RIGHT_COLOR, side: asset.right, span: unit?.right, label: 'FlowState map' },
   ] as const
 
   return (
     <section className="flex flex-col gap-7">
-      <div className="flex w-fit max-w-full flex-col gap-3 rounded-[28px] bg-white/35 px-7 py-6 backdrop-blur-2xl">
-        <Eyebrow>Emergency response · recorded SUMO run</Eyebrow>
-        <h2 className="m-0 text-balance text-[38px] font-[650] leading-[1.08] tracking-[-0.03em] text-ink">Every second counts.</h2>
-        <p className="m-0 max-w-[560px] text-pretty text-[16px] leading-[1.45] text-ink-2">
-          The same ambulance in the same traffic, without and with FlowState. Drag a map to move, scroll to zoom.
-        </p>
-      </div>
-
       <div className="grid gap-10 min-[860px]:grid-cols-2">
         {sides.map((x) => (
-          <div key={x.name} className={cn('relative h-[380px] overflow-hidden p-1.5 min-[860px]:h-[480px]', panel)}>
-            <div className="relative h-full w-full overflow-hidden rounded-[17px] bg-[#e9ecef]">
-              <SimMap scene={scene} net={net} side={x.side} ambulance={example} clock={clock} mode={mode} view={view} onFree={() => setMode('free')} label={x.label} />
-              <div className={cn('pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-full py-1.5 pl-3 pr-4', glass)}>
-                <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: x.color }} />
-                <span className="text-[13px] font-semibold leading-none text-ink">{x.name}</span>
-                <span className="text-[12px] leading-none text-ink-3">{x.sub}</span>
+          <div key={x.name} className="flex flex-col gap-3.5">
+            <div className="flex min-h-[54px] flex-col items-center gap-1.5 px-2 text-center">
+              <div className="flex items-baseline justify-center gap-2.5">
+                <span className="text-[20px] font-[650] leading-none tracking-[-0.02em] text-ink">{x.name}</span>
+                <span className="text-[13px] leading-none text-ink-3">{x.sub}</span>
               </div>
-              {example != null && x.span && (
-                <div className={cn('pointer-events-none absolute bottom-3 left-3 max-w-[calc(100%-24px)] rounded-full px-3.5 py-1.5', glass)}>
-                  <AmbulanceTag side={x.side} id={example} t={t} span={x.span} />
-                </div>
-              )}
+              {example != null && x.span && <AmbulanceTag side={x.side} id={example} t={t} span={x.span} />}
+            </div>
+            <div className={cn('relative h-[380px] overflow-hidden min-[860px]:h-[500px]', frame)}>
+              <div className="absolute inset-0 bg-[#e9ecef]">
+                <SimMap scene={scene} net={net} side={x.side} ambulance={example} clock={clock} mode={mode} view={view} onFree={() => setMode('free')} label={x.label} />
+              </div>
+              {EDGES.map((e) => <div key={e} aria-hidden className={cn('pointer-events-none absolute backdrop-blur-xl', e)} />)}
             </div>
           </div>
         ))}
