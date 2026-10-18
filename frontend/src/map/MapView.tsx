@@ -35,11 +35,17 @@ function targetView(scene: Scene, cam: Camera): { x: number; y: number; s: numbe
   const st = useStore.getState()
   if (st.camMode === 'network') {
     const b = scene.roadBounds
-    return { x: (b[0] + b[2]) / 2, y: (b[1] + b[3]) / 2, s: cam.fitScale(b, 36) }
+    return { x: (b[0] + b[2]) / 2, y: (b[1] + b[3]) / 2, s: Math.max(cam.fitScale(b, 36), cam.minScale) }
   }
   const j = scene.junctions.find((q) => q.id === st.focusJunction) ?? scene.junctions.find((q) => q.id === HOME_JUNCTION) ?? scene.junctions[0]
   const [x, y] = j ? [j.x, j.y] : scene.focus
   return { x, y, s: focusScale(cam.width, cam.height) }
+}
+
+/** Furthest zoom-out: the drawn city fills the whole map area, so nothing beyond it ever shows. */
+function minScaleFor(scene: Scene, cam: Camera): number {
+  const [x0, y0, x1, y1] = scene.bounds
+  return Math.max(cam.width / (x1 - x0), cam.height / (y1 - y0))
 }
 
 // Vehicle classes with time-based animation (beacons, hazard flashers) that need redraws while paused.
@@ -106,8 +112,9 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
     const el = wrapRef.current
     if (!el) return
     cam.setViewport(el.clientWidth, el.clientHeight)
-    const [x0, y0, x1, y1] = scene.roadBounds
-    cam.minScale = Math.min(cam.width / (x1 - x0 + 200), cam.height / (y1 - y0 + 200))
+    // the view stays on the roads; zooming out stops once the city fills the screen
+    cam.bounds = scene.roadBounds
+    cam.minScale = minScaleFor(scene, cam)
     if (placed.current !== scene.id) {
       placed.current = scene.id
       const t = targetView(scene, cam)
@@ -170,8 +177,8 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
       canvas.style.height = `${el.clientHeight}px`
       cam.setViewport(el.clientWidth, el.clientHeight)
       measureSafe()
-      const [x0, y0, x1, y1] = scene.roadBounds
-      cam.minScale = Math.min(0.45, cam.width / (x1 - x0 + 200), cam.height / (y1 - y0 + 200))
+      cam.bounds = scene.roadBounds
+      cam.minScale = minScaleFor(scene, cam)
       // keep the requested view framed while panels open/close, preserving any extra zoom
       if (!detached.current && !cam.gliding && !useStore.getState().follow) {
         const t = targetView(scene, cam)
