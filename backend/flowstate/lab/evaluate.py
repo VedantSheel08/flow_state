@@ -90,10 +90,15 @@ def tune(workers: int = 4, rounds: tuple[int, ...] = (1, 2)) -> dict[str, Any]:
     return doc
 
 
-def evaluate_paired(workers: int = 4) -> dict[str, Any]:
+def evaluate_paired(workers: int = 4, rerun: tuple[str, ...] | None = None) -> dict[str, Any]:
+    """``rerun``: only simulate these arms and reuse the stored rows of the others (every arm is deterministic for its (scenario, seed, demand))."""
     cids = ["fixed_time", "queue_heuristic", "queue_heuristic_ev", "ml_forecast", "ml_forecast_ev"]  # *_ev = controller turns the lights ahead of an ambulance green
     t0 = time.time()
-    rows = _run([(c, sc, s) for sc in SCENARIOS for s in TEST_SEEDS for c in cids], workers)
+    fresh = [c for c in cids if rerun is None or c in rerun]
+    rows = _run([(c, sc, s) for sc in SCENARIOS for s in TEST_SEEDS for c in fresh], workers)
+    if rerun is not None:
+        stored = json.loads((lab_dir() / "comparison_eval.json").read_text())["rows"]
+        rows += [r for r in stored if r["controller"] not in fresh]
     ml_rows = [r for r in rows if r["controller"] == "ml_forecast" and r["ml"]]  # influence stats of the pure-ML arm
     per_scenario = {sc: paired([r for r in rows if r["scenario"] == sc], "queue_heuristic", "ml_forecast")["mean_wait_s"] for sc in SCENARIOS}
     summary = {"episodes": len(rows) // len(cids), "seeds": TEST_SEEDS, "scenarios": list(SCENARIOS),
@@ -111,7 +116,7 @@ def evaluate_paired(workers: int = 4) -> dict[str, Any]:
                "ml_influence": {"decisions": sum(r["ml"]["decisions"] for r in ml_rows), "changed": sum(r["ml"]["changed"] for r in ml_rows),
                                 "switchedEarlier": sum(r["ml"]["switchedEarlier"] for r in ml_rows), "heldLonger": sum(r["ml"]["heldLonger"] for r in ml_rows)},
                "ml_params": json.loads((lab_dir() / "ml_control_tuning.json").read_text())["best"] if (lab_dir() / "ml_control_tuning.json").exists() else None}
-    timing = {c: {k: round(float(np.mean([r["timing"][k]["mean_ms"] for r in rows if r["controller"] == c])), 3) for k in ("sumo_step", "observation", "inference")}
+    timing = {c: {k: round(float(np.mean([r["timing"][k]["mean_ms"] for r in rows if r["controller"] == c and "timing" in r] or [0.0])), 3) for k in ("sumo_step", "observation", "inference")}
               for c in cids}
     doc = {"summary": summary, "timing_ms": timing, "wall_s": round(time.time() - t0, 1), "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
            "rows": [{k: v for k, v in r.items() if k != "timing"} for r in rows]}

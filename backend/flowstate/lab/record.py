@@ -63,6 +63,8 @@ def run_episode(cid: str, scenario: str, seed: int, intensity: float = 1.0, reco
         m = sim.metrics()
         out = {"controller": cid, "controllerInfo": info, "metrics": m, "timing": sim.timing(), "wall_s": round(time.time() - t0, 2),
                "demandSha": man["sha256"], "intensity": intensity}
+        if hasattr(ctl, "corridor_log"):
+            out["emergencyLog"] = ctl.corridor_log
         if hasattr(ctl, "stats"):
             out["ml"] = ctl.stats()
             out["mlLog"] = ctl.log

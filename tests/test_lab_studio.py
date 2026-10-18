@@ -52,9 +52,11 @@ def test_ambulances_get_no_priority_unless_the_controller_is_an_ev_variant():
         assert flagged["blind"] == 0  # the controller never learns an ambulance is there
         sim.reset("rush_ramp", 3100, 900, 0, 1.18)
         ctl, info = make_controller("queue_heuristic_ev", sim)
-        assert sim.controllers_see_emergency is True and info["emergencyGreen"] is True
+        assert sim.controllers_see_emergency is False and info["emergencyGreen"] is True  # the corridor wrapper handles ambulances; the base controller stays blind
         _run(sim, ctl, t0 + 120, watch("ev"))
-        assert flagged["ev"] > 0  # the emergency-green variant does see it
+        assert flagged["ev"] == 0
+        acts = {e["action"] for e in ctl.corridor_log}
+        assert ctl.corridor_log and acts <= {"hold", "switch", "waiting"} and "hold" in acts  # it held the green ahead of the ambulance
     finally:
         sim.close()
 
@@ -64,7 +66,10 @@ def test_controller_ids_and_flags():
     try:
         for cid, ml, ev in (("fixed_time", False, False), ("queue_heuristic", False, False), ("queue_heuristic_ev", False, True), ("ml_forecast", True, False), ("ml_forecast_ev", True, True)):
             ctl, info = make_controller(cid, sim)
-            assert sim.controllers_see_emergency is ev and info["mlInControl"] is ml and info["emergencyGreen"] is ev, cid
+            assert sim.controllers_see_emergency is False and info["mlInControl"] is ml and info["emergencyGreen"] is ev, cid
+            from flowstate.lab.control import WithEmergencyCorridor
+
+            assert isinstance(ctl, WithEmergencyCorridor) is (ev and cid != "fixed_time"), cid
             if ml:
                 assert ctl.id.endswith("_ev") == ev
     finally:
@@ -215,3 +220,26 @@ def test_grid_map_geometry_matches_the_simulation():
     # the artifact shipped to the lab is this geometry
     shipped = json.loads((Path(__file__).resolve().parents[1] / "artifacts" / "lab" / "grid-network.json").read_text())
     assert shipped["city"]["buildings"] == g["city"]["buildings"] and shipped["bounds"] == g["bounds"]
+
+
+def test_corridor_plan_follows_each_ambulances_route():
+    """The junctions the corridor clears are exactly the ones on the ambulance's remaining route, with the stage that serves the approach it will take."""
+    from flowstate.rl.sim import T
+
+    sim = LabSim("t-corr")
+    try:
+        sim.reset("rush_ramp", 3100, 900, 0, 1.18)
+        ctl, _ = make_controller("queue_heuristic", sim)
+        _run(sim, ctl, _first_ambulance_time(sim) + 40)
+        plan = sim.emergency_corridor(3, 450.0)
+        assert plan and len(plan) <= len(C.CONTROLLED)
+        for jid, (stage, vnum, dist) in plan.items():
+            route = T.vehicle.getRoute(f"v{vnum}")
+            idx = T.vehicle.getRouteIndex(f"v{vnum}")
+            appr = sim.grid.junctions[jid].approach_edges
+            edge = next(e for e in route[idx:] if e in appr.values())  # the ambulance really will arrive at this junction
+            direction = next(d for d, e in appr.items() if e == edge)
+            assert direction in sim.grid.junctions[jid].served[stage] and 0.0 <= dist <= 450.0
+        assert sim.emergency_corridor(1, 450.0).keys() <= plan.keys()  # a shorter lookahead never adds junctions
+    finally:
+        sim.close()

@@ -196,6 +196,42 @@ class LabSim(SignalSim):
         a = super().approach(jid, direction)
         return a if self.controllers_see_emergency else replace(a, emergency=False)
 
+    def emergency_corridor(self, lookahead: int = 2, horizon_m: float = 300.0) -> dict[str, tuple[int, int, float]]:
+        """Signalised junctions on each ambulance's remaining route: ``jid -> (stage that must be green, ambulance id, metres to its stop line)``.
+
+        Looks at the next ``lookahead`` junctions within ``horizon_m`` along the route (so the street the queue discharges into is cleared too, not only the next
+        light). A junction the ambulance is inside counts as distance 0 (the green is held until it is out). The nearest ambulance wins a contested junction."""
+        if not self.ev_status:
+            return {}
+        if not hasattr(self, "_appr"):
+            self._appr = {e: (jid, d) for jid, j in self.grid.junctions.items() for d, e in j.approach_edges.items()}
+        wanted: list[tuple[float, str, int, int]] = []
+        for vid in self.ev_status:
+            route, idx = T.vehicle.getRoute(vid), T.vehicle.getRouteIndex(vid)
+            if idx < 0 or idx >= len(route):
+                continue
+            here = self.grid.edge_length.get(route[idx], 0.0)
+            pos = here if T.vehicle.getRoadID(vid).startswith(":") else T.vehicle.getLanePosition(vid)
+            dist, found = max(0.0, here - pos), 0
+            for k in range(idx, len(route)):
+                if k > idx:
+                    dist += self.grid.edge_length.get(route[k], 0.0)
+                hit = self._appr.get(route[k])
+                if hit and dist <= horizon_m:
+                    jid, direction = hit
+                    stage = next((s for s, served in enumerate(self.grid.junctions[jid].served) if direction in served), None)
+                    if stage is not None:
+                        wanted.append((dist, jid, stage, int(vid[1:])))
+                        found += 1
+                        if found >= lookahead:
+                            break
+                elif dist > horizon_m:
+                    break
+        plan: dict[str, tuple[int, int, float]] = {}
+        for dist, jid, stage, vnum in sorted(wanted):
+            plan.setdefault(jid, (stage, vnum, round(dist, 1)))
+        return plan
+
     def _track_emergency(self, subs: dict[str, dict[int, Any]]) -> None:
         """Why is each emergency vehicle not moving? Stopped within 12 m of a red/amber stop line = a red light; stopped anywhere else = a queue."""
         self.ev_status = {}

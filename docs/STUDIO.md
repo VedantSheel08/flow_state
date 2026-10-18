@@ -13,11 +13,11 @@ The Studio talks to its own backend instance, so its live session never replaces
 As on main, the simulator gives an ambulance **no priority**: it stops at red lights and queues behind other cars, and no driver pulls over. In the Compare tab:
 
 * **Left** (no ML) has no ambulance priority.
-* **Right** (ML forecast + ambulance green) has a controller that turns the lights *ahead of* an ambulance green once SafeSignal allows it. The ambulance still waits in any queue in front of it.
+* **Right** (ML forecast + ambulance green) has a controller that holds the lights green along the ambulance's route (next three junctions, 450 m) as SafeSignal allows. The ambulance still waits in any queue in front of it, and everyone else pays for the held greens (see the Results tab).
 
 Each ambulance is outlined and labelled with its measured state: **moving**, **stopped at a red light** (halted within 12 m of a red or amber stop line), **stuck behind queued cars** (halted anywhere else) or **moving, green light ahead**. The state comes from SUMO's own speed and next-signal values, recorded every simulated second. Per-ambulance timelines and totals sit under the maps.
 
-The green rule is the heuristic's existing emergency rule, not machine learning, which is why the Results tab reports it separately from the forecast.
+The green corridor is a rule (route-aware preemption), not machine learning, and no learned model decides it, which is why the results report it separately from the forecast.
 
 ## Tabs
 

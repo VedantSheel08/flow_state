@@ -1561,25 +1561,25 @@
    "episodes": 10
   },
   "ml_controlled_30s": {
-   "n": 25472,
-   "mae": 2.615,
-   "persistence_mae": 4.554,
-   "skill_vs_persistence": 0.426,
-   "bias": -0.005,
-   "rmse": 4.287,
-   "mean_true_queue": 6.0,
+   "n": 24784,
+   "mae": 2.853,
+   "persistence_mae": 4.583,
+   "skill_vs_persistence": 0.378,
+   "bias": -0.108,
+   "rmse": 4.601,
+   "mean_true_queue": 6.35,
    "episodes": 6
   },
   "ml_controlled_60s": {
-   "n": 24896,
-   "mae": 3.161,
-   "persistence_mae": 3.464,
-   "skill_vs_persistence": 0.088,
-   "bias": -0.136,
-   "rmse": 5.024,
-   "mean_true_queue": 6.12,
+   "n": 24208,
+   "mae": 3.339,
+   "persistence_mae": 3.72,
+   "skill_vs_persistence": 0.102,
+   "bias": -0.214,
+   "rmse": 5.229,
+   "mean_true_queue": 6.49,
    "episodes": 6
   }
  },
- "wall_s": 74.5
+ "wall_s": 47.0
 }

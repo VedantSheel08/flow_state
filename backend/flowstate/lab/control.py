@@ -99,6 +99,58 @@ class ForecastAware(QueueResponsive):
         return {"decisions": self.decisions, "changed": self.changed, "switchedEarlier": self.earlier, "heldLonger": self.later}
 
 
+class WithEmergencyCorridor(Controller):
+    """Wraps any lab controller with a route-aware green corridor for ambulances (rule-based; nothing is learned here).
+
+    For every ambulance on the road, the next ``lookahead`` signalised junctions on its route are asked to show the stage that serves the approach it will use:
+    already green -> hold it; another stage green -> ask for the switch (granted by SafeSignal only after the minimum green, then the full yellow and all-red run);
+    mid-transition -> wait. Because the junctions ahead are cleared as well, the queue in front of the ambulance can discharge through them instead of backing up
+    at a red light one block on. The ambulance still cannot pass the cars physically in front of it. Everything else is the wrapped controller's decision."""
+
+    def __init__(self, base: Controller, lookahead: int = 3, horizon_m: float = 450.0):
+        # 3 junctions / 450 m was the best of the settings tried on 15 matched episodes (1/300, 2/180, 1/180, 2/300, 3/450, 4/600)
+        import os
+
+        knob = os.environ.get("FLOWSTATE_CORRIDOR")  # "lookahead,horizon_m": a tuning knob for experiments, unset in normal use
+        if knob:
+            lookahead, horizon_m = int(knob.split(",")[0]), float(knob.split(",")[1])
+        self.base, self.lookahead, self.horizon_m = base, lookahead, horizon_m
+        self.id = base.id + EV_SUFFIX
+        self.title = base.title + " + ambulance green corridor"
+        self.corridor_log: list[dict[str, Any]] = []
+        self._last: dict[str, str] = {}
+
+    def __getattr__(self, name: str) -> Any:  # stats, logs and evidence of the wrapped controller stay visible to the recorder and the live stream
+        if name in ("base", "corridor_log", "_last"):
+            raise AttributeError(name)
+        return getattr(self.base, name)
+
+    def reset(self, sim: Any) -> None:
+        self.base.reset(sim)
+        self.corridor_log, self._last = [], {}
+
+    def decide(self, sim: Any) -> list[int]:
+        out = list(self.base.decide(sim))
+        plan = sim.emergency_corridor(self.lookahead, self.horizon_m)
+        for k, jid in enumerate(C.CONTROLLED):
+            if jid not in plan:
+                self._last.pop(jid, None)
+                continue
+            stage, vnum, dist = plan[jid]
+            s = sim.signals[jid]
+            if s.mode != "green":
+                want, what = 0, "waiting"  # amber / all-red run their full length
+            elif s.stage == stage:
+                want, what = 0, "hold"
+            else:
+                want, what = (1, "switch") if s.can_switch else (0, "waiting")  # SafeSignal grants it after the minimum green
+            if what != self._last.get(jid):
+                self._last[jid] = what
+                self.corridor_log.append({"t": int(sim.t), "junction": jid, "action": what, "vehicle": vnum, "metresToStopLine": dist, "baseWanted": out[k]})
+            out[k] = want
+        return out
+
+
 def ml_params() -> dict[str, float]:
     from .forecast import lab_dir
 
@@ -128,7 +180,7 @@ def make_controller(cid: str, sim: Any, *, shadow_forecast: bool = True) -> tupl
     head, at, tail = cid.partition("@")
     ev = head.endswith(EV_SUFFIX)
     cid = (head[: -len(EV_SUFFIX)] if ev else head) + at + tail
-    sim.controllers_see_emergency = ev
+    sim.controllers_see_emergency = False  # the corridor wrapper does the emergency handling; the base controller never sees ambulances
     fc = Forecaster.load_default()
     if cid.startswith("ml_forecast"):
         if fc is None:
@@ -138,8 +190,12 @@ def make_controller(cid: str, sim: Any, *, shadow_forecast: bool = True) -> tupl
         if "@" in cid:  # explicit parameters for tuning: ml_forecast@beta,bound,spill
             b, bd, sp = (float(x) for x in cid.split("@")[1].split(","))
             params |= {"beta": b, "bound": bd, "spill": sp}
-        ctl = ForecastAware(**params, id=cid + (EV_SUFFIX if ev else ""))
+        ctl: Controller = ForecastAware(**params, id=cid + (EV_SUFFIX if ev else ""))
+        if ev:
+            ctl = WithEmergencyCorridor(ctl)
         return ctl, {"requested": cid + (EV_SUFFIX if ev else ""), "used": cid, "mlInControl": True, "emergencyGreen": ev, "params": params}
     sim.forecaster = fc if shadow_forecast else None
     ctl, info = make(cid)
+    if ev:
+        ctl = WithEmergencyCorridor(ctl)
     return ctl, info | {"mlInControl": False, "emergencyGreen": ev}

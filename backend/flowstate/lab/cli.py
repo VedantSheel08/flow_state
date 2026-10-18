@@ -25,7 +25,9 @@ def main() -> None:
     sub.add_parser("dataset").add_argument("--workers", type=int, default=4)
     sub.add_parser("train")
     sub.add_parser("tune").add_argument("--workers", type=int, default=4)
-    sub.add_parser("evaluate").add_argument("--workers", type=int, default=4)
+    ev = sub.add_parser("evaluate")
+    ev.add_argument("--workers", type=int, default=4)
+    ev.add_argument("--rerun", nargs="*", help="only simulate these controller ids and reuse the stored rows of the others")
     r = sub.add_parser("record")
     r.add_argument("--workers", type=int, default=4)
     sub.add_parser("benchmark")
@@ -57,7 +59,7 @@ def main() -> None:
     elif a.cmd == "evaluate":
         from .evaluate import evaluate_paired
 
-        print(json.dumps(evaluate_paired(a.workers)["summary"], indent=1))
+        print(json.dumps(evaluate_paired(a.workers, tuple(a.rerun) if a.rerun else None)["summary"], indent=1))
     elif a.cmd == "record":
         from .record import record_defaults
 
