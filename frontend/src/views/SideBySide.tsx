@@ -352,19 +352,18 @@ export function SideBySide() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [started, setStarted] = useState(0)
-  const first = useRef(true)
+  const [catalogReady, setCatalogReady] = useState(false)
   useEffect(() => {
     let live = true
-    loadIndex().then((ix) => { if (live) { setIndex(ix); setTab((s) => s ?? ix.scenarios[0]?.id ?? null) } }, (e: unknown) => { if (live) setIndex({ error: e instanceof Error ? e.message : String(e) }) })
-    fetch('/api/scenarios').then((r) => (r.ok ? r.json() : [])).then((list: CatalogScenario[]) => { if (live) setCatalog(Array.isArray(list) ? list : []) }, () => {})
+    loadIndex().then((ix) => { if (live) { setIndex(ix); setTab((s) => s ?? (ix.scenarios.some((x) => x.id === 'ambulance') ? 'ambulance' : ix.scenarios[0]?.id ?? null)) } }, (e: unknown) => { if (live) setIndex({ error: e instanceof Error ? e.message : String(e) }) })
+    fetch('/api/scenarios').then((r) => (r.ok ? r.json() : [])).then((list: CatalogScenario[]) => { if (live) setCatalog(Array.isArray(list) ? list : []) }, () => {}).finally(() => { if (live) setCatalogReady(true) })
     return () => { live = false }
   }, [])
   useEffect(() => {
-    if (!tab || !index || 'error' in index || data[tab]) return
+    if (!tab || !index || 'error' in index || data[tab] || !catalogReady) return
     let live = true
     const recorded = index.scenarios.some((x) => x.id === tab)
-    const live_ = catalog.length > 0 && !(first.current && recorded) // the first view uses the recorded run; every pick after that is simulated now
-    first.current = false
+    const live_ = catalog.length > 0 // with the simulation backend every scenario, including the first one, is simulated now; without it the recorded runs are shown
     setBusy(live_); setError(null); setStarted(performance.now())
     const job = live_ ? runComparison(tab, null).catch(() => (recorded ? loadScenario(tab) : Promise.reject(new Error('Simulation backend unreachable')))) : loadScenario(tab)
     job.then(async (asset) => {
@@ -372,7 +371,7 @@ export function SideBySide() {
       if (live) setData((d) => ({ ...d, [tab]: { asset, net, scene: buildScene(net) } }))
     }).catch((e: unknown) => { if (live) setError(e instanceof Error ? e.message : String(e)) }).finally(() => { if (live) setBusy(false) })
     return () => { live = false }
-  }, [tab, index, data, catalog])
+  }, [tab, index, data, catalog, catalogReady])
 
   if (index && 'error' in index) {
     return (
