@@ -27,7 +27,7 @@ const GLOWS: { x: number; y: number; w: number; h: number; color: string; o: num
 export function FlowBackdrop() {
   const still = typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[linear-gradient(135deg,#ffffff_0%,#f6f8fd_55%,#f3f5fb_100%)]" aria-hidden>
+    <div className="absolute inset-0 overflow-hidden opacity-60 [mask-image:linear-gradient(to_bottom,#000_0%,#000_55%,transparent_100%)]" aria-hidden>
       <style>{GLOWS.map((g, i) => `@keyframes fb-drift-${i}{50%{transform:translate3d(${g.dx}px,${g.dy}px,0)}}`).join('')}</style>
       {GLOWS.map((g, i) => (
         <div key={i} className="absolute rounded-full will-change-transform"

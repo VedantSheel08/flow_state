@@ -1,10 +1,10 @@
-import { Minus, Pause, Play, Plus, RotateCcw } from 'lucide-react'
+import { Loader2, Minus, Pause, Play, Plus, RotateCcw } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Camera } from '../map/camera'
 import { canopyCache, groundCache, render, type RenderState } from '../map/renderer'
 import { buildScene, type Scene } from '../map/scene'
 import {
-  LOWER_IS_BETTER, STATUS_TEXT, evState, isAmbulance, loadIndex, loadNetwork, loadScenario, locate, sample, sideId, spriteCode, windowFor,
+  LOWER_IS_BETTER, STATUS_TEXT, evState, isAmbulance, loadIndex, loadNetwork, loadScenario, locate, runComparison, sample, sideId, spriteCode, windowFor,
   type AggStat, type DemoAsset, type DemoFocus, type DemoIndex, type DemoSide, type DemoUnit, type UnitSide,
 } from '../lib/flowstateDemo'
 import { cn, num } from '../lib/format'
@@ -75,7 +75,7 @@ function SimMap({ scene, net, side, subject, focus, clock, mode, view, onFree, l
     const roads = net.edges.map((e) => e.lanes.find((l) => l.role === 'car')?.shape).filter((sh): sh is number[] => !!sh && sh.length >= 4)
     let current: (typeof signalled)[number] | null = null
     let roadsCache: HTMLCanvasElement | null = null, miniAt = 0
-    let raf = 0, visible = true, lastTs = 0
+    let raf = 0, visible = true, lastTs = 0, lastKey = ''
     let held: [number, number] | null = focus?.x != null && focus.y != null ? [focus.x, focus.y] : null
     let drag: { x: number; y: number; cx: number; cy: number } | null = null
     const io = new IntersectionObserver((e) => { visible = e.some((x) => x.isIntersecting) })
@@ -93,7 +93,7 @@ function SimMap({ scene, net, side, subject, focus, clock, mode, view, onFree, l
 
     const frame = () => {
       raf = requestAnimationFrame(frame)
-      const dpr = Math.min(1.5, window.devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight
+      const dpr = Math.min(1.25, window.devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight
       if (w < 10 || h < 10 || !visible) return
       if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr) }
       const t = clock.current
@@ -130,6 +130,9 @@ function SimMap({ scene, net, side, subject, focus, clock, mode, view, onFree, l
         v.cy = jumped ? hy : v.cy + (hy - v.cy) * Math.max(ease, 0.2)
       }
       cam.jump(v.cx, v.cy, v.scale)
+      const key = `${t.toFixed(3)}|${v.cx.toFixed(2)}|${v.cy.toFixed(2)}|${v.scale.toFixed(4)}|${w}|${h}`
+      if (key === lastKey) return // paused and still: nothing to redraw
+      lastKey = key
       const dt = side.frames.length > 1 ? side.frames[1].t - side.frames[0].t : 1
       const frameState = side.frames[Math.min(side.frames.length - 1, Math.max(0, Math.floor((t - side.frames[0].t) / dt)))]
       const st: RenderState = {
@@ -293,10 +296,10 @@ function Aggregate({ asset }: { asset: DemoAsset }) {
           <div className="pb-2 text-[13px] font-semibold text-ink">{g.title}</div>
           {g.keys.map((k, i) => {
             const s: AggStat | undefined = asset.aggregate.metrics[k]
-            if (!s) return null
+            if (!s || (s.left_mean === 0 && s.right_mean === 0)) return null // nothing happened on either side
             const lower = LOWER_IS_BETTER.has(k) || k === 'teleports'
             const good = lower ? s.mean_diff < 0 : s.mean_diff > 0 // mean_diff is FlowState − fixed-time
-            const sure = s.ci95[0] > 0 || s.ci95[1] < 0 // the 95% interval excludes zero
+            const sure = s.pairs >= 3 && (s.ci95[0] > 0 || s.ci95[1] < 0) // the 95% interval excludes zero (needs a few runs)
             return (
               <div key={k} title={`95% interval of the change: ${num(s.ci95[0], 1)} to ${num(s.ci95[1], 1)}`} className={cn('flex items-center gap-3 py-3', i > 0 && 'border-t border-border')}>
                 <div className="min-w-0 flex-1">
@@ -349,24 +352,35 @@ function Segmented<T extends string | number>({ value, onChange, options, label,
 }
 
 // ---- section ---------------------------------------------------------------
+interface Tab { id: string; title: string; tagline: string; runs: number }
+interface CatalogScenario { id: string; title: string; tagline: string }
+
 export function SideBySide() {
   const [index, setIndex] = useState<DemoIndex | { error: string } | null>(null)
-  const [scenario, setScenario] = useState<string | null>(null)
+  const [tab, setTab] = useState<string | null>(null)
   const [data, setData] = useState<Record<string, Loaded>>({})
+  const [mine, setMine] = useState<Tab[]>([])
   useEffect(() => {
     let live = true
-    loadIndex().then((ix) => { if (live) { setIndex(ix); setScenario((s) => s ?? ix.scenarios[0]?.id ?? null) } }, (e: unknown) => { if (live) setIndex({ error: e instanceof Error ? e.message : String(e) }) })
+    loadIndex().then((ix) => { if (live) { setIndex(ix); setTab((s) => s ?? ix.scenarios[0]?.id ?? null) } }, (e: unknown) => { if (live) setIndex({ error: e instanceof Error ? e.message : String(e) }) })
     return () => { live = false }
   }, [])
   useEffect(() => {
-    if (!scenario || !index || 'error' in index || data[scenario]) return
+    if (!tab || tab.startsWith('run:') || !index || 'error' in index || data[tab]) return
     let live = true
-    Promise.all([loadScenario(scenario), loadNetwork(index.network)]).then(
-      ([asset, net]) => { if (live) setData((d) => d[scenario] ? d : { ...d, [scenario]: { asset, net, scene: buildScene(net) } }) },
+    Promise.all([loadScenario(tab), loadNetwork(index.network)]).then(
+      ([asset, net]) => { if (live) setData((d) => d[tab] ? d : { ...d, [tab]: { asset, net, scene: buildScene(net) } }) },
       (e: unknown) => { if (live) setIndex({ error: e instanceof Error ? e.message : String(e) }) },
     )
     return () => { live = false }
-  }, [scenario, index, data])
+  }, [tab, index, data])
+
+  const addRun = (asset: DemoAsset, net: NetworkGeom) => {
+    const id = `run:${asset.scenario}:${asset.seed}`
+    setData((d) => ({ ...d, [id]: { asset, net, scene: buildScene(net) } }))
+    setMine((m) => (m.some((x) => x.id === id) ? m : [...m, { id, title: `${asset.scenarioTitle} · ${asset.seed}`, tagline: asset.tagline ?? '', runs: 1 }]))
+    setTab(id)
+  }
 
   if (index && 'error' in index) {
     return (
@@ -376,23 +390,68 @@ export function SideBySide() {
       </section>
     )
   }
-  const loaded = scenario ? data[scenario] : undefined
+  const tabs: Tab[] = [...(index?.scenarios ?? []).map((s) => ({ id: s.id, title: s.title, tagline: s.tagline, runs: index?.seeds.length ?? 0 })), ...mine]
+  const current = tabs.find((x) => x.id === tab)
+  const loaded = tab ? data[tab] : undefined
   return (
     <section className="flex flex-col gap-7">
-      {index && scenario && (
+      {index && tab && (
         <div className="flex flex-col items-center gap-3">
-          <Segmented size="lg" label="Scenario" value={scenario} onChange={setScenario} options={index.scenarios.map((s) => ({ v: s.id, label: s.title }))} />
-          <Headline index={index} scenario={scenario} />
+          <div className="flex max-w-full flex-wrap justify-center gap-2">
+            <Segmented size="lg" label="Scenario" value={tab} onChange={setTab} options={tabs.map((s) => ({ v: s.id, label: s.title }))} />
+          </div>
+          {current && <Headline tagline={current.tagline} runs={current.runs} />}
+          <RunYourOwn network={index.network} onDone={addRun} />
         </div>
       )}
-      {loaded ? <Replay key={scenario} data={loaded} /> : <div className="flex h-[560px] items-center justify-center text-ink-3">Loading the recorded runs…</div>}
+      {loaded ? <Replay key={tab} data={loaded} /> : <div className="flex h-[560px] items-center justify-center text-ink-3">Loading the recorded runs…</div>}
     </section>
   )
 }
 
-function Headline({ index, scenario }: { index: DemoIndex; scenario: string }) {
-  const s = index.scenarios.find((x) => x.id === scenario)
-  return s ? <p className="m-0 text-center text-[15px] text-ink-3">{s.tagline} · {index.seeds.length} paired SUMO runs</p> : null
+/** Pick any scenario from the Simulation page and run fixed-time vs FlowState on the backend (two real headless SUMO runs, same seed). */
+function RunYourOwn({ network, onDone }: { network: string; onDone: (a: DemoAsset, n: NetworkGeom) => void }) {
+  const [catalog, setCatalog] = useState<CatalogScenario[] | null>(null)
+  const [scenario, setScenario] = useState('ambulance')
+  const [seed, setSeed] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    let live = true
+    fetch('/api/scenarios').then((r) => (r.ok ? r.json() : null)).then((list: CatalogScenario[] | null) => { if (live) setCatalog(list) }, () => { if (live) setCatalog(null) })
+    return () => { live = false }
+  }, [])
+  if (!catalog?.length) return null // static hosting without the simulation backend: only the recorded runs
+  const go = async () => {
+    setBusy(true); setError(null)
+    try {
+      const asset = await runComparison(scenario, seed.trim() ? Number(seed) : null)
+      onDone(asset, await loadNetwork(asset.network ?? network))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <div className={cn('flex flex-wrap items-center justify-center gap-3 !rounded-full px-4 py-2', panel)}>
+      <span className="text-[14px] font-[550] text-ink">Run your own comparison</span>
+      <select aria-label="Scenario" value={scenario} onChange={(e) => setScenario(e.target.value)} disabled={busy}
+        className="h-9 rounded-full bg-white/80 px-4 text-[13px] text-ink shadow-[0_0_0_1px_rgb(12_19_34/0.08)] outline-none">
+        {catalog.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+      </select>
+      <input aria-label="Seed" inputMode="numeric" placeholder="Random seed" value={seed} onChange={(e) => setSeed(e.target.value.replace(/[^0-9]/g, ''))} disabled={busy}
+        className="tnum h-9 w-[130px] rounded-full bg-white/80 px-4 text-[13px] text-ink shadow-[0_0_0_1px_rgb(12_19_34/0.08)] outline-none placeholder:text-ink-4" />
+      <button type="button" onClick={go} disabled={busy} className="inline-flex h-9 items-center gap-2 rounded-full bg-ink px-5 text-[13px] font-[550] text-white disabled:opacity-70">
+        {busy && <Loader2 size={14} className="animate-spin" />}{busy ? 'Simulating both sides…' : 'Run in SUMO'}
+      </button>
+      {error && <span className="text-[12px] text-bad">{error}</span>}
+    </div>
+  )
+}
+
+function Headline({ tagline, runs }: { tagline: string; runs: number }) {
+  return <p className="m-0 text-center text-[15px] text-ink-3">{tagline}{tagline ? ' · ' : ''}{runs === 1 ? 'one SUMO run per side (your seed)' : `${runs} paired SUMO runs`}</p>
 }
 
 const EFFICIENCY: Record<string, string> = {
@@ -411,13 +470,13 @@ function Efficiency({ asset }: { asset: DemoAsset }) {
         if (!m || m.pct == null) return null
         const lower = LOWER_IS_BETTER.has(k)
         const good = lower ? m.mean_diff < 0 : m.mean_diff > 0
-        const sure = m.ci95[0] > 0 || m.ci95[1] < 0
+        const sure = m.pairs >= 3 && (m.ci95[0] > 0 || m.ci95[1] < 0)
         const unit = k === 'throughput_vph' ? ' veh/h' : k === 'queue_total_mean_veh' ? '' : ' s'
         return (
           <div key={k} title={`95% interval of the change: ${num(m.ci95[0], 1)} to ${num(m.ci95[1], 1)}`} className={cn('flex flex-col items-center gap-1.5 px-5 py-6 text-center', panel)}>
             <span className={cn('tnum text-[44px] font-[650] leading-none tracking-[-0.04em]', !sure ? 'text-ink-3' : good ? 'text-ink' : 'text-bad')}>{Math.abs(m.pct).toFixed(0)}%</span>
             <span className="text-[14px] font-[550] text-ink">{good ? EFFICIENCY[k] : EFFICIENCY[k].replace(/^(faster|less|fewer|more)/, (w) => ({ faster: 'slower', less: 'more', fewer: 'more', more: 'fewer' })[w] ?? w)}</span>
-            <span className="tnum text-[12px] text-ink-3">{num(m.left_mean, k === 'queue_total_mean_veh' ? 1 : 0)}{unit} → {num(m.right_mean, k === 'queue_total_mean_veh' ? 1 : 0)}{unit} · better in {m.better} of {runs}</span>
+            <span className="tnum text-[12px] text-ink-3">{num(m.left_mean, k === 'queue_total_mean_veh' ? 1 : 0)}{unit} → {num(m.right_mean, k === 'queue_total_mean_veh' ? 1 : 0)}{unit} · {runs > 1 ? `better in ${m.better} of ${runs}` : 'one run'}</span>
           </div>
         )
       })}

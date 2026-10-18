@@ -88,7 +88,14 @@ const getJson = async <T,>(url: string, what: string): Promise<T> => {
 /** The list of recorded scenarios. */
 export const loadIndex = () => once('index', () => getJson<DemoIndex>(`${BASE}index.json`, 'Recorded scenarios'))
 /** The map description of a recorded network (once per network). */
-export const loadNetwork = (id: string) => once(`net:${id}`, () => getJson<NetworkGeom>(`${BASE}${id}-network.json`, 'Map'))
+export const loadNetwork = (id: string) => once(`net:${id}`, () => getJson<NetworkGeom>(`${BASE}${id}-network.json`, 'Map').catch(() => getJson<NetworkGeom>(`/api/networks/${id}`, 'Map')))
+
+/** Runs fixed-time vs FlowState for one scenario on the backend (two headless SUMO runs, ~15 s) and returns the recorded pair. */
+export async function runComparison(scenario: string, seed: number | null): Promise<DemoAsset> {
+  const r = await fetch('/api/replay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ scenario, seed }) })
+  if (!r.ok) throw new Error(`Simulation failed (${r.status})`)
+  return normalise(await gunzipJson<DemoAsset>(r))
+}
 /** One scenario's recorded pair. */
 export const loadScenario = (id: string) => once(`sc:${id}`, async () => {
   const r = await fetch(`${BASE}${id}/pair.json.gz`)

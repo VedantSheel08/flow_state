@@ -42,8 +42,8 @@ def run(seed: int, arm: str, scenario_id: str = "ambulance", frames: bool = True
     from .heuristic import QueueResponsive
     from .priority import EmergencyPriority
 
-    spec = SCENARIOS[scenario_id]
-    sc = create(scenario_id, {"duration": DURATION_MIN, **spec["params"]})
+    spec = SCENARIOS.get(scenario_id, {})
+    sc = create(scenario_id, {"duration": DURATION_MIN, **spec.get("params", {})})
     eng = Engine(sc, RunConfig(scenario_id, sc.params, seed, "fixed", label=f"replay-{scenario_id}-{arm}-{seed}"), NETWORKS_DIR, WORK_DIR / f"replay-{scenario_id}-{arm}-{seed}")
     eng.start()
     rules: list[Any] = []
@@ -122,7 +122,7 @@ def run(seed: int, arm: str, scenario_id: str = "ambulance", frames: bool = True
         "teleports": res["teleports"], "collisions": res["collisions"], "car": cars, "junctionMaxQueue": res["metrics"].get("junctionMaxQueue", {}),
         "rules": [r.summary() for r in rules] or None, "scenario": res.get("scenario"),
     }
-    return {"seed": seed, "arm": arm, "scenario": scenario_id, "controller": "fixed_time" if arm == "fixed_time" else "flowstate_rules", "tlsIds": tls_ids,
+    return {"seed": seed, "arm": arm, "scenario": scenario_id, "network": eng.network_id, "controller": "fixed_time" if arm == "fixed_time" else "flowstate_rules", "tlsIds": tls_ids,
             "frames": out_frames, "units": list(units.values()), "metrics": metrics, "focus": focus}
 
 
@@ -211,14 +211,34 @@ def asset(scenario_id: str, pair: dict[str, Any], agg: dict[str, Any], seeds: li
         m = run_["metrics"]
         return {k: m.get(k) for k in ("ev_total", "ev_unfinished", "ev_travel_mean_s", "ev_stopped_red_s", "ev_stopped_queue_s", "queue_total_mean_veh", "throughput_vph", "teleports", "collisions")} | {"car": m.get("car"), "rules": m.get("rules")}
 
-    spec = SCENARIOS[scenario_id]
-    return {"schema": "flowstate.results-demo/3", "builtAt": time.strftime("%Y-%m-%dT%H:%M:%S"), "network": "district", "codes": "main", "tlsIds": L["tlsIds"], "dt": FRAME_DT,
+    spec = _spec(scenario_id)
+    return {"schema": "flowstate.results-demo/3", "builtAt": time.strftime("%Y-%m-%dT%H:%M:%S"), "network": L.get("network", "district"), "codes": "main", "tlsIds": L["tlsIds"], "dt": FRAME_DT,
             "pair": f"district__{scenario_id}__{pair['seed']}", "scenario": scenario_id, "scenarioTitle": spec["title"], "tagline": spec["tagline"], "seed": pair["seed"],
             "bestCaseStopS": BEST_CASE_STOP_S, "minQueueS": MIN_QUEUE_S, "focus": L["focus"], "kpis": [{"key": k, "label": lbl, "unit": u} for k, lbl, u in KPIS.get(scenario_id, KPIS["default"])],
             "left": {"controller": "fixed_time", "frames": L["frames"]}, "right": {"controller": "flowstate_rules", "frames": R["frames"]},
             "units": units, "example": example, "totals": {"left": totals(L), "right": totals(R)},
             "aggregate": {"episodes": len(seeds), "seeds": seeds, "metrics": agg},
             "rightIncludes": "the same fixed plans with FlowState's rules: queue-responsive green durations and ambulance green priority (hand-written; no learned model is used on this network)"}
+
+
+def _spec(scenario_id: str) -> dict[str, Any]:
+    """Title and tagline: ours for the curated four, otherwise straight from main's scenario catalog."""
+    if scenario_id in SCENARIOS:
+        return SCENARIOS[scenario_id]
+    from ..scenarios.catalog import CATALOG
+
+    cat = CATALOG[scenario_id][0]
+    return {"title": cat.title, "tagline": cat.tagline, "params": {}}
+
+
+def compare_one(scenario_id: str, seed: int) -> dict[str, Any]:
+    """Run both arms of one seed in parallel processes (libsumo allows one simulation per process) and build a page asset. Used by ``POST /api/replay``."""
+    with ProcessPoolExecutor(2, mp_context=mp.get_context("spawn")) as pool:
+        fl = pool.submit(run, seed, "fixed_time", scenario_id, True)
+        fr = pool.submit(run, seed, "flowstate", scenario_id, True)
+        pair = {"seed": seed, "left": fl.result(), "right": fr.result()}
+    car_keys = [k for k, v in pair["left"]["metrics"]["car"].items() if isinstance(v, (int, float))]
+    return asset(scenario_id, pair, paired([pair], car_keys), [seed])
 
 
 def main(argv: list[str] | None = None) -> None:

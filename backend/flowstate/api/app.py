@@ -101,6 +101,33 @@ def vehicle_types() -> list[dict[str, Any]]:
     return type_summary()
 
 
+class ReplayRequest(BaseModel):
+    scenario: str
+    seed: int | None = None
+
+
+@app.post("/api/replay")
+def replay(req: ReplayRequest) -> Response:
+    """Fixed-time vs FlowState for one scenario and seed: two headless 5-minute runs on the scenario's network, recorded for the Results page.
+    Cached on disk per (scenario, seed); the body is the gzipped page asset (see ``flowstate.replay.record``)."""
+    import gzip as _gzip
+    import random as _random
+
+    from ..replay.record import compare_one
+    from ..scenarios.catalog import CATALOG
+    from .service import WORK_DIR
+
+    if req.scenario not in CATALOG:
+        raise HTTPException(404, f"unknown scenario '{req.scenario}'")
+    seed = req.seed if req.seed is not None else _random.randint(1, 99999)
+    path = WORK_DIR / "replay-cache" / f"{req.scenario}-{seed}.json.gz"
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        doc = compare_one(req.scenario, seed)
+        path.write_bytes(_gzip.compress(json.dumps(doc, separators=(",", ":")).encode(), 6))
+    return Response(path.read_bytes(), media_type="application/octet-stream", headers={"X-Seed": str(seed)})
+
+
 @app.get("/api/networks/{network_id}")
 def network(network_id: str) -> Response:
     path = NETWORKS_DIR / f"{network_id}.net.xml"
