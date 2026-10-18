@@ -9,6 +9,7 @@ export type View = 'simulate' | 'results' | 'analyze' | 'runs'
 
 export interface Layers {
   buildings: boolean
+  trees: boolean
   labels: boolean
   pedestrians: boolean
   flow: boolean
@@ -124,7 +125,7 @@ export const useStore = create<State & Actions>((set, get) => ({
   networks: {},
   selection: null,
   follow: false,
-  layers: { buildings: true, labels: true, pedestrians: true, flow: false, signals: true },
+  layers: { buildings: true, trees: true, labels: true, pedestrians: true, flow: false, signals: true },
   pick: null,
   view: 'simulate',
   toasts: [],

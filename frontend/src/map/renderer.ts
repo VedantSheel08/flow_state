@@ -372,7 +372,7 @@ function drawCanopy(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera, la
   ctx.clearRect(0, 0, W, H)
   const k = s * dpr
   ctx.setTransform(k, 0, 0, -k, (W / 2 - cam.x * s) * dpr, (H / 2 + cam.y * s) * dpr)
-  if (layers.buildings) {
+  if (layers.trees) {
     if (s > 1.2) {
       ctx.fillStyle = C.treeShadow
       ctx.fill(scene.treeShadows)
@@ -453,7 +453,7 @@ function buildOverview(cache: LayerCache, key: string, scene: Scene, layers: Lay
 }
 
 function overviewKey(scene: Scene, st: RenderState, dpr: number) {
-  return `${scene.id}|${dpr}|${+st.layers.buildings}${+st.layers.signals}`
+  return `${scene.id}|${dpr}|${+st.layers.buildings}${+st.layers.trees}${+st.layers.signals}`
 }
 
 function scheduleOverviews(scene: Scene, st: RenderState, dpr: number) {
@@ -485,7 +485,7 @@ function covers(v: Camera, cam: Camera): boolean {
 }
 
 function drawLayer(ctx: CanvasRenderingContext2D, cache: LayerCache, scene: Scene, cam: Camera, st: RenderState, dpr: number, paint: Painter) {
-  const key = `${scene.id}|${dpr}|${cam.width}x${cam.height}|${+st.layers.buildings}${+st.layers.labels}${+st.layers.signals}`
+  const key = `${scene.id}|${dpr}|${cam.width}x${cam.height}|${+st.layers.buildings}${+st.layers.trees}${+st.layers.labels}${+st.layers.signals}`
   const v = cache.view
   const valid = cache.canvas !== null && cache.key === key
   const ratio = cam.scale / v.scale
