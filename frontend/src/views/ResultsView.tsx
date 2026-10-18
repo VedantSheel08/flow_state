@@ -3,6 +3,7 @@ import { METRICS, pairs, results, scale, type ControllerId, type DemandResults, 
 import { cn, num } from '../lib/format'
 import { BASE, COLOR, FS, HERO, card, signed } from '../lib/resultsTheme'
 import { Cap, Eyebrow, H2, Swatch } from './resultsUi'
+import { SideBySide } from './SideBySide'
 
 // Recorded SUMO evaluation, standard peak demand; over-saturated only confirms the headline.
 const D = results.demand.standard
@@ -306,6 +307,7 @@ export function ResultsView() {
           <Eyebrow>Results · Recorded SUMO evaluation · {runs} paired runs</Eyebrow>
           <h1 className="m-0 text-balance text-[32px] font-[650] leading-[1.19] tracking-[-0.02em]">FlowState vs fixed-time signals</h1>
         </div>
+        <SideBySide />
         <Headline />
         <HeadlineMeasures />
         <HeadToHead d={D} />
