@@ -20,6 +20,7 @@ export interface DemoAsset {
   seed: number
   intensity: number
   bestCaseStopS: number
+  minQueueS: number
   left: DemoSide
   right: DemoSide
   ambulances: DemoUnit[]
