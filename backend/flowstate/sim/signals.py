@@ -80,7 +80,7 @@ offsets 0, run with the same code otherwise; time loss is the mean per car):
   and a left-turner stopped in the same junction box); over all 70 runs
   36 → 33.
 
-Known limits: priority strategies (pre-emption, TSP) displace a signal from
+Known limits: transit signal priority displaces a signal from
 its offset permanently — there is no transition back to the reference
 pattern; demand is not measured, so splits are design-stage estimates;
 offsets give only partial two-way progression on this 200 m grid because the
@@ -88,19 +88,15 @@ arterials' through greens are ~25-30 % of the cycle (pedestrian clearance
 across a 20 m arterial and protected lefts take the rest); one-lane
 collector approaches still see permissive lefts at collector × collector.
 
-On top of either plan two optional priority strategies act through TraCI by
-*holding* or *ending* the current phase early. Neither ever skips an amber,
-all-red or pedestrian-clearance interval, so every signal sequence remains
-legal:
+On top of either plan an optional priority strategy acts through TraCI by
+*holding* the current phase. It never skips an amber, all-red or
+pedestrian-clearance interval, so every signal sequence remains legal:
 
-* **Emergency pre-emption** – every signal an emergency vehicle will reach
-  within ``PREEMPT_HORIZON_S`` (via ``vehicle.getNextTLS``) holds the green
-  that serves it, or ends conflicting greens once they have run a minimum
-  time – the first after ``MIN_GREEN_BEFORE_PREEMPT``, the ones that follow
-  on the way to the serving phase after ``MIN_GREEN_WHILE_ADVANCING`` – so
-  the queue in front of the vehicle has discharged by the time it arrives.
 * **Transit signal priority** – a bus within reach of a green extends it by
   up to ``tsp_max_extension`` seconds.
+
+There is no emergency pre-emption: clearing the way for emergency vehicles
+is left to the signal controller.
 
 New strategies can subclass :class:`SignalPolicy`.
 """
@@ -713,8 +709,6 @@ class TlsInfo:
     phase_start: float = 0.0
     prev_state: str = ""
     state: str = ""
-    held_by: str | None = None
-    advancing: bool = False  # a conflicting green has already been ended for ``held_by``
     hold_until: float = 0.0
     extended: float = 0.0  # seconds of TSP extension granted in the current phase
 
@@ -727,21 +721,13 @@ class SignalPolicy:
 
 
 class SignalManager:
-    MIN_GREEN_BEFORE_PREEMPT = 5.0
-    MIN_GREEN_WHILE_ADVANCING = 2.0  # later non-serving greens on the way to the one the vehicle needs
-    PREEMPT_DISTANCE = 140.0  # always requested within this distance ...
-    PREEMPT_HORIZON_S = 20.0  # ... and further out when the vehicle would get there within this time
-    PREEMPT_MAX_DISTANCE = 320.0
-
-    def __init__(self, engine: "Engine", mode: str, preemption: bool, tsp: bool, tsp_max_extension: float = 15.0):
+    def __init__(self, engine: "Engine", mode: str, tsp: bool, tsp_max_extension: float = 15.0):
         self.engine = engine
         self.mode = mode
-        self.preemption = preemption
         self.tsp = tsp
         self.tsp_max_extension = tsp_max_extension
         self.tls: dict[str, TlsInfo] = {}
         self.policies: list[SignalPolicy] = []
-        self.preempt_count = 0
         self.tsp_count = 0
         self.tsp_seconds = 0.0
 
@@ -772,68 +758,11 @@ class SignalManager:
                 info.extended = 0.0
             info.state = states.get(tid, info.state)
 
-    def _cuttable(self, info: TlsInfo, t: float, min_green: float | None = None) -> bool:
-        s = info.state
-        if "y" in s.lower() or not any(c in "Gg" for c in s):
-            return False  # amber / all-red intervals always run in full
-        if any(info.prev_state[i:i + 1] == "G" and s[i] == "r" for i in info.crossing_links if i < len(s)):
-            return False  # pedestrian clearance interval
-        return t - info.phase_start >= (self.MIN_GREEN_BEFORE_PREEMPT if min_green is None else min_green)
-
     def step(self, t: float) -> None:
-        if self.preemption:
-            self._preempt(t)
         if self.tsp:
             self._transit_priority(t)
         for p in self.policies:
             p.step(self, t)
-
-    def _preempt(self, t: float) -> None:
-        """First-come, first-served pre-emption: one emergency vehicle per signal at a time.
-
-        A second vehicle whose movement is green in the same phase shares the hold instead of waiting.
-        """
-        T = self.T
-        eng = self.engine
-        requests: list[tuple[str, str, int, float, str]] = []
-        for vid in eng.emergency_active():
-            try:
-                upcoming = T.vehicle.getNextTLS(vid)
-                speed = T.vehicle.getSpeed(vid)
-            except Exception:  # noqa: BLE001
-                continue
-            # signals further out only while the vehicle is moving, so a unit stuck in a queue does not hold them
-            horizon = min(self.PREEMPT_MAX_DISTANCE, max(self.PREEMPT_DISTANCE, speed * self.PREEMPT_HORIZON_S))
-            for tid, link, dist, state in upcoming:
-                if dist > horizon:
-                    break
-                if tid in self.tls:
-                    requests.append((vid, tid, link, dist, state))
-        wanted = {(vid, tid) for vid, tid, *_ in requests}
-        # release holds whose vehicle has passed or left
-        for tid, info in self.tls.items():
-            if info.held_by and (info.held_by, tid) not in wanted:
-                info.held_by = None
-                info.advancing = False
-        for vid, tid, link, dist, state in sorted(requests, key=lambda r: r[3]):
-            info = self.tls[tid]
-            if info.held_by not in (None, vid) and state not in "Gg":
-                continue  # another emergency vehicle is being served here
-            if info.held_by is None:
-                info.held_by = vid
-                info.advancing = False
-                self.preempt_count += 1
-                verb = "holding green" if state in "Gg" else "advancing phases"
-                eng.emit("emergency", f"Pre-emption at {eng.junction_name(tid)}: {verb} for {eng.label(vid)}", "info", tls=tid, vehicle=vid)
-            if state in "Gg":
-                speed = max(3.0, T.vehicle.getSpeed(vid))
-                remaining = T.trafficlight.getNextSwitch(tid) - T.simulation.getTime()
-                need = min(30.0, dist / speed + 3.0)
-                if remaining < need:
-                    T.trafficlight.setPhaseDuration(tid, need)
-            elif info.held_by == vid and self._cuttable(info, t, self.MIN_GREEN_WHILE_ADVANCING if info.advancing else None):
-                T.trafficlight.setPhaseDuration(tid, 0.0)
-                info.advancing = True
 
     def _transit_priority(self, t: float) -> None:
         T = self.T
@@ -847,7 +776,7 @@ class SignalManager:
                 continue
             tid, link, dist, state = upcoming[0]
             info = self.tls.get(tid)
-            if info is None or info.held_by or dist > 90 or state not in "Gg":
+            if info is None or dist > 90 or state not in "Gg":
                 continue
             if T.vehicle.getStopState(vid) & 1:  # dwelling at a stop
                 continue
@@ -867,4 +796,4 @@ class SignalManager:
             T.trafficlight.setPhaseDuration(tid, remaining + grant)
 
     def summary(self) -> dict[str, Any]:
-        return {"mode": self.mode, "preemptions": self.preempt_count, "tspExtensions": self.tsp_count, "tspSeconds": round(self.tsp_seconds, 1)}
+        return {"mode": self.mode, "tspExtensions": self.tsp_count, "tspSeconds": round(self.tsp_seconds, 1)}

@@ -109,7 +109,6 @@ interface Variable {
 
 function variablesFor(scenario: string, params: Record<string, unknown>): Variable[] {
   const out: Variable[] = [{ key: 'signals', label: 'Signal control', values: ['fixed', 'actuated'], names: ['Fixed-time', 'Actuated'] }]
-  if ('preemption' in params) out.push({ key: 'preemption', label: 'Emergency pre-emption', values: [false, true], names: ['Off', 'On'] })
   if ('tsp' in params) out.push({ key: 'tsp', label: 'Transit signal priority', values: [false, true], names: ['Off', 'On'] })
   if (scenario === 'bike_lanes') out.push({ key: 'network', label: 'King Street design', values: ['district', 'district_bike'], names: ['As built', 'Bike lanes'] })
   if (scenario === 'weather') {
@@ -130,7 +129,6 @@ const COMPARE_ROWS: Row[] = [
   { label: 'Bus travel time', get: (r) => (r.scenario.transit as { meanTravel?: number } | undefined)?.meanTravel, unit: 's', better: 'lower', digits: 1 },
   { label: 'Bus delay vs. timetable', get: (r) => (r.scenario.transit as { meanDelay?: number } | undefined)?.meanDelay, unit: 's', better: 'lower', digits: 1 },
   { label: 'Mean ambulance response', get: (r) => r.scenario.meanResponse as number | undefined, unit: 's', better: 'lower', digits: 1 },
-  { label: 'Signal pre-emptions', get: (r) => r.signals.preemptions, unit: '', better: 'none' },
   { label: 'Green extensions for buses', get: (r) => r.signals.tspExtensions, unit: '', better: 'none' },
   { label: 'Gridlock teleports', get: (r) => r.teleports, unit: '', better: 'lower' },
 ]

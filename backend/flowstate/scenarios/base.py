@@ -203,8 +203,6 @@ class Scenario:
         self.net: "NetInfo | None" = None
         self.reserved: set[str] = set()
         self.protected: set[str] = set()
-        self.preemption = bool(self.params.get("preemption", False))
-        self.yield_to_ev = bool(self.params.get("yield_to_ev", True))
         self.tsp = bool(self.params.get("tsp", False))
 
     # -- lifecycle -----------------------------------------------------------

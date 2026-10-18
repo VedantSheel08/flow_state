@@ -148,6 +148,7 @@ export function FocusBar({ scene, junctions }: { scene: Scene; junctions: NavJun
         )}
         {open && (
           <JunctionPicker
+            scene={scene}
             junctions={junctions}
             current={network ? null : focusId}
             onPick={(id) => {
@@ -215,7 +216,28 @@ function ControlGlyph({ control, size = 20 }: { control: string; size?: number }
 
 const DIR_STEP: Record<string, [number, number]> = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] }
 
-function JunctionPicker({ junctions, current, onPick }: { junctions: NavJunction[]; current: string | null; onPick: (id: string) => void }) {
+/** Distance (m) from a point to the nearest road centreline in the scene. */
+function roadDistance(scene: Scene, x: number, y: number): number {
+  let best = Infinity
+  for (const { pts } of scene.edgeCenter.values()) {
+    for (let i = 1; i < pts.length; i++) {
+      const [ax, ay] = pts[i - 1]
+      const [bx, by] = pts[i]
+      const dx = bx - ax
+      const dy = by - ay
+      const t = dx || dy ? Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy))) : 0
+      best = Math.min(best, Math.hypot(x - ax - t * dx, y - ay - t * dy))
+    }
+  }
+  return best
+}
+
+/** True when a real road runs between two junctions (sampled along the straight line between them). */
+const ROAD_TOL = 8
+const roadBetween = (scene: Scene, a: NavJunction, b: NavJunction) =>
+  [0.25, 0.5, 0.75].every((t) => roadDistance(scene, a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t) < ROAD_TOL)
+
+function JunctionPicker({ scene, junctions, current, onPick }: { scene: Scene; junctions: NavJunction[]; current: string | null; onPick: (id: string) => void }) {
   const grid = useMemo(() => junctionGrid(junctions), [junctions])
   // a line can change name along its length (Blue Jays Way / Peter, Windsor / Widmer): list every name on it
   const lineName = (cells: NavJunction[], side: 0 | 1) => [...new Set(cells.map((q) => streetPart(q.name, side)))].join(' / ')
@@ -243,20 +265,23 @@ function JunctionPicker({ junctions, current, onPick }: { junctions: NavJunction
     const segs: [number, number, number, number][] = []
     const lines = (key: 'r' | 'c', other: 'r' | 'c', count: number, span: number, horizontal: boolean) => {
       for (let i = 0; i < count; i++) {
-        const on = grid.cells.filter((q) => q[key] === i).map((q) => q[other]).sort((a, b) => a - b)
+        const cells = grid.cells.filter((q) => q[key] === i).sort((a, b) => a[other] - b[other])
+        const on = cells.map((q) => q[other])
         if (!on.length) continue
         const seg = (a: number, b: number) => segs.push(horizontal ? [a, at(i), b, at(i)] : [at(i), a, at(i), b])
         // Streets that reach the edge of the picker carry on off-map.
         if (on[0] === 0) seg(at(0) - STUB, at(0))
         if (on[on.length - 1] === span - 1) seg(at(span - 1), at(span - 1) + STUB)
-        for (let k = 1; k < on.length; k++) if (on[k] === on[k - 1] + 1) seg(at(on[k - 1]), at(on[k]))
+        // Join consecutive junctions on this street wherever the real road runs between them,
+        // so a street that passes a row with no junction on it stays continuous.
+        for (let k = 1; k < on.length; k++) if (on[k] === on[k - 1] + 1 || roadBetween(scene, cells[k - 1], cells[k])) seg(at(on[k - 1]), at(on[k]))
       }
     }
     lines('r', 'c', grid.rows, grid.cols, true)
     lines('c', 'r', grid.cols, grid.rows, false)
     return segs
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grid])
+  }, [grid, scene])
 
   const move = (from: (typeof grid.cells)[number], key: string) => {
     const [dr, dc] = DIR_STEP[key]
@@ -292,7 +317,7 @@ function JunctionPicker({ junctions, current, onPick }: { junctions: NavJunction
             <span
               key={c}
               title={full}
-              className="label-caps absolute -translate-x-1/2 truncate whitespace-nowrap text-center leading-none"
+              className="label-caps absolute text-ink-2! -translate-x-1/2 truncate whitespace-nowrap text-center leading-none"
               style={{ left: LABEL_W + at(c), top: stagger && c % 2 ? 16 : 0, maxWidth: stagger ? PITCH * 2 - 8 : PITCH - 2 }}
             >
               {firstName(full)}
@@ -302,7 +327,7 @@ function JunctionPicker({ junctions, current, onPick }: { junctions: NavJunction
         {Array.from({ length: grid.rows }, (_, r) => {
           const full = rowName(r)
           return (
-            <span key={r} title={full} className="label-caps absolute left-0 -translate-y-1/2 truncate whitespace-nowrap leading-none" style={{ top: headH + at(r), maxWidth: LABEL_W - 10 }}>
+            <span key={r} title={full} className="label-caps absolute text-ink-2! left-0 -translate-y-1/2 truncate whitespace-nowrap leading-none" style={{ top: headH + at(r), maxWidth: LABEL_W - 10 }}>
               {firstName(full)}
             </span>
           )
@@ -310,7 +335,7 @@ function JunctionPicker({ junctions, current, onPick }: { junctions: NavJunction
 
         <svg className="pointer-events-none absolute overflow-visible" style={{ left: LABEL_W, top: headH }} width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden>
           {segments.map(([x1, y1, x2, y2], i) => (
-            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-border-strong)" strokeWidth={2} strokeLinecap="round" />
+            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgb(255 255 255 / 0.6)" strokeWidth={2.5} strokeLinecap="round" />
           ))}
         </svg>
 

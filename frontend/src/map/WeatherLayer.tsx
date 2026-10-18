@@ -1,10 +1,10 @@
 // Screen-space weather over the map for the Severe Weather scenario: rain
-// streaks, drifting snow or a fog wash. Purely visual; SUMO models the effect
+// streaks, drifting snow or fog patches. Purely visual; SUMO models the effect
 // on drivers. Freezes while the run is paused and stays static under
 // prefers-reduced-motion.
 
 import { useEffect, useRef } from 'react'
-import { useStore } from '../lib/store'
+import { effectsLive, useStore } from '../lib/store'
 
 interface Drop {
   x: number
@@ -14,11 +14,12 @@ interface Drop {
   p: number // phase for drift
 }
 
-const LOOK: Record<string, { n: number; tint: string }> = {
-  light_rain: { n: 140, tint: 'rgba(52,72,102,0.06)' },
-  heavy_rain: { n: 420, tint: 'rgba(40,58,88,0.13)' },
-  snow: { n: 260, tint: 'rgba(236,242,248,0.16)' },
-  fog: { n: 7, tint: 'rgba(232,236,240,0.18)' },
+// Particles only: no full-screen tint, so the map keeps its own colours in any weather.
+const LOOK: Record<string, { n: number }> = {
+  light_rain: { n: 140 },
+  heavy_rain: { n: 420 },
+  snow: { n: 260 },
+  fog: { n: 7 },
 }
 
 /** The run's weather condition, from its overlays or the live scenario status. */
@@ -30,8 +31,9 @@ export function useWeather(): string | null {
 
 export function WeatherLayer() {
   const cond = useWeather()
+  const live = useStore(effectsLive)
   const moving = useStore((s) => s.view === 'simulate' && s.status.state === 'running' && !s.status.paused)
-  if (!cond || !LOOK[cond] || cond === 'clear') return null
+  if (!live || !cond || !LOOK[cond] || cond === 'clear') return null
   return <WeatherCanvas cond={cond} moving={moving} />
 }
 
@@ -70,8 +72,6 @@ function WeatherCanvas({ cond, moving }: { cond: string; moving: boolean }) {
     }
     const draw = (dt: number) => {
       ctx.clearRect(0, 0, W, H)
-      ctx.fillStyle = look.tint
-      ctx.fillRect(0, 0, W, H)
       if (reduced) return
       if (cond === 'fog') {
         for (const d of drops) {
@@ -83,12 +83,6 @@ function WeatherCanvas({ cond, moving }: { cond: string; moving: boolean }) {
           ctx.fillStyle = g
           ctx.fillRect(d.x - d.s, d.y - d.s, d.s * 2, d.s * 2)
         }
-        // thicker towards the edges: visibility falls off with distance
-        const v = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.2, W / 2, H / 2, Math.hypot(W, H) * 0.6)
-        v.addColorStop(0, 'rgba(240,243,246,0)')
-        v.addColorStop(1, 'rgba(240,243,246,0.55)')
-        ctx.fillStyle = v
-        ctx.fillRect(0, 0, W, H)
         return
       }
       if (cond === 'snow') {

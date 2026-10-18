@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Tip } from '../components/ui'
 import { frames } from '../lib/frames'
 import { WEATHER_LABEL, clock } from '../lib/format'
-import { useStore } from '../lib/store'
+import { effectsLive, useStore } from '../lib/store'
 import type { Marker } from '../lib/types'
 import { mapApi } from './MapView'
 import { TONE, focusTarget, placeOverlays } from './overlays'
@@ -39,11 +39,12 @@ function currentMarker(markers: Marker[], t: number): { m: Marker; when: 'now' |
 
 export function ScenarioBanner({ scene }: { scene: Scene }) {
   const run = useStore((s) => s.run)
+  const live = useStore(effectsLive)
   const cond = useWeather()
   const t = useSimTime()
   const weather = run?.overlays?.find((o) => o.kind === 'weather')
   const placed = useMemo(() => (run && run.network === scene.id ? placeOverlays(scene, run.overlays) : []), [run, scene])
-  if (!run) return null
+  if (!run || !live) return null
   const cur = currentMarker(run.markers, t)
   const target = focusTarget(placed, t)
   const WIcon = cond ? WEATHER_ICON[cond] : undefined
