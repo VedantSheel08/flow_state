@@ -153,6 +153,20 @@ body {
 .glass [class*='border-black/'] {
   border-color: rgb(255 255 255 / 0.12);
 }
+/* Native dropdown lists open in the OS's light popup: keep their text dark */
+.glass option {
+  color: #0c1322;
+  background: #fff;
+}
+/* Solid white marks on a blue (selected) chip stay solid, e.g. the intensity level bars */
+.glass .bg-ink .bg-white {
+  background-color: #fff;
+}
+/* A plain white hover would put white text on white */
+.glass [class*='hover:bg-white']:hover {
+  background-color: rgb(255 255 255 / 0.16);
+  box-shadow: none;
+}
 
 /* Keyboard hint chip */
 .kbd {

@@ -1,8 +1,8 @@
-import { INTENSITY, PRESET_SHORT, effectiveValues, matchPreset, nominalRate, overriddenKeys, presetKeys, presetParams } from '../lib/intensity'
+import { INTENSITY, PRESET_SHORT, effectiveValues, matchPreset, nominalRate, presetKeys, presetParams } from '../lib/intensity'
 import { cn, num } from '../lib/format'
 import { useStore } from '../lib/store'
 import type { CongestionPreset, ScenarioSpec } from '../lib/types'
-import { Badge, Tip } from './ui'
+import { Tip } from './ui'
 
 // Bars that fill up with the preset, so the scale reads at a glance.
 function Level({ n, active, hot }: { n: number; active: boolean; hot: boolean }) {
@@ -54,7 +54,7 @@ function presetTip(p: CongestionPreset, scenario: string): string {
  * mapping. Older backends fall back to writing the existing `demand`/`traffic`
  * parameters directly. Either way, no traffic is generated client-side.
  */
-export function IntensitySelector({ spec, running }: { spec: ScenarioSpec; running: boolean }) {
+export function IntensitySelector({ spec }: { spec: ScenarioSpec }) {
   const presets = useStore((s) => s.congestionPresets)
   const selected = useStore((s) => s.congestion[spec.id] ?? null)
   const draft = useStore((s) => s.drafts[spec.id])
@@ -65,7 +65,6 @@ export function IntensitySelector({ spec, running }: { spec: ScenarioSpec; runni
   const values = effectiveValues(spec, draft, preset)
   if (!backend && !presetParams(spec, 'normal')) return null
   const rate = nominalRate(values)
-  const overridden = overriddenKeys(spec, draft, preset).filter((k) => k !== 'duration')
   const legacy = backend ? null : matchPreset(spec, values)
 
   return (
@@ -108,23 +107,6 @@ export function IntensitySelector({ spec, running }: { spec: ScenarioSpec; runni
               )
             })}
       </div>
-      {preset && (
-        <div className="mt-2 flex flex-wrap items-center gap-1">
-          <Badge>Backend preset v{preset.version}</Badge>
-          <Badge>Warm-up {preset.warmup} s</Badge>
-          {preset.stressTest && <Badge tone="bad">Stress test</Badge>}
-          {!preset.calibrated && <Badge tone="warn">Not calibrated</Badge>}
-          {!preset.safetyValidated && <Badge tone="warn">Safety not validated</Badge>}
-        </div>
-      )}
-      <p className="mt-1.5 text-[11px] leading-snug text-ink-3">
-        {preset
-          ? `${preset.description ?? 'Modeled load; measure actual departures and queues.'}${overridden.length ? ` Your edits to ${overridden.join(', ')} override the preset.` : ''}`
-          : backend
-            ? 'Pick a modeled load from the simulation server, or keep the scenario’s own demand.'
-            : `Sets SUMO’s background demand${spec.params.some((q) => q.key === 'traffic') ? ' and traffic multiplier' : ''} for the next run (this server has no preset API).`}
-        {running ? ' The running simulation keeps its demand; use Live control → Traffic level to change it now.' : ''}
-      </p>
     </div>
   )
 }

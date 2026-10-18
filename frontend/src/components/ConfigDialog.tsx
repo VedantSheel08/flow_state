@@ -1,5 +1,5 @@
-// Scenario configuration in a modal: intensity, scenario parameters, simulation
-// settings and model assumptions, so the scenario rail stays a short list.
+// Scenario configuration in a modal: intensity, scenario parameters and simulation
+// settings, so the scenario rail stays a short list.
 
 import * as Dialog from '@radix-ui/react-dialog'
 import { Gauge, Play, RotateCcw, X } from 'lucide-react'
@@ -14,7 +14,7 @@ import { ParamField } from './ParamField'
 import { ICONS } from './ScenarioRail'
 import { Button, Segmented } from './ui'
 
-type Tab = 'scenario' | 'simulation' | 'assumptions'
+type Tab = 'scenario' | 'simulation'
 
 // toggles and map pickers carry a description or a button row, so they take the full width
 const wide = (p: ParamSpec) => p.type === 'bool' || p.type === 'edge'
@@ -66,14 +66,14 @@ export function ConfigDialog() {
     <Dialog.Root open={open} onOpenChange={(o) => set({ configOpen: o })}>
       <Dialog.Portal>
         <Dialog.Overlay className="anim-fade fixed inset-0 z-40 bg-[rgba(16,24,40,0.28)]" />
-        <Dialog.Content className="anim-in fixed left-1/2 top-1/2 z-50 flex max-h-[min(84vh,760px)] w-[min(600px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-float outline-none">
+        <Dialog.Content className="anim-in fixed left-1/2 top-1/2 z-50 flex max-h-[min(84vh,760px)] w-[min(600px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden glass rounded-2xl outline-none">
           <div className="flex items-start gap-3 border-b border-border px-5 pb-3.5 pt-4">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-ink text-white shadow-xs">
               <Icon size={17} strokeWidth={1.8} />
             </span>
             <div className="min-w-0 flex-1">
               <Dialog.Title className="text-[15px] font-semibold text-ink">Configure · {spec.title}</Dialog.Title>
-              <Dialog.Description className="mt-0.5 text-[12px] leading-relaxed text-ink-2">{spec.description}</Dialog.Description>
+              <Dialog.Description className="sr-only">{spec.description}</Dialog.Description>
             </div>
             <Dialog.Close asChild>
               <Button size="icon-sm" variant="ghost" aria-label="Close">
@@ -89,7 +89,6 @@ export function ConfigDialog() {
               options={[
                 { value: 'scenario', label: 'Scenario' },
                 { value: 'simulation', label: 'Simulation' },
-                ...(spec.assumptions.length ? [{ value: 'assumptions' as Tab, label: 'Assumptions' }] : []),
               ]}
             />
             {edited && (
@@ -102,18 +101,11 @@ export function ConfigDialog() {
           <div className="scroll-y min-h-0 flex-1 px-5 pb-5 pt-4">
             {tab === 'scenario' && (
               <div className="space-y-5">
-                <IntensitySelector spec={spec} running={status.state === 'running' || status.state === 'warming'} />
+                <IntensitySelector spec={spec} />
                 {scenarioParams.length > 0 && fields(scenarioParams)}
               </div>
             )}
             {tab === 'simulation' && fields(simParams)}
-            {tab === 'assumptions' && (
-              <ul className="list-disc space-y-1.5 pl-4 text-[12.5px] leading-snug text-ink-2">
-                {spec.assumptions.map((a) => (
-                  <li key={a}>{a}</li>
-                ))}
-              </ul>
-            )}
           </div>
 
           <div className="flex items-center justify-end gap-2 border-t border-border bg-subtle px-5 py-3">
