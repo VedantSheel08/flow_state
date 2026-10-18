@@ -29,6 +29,8 @@ python -m flowstate.cli serve --port 8000                # terminal 1
 cd frontend && npm install && npm run dev                # terminal 2
 ```
 
+**Intelligence Lab** (forecasting and ML vs non-ML signal control, standalone): `.un-lab.ps1`, then open <http://localhost:5176>. See [docs/INTELLIGENCE_LAB.md](docs/INTELLIGENCE_LAB.md).
+
 ## Using it
 
 1. Choose a scenario in the left rail. Adjust its parameters; *Simulation settings* holds run length, demand,
