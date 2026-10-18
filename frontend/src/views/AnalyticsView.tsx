@@ -286,7 +286,6 @@ export function AnalyticsView() {
           <div className="rounded-lg border border-border bg-surface p-4">
             <div className="mb-2 text-[13px] font-semibold text-ink">Completed trips by mode</div>
             <ModeTable modes={modes} />
-            <div className="mt-2 text-[11px] text-ink-3">Cumulative since the scenario clock started. Trips still under way are not included.</div>
           </div>
           <Comparison />
         </div>
