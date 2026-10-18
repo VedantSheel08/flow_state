@@ -30,6 +30,9 @@ OBS_NAMES = ([f"{d}:{n}" for d in C.DIRECTIONS for n in ("queue/cap", "wait/60s"
 OBS_GROUPS = [("Approaches (N, E, S, W)", 0, 16), ("Signal", 16, 22), ("Stage demand", 22, 29), ("Context", 29, 33)]
 PPO_CHECKPOINT = "run4/best_validation.zip"  # the per-junction (v2 observation) candidate that was evaluated and rejected by the gate
 
+# Same palette as the lab's map (BGR order for OpenCV): light land, curb bed, kerb line, grey asphalt, yellow centre line.
+LAND, CURB_BED, KERB, ASPHALT, YELLOW = (230, 234, 232), (225, 222, 220), (195, 188, 183), (107, 99, 94), (59, 185, 226)
+CAR_BGR = [(235, 232, 229), (191, 182, 170), (179, 160, 141), (163, 185, 199), (144, 149, 169), (154, 168, 147)]  # the lab's fixed car colours
 SCALE = 3.0  # camera pixels per metre
 VIEW_M = 160.0  # camera footprint, metres per side
 SIZE = int(VIEW_M * SCALE)
@@ -45,6 +48,7 @@ class Perception:
         self._cv_err: str | None = None
         self._geom: dict[str, Any] | None = None
         self._bg: dict[str, np.ndarray] = {}
+        self._ref: dict[str, np.ndarray] = {}  # the empty scene after the same blur the camera frames get (thin lane markings would otherwise read as vehicles)
         self.timing: dict[str, list[float]] = {"ppo": [], "camera": []}
 
     # ------------------------------------------------------------------------------------------------ PPO (shadow)
@@ -120,45 +124,79 @@ class Perception:
         return int(round(SIZE / 2 + (x - c[0]) * SCALE)), int(round(SIZE / 2 - (y - c[1]) * SCALE))
 
     def _background(self, sim: Any, jid: str) -> tuple[np.ndarray, tuple[float, float]]:
+        """The empty scene in the same palette as the lab's map (light land, curb bed, kerb line, grey asphalt, dashed lane lines, yellow centre line, stop bars)."""
         cv = self._cv2()
         g = self._geometry(sim)
         c = tuple(next(j["c"] for j in g["junctions"] if j["id"] == jid))
         if jid not in self._bg:
-            img = np.full((SIZE, SIZE, 3), (52, 56, 60), np.uint8)  # asphalt-grey ground
-            for j in g["junctions"]:
-                pts = np.array([self._px(x, y, c) for x, y in j["s"]], np.int32)
-                cv.fillPoly(img, [pts], (74, 78, 82))
+            img = np.full((SIZE, SIZE, 3), LAND, np.uint8)
+            px = lambda pts: np.array([self._px(x, y, c) for x, y in pts], np.int32)  # noqa: E731
+            for color, extra in ((CURB_BED, 5.2), (KERB, 0.7), (ASPHALT, 0.05)):  # curb bed, then kerb line, then asphalt on top
+                for ln in g["lanes"]:
+                    cv.polylines(img, [px(ln["s"])], False, color, max(1, int((ln["w"] + extra) * SCALE)))
+                for j in g["junctions"]:
+                    cv.fillPoly(img, [px(j["s"])], color)
+            edges: dict[str, list[dict[str, Any]]] = {}
             for ln in g["lanes"]:
-                pts = np.array([self._px(x, y, c) for x, y in ln["s"]], np.int32)
-                cv.polylines(img, [pts], False, (74, 78, 82), max(2, int(ln["w"] * SCALE)))
-            for ln in g["lanes"]:  # painted lane edges
                 if not ln["i"]:
-                    pts = np.array([self._px(x, y, c) for x, y in ln["s"]], np.int32)
-                    cv.polylines(img, [pts], False, (150, 150, 140), 1)
+                    edges.setdefault(ln["id"].rsplit("_", 1)[0], []).append(ln)
+            for lanes in edges.values():
+                lanes = sorted(lanes, key=lambda l: l["id"])
+                for a_, b_ in zip(lanes, lanes[1:]):  # dashed divider halfway between neighbouring lanes
+                    if len(a_["s"]) == len(b_["s"]):
+                        self._dashed(img, px([((p[0] + q[0]) / 2, (p[1] + q[1]) / 2) for p, q in zip(a_["s"], b_["s"])]), (246, 250, 250), 2.5 * SCALE, 3.5 * SCALE)
+                inner = lanes[-1]  # the left edge of the last lane is the centre line
+                (x0, y0), (x1, y1) = inner["s"][0], inner["s"][-1]
+                L = float(np.hypot(x1 - x0, y1 - y0)) or 1.0
+                dx, dy = (x1 - x0) / L, (y1 - y0) / L
+                cv.polylines(img, [px([(x - dy * inner["w"] / 2, y + dx * inner["w"] / 2) for x, y in inner["s"]])], False, YELLOW, 1)
+            for ap in g["approaches"]:  # white stop bar across each incoming lane
+                for ln in g["lanes"]:
+                    if ln["id"].startswith(ap["edge"] + "_"):
+                        (px0, py0), (px1, py1) = ln["s"][-2], ln["s"][-1]
+                        L = float(np.hypot(px1 - px0, py1 - py0)) or 1.0
+                        ux, uy = (px1 - px0) / L, (py1 - py0) / L
+                        hw = ln["w"] / 2
+                        cv.line(img, self._px(px1 + uy * hw - ux, py1 - ux * hw - uy, c), self._px(px1 - uy * hw - ux, py1 + ux * hw - uy, c), (239, 244, 244), 2)
             rng = np.random.default_rng(7)
-            self._bg[jid] = np.clip(img.astype(np.int16) + rng.normal(0, 2.0, img.shape).astype(np.int16), 0, 255).astype(np.uint8)
+            self._bg[jid] = np.clip(img.astype(np.int16) + rng.normal(0, 1.5, img.shape).astype(np.int16), 0, 255).astype(np.uint8)
         return self._bg[jid], c
+
+    def _dashed(self, img: np.ndarray, pts: np.ndarray, color: tuple[int, int, int], dash: float, gap: float) -> None:
+        cv = self._cv2()
+        on, left = True, dash
+        for p, q in zip(pts[:-1], pts[1:]):
+            seg = float(np.hypot(*(q - p)))
+            pos = 0.0
+            while pos < seg:
+                step = min(left, seg - pos)
+                if on:
+                    cv.line(img, tuple(int(v) for v in p + (q - p) * pos / seg), tuple(int(v) for v in p + (q - p) * (pos + step) / seg), color, 1)
+                pos += step
+                left -= step
+                if left <= 1e-6:
+                    on = not on
+                    left = dash if on else gap
 
     def _render(self, vehicles: list[list[float]], bg: np.ndarray, c: tuple[float, float], t: float) -> np.ndarray:
         cv = self._cv2()
         img = bg.copy()
-        palette = [(70, 70, 200), (190, 190, 190), (60, 130, 60), (200, 120, 50), (40, 40, 40), (180, 180, 220), (90, 160, 200)]
         for v in vehicles:
             vid, x, y, ang, typ = int(v[0]), v[1] / 10.0, v[2] / 10.0, v[3], int(v[4])
             if abs(x - c[0]) > VIEW_M / 2 + 8 or abs(y - c[1]) > VIEW_M / 2 + 8:
                 continue
             length = {0: 4.5, 1: 8.0, 2: 6.0}.get(typ, 4.5)
-            col = (235, 235, 235) if typ == 2 else (palette[vid % len(palette)] if typ == 0 else (120, 90, 60))
+            col = (250, 250, 250) if typ == 2 else ((163, 153, 141) if typ == 1 else CAR_BGR[vid % len(CAR_BGR)])
             rad = np.radians(ang)  # SUMO angle: degrees clockwise from north; (x, y) is the front bumper
             fx, fy = np.sin(rad), np.cos(rad)
             cx_, cy_ = x - fx * length / 2, y - fy * length / 2
             rect = ((SIZE / 2 + (cx_ - c[0]) * SCALE, SIZE / 2 - (cy_ - c[1]) * SCALE), (1.8 * SCALE, length * SCALE), ang)
             box = cv.boxPoints(rect).astype(np.int32)
-            cv.fillPoly(img, [box + np.array([2, 2])], (28, 30, 32))  # shadow
+            cv.fillPoly(img, [box + np.array([2, 2])], (60, 62, 66))  # shadow
             cv.fillPoly(img, [box], col)
         img = cv.GaussianBlur(img, (3, 3), 0)
         rng = np.random.default_rng(int(t) & 0xFFFF)
-        light = 1.0 + 0.06 * np.sin(t / 40.0)  # slow illumination drift
+        light = 1.0 + 0.03 * np.sin(t / 40.0)  # slow illumination drift
         noisy = img.astype(np.float32) * light + rng.normal(0, 3.0, img.shape)
         return np.clip(noisy, 0, 255).astype(np.uint8)
 
@@ -183,7 +221,7 @@ class Perception:
         patch with every palette colour; used to turn a blob's area into a vehicle count instead of assuming the geometric footprint."""
         if getattr(self, "_car_px", None) is None:
             cv = self._cv2()
-            plain = np.full((SIZE, SIZE, 3), (74, 78, 82), np.uint8)
+            plain = np.full((SIZE, SIZE, 3), ASPHALT, np.uint8)
             areas = []
             for i in range(7):
                 veh = [[i, 0, 0, 0.0, 0, 0, 0]]  # centre of the view, heading north, vtype car; id selects the colour
@@ -199,11 +237,14 @@ class Perception:
             return {"available": False, "reason": self._cv_err} | self.camera_status()
         t0 = time.perf_counter()
         bg, c = self._background(sim, jid)
-        frame, mask_now = self._render(poses_now, bg, c, t), None
-        mask_now, blobs = self._detect(frame, bg)
+        ref = self._ref.get(jid)
+        if ref is None:
+            ref = self._ref[jid] = cv.GaussianBlur(bg, (3, 3), 0)
+        frame = self._render(poses_now, bg, c, t)
+        mask_now, blobs = self._detect(frame, ref)
         stopped_frac = {}
         if poses_prev is not None:  # a blob that sits on the same pixels one second earlier is a stopped vehicle
-            prev_mask, _ = self._detect(self._render(poses_prev, bg, c, t - 1.0), bg)
+            prev_mask, _ = self._detect(self._render(poses_prev, bg, c, t - 1.0), ref)
             _, labels = cv.connectedComponents(mask_now, connectivity=8)
             for b in blobs:
                 sel = labels == b["label"]
