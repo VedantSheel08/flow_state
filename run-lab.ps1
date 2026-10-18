@@ -4,7 +4,7 @@ $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 if (-not (Test-Path ".venv")) { python -m venv .venv }
 $py = Join-Path $root ".venv\Scripts\python.exe"
-& $py -m pip install -q -r backend\requirements.txt numpy scikit-learn
+& $py -m pip install -q -r backend\requirements.txt numpy scikit-learn psutil
 if (-not (Test-Path "lab\node_modules")) { Push-Location lab; npm install; Pop-Location }
 $env:PYTHONIOENCODING = "utf-8"
 if (-not (Test-Path "artifacts\lab\forecaster.pkl")) {

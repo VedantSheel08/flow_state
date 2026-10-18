@@ -10,6 +10,8 @@ Manual start: `cd backend; ..\.venv\Scripts\python -m flowstate.lab.cli serve --
 Paired replays live in `data/lab/replays/` (git-ignored, about 10 MB). `run-lab.ps1` records them if they are missing
 (`python -m flowstate.lab.cli record`, about 2 minutes).
 
+See also: [INTELLIGENCE_API.md](INTELLIGENCE_API.md) (versioned API, model health, commands) and [FORECAST_AUDIT.md](FORECAST_AUDIT.md) (leakage audit, per-scenario/junction/severity accuracy, known weaknesses).
+
 ## What runs
 
 * **Network and simulation:** the RL 2x2 signalised grid (`flowstate.rl.sim.SignalSim`) with the same seeded demand, the same

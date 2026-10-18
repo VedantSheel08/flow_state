@@ -10,6 +10,7 @@ rows as the model.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import multiprocessing as mp
 import os
@@ -180,16 +181,63 @@ class Forecaster:
         path.write_bytes(pickle.dumps({"models": self.models, "meta": self.meta}))  # FlatTrees are rebuilt on load
 
     @classmethod
-    def load(cls, path: Path) -> "Forecaster":
-        d = pickle.loads(path.read_bytes())  # our own artifact, written by train(); never loaded from user input
-        return cls(d["models"], d["meta"])
+    def load(cls, path: Path, expected_sha256: str | None = None) -> "Forecaster":
+        raw = path.read_bytes()
+        if expected_sha256 and hashlib.sha256(raw).hexdigest() != expected_sha256:  # never unpickle a file that is not the registered artifact
+            raise ModelArtifactError("artifact sha256 does not match MODEL_MANIFEST.json")
+        d = pickle.loads(raw)  # our own artifact, written by train() and hash-checked above
+        fc = cls(d["models"], d["meta"])
+        fc.sha256 = hashlib.sha256(raw).hexdigest()
+        return fc
 
     @classmethod
     def load_default(cls) -> "Forecaster | None":
+        """The registered forecaster, or None (never raises): the reason is kept in ``Forecaster.load_error`` and surfaced by the health check."""
         if cls._default is False:
+            cls._default, cls.load_error = None, None
             p = lab_dir() / "forecaster.pkl"
-            cls._default = cls.load(p) if p.exists() else None
+            try:
+                if p.exists():
+                    mf = lab_dir() / "MODEL_MANIFEST.json"
+                    sha = json.loads(mf.read_text())["artifact_sha256"] if mf.exists() else None
+                    fc = cls.load(p, sha)
+                    fc.manifest_present = sha is not None
+                    fc.attach_calibration()
+                    cls._default = fc
+            except Exception as exc:  # noqa: BLE001 - a broken artifact must degrade the lab, not crash it
+                cls.load_error = f"{type(exc).__name__}: {exc}"
         return cls._default  # type: ignore[return-value]
+
+    # -- calibrated intervals (bound to the artifact by sha256; absent or mismatching calibration is ignored, never guessed) ----------
+    def attach_calibration(self) -> None:
+        f = lab_dir() / "calibration.json"
+        self.calibration = None
+        if f.exists():
+            cal = json.loads(f.read_text())
+            if cal.get("model_sha256") == self.sha256:
+                self.calibration = cal
+
+    def predict_full(self, X: np.ndarray) -> dict[str, np.ndarray]:
+        """p30/p60 plus, when a matching calibration exists, empirical lo/hi bounds per horizon."""
+        from .benchmark import apply_calibration
+
+        p30, p60 = self.predict(X)
+        out = {"p30": p30, "p60": p60}
+        if self.calibration is not None:
+            cap = X[:, FEATURES.index("capacity")]
+            for h, p in ((30, p30), (60, p60)):
+                out[f"lo{h}"], out[f"hi{h}"] = apply_calibration(self.calibration, h, p, cap)
+        return out
+
+
+class ModelArtifactError(RuntimeError):
+    pass
+
+
+Forecaster.load_error = None  # type: ignore[attr-defined]
+Forecaster.sha256 = ""  # type: ignore[attr-defined]
+Forecaster.calibration = None  # type: ignore[attr-defined]
+Forecaster.manifest_present = False  # type: ignore[attr-defined]
 
 
 def _baselines(X: np.ndarray, h_s: int, mean_by_appr: np.ndarray, appr: np.ndarray) -> dict[str, np.ndarray]:
@@ -268,6 +316,9 @@ def train(path: Path | None = None) -> dict[str, Any]:
     fc.save(lab_dir() / "forecaster.pkl")
     (lab_dir() / "forecast_eval.json").write_text(json.dumps(meta, indent=1))
     Forecaster._default = False
+    from .health import write_manifest  # a new artifact must be re-registered (and its calibration refitted: `lab benchmark`)
+
+    write_manifest(version="1.0." + str(int(time.time())))
     return meta
 
 

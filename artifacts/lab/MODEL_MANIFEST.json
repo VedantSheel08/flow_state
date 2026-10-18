@@ -1,0 +1,40 @@
+{
+ "schema": "flowstate.model-manifest/1",
+ "model_id": "queue-forecaster",
+ "version": "1.0.0",
+ "artifact": "forecaster.pkl",
+ "artifact_sha256": "b624154e4e128faa8ccba7e5931e272d6d8374dd77091ef7a4b3dfa1ea548ca2",
+ "features": [
+  "queue",
+  "count",
+  "moving",
+  "mean_wait",
+  "down_occ",
+  "is_green",
+  "in_transition",
+  "elapsed",
+  "to_max_green",
+  "up_count",
+  "up_halting",
+  "up_released",
+  "q_lag10",
+  "q_lag20",
+  "q_lag30",
+  "count_lag30",
+  "capacity",
+  "is_entry",
+  "stage_demand_other"
+ ],
+ "feature_hash": "af41153453cf22cf",
+ "horizons_s": [
+  30,
+  60
+ ],
+ "sample_s": 5,
+ "kind": "HistGradientBoostingRegressor x2 (30 s, 60 s)",
+ "trained_at": "2026-10-17T20:41:41",
+ "dataset_manifest_sha256": "772ddd755bca08c452cdde0aab661accbaef450c245545e6ff67d0c856256616",
+ "evaluation": "forecast_eval.json",
+ "split": "by episode: train seeds 1000-1011, val 2000-2003, test 3000-3007 (+ held-out rush_ramp scenario)",
+ "registered_at": "2026-10-17T22:27:31"
+}

@@ -35,25 +35,46 @@ class ForecastAware(QueueResponsive):
         self.decisions = self.changed = self.earlier = self.later = 0
         self.last_changed: list[int] = []
         self.log: list[tuple[int, int, int]] = []  # (t, junction index, +1 switched earlier / -1 held longer)
+        self.evidence_log: list[dict[str, Any]] = []  # same order as ``log``: the forecast values behind each changed decision
+        self.last_evidence: list[dict[str, Any]] = []
 
     def reset(self, sim: Any) -> None:
         self.decisions = self.changed = self.earlier = self.later = 0
-        self.last_changed, self.log = [], []
+        self.last_changed, self.log, self.evidence_log, self.last_evidence = [], [], [], []
+
+    def _shift(self, sim: Any, jid: str, stage: int) -> tuple[float, float, list[dict[str, Any]], list[str]]:
+        """(bounded demand shift, raw shift, per-approach evidence, exits predicted to be full) for one stage, from the current forecast."""
+        f, topo = sim.forecast, sim.topo
+        raw, drivers, full = 0.0, [], []
+        for d in sim.grid.junctions[jid].served[stage]:
+            i = topo.index[(jid, d)]
+            ahead = min(float(f["p30"][i]), float(f["cap"][i]))
+            raw += ahead - float(f["q"][i])
+            drivers.append({"approach": f"{jid}:{d}", "queueNow": round(float(f["q"][i]), 1), "forecast30s": round(float(f["p30"][i]), 1)})
+            k = topo.feeds[i]
+            if k is not None and float(f["p30"][k]) >= self.spill * float(f["cap"][k]):
+                a = topo.approaches[k]
+                full.append(f"{a.jid}:{a.direction}")
+        return max(-self.bound, min(self.bound, self.beta * raw)), raw, drivers, full
 
     def _demand(self, sim: Any, jid: str, stage: int) -> tuple[float, bool, bool]:
         total, blocked, emerg = super()._demand(sim, jid, stage)
-        f = sim.forecast
-        if not self._ml or f is None:
+        if not self._ml or sim.forecast is None:
             return total, blocked, emerg
-        topo = sim.topo
-        shift = 0.0
-        for d in sim.grid.junctions[jid].served[stage]:
-            i = topo.index[(jid, d)]
-            shift += min(float(f["p30"][i]), float(f["cap"][i])) - float(f["q"][i])
-            k = topo.feeds[i]
-            if k is not None and float(f["p30"][k]) >= self.spill * float(f["cap"][k]):
-                blocked = True
-        return total + max(-self.bound, min(self.bound, self.beta * shift)), blocked, emerg
+        shift, _, _, full = self._shift(sim, jid, stage)
+        return total + shift, blocked or bool(full), emerg
+
+    def evidence(self, sim: Any, jid: str, action: str) -> dict[str, Any]:
+        """Why the ML changed this decision: base vs forecast-adjusted demand of the green and waiting stage, and the forecast values behind the shift."""
+        s = sim.signals[jid]
+        out: dict[str, Any] = {"t": int(sim.t), "junction": jid, "action": action, "greenStage": s.stage, "greenElapsedS": round(s.elapsed, 1)}
+        for label, st in (("current", s.stage), ("next", s.next_stage)):
+            base = QueueResponsive._demand(self, sim, jid, st)
+            shift, raw, drivers, full = self._shift(sim, jid, st)
+            out[label] = {"stage": st, "baseDemand": round(base[0], 2), "mlDemand": round(base[0] + shift, 2), "forecastShift": round(shift, 2), "rawForecastGrowth": round(raw, 2),
+                          "boundedAt": self.bound, "approaches": drivers, "exitsForecastFull": full, "blockedExitBase": base[1], "blockedExitWithForecast": base[1] or bool(full)}
+        out["forecastModel"] = "the controller reads the 30 s point forecast only (never the intervals)"
+        return out
 
     def decide(self, sim: Any) -> list[int]:
         self._ml = False
@@ -70,6 +91,8 @@ class ForecastAware(QueueResponsive):
             else:
                 self.later += 1
             self.log.append((int(sim.t), k, 1 if out[k] == 1 else -1))
+        self.last_evidence = [self.evidence(sim, C.CONTROLLED[k], "switched_earlier" if out[k] == 1 else "held_longer") for k in self.last_changed]
+        self.evidence_log += self.last_evidence
         return out
 
     def stats(self) -> dict[str, int]:

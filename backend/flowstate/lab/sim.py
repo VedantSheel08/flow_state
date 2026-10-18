@@ -213,9 +213,9 @@ class LabSim(SignalSim):
         self.obs_ms.append(self.state.cost_ms)
         if self.forecaster is not None:
             t0 = time.perf_counter()
-            p30, p60 = self.forecaster.predict(X)
+            full = self.forecaster.predict_full(X)  # point forecasts (+ calibrated bounds when a calibration is bound to the artifact)
             self.infer_ms.append((time.perf_counter() - t0) * 1000.0)
-            self.forecast = {"t": self.t, "p30": p30, "p60": p60, "q": X[:, 0].copy(), "cap": X[:, 16].copy()}
+            self.forecast = {"t": self.t, "q": X[:, 0].copy(), "cap": X[:, 16].copy(), **full}
         return X
 
     def metrics(self) -> dict[str, Any]:

@@ -16,6 +16,8 @@ from ..rl import config as C
 
 
 def worker(cmd_q: Any, out_q: Any, cfg: dict[str, Any]) -> None:
+    from . import health
+    from .contract import build_report, model_block, observed_extra
     from .control import make_controller
     from .sim import LabSim
 
@@ -26,6 +28,8 @@ def worker(cmd_q: Any, out_q: Any, cfg: dict[str, Any]) -> None:
                              float(cfg.get("intensity", 1.0)))
         ctl, info = make_controller(cfg["controller"], sim)
         ctl.reset(sim)
+        health.check()  # populates the status shown inside every prediction block
+        model_desc = model_block(health.status())
         out_q.put({"type": "started", "manifest": {k: v for k, v in manifest.items() if k != "sha256"} | {"demandSha": manifest["sha256"]},
                    "controller": info, "forecaster": sim.forecaster.meta if sim.forecaster else None})
         speed, paused, dropped = float(cfg.get("speed", 4.0)), False, 0
@@ -61,6 +65,11 @@ def worker(cmd_q: Any, out_q: Any, cfg: dict[str, Any]) -> None:
                     msg["mlChanged"] = ctl.last_changed
                     msg["mlStats"] = ctl.stats()
                 msg["timing"] = sim.timing()
+                msg["intel"] = build_report(t=sim.t, queues=sim.state.X[:, 0].tolist(), extra=observed_extra(sim.state.X), source="live",
+                                            forecast=fc and {k: v.tolist() for k, v in fc.items() if k in ("p30", "p60", "lo30", "hi30", "lo60", "hi60")},
+                                            model=model_desc if fc else None, context={"scenario": cfg["scenario"], "seed": int(cfg["seed"])},
+                                            controller={"id": cfg["controller"], "mlInControl": bool(info.get("mlInControl"))},
+                                            decisions=getattr(ctl, "last_evidence", []))
                 _put(out_q, msg)
             sim.advance(C.STEP_S)
             frame = sim.frames.pop()

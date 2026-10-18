@@ -90,6 +90,20 @@ def facts(replay_id: str | None, live: dict[str, Any] | None) -> dict[str, Any]:
         out["forecaster"] = {"kind": fe["kind"], "heldOutMAE_30s": fe["test"]["p30"]["model"]["mae"], "persistenceMAE_30s": fe["test"]["p30"]["persistence"]["mae"],
                              "heldOutMAE_60s": fe["test"]["p60"]["model"]["mae"], "persistenceMAE_60s": fe["test"]["p60"]["persistence"]["mae"],
                              "inferenceMsPerDecision": fe["inference_ms_per_decision"]["mean"]}
+    try:  # measured forecasting benchmarks (held-out): what the model gets right and where it is weak
+        from . import export, health
+
+        fx = export.load().get("forecast")
+        if fx:
+            out["forecastBenchmark"] = {h: {"overall": {k: b["overall"][k] for k in ("mae", "persistence_mae", "skill_vs_persistence", "bias", "interval_coverage") if k in b["overall"]},
+                                            "byScenario": {r["scenario"]: {"mae": r["mae"], "persistence_mae": r["persistence_mae"], "skill": r["skill_vs_persistence"]} for r in b["byScenario"]},
+                                            "byTrueSeverityBias": {r["severity"]: r["bias"] for r in b["byTrueSeverity"]},
+                                            "alertRuleHeldOut": next((v for k, v in b["warnings"].items() if k.startswith("model_point_forecast_tuned")), None)}
+                                        for h, b in fx["horizons"].items()}
+            out["forecastBenchmark"]["note"] = "bias < 0 means the model under-predicts; 30 and 60 are forecast horizons in seconds; interval_coverage is measured on test seeds"
+        out["modelHealth"] = health.status()["health"]
+    except (OSError, KeyError, ValueError):  # a missing or stale artifact: the answer simply has fewer facts (programming errors are not swallowed)
+        pass
     if replay_id:
         s = R.index().get(replay_id)
         if s:
@@ -108,15 +122,9 @@ def facts(replay_id: str | None, live: dict[str, Any] | None) -> dict[str, Any]:
 
 
 def _approach_keys() -> list[str]:
-    try:
-        from .control import ForecastAware  # noqa: F401 - cheap import check
-        from .app import _geometry
+    from .contract import approach_table
 
-        if _geometry:
-            return [a["key"] for a in _geometry["approaches"]]
-    except Exception:  # noqa: BLE001
-        pass
-    return []
+    return [a["key"] for a in approach_table()]
 
 
 def deterministic(question: str, F: dict[str, Any]) -> tuple[str, dict[str, Any] | None]:
@@ -143,6 +151,15 @@ def deterministic(question: str, F: dict[str, Any]) -> tuple[str, dict[str, Any]
         m = r["measured"]["mean_wait_s"]
         parts.append(f"In this paired run ({r['scenario']}, seed {r['seed']}), mean waiting time was {m['left']} s for {r['left']} and {m['right']} s for {r['right']} "
                      f"({m['diff']:+} s). Both runs used identical demand.")
+    fb = F.get("forecastBenchmark")
+    if fb and fb.get("30") and fb.get("60") and any(w in q for w in ("forecast", "predict", "accura", "reliab", "confiden", "model", "trust", "wrong", "weak")):
+        o30, o60 = fb["30"]["overall"], fb["60"]["overall"]
+        sev = fb["30"].get("byTrueSeverityBias", {})
+        rule = fb["30"].get("alertRuleHeldOut") or {}
+        parts.append(f"On held-out simulations the 30 s queue forecast has a mean error of {o30['mae']} vehicles against {o30['persistence_mae']} for assuming the queue stays the same; "
+                     f"at 60 s it is {o60['mae']} against {o60['persistence_mae']}. Its 90% intervals contained the measured queue {o30['interval_coverage']} of the time at 30 s. "
+                     f"The model tends to under-predict the worst queues (bias {sev.get('spillback')} vehicles when the queue later fills half the approach)"
+                     + (f", and its spillback alert rule had precision {rule['precision']} and recall {rule['recall']} on held-out data." if rule else "."))
     pe = F.get("pairedEvaluation")
     if pe and (not parts or any(w in q for w in ("ml", "improve", "better", "overall", "compar", "help"))):
         d = pe.get("ml_vs_heuristic", {}).get("mean_wait_s")

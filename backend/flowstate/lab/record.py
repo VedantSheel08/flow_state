@@ -53,7 +53,7 @@ def run_episode(cid: str, scenario: str, seed: int, intensity: float = 1.0, reco
             if record:
                 o: dict[str, Any] = {"t": int(sim.t), "q": sim.state.X[:, 0].round(1).tolist()}
                 if sim.forecast is not None:
-                    o |= {"p30": sim.forecast["p30"].round(1).tolist(), "p60": sim.forecast["p60"].round(1).tolist()}
+                    o |= {k: sim.forecast[k].round(1).tolist() for k in ("p30", "p60", "lo30", "hi30", "lo60", "hi60") if k in sim.forecast}
                 if getattr(ctl, "last_changed", None):
                     o["ml"] = ctl.last_changed
                 obs.append(o)
@@ -64,6 +64,7 @@ def run_episode(cid: str, scenario: str, seed: int, intensity: float = 1.0, reco
         if hasattr(ctl, "stats"):
             out["ml"] = ctl.stats()
             out["mlLog"] = ctl.log
+            out["mlEvidence"] = ctl.evidence_log
         if record:
             out["frames"] = sim.frames
             out["obs"] = obs
@@ -110,7 +111,7 @@ def record_pair(left: str, right: str, scenario: str, seed: int, intensity: floa
     doc = {"id": pid, "scenario": scenario, "seed": seed, "intensity": intensity, "horizon_s": HORIZON_S, "demandSha": L["demandSha"],
            "kpiFields": KPI_FIELDS, "left": L, "right": R, "diff": diff_table(L["metrics"], R["metrics"]),
            "mlInControl": {"left": L["controllerInfo"].get("mlInControl", False), "right": R["controllerInfo"].get("mlInControl", False)},
-           "forecaster": {"kind": fc.meta.get("kind"), "trained_at": fc.meta.get("trained_at")} if fc else None,
+           "forecaster": {"kind": fc.meta.get("kind"), "trained_at": fc.meta.get("trained_at"), "sha256": fc.sha256[:16], "calibrated": bool(fc.calibration)} if fc else None,
            "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S")}
     d = replays_dir()
     d.mkdir(parents=True, exist_ok=True)

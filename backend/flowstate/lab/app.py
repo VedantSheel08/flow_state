@@ -25,11 +25,13 @@ from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from ..rl.demand import SCENARIOS
+from . import intel_api
 from . import record as R
 from .control import CONTROLLERS
 from .forecast import Forecaster, lab_dir
 
 app = FastAPI(title="FlowState Intelligence Lab")
+app.include_router(intel_api.router)  # versioned intelligence contract (additive: the /api/lab/* endpoints are unchanged)
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5176", "http://127.0.0.1:5176"], allow_methods=["*"], allow_headers=["*"])
 CTX = mp.get_context("spawn")
 _geometry: dict[str, Any] | None = None
@@ -54,10 +56,11 @@ def _read(name: str) -> dict[str, Any] | None:
 # ------------------------------------------------------------------------------------------------------------ static data
 @app.get("/api/lab/status")
 def status() -> dict[str, Any]:
-    fc = Forecaster.load_default()
+    from . import health
     from .ask import guard_status
 
-    return {"controllers": CONTROLLERS, "forecaster": bool(fc), "mlAvailable": bool(fc),
+    h = health.check()
+    return {"controllers": CONTROLLERS, "forecaster": h["usable"], "mlAvailable": h["usable"], "modelHealth": {"status": h["status"], "failed": h["failed"]},
             "scenarios": [{"id": s.id, "title": s.title, "description": s.description} for s in SCENARIOS.values()],
             "live": live.state(), "gemini": guard_status()}
 
@@ -192,6 +195,13 @@ class Live:
         return {"scenario": self.cfg.get("scenario"), "controller": self.cfg.get("controller"), "t": self.last_frame["t"],
                 "kpis": dict(zip(R.KPI_FIELDS, k)), "obs": self.last_obs}
 
+    def intel(self) -> dict[str, Any] | None:
+        """Latest v1 report of the live session plus the compact snapshot Gemini may be given."""
+        o = self.last_obs
+        if not o or "intel" not in o:
+            return None
+        return {**o["intel"], "session": {"status": self.status, "paused": self.paused, "sid": self.sid, "config": self.cfg}, "_snapshot": self.snapshot()}
+
     async def start(self, cfg: dict[str, Any]) -> None:
         await self.stop()
         self.cmd_q, self.out_q = CTX.Queue(), CTX.Queue(maxsize=256)
@@ -284,6 +294,7 @@ class Live:
 
 
 live = Live()
+intel_api.live_provider = live.intel
 
 
 @app.websocket("/ws/live")
