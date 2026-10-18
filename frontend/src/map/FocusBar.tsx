@@ -180,68 +180,203 @@ function ModeButton({ active, onClick, label, hint, children }: { active: boolea
   )
 }
 
+// Schematic street map: rows are east-west streets, columns north-south. Lines are
+// drawn only between junctions that exist, so a street that stops reads as stopping.
+const PITCH = 48
+const LABEL_W = 92
+const STUB = 14
+
+const firstName = (s: string) => s.split('/')[0].trim().replace(/\s+(Street|Avenue|Road|Boulevard|Way)$/, '')
+
+const OCTAGON = (r: number) =>
+  Array.from({ length: 8 }, (_, i) => {
+    const a = Math.PI / 8 + (i * Math.PI) / 4
+    return `${(r * Math.cos(a)).toFixed(2)},${(r * Math.sin(a)).toFixed(2)}`
+  }).join(' ')
+
+/** Control type by shape, never by colour: dot = signal, octagon = stop, octagon + dot = all-way, diamond = priority. */
+function ControlGlyph({ control, size = 20 }: { control: string; size?: number }) {
+  const c = size / 2
+  return (
+    <svg width={size} height={size} viewBox={`${-c} ${-c} ${size} ${size}`} aria-hidden className="pointer-events-none overflow-visible">
+      {control === 'traffic_light' ? (
+        <circle r={4.5} fill="currentColor" />
+      ) : control === 'priority' ? (
+        <rect x={-3.6} y={-3.6} width={7.2} height={7.2} transform="rotate(45)" fill="var(--color-surface)" stroke="currentColor" strokeWidth={1.5} />
+      ) : (
+        <>
+          <polygon points={OCTAGON(5.2)} fill="var(--color-surface)" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" />
+          {control === 'allway_stop' && <circle r={1.7} fill="currentColor" />}
+        </>
+      )}
+    </svg>
+  )
+}
+
+const DIR_STEP: Record<string, [number, number]> = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] }
+
 function JunctionPicker({ junctions, current, onPick }: { junctions: NavJunction[]; current: string | null; onPick: (id: string) => void }) {
   const grid = useMemo(() => junctionGrid(junctions), [junctions])
   // a line can change name along its length (Blue Jays Way / Peter, Windsor / Widmer): list every name on it
   const lineName = (cells: NavJunction[], side: 0 | 1) => [...new Set(cells.map((q) => streetPart(q.name, side)))].join(' / ')
   const colName = (c: number) => lineName(grid.cells.filter((q) => q.c === c), 0)
   const rowName = (r: number) => lineName(grid.cells.filter((q) => q.r === r), 1)
+  const [hover, setHover] = useState<string | null>(null)
+  const [cursor, setCursor] = useState<string | null>(current ?? grid.cells[0]?.id ?? null)
+  const [focused, setFocused] = useState(false)
+  const nodes = useRef(new Map<string, HTMLButtonElement>())
+
+  // Open with the keyboard cursor on the selected junction so arrows start from there.
+  useEffect(() => {
+    if (cursor) nodes.current.get(cursor)?.focus({ preventScroll: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const W = grid.cols * PITCH
+  const H = grid.rows * PITCH
+  const at = (n: number) => n * PITCH + PITCH / 2
+  // Long street names: alternate label heights so each name gets two pitches of room.
+  const stagger = Array.from({ length: grid.cols }, (_, c) => firstName(colName(c))).some((n) => n.length > 6)
+  const headH = stagger ? 34 : 20
+
+  const segments = useMemo(() => {
+    const segs: [number, number, number, number][] = []
+    const lines = (key: 'r' | 'c', other: 'r' | 'c', count: number, span: number, horizontal: boolean) => {
+      for (let i = 0; i < count; i++) {
+        const on = grid.cells.filter((q) => q[key] === i).map((q) => q[other]).sort((a, b) => a - b)
+        if (!on.length) continue
+        const seg = (a: number, b: number) => segs.push(horizontal ? [a, at(i), b, at(i)] : [at(i), a, at(i), b])
+        // Streets that reach the edge of the picker carry on off-map.
+        if (on[0] === 0) seg(at(0) - STUB, at(0))
+        if (on[on.length - 1] === span - 1) seg(at(span - 1), at(span - 1) + STUB)
+        for (let k = 1; k < on.length; k++) if (on[k] === on[k - 1] + 1) seg(at(on[k - 1]), at(on[k]))
+      }
+    }
+    lines('r', 'c', grid.rows, grid.cols, true)
+    lines('c', 'r', grid.cols, grid.rows, false)
+    return segs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grid])
+
+  const move = (from: (typeof grid.cells)[number], key: string) => {
+    const [dr, dc] = DIR_STEP[key]
+    // Nearest junction ahead in that direction, preferring one on the same street.
+    const cost = (q: typeof from) => (dr ? Math.abs(q.r - from.r) + 2 * Math.abs(q.c - from.c) : Math.abs(q.c - from.c) + 2 * Math.abs(q.r - from.r))
+    const ahead = grid.cells.filter((q) => (dr ? (q.r - from.r) * dr > 0 : (q.c - from.c) * dc > 0)).sort((a, b) => cost(a) - cost(b))[0]
+    if (!ahead) return
+    setCursor(ahead.id)
+    nodes.current.get(ahead.id)?.focus()
+  }
+
+  const shownId = hover ?? (focused ? cursor : null) ?? current
+  const shown = grid.cells.find((q) => q.id === shownId)
+
   return (
-    <div className="glass anim-in absolute left-0 top-12 w-max rounded-xl p-3">
-      <div className="mb-2 flex items-baseline justify-between gap-6">
-        <span className="label-caps">Intersections</span>
-        <span className="text-[11px] text-ink-3">Laid out as on the map</span>
+    <div className="glass anim-in absolute left-0 top-12 w-max rounded-xl px-3 pb-2.5 pt-2.5">
+      <div className="mb-2 flex h-5 items-center gap-1 text-[12.5px] leading-none" aria-live="polite">
+        {shown ? (
+          <>
+            {shown.id === current && <span className="mr-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden />}
+            <span className="font-semibold tracking-[-0.01em] text-ink">{shortName(shown.name)}</span>
+            <span className="text-ink-3">· {CONTROL_LABEL[shown.control] ?? shown.control}</span>
+          </>
+        ) : (
+          <span className="text-ink-3">Pick an intersection to focus</span>
+        )}
       </div>
-      <div className="grid gap-1" style={{ gridTemplateColumns: `84px repeat(${grid.cols}, 92px)` }}>
-        <span />
-        {Array.from({ length: grid.cols }, (_, c) => (
-          <span key={c} title={colName(c)} className="self-end pb-0.5 text-center text-[10.5px] font-semibold uppercase leading-tight tracking-[0.06em] text-ink-3">
-            {colName(c)}
+
+      <div className="relative" style={{ width: LABEL_W + W + (stagger ? PITCH / 2 : 0), height: headH + H }}>
+        {Array.from({ length: grid.cols }, (_, c) => {
+          const full = colName(c)
+          return (
+            <span
+              key={c}
+              title={full}
+              className="label-caps absolute -translate-x-1/2 truncate whitespace-nowrap text-center leading-none"
+              style={{ left: LABEL_W + at(c), top: stagger && c % 2 ? 16 : 0, maxWidth: stagger ? PITCH * 2 - 8 : PITCH - 2 }}
+            >
+              {firstName(full)}
+            </span>
+          )
+        })}
+        {Array.from({ length: grid.rows }, (_, r) => {
+          const full = rowName(r)
+          return (
+            <span key={r} title={full} className="label-caps absolute left-0 -translate-y-1/2 truncate whitespace-nowrap leading-none" style={{ top: headH + at(r), maxWidth: LABEL_W - 10 }}>
+              {firstName(full)}
+            </span>
+          )
+        })}
+
+        <svg className="pointer-events-none absolute overflow-visible" style={{ left: LABEL_W, top: headH }} width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden>
+          {segments.map(([x1, y1, x2, y2], i) => (
+            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-border-strong)" strokeWidth={2} strokeLinecap="round" />
+          ))}
+        </svg>
+
+        <div role="group" aria-label="Intersections, laid out as on the map" className="absolute" style={{ left: LABEL_W, top: headH, width: W, height: H }}>
+          {grid.cells.map((cell) => {
+            const active = cell.id === current
+            return (
+              <button
+                key={cell.id}
+                ref={(el) => {
+                  if (el) nodes.current.set(cell.id, el)
+                  else nodes.current.delete(cell.id)
+                }}
+                tabIndex={cell.id === cursor ? 0 : -1}
+                aria-label={`${shortName(cell.name)}, ${(CONTROL_LABEL[cell.control] ?? cell.control).toLowerCase()}${active ? ', selected' : ''}`}
+                aria-current={active || undefined}
+                onClick={() => onPick(cell.id)}
+                onPointerEnter={() => setHover(cell.id)}
+                onPointerLeave={() => setHover((h) => (h === cell.id ? null : h))}
+                onFocus={() => {
+                  setCursor(cell.id)
+                  setFocused(true)
+                }}
+                onBlur={() => setFocused(false)}
+                onKeyDown={(e) => {
+                  if (!(e.key in DIR_STEP)) return
+                  // keep the global arrow shortcut from also moving the camera
+                  e.preventDefault()
+                  e.stopPropagation()
+                  move(cell, e.key)
+                }}
+                className={cn(
+                  'absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full outline-none transition-colors duration-100',
+                  'focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-offset-1 focus-visible:ring-offset-white',
+                  active ? 'bg-accent-soft text-accent ring-2 ring-accent' : 'text-ink-2 hover:bg-black/[0.05] hover:text-ink focus-visible:bg-black/[0.05] focus-visible:text-ink',
+                )}
+                style={{ left: at(cell.c), top: at(cell.r) }}
+              >
+                <ControlGlyph control={cell.control} />
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="mt-1.5 flex items-center gap-3 text-[11px] leading-none text-ink-3">
+        {(
+          [
+            ['traffic_light', 'Signal'],
+            ['priority_stop', 'Stop'],
+            ['allway_stop', 'All-way'],
+          ] as const
+        ).map(([k, l]) => (
+          <span key={k} className="flex items-center gap-0.5">
+            <ControlGlyph control={k} size={14} />
+            {l}
           </span>
         ))}
-        {Array.from({ length: grid.rows }, (_, r) => (
-          <Row key={r} label={rowName(r)}>
-            {Array.from({ length: grid.cols }, (_, c) => {
-              const cell = grid.cells.find((q) => q.r === r && q.c === c)
-              if (!cell) return <span key={c} />
-              const active = cell.id === current
-              const signal = cell.control === 'traffic_light'
-              return (
-                <button
-                  key={c}
-                  onClick={() => onPick(cell.id)}
-                  title={`${cell.name} · ${CONTROL_LABEL[cell.control] ?? cell.control}`}
-                  className={cn(
-                    'flex h-9 items-center gap-1.5 rounded-lg border px-2 text-left text-[11.5px] font-medium transition-colors',
-                    active ? 'border-ink bg-ink text-white' : 'border-black/[0.07] bg-white/70 text-ink-2 hover:border-black/15 hover:bg-white hover:text-ink',
-                  )}
-                >
-                  <span className={cn('h-2 w-2 shrink-0 rounded-full', signal ? (active ? 'bg-[#4ADE80]' : 'bg-good') : active ? 'bg-[#FCA5A5]' : 'bg-bad')} />
-                  <span className="truncate">{signal ? 'Signal' : cell.control === 'allway_stop' ? 'All-way' : 'Stop'}</span>
-                </button>
-              )
-            })}
-          </Row>
-        ))}
-      </div>
-      <div className="mt-2.5 flex items-center gap-3 border-t border-black/[0.06] pt-2 text-[11px] text-ink-3">
-        <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-good" /> Signalised
+        <span className="ml-auto flex items-center gap-1 pl-4">
+          <span className="kbd">←</span>
+          <span className="kbd">→</span>
+          <span className="kbd">↑</span>
+          <span className="kbd">↓</span>
+          <span className="ml-0.5">to move</span>
         </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-bad" /> Stop-controlled
-        </span>
-        <span className="ml-auto">Arrow keys move between intersections</span>
       </div>
     </div>
-  )
-}
-
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <>
-      <span title={label} className="flex items-center truncate pr-1 text-[10.5px] font-semibold uppercase tracking-[0.06em] text-ink-3">{label}</span>
-      {children}
-    </>
   )
 }
