@@ -38,6 +38,10 @@ def main() -> None:
     pr.add_argument("--scenario", default="rush_ramp")
     sub.add_parser("export")
     sub.add_parser("mapgeom")
+    da = sub.add_parser("demo-asset")
+    da.add_argument("--pair", required=True, help="id of a recorded pair, e.g. fixed_time__ml_forecast_ev__rush_ramp__3100__1")
+    da.add_argument("--out", required=True, help="directory to write pair.json.gz and grid-network.json into")
+    da.add_argument("--list", action="store_true", help="list the ambulances in the pair and the example that would be chosen, without writing")
     s = sub.add_parser("serve")
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=8015)
@@ -94,6 +98,17 @@ def main() -> None:
 
         g = build(lab_dir() / "grid-network.json")
         print(json.dumps({"edges": len(g["edges"]), "junctions": len(g["junctions"]), "crossings": len(g["crossings"]), "buildings": len(g["city"]["buildings"]), "trees": len(g["city"]["trees"])}))
+    elif a.cmd == "demo-asset":
+        from pathlib import Path
+
+        from .demo_asset import build, write
+
+        if a.list:
+            d = build(a.pair)
+            print(json.dumps({"example": d["example"], "units": [{"id": u["id"], "savedS": u["savedS"], "left": [u["left"]["travelS"], u["left"]["stoppedRedS"], u["left"]["stoppedQueueS"]],
+                                                                    "right": [u["right"]["travelS"], u["right"]["stoppedRedS"], u["right"]["stoppedQueueS"]]} for u in d["ambulances"]]}, indent=0))
+        else:
+            print(json.dumps(write(a.pair, Path(a.out))))
     elif a.cmd == "export":
         from .export import build
 
