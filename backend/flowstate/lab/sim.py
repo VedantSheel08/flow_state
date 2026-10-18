@@ -176,7 +176,9 @@ class LabSim(SignalSim):
         subs = T.vehicle.getAllSubscriptionResults()
         co2 = 0.0
         for r in subs.values():
-            co2 += r.get(tc.VAR_CO2EMISSION, 0.0)
+            v = r.get(tc.VAR_CO2EMISSION, 0.0)
+            if v >= 0.0:  # libsumo reports INVALID_DOUBLE_VALUE (-2^30) for a vehicle that is being teleported
+                co2 += v
         self.co2_g += co2 * C.STEP_S / 1000.0  # mg/s over one step -> g
         if self.record:
             self.frames.append(self._frame(subs))
@@ -189,6 +191,8 @@ class LabSim(SignalSim):
             if tc.VAR_POSITION not in r:
                 continue
             x, y = r[tc.VAR_POSITION]
+            if x < -1e6 or y < -1e6:  # teleporting: not on the road, nothing to draw
+                continue
             w = r[tc.VAR_WAITING_TIME]
             waits.append(w)
             veh.append([int(vid[1:]), int(round(x * 10)), int(round(y * 10)), int(round(r[tc.VAR_ANGLE])), self.vtype.get(vid, 0),

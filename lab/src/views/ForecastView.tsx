@@ -23,7 +23,7 @@ export default function ForecastView() {
       <div className="card">
         <h4>Queue forecaster <small>{ev.kind} · trained {ev.trained_at} in {ev.train_wall_s}s on CPU</small></h4>
         <p className="small">Predicts halting vehicles on each of the 16 signalised approaches 30 s and 60 s ahead from detector-like inputs (counts, halts, waiting, downstream occupancy,
-          signal state, upstream platoons, 10–30 s history). Data: real SUMO runs. Split <b>by episode</b>: {ev.split}. Rows — train {ev.rows.train.toLocaleString()},
+          signal state, upstream platoons, 10–30 s history). Data: real SUMO runs. Split {ev.split}. Rows — train {ev.rows.train.toLocaleString()},
           validation {ev.rows.val.toLocaleString()}, test {ev.rows.test.toLocaleString()}. Hyper-parameters chosen on validation seeds only.</p>
         <p className="small">Inference: <b>{fmt(ev.inference_ms_per_decision.mean, 2)} ms</b> per control decision (16 approaches × 2 horizons, p95 {fmt(ev.inference_ms_per_decision.p95, 2)} ms).</p>
       </div>

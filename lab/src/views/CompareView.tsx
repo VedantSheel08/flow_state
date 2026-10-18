@@ -45,7 +45,7 @@ export default function CompareView({ geom, scenarios, mlAvailable, onReplay, pe
     if (!playing || !rep) return
     let raf = 0, prev = performance.now(), lastUi = 0
     const loop = (now: number) => {
-      tref.current = Math.min(dur, tref.current + ((now - prev) / 1000) * speed)
+      tref.current = Math.min(dur, tref.current + (Math.max(0, now - prev) / 1000) * speed) // rAF time can precede performance.now()
       prev = now
       if (now - lastUi > 120) { setT(tref.current); lastUi = now }
       if (tref.current >= dur) { setPlaying(false); setT(dur); return }
@@ -59,9 +59,10 @@ export default function CompareView({ geom, scenarios, mlAvailable, onReplay, pe
   const mkSource = (side: 'left' | 'right') => (): DrawData | null => {
     if (!rep) return null
     const run = rep[side]
-    const tt = tref.current
-    const i = Math.min(run.frames.length - 1, Math.floor(tt))
+    const tt = Math.max(0, tref.current)
+    const i = Math.max(0, Math.min(run.frames.length - 1, Math.floor(tt)))
     const f = run.frames[i]
+    if (!f) return null
     const o = obsAt(run.obs, tt)
     const recentMl = (run.mlLog ?? []).filter(([ts]) => ts <= tt && tt - ts < 6).map(([, j]) => j)
     return { vehicles: interpolate(f, run.frames[i + 1], tt - i), signals: f.s, queue: o?.q, forecast: o?.p30, mlJunctions: recentMl }
@@ -104,7 +105,7 @@ export default function CompareView({ geom, scenarios, mlAvailable, onReplay, pe
   const mlRight = rep?.mlInControl.right
   const rightLabel = rep ? (mlRight ? `RIGHT · ${lbl(rep.right.controller)} (ML in control)` : `RIGHT · ${lbl(rep.right.controller)}`) : ''
   const pairKey = rep && `${rep.left.controller}|${rep.right.controller}`
-  const evBlock = ev && pairKey ? (pairKey === 'queue_heuristic|ml_forecast' ? ev.summary.ml_vs_heuristic : pairKey === 'fixed_time|queue_heuristic' ? ev.summary.heuristic_vs_fixed : null) : null
+  const evBlock = ev && pairKey ? (pairKey === 'queue_heuristic|ml_forecast' ? ev.summary.ml_vs_heuristic : pairKey === 'fixed_time|queue_heuristic' ? ev.summary.heuristic_vs_fixed : pairKey === 'fixed_time|ml_forecast' ? ev.summary.ml_vs_fixed : null) : null
 
   return (
     <div className="compare">
@@ -117,6 +118,7 @@ export default function CompareView({ geom, scenarios, mlAvailable, onReplay, pe
         <span className="mono">t = {ti} s / {dur} s</span>
         {loading && <span className="pill starting">loading…</span>}
       </div>
+      {ev && <Headline ev={ev} />}
       {!index.length && <div className="card">No recorded pairs yet. Record one below (two SUMO runs, ~15 s).</div>}
       {rep && (
         <>
@@ -172,6 +174,24 @@ export default function CompareView({ geom, scenarios, mlAvailable, onReplay, pe
 }
 
 const lbl = (c: string) => CONTROLLER_LABEL[c] ?? c
+
+type Pair = { mean_diff: number; ci95: [number, number]; pairs: number; better: number; worse: number; left_mean: number; right_mean: number; pct?: number }
+function Headline({ ev }: { ev: EvalSummary }) {
+  const s = ev.summary as unknown as { ml_vs_heuristic?: Record<string, Pair>; heuristic_vs_fixed?: Record<string, Pair>; ml_influence?: { decisions: number; changed: number; switchedEarlier: number; heldLonger: number } }
+  const w = s.ml_vs_heuristic?.mean_wait_s
+  if (!w) return null
+  const verdict = w.ci95[1] < 0 ? 'yes' : w.ci95[0] > 0 ? 'worse' : 'no'
+  const hf = s.heuristic_vs_fixed?.mean_wait_s
+  const inf = s.ml_influence
+  return <div className={`headline ${verdict === 'yes' ? 'good' : verdict === 'worse' ? 'bad' : 'neutral'}`}>
+    <div className="hq">Did machine learning improve traffic?</div>
+    <div className="ha">{verdict === 'yes' ? 'Yes' : verdict === 'worse' ? 'No: it made waiting worse' : 'No measurable improvement'}</div>
+    <div className="small">Held-out test, {w.pairs} paired SUMO episodes (5 scenarios × 12 unseen seeds): mean wait {fmt(w.left_mean, 1)} s without ML vs {fmt(w.right_mean, 1)} s with ML
+      (Δ {w.mean_diff > 0 ? '+' : ''}{fmt(w.mean_diff, 2)} s, 95% CI {fmt(w.ci95[0], 2)} to {fmt(w.ci95[1], 2)}).
+      {inf && <> The forecast changed {inf.changed.toLocaleString()} of {inf.decisions.toLocaleString()} decisions ({fmt((100 * inf.changed) / Math.max(1, inf.decisions), 1)}%), {inf.heldLonger.toLocaleString()} of them longer holds for predicted spillback.</>}
+      {hf && <> For reference, the heuristic vs fixed-time: Δ {hf.mean_diff > 0 ? '+' : ''}{fmt(hf.mean_diff, 2)} s (CI {fmt(hf.ci95[0], 2)} to {fmt(hf.ci95[1], 2)}).</>}</div>
+  </div>
+}
 
 function RunTiles({ k, other }: { k?: number[]; other?: number[] }) {
   if (!k) return null

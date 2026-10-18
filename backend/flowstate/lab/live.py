@@ -35,7 +35,7 @@ def worker(cmd_q: Any, out_q: Any, cfg: dict[str, Any]) -> None:
                 while True:
                     c = cmd_q.get_nowait()
                     if c["cmd"] == "stop":
-                        out_q.put({"type": "stopped", "t": sim.t, "metrics": sim.metrics(), "timing": sim.timing()})
+                        out_q.put({"type": "stopped", "t": sim.t, "metrics": sim.metrics(), "timing": sim.timing(), "dropped": dropped})
                         return
                     if c["cmd"] == "pause":
                         paused = True

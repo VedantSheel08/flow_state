@@ -259,7 +259,7 @@ class Live:
                 elif m["type"] == "obs":
                     self.last_obs = m
                 elif m["type"] in ("done", "stopped", "error"):
-                    self.status, self.last_end = ("error" if m["type"] == "error" else "finished"), m
+                    self.status, self.last_end, self.paused = ("error" if m["type"] == "error" else "finished"), m, False
                 await self.broadcast(json.dumps(m))
             if frames and current:  # if the browser fell behind, only the newest frame matters for display
                 self.last_frame = frames[-1]

@@ -117,3 +117,26 @@ def test_lab_api_status_geometry_and_offline_ask(monkeypatch):
         assert r["source"] == "measurements" and r["answer"]
         assert c.get("/api/lab/replays/..%2Fsecret").status_code in (400, 404)
         assert c.post("/api/lab/replays", json={"left": "ml_forecast", "right": "ml_forecast"}).status_code == 400
+
+
+def test_gemini_answer_accepted_only_when_grounded(monkeypatch):
+    """Through the real GuardedGemini (cache, limits, breakers) with a scripted client: a grounded answer is used, an invented number is not."""
+    from flowstate.intelligence.gemini import GuardedGemini
+    from flowstate.lab import ask as K
+
+    replies = []
+
+    class Client:
+        def generate_json(self, system, user, schema):
+            assert "never" in system.lower() or "only numbers" in system.lower()
+            return replies.pop(0)
+
+    guard = GuardedGemini(api_key="test-key-not-real", client_factory=lambda m, t, k: Client())
+    monkeypatch.setattr(K, "_guard", lambda: guard)
+    monkeypatch.setattr(K, "facts", lambda r, l: {"scenarios": {"pulse": "Alternating pulses"}, "pairedEvaluation": {"ml_vs_heuristic": {"mean_wait_s": {"mean_diff": 1.68, "ci95": [-0.79, 4.24], "pairs": 60}}}})
+    replies.append({"answer": "Across 60 pairs the difference was 1.68 s, CI -0.79 to 4.24, so not clear.", "scenario_request": {"scenario": "pulse", "intensity": 3.0}})
+    r = K.answer("Did ML help?", None, None)
+    assert r["source"] == "gemini" and r["scenarioRequest"] == {"scenario": "pulse", "intensity": 1.4, "left": "queue_heuristic", "right": "ml_forecast"}
+    replies.append({"answer": "ML cut waiting by 23.5 s.", "scenario_request": None})
+    r = K.answer("Did ML help a lot?", None, None)
+    assert r["source"] == "measurements" and r["rejectedNumbers"] == ["23.5"]
