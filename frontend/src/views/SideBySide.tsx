@@ -4,7 +4,7 @@ import { Camera } from '../map/camera'
 import { canopyCache, groundCache, render, type RenderState } from '../map/renderer'
 import { buildScene, type Scene } from '../map/scene'
 import {
-  LOWER_IS_BETTER, STATUS_TEXT, evState, loadDemo, locate, sample, spriteCode, windowFor,
+  LOWER_IS_BETTER, STATUS_TEXT, evState, isAmbulance, loadDemo, locate, sample, sideId, spriteCode, windowFor,
   type AggStat, type DemoAsset, type DemoSide, type DemoUnit, type UnitSide,
 } from '../lib/flowstateDemo'
 import { cn, num } from '../lib/format'
@@ -43,10 +43,12 @@ interface MapProps {
   view: React.RefObject<SharedView>
   onFree: () => void
   label: string
+  tlsIds: string[]
+  mainCodes: boolean
 }
 
 /** Main's own map renderer (roads, curbs, crosswalks, signal heads, buildings, trees, vehicle sprites) drawing one recorded run. Drag to move, scroll to zoom. */
-function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label }: MapProps) {
+function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label, tlsIds, mainCodes }: MapProps) {
   const ref = useRef<HTMLCanvasElement>(null)
   const modeRef = useRef(mode)
   useEffect(() => {
@@ -68,9 +70,8 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label 
     cam.minScale = MIN_ZOOM
     cam.maxScale = MAX_ZOOM
     const mine = { ground: { canvas: null, view: new Camera(), key: '', builds: 0 } as Swap, canopy: { canvas: null, view: new Camera(), key: '', builds: 0 } as Swap }
-    const tlsIds = net.tls.map((x) => x.id)
     const [rx0, ry0, rx1, ry1] = scene.roadBounds
-    const signalled = net.junctions.filter((j) => tlsIds.includes(j.id))
+    const signalled = net.junctions.filter((j) => tlsIds.includes(j.id) || j.type === 'traffic_light')
     const roads = net.edges.map((e) => e.lanes.find((l) => l.role === 'car')?.shape).filter((sh): sh is number[] => !!sh && sh.length >= 4)
     let current: (typeof signalled)[number] | null = null
     let raf = 0, visible = true, held: [number, number] | null = null, lastTs = 0
@@ -112,8 +113,9 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label 
         const dist = (j: { x: number; y: number }) => Math.hypot(j.x - at[0], j.y - at[1])
         const best = signalled.reduce((a, j) => (dist(j) < dist(a) ? j : a), signalled[0])
         if (best && (!current || dist(best) + 25 < dist(current))) current = best
-        // centre the junction, but slide towards the ambulance once it is more than 20 m from it so it never leaves the frame
-        const slide = (d: number) => d - Math.max(-20, Math.min(20, d))
+        // centre the junction, but slide towards the ambulance once it is past 30% of the view from it so it never leaves the frame
+        const lim = Math.max(20, (0.3 * Math.min(w, h)) / Math.max(1, v.scale)) // let the ambulance drift 30% of the view from the junction, no further
+        const slide = (d: number) => d - Math.max(-lim, Math.min(lim, d))
         const tx = (current?.x ?? (rx0 + rx1) / 2) + (current && held && me ? slide(held[0] - current.x) : 0)
         const ty = (current?.y ?? (ry0 + ry1) / 2) + (current && held && me ? slide(held[1] - current.y) : 0)
         if (!v.scale || v.scale < 1) { v.scale = Math.min(w, h) / 185; v.cx = tx; v.cy = ty }
@@ -129,8 +131,8 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label 
       const frameState = side.frames[Math.min(side.frames.length - 1, Math.max(0, Math.floor(t - side.frames[0].t)))]
       const st: RenderState = {
         vehicles: placed.map((p) => ({
-          id: String(p.id), code: spriteCode(p), x: p.x, y: p.y, angle: p.angle, speed: p.speed,
-          signals: (p.speed < 0.5 ? 8 : 0) | (p.type === 2 ? 2048 : 0), // brake lamps when nearly stopped; the beacon bit for the ambulance
+          id: String(p.id), code: spriteCode(p, mainCodes), x: p.x, y: p.y, angle: p.angle, speed: p.speed,
+          signals: (p.speed < 0.5 ? 8 : 0) | (isAmbulance(p, mainCodes) ? 2048 : 0), // brake lamps when nearly stopped; the beacon bit for the ambulance
           alpha: 1,
         })),
         persons: [], tls: Object.fromEntries(tlsIds.map((id, i) => [id, frameState.s[i] ?? ''])),
@@ -207,7 +209,7 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label 
       cv.removeEventListener('wheel', onWheel); cv.removeEventListener('pointerdown', onDown); cv.removeEventListener('pointermove', onMove)
       cv.removeEventListener('pointerup', onUp); cv.removeEventListener('pointercancel', onUp)
     }
-  }, [scene, net, side, ambulance, clock, view, miniK])
+  }, [scene, net, side, ambulance, clock, view, miniK, tlsIds, mainCodes])
 
   const jumpTo = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
@@ -257,12 +259,13 @@ const AGG_LABEL: Record<string, string> = {
   ev_stopped_queue_s: 'Ambulance stuck in queue',
   mean_wait_civilian_s: 'Other vehicles’ wait',
   mean_travel_s: 'Other vehicles’ trip time',
+  time_loss_s: 'Other vehicles’ time lost',
   queue_total_mean_veh: 'Vehicles queued',
   throughput_vph: 'Throughput (veh/h)',
 }
 const AGG_GROUPS: { title: string; keys: string[] }[] = [
   { title: 'For ambulances', keys: ['ev_travel_mean_s', 'ev_stopped_red_s', 'ev_stopped_queue_s'] },
-  { title: 'For everyone else', keys: ['mean_wait_civilian_s', 'mean_travel_s', 'queue_total_mean_veh', 'throughput_vph'] },
+  { title: 'For everyone else', keys: ['mean_wait_civilian_s', 'mean_travel_s', 'time_loss_s', 'queue_total_mean_veh', 'throughput_vph'] },
 ]
 
 function Aggregate({ asset }: { asset: DemoAsset }) {
@@ -307,8 +310,8 @@ function Units({ asset, example, onPick }: { asset: DemoAsset; example: number |
             className={cn('flex flex-col gap-1.5 p-5 text-left transition-shadow', on ? 'rounded-[22px] bg-white/85 shadow-[0_0_0_2px_#0c1322] backdrop-blur-2xl' : cn(panel, 'hover:bg-white/80'))}>
             <span className="flex items-center justify-between text-[13px] font-semibold text-ink">Ambulance {i + 1}{on && <span className="text-[11px] font-[550] text-ink-3">Showing</span>}</span>
             <span className="tnum text-[20px] font-[650] leading-none tracking-[-0.02em]">{secs(u.left.travelS)} → {secs(u.right.travelS)}</span>
-            <span className={cn('tnum text-[13px] font-[550]', u.savedS < 0 ? 'text-bad' : 'text-ink-2')}>
-              {u.savedS === 0 ? 'Same' : `${Math.abs(u.savedS).toFixed(0)} s ${u.savedS > 0 ? 'faster' : 'slower'}`}
+            <span className={cn('tnum text-[13px] font-[550]', u.savedS != null && u.savedS < 0 ? 'text-bad' : 'text-ink-2')}>
+              {u.savedS == null ? 'Did not arrive in one run' : u.savedS === 0 ? 'Same' : `${Math.abs(u.savedS).toFixed(0)} s ${u.savedS > 0 ? 'faster' : 'slower'}`}
             </span>
             <span className="tnum text-[12px] text-ink-3">Stopped {secs(stopped(u.left))} → {secs(stopped(u.right))}</span>
           </button>
@@ -392,9 +395,12 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
   const stops = (s: DemoUnit['left']) => s.stoppedRedS + s.stoppedQueueS
   const tot = asset.totals
   const avg = asset.aggregate.metrics.ev_travel_mean_s
+  const tlsIds = useMemo(() => asset.tlsIds ?? net.tls.map((x) => x.id), [asset, net])
+  const district = asset.network === 'district'
+  const bestCase = !!unit && stops(unit.right) <= asset.bestCaseStopS && unit.left.stoppedQueueS >= asset.minQueueS
   const sides = [
-    { name: 'Fixed-time', sub: 'Standard signals', color: LEFT_COLOR, side: asset.left, span: unit?.left, label: 'Fixed-time map' },
-    { name: 'FlowState', sub: 'Adaptive signals', color: RIGHT_COLOR, side: asset.right, span: unit?.right, label: 'FlowState map' },
+    { name: 'Fixed-time', sub: 'Pre-timed signal plans', color: LEFT_COLOR, side: asset.left, span: unit?.left, evId: unit ? sideId(unit, 'left') : null, label: 'Fixed-time map' },
+    { name: 'FlowState', sub: 'Adaptive plans + ambulance priority', color: RIGHT_COLOR, side: asset.right, span: unit?.right, evId: unit ? sideId(unit, 'right') : null, label: 'FlowState map' },
   ] as const
 
   return (
@@ -405,7 +411,7 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
             <span className="text-[34px] font-[650] leading-none tracking-[-0.03em] text-ink">{x.name}</span>
             <div className={cn('w-full p-2.5', shell)}>
               <div className="relative h-[380px] overflow-hidden rounded-[22px] bg-[#e9ecef] min-[860px]:h-[490px]">
-                <SimMap scene={scene} net={net} side={x.side} ambulance={example} clock={clock} mode={mode} view={view} onFree={() => setMode('free')} label={x.label} />
+                <SimMap scene={scene} net={net} side={x.side} ambulance={x.evId} clock={clock} mode={mode} view={view} onFree={() => setMode('free')} label={x.label} tlsIds={tlsIds} mainCodes={asset.codes === 'main'} />
                 {(mode === 'junction' || mode === 'follow') && (
                   <div aria-hidden className="pointer-events-none absolute inset-0 backdrop-blur-[2px] [mask-image:radial-gradient(ellipse_at_center,transparent_66%,#000_100%)]" />
                 )}
@@ -413,7 +419,7 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
             </div>
             <div className="flex flex-col items-center gap-1.5 text-center">
               <span className="text-[13px] leading-none text-ink-3">{x.sub}</span>
-              {example != null && x.span && <AmbulanceTag side={x.side} id={example} t={t} span={x.span} />}
+              {x.evId != null && x.span && <AmbulanceTag side={x.side} id={x.evId} t={t} span={x.span} />}
             </div>
           </div>
         ))}
@@ -458,11 +464,11 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
       <details className={cn('group px-6 py-4', panel)}>
         <summary className="cursor-pointer list-none text-[14px] font-[550] text-ink-2 marker:hidden [&::-webkit-details-marker]:hidden">How to read this</summary>
         <ul className="m-0 mt-3 flex list-disc flex-col gap-1.5 pl-5 text-[13px] leading-[1.5] text-ink-3">
-          <li>{asset.scenarioTitle} traffic on a synthetic 2×2 grid; both sides replay identical demand. Buildings and trees are generated decoration, not a real city.</li>
-          <li>The ambulance obeys the lights and cannot pass cars in both runs. The example shown first sat in a queue for at least {asset.minQueueS} s on the fixed-time side and was held at most {asset.bestCaseStopS} s by FlowState, so it is a best case. Every ambulance in the run is listed above.</li>
-          <li>Ambulance trips are faster on average ({secs(avg?.left_mean)} → {secs(avg?.right_mean)}), but the corridor holds side streets red: more vehicles are queued across the network, and other vehicles’ wait and throughput show no clear gain.</li>
-          <li>Only the queue forecaster is a trained model. The signal control and the corridor are hand-written rules.</li>
-          <li>This is a separate experiment from the evaluation below: a different controller variant, with the ambulance corridor, on the synthetic grid. Hover a row for its 95% interval.</li>
+          <li>{district ? 'The same downtown street network and map renderer as the Simulation page (OpenStreetMap geometry).' : 'A synthetic 2×2 grid; buildings and trees are generated decoration.'} Both sides replay identical demand and the same ambulance calls (seed {asset.seed}); only the signal control differs.</li>
+          <li>Left: fixed-time plans. Right: {asset.rightIncludes}.</li>
+          <li>The ambulance obeys the lights and cannot pass queued cars in both runs. Trip time is the call-to-scene leg. {bestCase ? `The ambulance shown first sat in a queue for at least ${asset.minQueueS} s on the fixed-time side and was held at most ${asset.bestCaseStopS} s on the right, so it is a best case` : 'The ambulance shown first is the one that gained the most in this run, so it is a best case'}; every ambulance in the run is listed above.</li>
+          <li>Averages come from {asset.aggregate.episodes} paired runs (seeds {asset.aggregate.seeds[0]}–{asset.aggregate.seeds[asset.aggregate.seeds.length - 1]}): ambulance trips {secs(avg?.left_mean)} → {secs(avg?.right_mean)} on average. A small sample: read the intervals (hover a row) before the percentages. Worse-run counts are shown for every measure.</li>
+          <li>This replay is a separate experiment from the evaluation below (different network and controller variant).</li>
         </ul>
       </details>
     </section>

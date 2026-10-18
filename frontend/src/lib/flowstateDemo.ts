@@ -1,24 +1,26 @@
-// Side-by-side replay for the Results page: one recorded SUMO pair (same demand, same seed), fixed-time signals vs FlowState.
-// The asset is built by backend `python -m flowstate.lab.cli demo-asset` from a recorded run; nothing here is simulated in the browser.
+// Side-by-side replay for the Results page: one recorded SUMO pair (same seed, same demand), fixed-time signals vs FlowState.
+// The asset is produced by `python -m flowstate.replay.record` (backend/flowstate/replay) from real runs on the `district` network; nothing is simulated in the browser.
 import type { NetworkGeom } from './types'
 
-/** [id, x*10, y*10, angle, type 0 car|1 truck|2 ambulance, speed*10 m/s] */
+/** [id, x*10, y*10, angle, type, speed*10 m/s]. `type` is one of main's sprite codes when `codes === 'main'` (sedan 0 … ambulance 5), else lab codes (0 car, 1 truck, 2 ambulance). */
 export type DemoVeh = [number, number, number, number, number, number]
 /** ambulance state: [id, status 0 moving|1 red light|2 stuck in queue|3 green ahead, metres to the next signal * 10] */
 export type DemoEv = [number, number, number]
 export interface DemoFrame { t: number; v: DemoVeh[]; s: string[]; e?: DemoEv[] }
 export interface DemoSide { controller: string; frames: DemoFrame[] }
-export interface UnitSide { travelS: number; stoppedRedS: number; stoppedQueueS: number; finished: boolean; departS: number; first: number | null; last: number | null }
-export interface DemoUnit { id: number; left: UnitSide; right: UnitSide; savedS: number }
+export interface UnitSide { travelS: number; stoppedRedS: number; stoppedQueueS: number; finished: boolean; departS: number; first: number | null; last: number | null; id?: number }
+export interface DemoUnit { id: number; left: UnitSide; right: UnitSide; savedS: number | null; call?: number }
 export interface AggStat { mean_diff: number; ci95: [number, number]; pairs: number; better: number; worse: number; left_mean: number; right_mean: number; pct: number | null }
-export interface DemoTotals { ev_total: number; ev_unfinished: number; ev_travel_mean_s: number; ev_stopped_red_s: number; ev_stopped_queue_s: number; mean_wait_civilian_s: number; mean_travel_s: number; throughput_vph: number; queue_total_mean_veh: number }
+export interface DemoTotals { ev_total: number; ev_unfinished: number; ev_travel_mean_s: number; ev_stopped_red_s: number; ev_stopped_queue_s: number; mean_wait_civilian_s: number; mean_travel_s: number; throughput_vph: number; queue_total_mean_veh: number; car?: Record<string, number>; priority?: Record<string, number | string> | null }
 export interface DemoAsset {
   schema: string
+  network?: string
+  codes?: 'main'
+  tlsIds?: string[]
   pair: string
   scenario: string
   scenarioTitle: string
   seed: number
-  intensity: number
   bestCaseStopS: number
   minQueueS: number
   left: DemoSide
@@ -43,19 +45,36 @@ export async function gunzipJson<T>(res: Response): Promise<T> {
   return JSON.parse(await new Response(stream).text()) as T
 }
 
+/** Main's per-mode metric names -> the names the page uses (schema 2 assets record main's `Metrics` for cars). */
+const CAR_KEYS: Record<string, string> = { car_waiting: 'mean_wait_civilian_s', car_travelTime: 'mean_travel_s', car_timeLoss: 'time_loss_s' }
+
+/** Fills the page-level fields from main's car metrics so one component serves both asset schemas. */
+export function normalise(asset: DemoAsset): DemoAsset {
+  for (const side of ['left', 'right'] as const) {
+    const t = asset.totals[side]
+    if (t.car) {
+      t.mean_wait_civilian_s ??= t.car.waiting
+      t.mean_travel_s ??= t.car.travelTime
+    }
+  }
+  const m = asset.aggregate.metrics
+  for (const [from, to] of Object.entries(CAR_KEYS)) if (m[from] && !m[to]) m[to] = m[from]
+  return asset
+}
+
 let loading: Promise<{ asset: DemoAsset; net: NetworkGeom }> | null = null
-/** Fetches the recorded pair and the grid's map description once. */
+/** Fetches the recorded pair, then the map description of the network it was recorded on. */
 export function loadDemo() {
-  loading ??= Promise.all([
-    fetch(`${BASE}pair.json.gz`).then((r) => {
+  loading ??= fetch(`${BASE}pair.json.gz`)
+    .then((r) => {
       if (!r.ok) throw new Error(`Recorded run not found (${r.status})`)
       return gunzipJson<DemoAsset>(r)
-    }),
-    fetch(`${BASE}grid-network.json`).then((r) => {
+    })
+    .then(async (asset) => {
+      const r = await fetch(`${BASE}${asset.network ?? 'grid'}-network.json`)
       if (!r.ok) throw new Error(`Map not found (${r.status})`)
-      return r.json() as Promise<NetworkGeom>
-    }),
-  ]).then(([asset, net]) => ({ asset, net }))
+      return { asset: normalise(asset), net: (await r.json()) as NetworkGeom }
+    })
   loading.catch(() => { loading = null })
   return loading
 }
@@ -103,6 +122,9 @@ export function evState(frames: DemoFrame[], id: number, t: number): { status: n
   return e ? { status: e[1], metresToSignal: e[2] / 10 } : null
 }
 
+/** The vehicle id of one ambulance on one side (ids differ per side in schema 2 assets). */
+export const sideId = (u: DemoUnit, side: 'left' | 'right') => u[side].id ?? u.id
+
 /** Time window that covers both journeys of one ambulance, with a few seconds either side. */
 export function windowFor(asset: DemoAsset, id: number, pad = 8): [number, number] {
   const u = asset.ambulances.find((x) => x.id === id)
@@ -113,9 +135,10 @@ export function windowFor(asset: DemoAsset, id: number, pad = 8): [number, numbe
   return [Math.max(t0, lo), Math.min(t1, hi)]
 }
 
-/** Lab vehicle types -> main's sprite codes (sedan, suv, truck, bus, bike, ambulance, ..., hatch, van, pickup). */
+/** Lab vehicle types -> main's sprite codes (sedan, suv, truck, bus, bike, ambulance, ..., hatch, van, pickup). Assets with `codes: 'main'` already carry main's codes. */
 const CAR_CODES = [0, 9, 1, 0, 9, 1, 0, 11]
-export const spriteCode = (p: Placed) => (p.type === 2 ? 5 : p.type === 1 ? 2 : CAR_CODES[p.id % CAR_CODES.length])
+export const spriteCode = (p: Placed, mainCodes = false) => (mainCodes ? p.type : p.type === 2 ? 5 : p.type === 1 ? 2 : CAR_CODES[p.id % CAR_CODES.length])
+export const isAmbulance = (p: Placed, mainCodes = false) => (mainCodes ? p.type === 5 : p.type === 2)
 
-/** Is the change a good one for this measure? All of these are "lower is better" except throughput. */
-export const LOWER_IS_BETTER = new Set(['ev_travel_mean_s', 'ev_stopped_red_s', 'ev_stopped_queue_s', 'mean_wait_civilian_s', 'mean_travel_s', 'queue_total_mean_veh'])
+/** Is the change a good one for this measure? All of these are "lower is better" except throughput and speed. */
+export const LOWER_IS_BETTER = new Set(['ev_travel_mean_s', 'ev_stopped_red_s', 'ev_stopped_queue_s', 'mean_wait_civilian_s', 'mean_travel_s', 'time_loss_s', 'queue_total_mean_veh', 'car_waiting', 'car_travelTime', 'car_timeLoss'])
