@@ -87,13 +87,71 @@ body {
   color: var(--color-ink-3);
 }
 
-/* Frosted floating surface used for everything that sits on the map. */
+/* One blue for every button and accent on the map panels (lighter Apple blue). */
+:root {
+  --flow-blue: #4da3ff;
+  --flow-blue-soft: rgb(77 163 255 / 0.28);
+}
+
+/* Frosted floating surface used for everything that sits on the map (simulation tab).
+   Apple-style dark material: neutral system gray (#636366, systemGray2 dark) at 74%, vibrancy blur,
+   white labels and one lighter blue (--flow-blue). To revert to the original white glass, replace this block with:
+     .glass { background: rgb(255 255 255 / 0.97); backdrop-filter: blur(6px); border: 1px solid transparent; box-shadow: var(--shadow-float); }
+*/
 .glass {
-  background: rgb(255 255 255 / 0.97);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  border: 1px solid transparent;
-  box-shadow: var(--shadow-float);
+  background: rgb(99 99 102 / 0.74);
+  -webkit-backdrop-filter: saturate(180%) blur(8px);
+  backdrop-filter: saturate(180%) blur(8px);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.25), 0 8px 24px -6px rgb(0 0 0 / 0.3);
+  color: var(--color-ink);
+  /* Flip the palette inside so text stays readable on the dark material. */
+  --color-ink: #ffffff;
+  --color-ink-2: rgb(235 235 245 / 0.86);
+  --color-ink-3: rgb(235 235 245 / 0.7);
+  --color-ink-4: rgb(235 235 245 / 0.55);
+  --color-ink-disabled: rgb(235 235 245 / 0.35);
+  --color-surface: rgb(255 255 255 / 0.14);
+  --color-subtle: rgb(255 255 255 / 0.08);
+  --color-muted: rgb(255 255 255 / 0.1);
+  --color-track: rgb(255 255 255 / 0.16);
+  --color-border: rgb(255 255 255 / 0.15);
+  --color-border-strong: rgb(255 255 255 / 0.25);
+  --color-accent: var(--flow-blue);
+  --color-accent-strong: #8cc4ff;
+  --color-accent-soft: var(--flow-blue-soft);
+  --color-good: #30d158;
+  --color-good-soft: rgb(48 209 88 / 0.2);
+  --color-good-line: rgb(48 209 88 / 0.45);
+  --color-warn: #ff9f0a;
+  --color-warn-soft: rgb(255 159 10 / 0.2);
+  --color-warn-line: rgb(255 159 10 / 0.45);
+  --color-bad: #ff453a;
+  --color-bad-soft: rgb(255 69 58 / 0.2);
+  --color-bad-line: rgb(255 69 58 / 0.45);
+}
+/* Hard-coded black/white utilities on the material */
+.glass .bg-ink.text-white,
+.glass.bg-ink.text-white {
+  background-color: var(--flow-blue);
+  color: #fff;
+}
+.glass .bg-ink.text-white:hover:not(:disabled) {
+  background-color: var(--flow-blue);
+  filter: brightness(1.06);
+}
+.glass .bg-white,
+.glass [class*='bg-white/'] {
+  background-color: rgb(255 255 255 / 0.16);
+}
+.glass [class*='bg-black/'] {
+  background-color: rgb(255 255 255 / 0.12);
+}
+.glass [class*='hover:bg-black/']:not(:hover) {
+  background-color: transparent;
+}
+.glass [class*='border-black/'] {
+  border-color: rgb(255 255 255 / 0.12);
 }
 
 /* Keyboard hint chip */

@@ -15,7 +15,7 @@ const LAYER_LABELS: [keyof L, string, string][] = [
 
 function ToolButton({ label, onClick, children, active }: { label: string; onClick: () => void; children: React.ReactNode; active?: boolean }) {
   return (
-    <Tip label={label} side="left">
+    <Tip label={label} side="top">
       <button
         aria-label={label}
         onClick={onClick}
@@ -41,9 +41,10 @@ export function MapControls() {
     return () => window.removeEventListener('pointerdown', close)
   }, [open])
 
+  // Sits under the right panel, which stops short of the run bar to make room.
   return (
-    <div className="absolute right-[calc(var(--inspector-w,0px)+12px)] top-3 z-10 flex flex-col items-end gap-2" ref={ref}>
-      <div className="glass flex flex-col gap-0.5 rounded-xl p-1">
+    <div className="absolute bottom-[76px] right-3 z-10 flex flex-row items-end gap-2" ref={ref}>
+      <div className="glass flex flex-row gap-0.5 rounded-xl p-1">
         <ToolButton label="Zoom in (+)" onClick={() => mapApi.current?.zoom(1.6)}>
           <Plus size={15} />
         </ToolButton>
@@ -51,7 +52,7 @@ export function MapControls() {
           <Minus size={15} />
         </ToolButton>
       </div>
-      <div className="glass flex flex-col gap-0.5 rounded-xl p-1">
+      <div className="glass flex flex-row gap-0.5 rounded-xl p-1">
         <ToolButton label="Home · King & John (H)" onClick={() => mapApi.current?.home()}>
           <Home size={15} />
         </ToolButton>
@@ -63,7 +64,7 @@ export function MapControls() {
         </ToolButton>
       </div>
       {open && (
-        <div className="glass anim-in w-60 rounded-xl p-1.5">
+        <div className="glass anim-in absolute bottom-full right-0 mb-2 w-60 rounded-xl p-1.5">
           <div className="label-caps px-2 pb-1 pt-1">Layers</div>
           {LAYER_LABELS.map(([k, label, hint]) => (
             <label key={k} className="flex cursor-pointer items-center justify-between rounded-lg px-2 py-1.5 hover:bg-black/[0.035]">

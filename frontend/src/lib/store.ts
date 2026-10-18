@@ -78,6 +78,8 @@ interface State {
   /** The user has panned/zoomed away from the requested camera view. */
   camDetached: boolean
   panels: Panels
+  /** Overview minimap expanded; the \ (map only) shortcut collapses it with the side panels. */
+  overviewOpen: boolean
   /** Wall-clock milestones of the current Generate & Run (performance.now()), for progress feedback. */
   launch: { t0: number; posted: number | null; scenario: string } | null
   /** Backend congestion presets; null until loaded, [] when the backend has no preset API. */
@@ -137,6 +139,7 @@ export const useStore = create<State & Actions>((set, get) => ({
   camNonce: 0,
   camDetached: false,
   panels: loadPanels(),
+  overviewOpen: true,
   launch: null,
   congestionPresets: null,
   congestion: {},
@@ -208,3 +211,6 @@ export function paramsFor(spec: ScenarioSpec, draft: Record<string, unknown> | u
   for (const p of spec.params) out[p.key] = draft && p.key in draft ? draft[p.key] : p.default
   return out
 }
+
+/** Scenario visuals (weather, incident zones, banner) only show while a run is live, so End clears them. */
+export const effectsLive = (s: Pick<State, 'status'>) => s.status.state === 'starting' || s.status.state === 'warming' || s.status.state === 'running'

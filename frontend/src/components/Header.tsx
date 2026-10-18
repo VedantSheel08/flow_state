@@ -56,7 +56,7 @@ export function Header() {
         ))}
       </nav>
       <div className="ml-auto flex items-center gap-2.5 text-[12px] text-ink-2">
-        <span className="hidden text-ink-3 md:inline">{view === 'results' ? 'rl_grid · 2×2 signalised' : netTitle.split(' · ')[0]}</span>
+        <span className="hidden text-ink-3 md:inline">{view === 'results' ? 'rl_grid · 2×2 signalised' : netTitle.split(' · ')[0].replace(/^Downtown\s+/, '')}</span>
         {view === 'simulate' && (
           <>
             <div className="h-4 w-px bg-border" />

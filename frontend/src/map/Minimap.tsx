@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Tip } from '../components/ui'
 import { frames } from '../lib/frames'
 import { cn } from '../lib/format'
-import { useStore } from '../lib/store'
+import { effectsLive, useStore } from '../lib/store'
 import type { Camera } from './camera'
 import type { Pt } from './geom'
 import { mapApi } from './MapView'
@@ -17,7 +17,8 @@ const W = 184
 const PAD = 8
 /** Gap kept between the dragged inset and the edge of the map. */
 const EDGE = 8
-const POS_KEY = 'flowstate.minimap'
+// v2: the default spot moved next to the map hint chip, so positions saved against the old default are dropped
+const POS_KEY = 'flowstate.minimap.v2'
 
 /** Inset position as fractions of the free space inside the map, so it stays in bounds on resize. */
 type Frac = { fx: number; fy: number }
@@ -88,7 +89,8 @@ function OverlayMarks({ placed, proj }: { placed: PlacedOverlay[]; proj: ReturnT
 }
 
 export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { readonly current: Camera }; scaleBar: { px: number; label: string } }) {
-  const [open, setOpen] = useState(true)
+  const open = useStore((s) => s.overviewOpen)
+  const set = useStore((s) => s.set)
   const [frac, setFrac] = useState<Frac | null>(loadFrac)
   // free space the inset can move in: map size minus card size minus the edge gap
   const [free, setFree] = useState<{ w: number; h: number } | null>(null)
@@ -140,7 +142,8 @@ export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { r
   }, [camRef, proj, open, H])
 
   const run = useStore((s) => s.run)
-  const scenes = useMemo(() => (run && run.network === scene.id ? placeOverlays(scene, run.overlays) : []), [run, scene])
+  const live = useStore(effectsLive)
+  const scenes = useMemo(() => (live && run && run.network === scene.id ? placeOverlays(scene, run.overlays) : []), [live, run, scene])
 
   const onClick = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -200,11 +203,61 @@ export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { r
   }
 
   const placed = frac && free
+  // Default spot while the map hint chip shows (idle), open or collapsed: at the bottom, just left of
+  // the chip, so toggling never jumps. A dragged position wins; double-click the header to reset.
+  const idleHint = useStore((s) => !s.run && s.status.state === 'idle' && s.connection === 'open')
+  const [dock, setDock] = useState<number | null>(null)
+  // the chip is centred between the side panels, so it moves when they open or close
+  const panels = useStore((s) => s.panels)
+  useEffect(() => {
+    const card = cardRef.current
+    const parent = card?.parentElement
+    if (placed || !idleHint || !card || !parent) {
+      setDock(null)
+      return
+    }
+    // offset* ignore the chip's centring transform and entry animation; the chip's left is its centre
+    const measure = () => {
+      const hint = document.querySelector<HTMLElement>('[data-map-hint]')
+      if (!hint) return setDock(null)
+      const base = (hint.offsetParent?.getBoundingClientRect().left ?? 0) - parent.getBoundingClientRect().left
+      setDock(Math.max(EDGE, base + hint.offsetLeft - hint.offsetWidth / 2 - card.offsetWidth - EDGE))
+    }
+    // measure after layout settles: panel toggles re-centre the chip without resizing anything
+    let raf = 0
+    const later = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(measure)
+    }
+    const ro = new ResizeObserver(later)
+    ro.observe(parent)
+    ro.observe(card)
+    // the chip mounts once the network has loaded, which can be after this runs; its position
+    // follows the panel widths set as CSS variables on <main>
+    const hintRoot = document.querySelector('main') ?? document.body
+    const mo = new MutationObserver(() => {
+      const hint = document.querySelector<HTMLElement>('[data-map-hint]')
+      if (hint) ro.observe(hint)
+      later()
+    })
+    mo.observe(hintRoot, { childList: true, attributes: true, attributeFilter: ['style'] })
+    const hint = document.querySelector<HTMLElement>('[data-map-hint]')
+    if (hint) ro.observe(hint)
+    measure()
+    later()
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+      mo.disconnect()
+    }
+  }, [placed, idleHint, panels.left, panels.right, open])
+  const docked = !placed && idleHint
+
   return (
     <div
       ref={cardRef}
-      className={cn('glass absolute z-[21] hidden overflow-hidden rounded-xl @[700px]:block', !placed && 'bottom-[76px] left-[calc(var(--rail-w,0px)+12px)]')}
-      style={placed ? { left: EDGE + frac.fx * free.w, top: EDGE + frac.fy * free.h } : undefined}
+      className={cn('glass absolute z-[21] hidden overflow-hidden rounded-xl @[700px]:block', docked ? dock == null && 'bottom-4 left-[calc(var(--rail-w,0px)+12px)]' : !placed && 'bottom-[76px] left-[calc(var(--rail-w,0px)+12px)]')}
+      style={docked ? (dock != null ? { left: dock, bottom: 16 } : undefined) : placed ? { left: EDGE + frac.fx * free.w, top: EDGE + frac.fy * free.h } : undefined}
     >
       <div
         className="flex h-8 cursor-grab touch-none select-none items-center justify-between gap-3 px-2.5 active:cursor-grabbing"
@@ -222,27 +275,27 @@ export function Minimap({ scene, camRef, scaleBar }: { scene: Scene; camRef: { r
             <span className="mt-[3px] block h-[4px] border-x border-b border-ink-2" style={{ width: Math.min(90, scaleBar.px) }} />
           </span>
           <Tip label={open ? 'Hide overview' : 'Show overview'} side="top">
-            <button aria-label={open ? 'Hide overview' : 'Show overview'} onClick={() => setOpen((o) => !o)} className="flex h-6 w-6 items-center justify-center rounded-md text-ink-3 hover:bg-black/[0.05] hover:text-ink">
+            <button aria-label={open ? 'Hide overview' : 'Show overview'} onClick={() => set({ overviewOpen: !open })} className="flex h-6 w-6 items-center justify-center rounded-md text-ink-3 hover:bg-black/[0.05] hover:text-ink">
               {open ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
             </button>
           </Tip>
         </span>
       </div>
       {open && (
-        <svg width={W} height={H} className="block cursor-pointer border-t border-black/[0.06] bg-[#EEF0EC]" onClick={onClick} role="img" aria-label="Network overview">
-          <path d={roads.minor} stroke="#AEB4BC" strokeWidth={2.2} fill="none" strokeLinecap="round" />
-          <path d={roads.major} stroke="#8D949E" strokeWidth={3.4} fill="none" strokeLinecap="round" />
+        <svg width={W} height={H} className="block cursor-pointer border-t border-white/[0.1]" style={{ background: 'rgb(0 0 0 / 0.18)' }} onClick={onClick} role="img" aria-label="Network overview">
+          <path d={roads.minor} stroke="rgb(255 255 255 / 0.55)" strokeWidth={2.2} fill="none" strokeLinecap="round" />
+          <path d={roads.major} stroke="rgb(255 255 255 / 0.9)" strokeWidth={3.4} fill="none" strokeLinecap="round" />
           {scene.junctions.map((j) => {
             const active = camMode === 'intersection' && j.id === focusId
             return (
               <g key={j.id}>
-                {active && <circle cx={sx(j.x)} cy={sy(j.y)} r={8} fill="rgba(37,99,235,0.18)" />}
-                <circle cx={sx(j.x)} cy={sy(j.y)} r={active ? 4 : 2.6} fill={active ? '#2563EB' : j.control === 'traffic_light' ? '#475467' : '#C2410C'} stroke="#fff" strokeWidth={1.2} />
+                {active && <circle cx={sx(j.x)} cy={sy(j.y)} r={8} fill="var(--flow-blue-soft)" />}
+                <circle cx={sx(j.x)} cy={sy(j.y)} r={active ? 4 : 2.6} fill={active ? 'var(--flow-blue)' : j.control === 'traffic_light' ? '#fff' : '#FF9F0A'} stroke="rgb(0 0 0 / 0.45)" strokeWidth={1} />
               </g>
             )
           })}
           <OverlayMarks placed={scenes} proj={proj} />
-          <rect ref={viewRef} fill="rgba(37,99,235,0.07)" stroke="#2563EB" strokeWidth={1.3} rx={2} />
+          <rect ref={viewRef} fill="rgb(77 163 255 / 0.14)" stroke="var(--flow-blue)" strokeWidth={1.3} rx={2} />
         </svg>
       )}
     </div>

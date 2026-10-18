@@ -2,7 +2,7 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { apiUrl } from '../lib/endpoints'
 import { frames, type PersonView, type VehicleView } from '../lib/frames'
 import { perf } from '../lib/perf'
-import { HOME_JUNCTION, useStore } from '../lib/store'
+import { effectsLive, HOME_JUNCTION, useStore } from '../lib/store'
 import type { NetworkGeom, Tracked } from '../lib/types'
 import { Camera } from './camera'
 import { FocusBar } from './FocusBar'
@@ -225,7 +225,8 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
       }
       trackedMap.clear()
       for (const tr of st.stats?.tracked ?? []) trackedMap.set(tr.id, tr)
-      const runId = st.run && st.run.network === scene.id ? st.run.id : null
+      // scenario overlays clear once the run ends (End button or natural finish)
+      const runId = st.run && st.run.network === scene.id && effectsLive(st) ? st.run.id : null
       if (runId !== placedRun) {
         placedRun = runId
         placed = runId ? placeOverlays(scene, st.run?.overlays) : []

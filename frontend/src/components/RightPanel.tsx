@@ -23,7 +23,7 @@ export function RightPanel() {
   const togglePanel = useStore((s) => s.togglePanel)
   if (!open) {
     return (
-      <aside className="glass anim-fade absolute bottom-[80px] right-3 top-3 z-20 flex w-[52px] flex-col items-center gap-1 rounded-xl py-2" aria-label="Inspector (collapsed)">
+      <aside className="glass anim-fade absolute bottom-[124px] right-3 top-3 z-20 flex w-[52px] flex-col items-center gap-1 rounded-xl py-2" aria-label="Inspector (collapsed)">
         <Tip label="Show panel ( ] )" side="left">
           <Button size="icon" variant="ghost" aria-label="Show inspector panel" onClick={() => togglePanel('right', true)}>
             <PanelRightOpen size={16} />
@@ -52,7 +52,7 @@ export function RightPanel() {
     )
   }
   return (
-    <aside className="glass anim-fade absolute bottom-[80px] right-3 top-3 z-20 flex w-[340px] flex-col overflow-hidden rounded-xl" aria-label="Inspector">
+    <aside className="glass anim-fade absolute bottom-[124px] right-3 top-3 z-20 flex w-[340px] flex-col overflow-hidden rounded-xl" aria-label="Inspector">
       <div className="flex h-11 shrink-0 items-end gap-4 border-b border-black/[0.07] pl-3.5 pr-1.5">
         {TABS.map((t) => (
           <button

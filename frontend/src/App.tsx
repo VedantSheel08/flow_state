@@ -82,6 +82,7 @@ function useShortcuts() {
         const open = !st.panels.left && !st.panels.right
         st.togglePanel('left', open)
         st.togglePanel('right', open)
+        st.set({ overviewOpen: open })
       } else if (e.key in ARROWS && st.view === 'simulate') {
         // let sliders, tabs and menus keep their own arrow-key behaviour
         if (el?.closest('[role=slider],[role=tablist],[role=menu],[role=listbox],[role=radiogroup]')) return
@@ -135,7 +136,7 @@ function MapStage() {
       )}
       {!run && conn === 'open' && net && status.state === 'idle' && (
         // centred on the visible map between the scenario rail and the inspector
-        <div className="glass anim-in pointer-events-none absolute bottom-4 left-[calc(50%+(var(--rail-w)-var(--inspector-w))/2)] z-10 -translate-x-1/2 rounded-xl px-4 py-2.5 text-center">
+        <div data-map-hint className="glass anim-in pointer-events-none absolute bottom-4 left-[calc(50%+(var(--rail-w)-var(--inspector-w))/2)] z-10 -translate-x-1/2 rounded-xl px-4 py-2.5 text-center">
           <div className="text-[13px] font-semibold text-ink">{net.title}</div>
           <div className="mt-1.5 flex items-center justify-center gap-3 whitespace-nowrap text-[11px] text-ink-3">
             <span className="flex items-center gap-1">
