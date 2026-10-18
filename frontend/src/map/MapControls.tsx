@@ -5,7 +5,8 @@ import { useStore, type Layers as L } from '../lib/store'
 import { mapApi } from './MapView'
 
 const LAYER_LABELS: [keyof L, string, string][] = [
-  ['buildings', 'Buildings & trees', 'Context layer'],
+  ['buildings', 'Buildings', 'Footprints, shadows and shelters'],
+  ['trees', 'Trees', 'Street tree canopy'],
   ['labels', 'Street & place labels', ''],
   ['pedestrians', 'Pedestrians', 'SUMO striping model'],
   ['signals', 'Signal heads', 'Live phase per lane'],
@@ -41,7 +42,7 @@ export function MapControls() {
   }, [open])
 
   return (
-    <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-2" ref={ref}>
+    <div className="absolute right-[calc(var(--inspector-w,0px)+12px)] top-3 z-10 flex flex-col items-end gap-2" ref={ref}>
       <div className="glass flex flex-col gap-0.5 rounded-xl p-1">
         <ToolButton label="Zoom in (+)" onClick={() => mapApi.current?.zoom(1.6)}>
           <Plus size={15} />

@@ -32,6 +32,8 @@ export class Camera {
   vy = 0
   minScale = MIN_SCALE
   maxScale = MAX_SCALE
+  /** World rectangle the view is kept inside [x0, y0, x1, y1]; centred on an axis the view is wider than. */
+  bounds: [number, number, number, number] | null = null
   private anchor: { sx: number; sy: number; wx: number; wy: number } | null = null
   private glideState: Glide | null = null
 
@@ -56,6 +58,7 @@ export class Camera {
     this.anchor = null
     this.glideState = null
     this.vx = this.vy = 0
+    this.clampCenter()
   }
 
   flyTo(x: number, y: number, scale?: number) {
@@ -65,6 +68,7 @@ export class Camera {
     this.anchor = null
     this.glideState = null
     this.vx = this.vy = 0
+    this.clampCenter()
   }
 
   /**
@@ -74,6 +78,7 @@ export class Camera {
    */
   glide(x: number, y: number, scale: number, durMs?: number) {
     const s1 = this.clampScale(scale)
+    ;[x, y] = this.clampPoint(x, y, s1)
     const s0 = this.scale
     const dist = Math.hypot(x - this.x, y - this.y)
     const l0 = Math.log(s0)
@@ -103,6 +108,25 @@ export class Camera {
 
   clampScale(s: number) {
     return Math.min(this.maxScale, Math.max(this.minScale, s))
+  }
+
+  /** Nearest view centre at `scale` that keeps the view inside `bounds`. */
+  clampPoint(x: number, y: number, scale: number): [number, number] {
+    const b = this.bounds
+    if (!b) return [x, y]
+    const axis = (c: number, half: number, lo: number, hi: number) => (half * 2 >= hi - lo ? (lo + hi) / 2 : Math.min(hi - half, Math.max(lo + half, c)))
+    return [axis(x, this.width / 2 / scale, b[0], b[2]), axis(y, this.height / 2 / scale, b[1], b[3])]
+  }
+
+  private clampCenter() {
+    if (!this.bounds) return
+    const [x, y] = this.clampPoint(this.x, this.y, this.scale)
+    // stop inertia against an edge instead of pushing into it
+    if (x !== this.x) this.vx = 0
+    if (y !== this.y) this.vy = 0
+    this.x = x
+    this.y = y
+    ;[this.tx, this.ty] = this.clampPoint(this.tx, this.ty, this.tscale)
   }
 
   toScreen(wx: number, wy: number): [number, number] {
@@ -135,6 +159,7 @@ export class Camera {
     this.tx = this.x
     this.ty = this.y
     this.anchor = null
+    this.clampCenter()
   }
 
   /** Scale that fits the bounds into the viewport. */
@@ -148,8 +173,14 @@ export class Camera {
     this.flyTo((x0 + x1) / 2, (y0 + y1) / 2, this.fitScale(b, pad))
   }
 
-  /** Advance easing; returns true while moving. */
+  /** Advance easing; returns true while moving. The view never leaves `bounds`. */
   update(dt: number): boolean {
+    const moving = this.step(dt)
+    this.clampCenter()
+    return moving
+  }
+
+  private step(dt: number): boolean {
     const g = this.glideState
     if (g) {
       g.t = Math.min(g.dur, g.t + dt)
