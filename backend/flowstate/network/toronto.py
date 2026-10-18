@@ -28,6 +28,8 @@ from typing import Any
 from .city import NetworkSpec, Poi, Street, _grid_lines
 
 OSM_PATH = Path(__file__).resolve().parents[3] / "data" / "osm" / "toronto_king_west.json"
+# Buildings, open spaces and trees around the streets (drawn only; see load_context)
+CONTEXT_PATH = OSM_PATH.with_name("toronto_king_west_context.json")
 REF = (43.6466, -79.3920)  # projection origin (lat, lon), near King & John
 
 # OSM highway class -> product street class
@@ -131,7 +133,75 @@ def measure(data: dict[str, Any]) -> dict[str, Any]:
             if L >= 0.6 * st["len"]:  # mostly one-way in the window
                 oneway = d
         out[name] = {"offset": med, "cls": cls, "oneway": oneway, "length": st["len"]}
-    return {"bearing": bearing, "streets": out}
+    return {"bearing": bearing, "rot": (c, s), "streets": out}
+
+
+def _levels_height(t: dict[str, str]) -> float:
+    for key, scale in (("height", 1.0), ("building:levels", 3.4)):
+        try:
+            return round(float(t[key].split()[0].replace(",", ".")) * scale, 1)
+        except (KeyError, ValueError, IndexError):
+            continue
+    return 10.0
+
+
+def _area_kind(t: dict[str, str]) -> tuple[str, str] | None:
+    """(feature kind, use) for a context area, or None for areas the map does not draw (only greenery is)."""
+    if t.get("leisure") in ("park", "garden", "playground", "pitch") or t.get("landuse") in ("grass", "recreation_ground"):
+        return "green", t.get("leisure") or "grass"
+    return None
+
+
+def _building_use(t: dict[str, str]) -> str:
+    b = t.get("building", "")
+    if b in ("residential", "apartments", "house", "terrace", "detached", "semidetached_house", "dormitory"):
+        return "residential"
+    if b in ("school", "university", "college") or t.get("amenity") == "school":
+        return "school"
+    if b == "hospital":
+        return "hospital"
+    return "commercial"
+
+
+def load_context(m: dict[str, Any], ox: float, oy: float) -> dict[str, Any]:
+    """Real buildings, open spaces and trees from the context extract, in network coordinates
+    (rotated to the street grid and shifted to the Peter & Front origin). Map context only."""
+    if not CONTEXT_PATH.exists():
+        return {}
+    data = json.loads(CONTEXT_PATH.read_text(encoding="utf-8"))
+    c, s = m["rot"]
+
+    def to_net(lat: float, lon: float) -> list[float]:
+        x, y = _project(lat, lon)
+        return [round(x * c - y * s - ox, 1), round(x * s + y * c - oy, 1)]
+
+    nodes = {e["id"]: to_net(e["lat"], e["lon"]) for e in data["elements"] if e["type"] == "node"}
+    ways = {e["id"]: e for e in data["elements"] if e["type"] == "way"}
+
+    def ring(way: dict[str, Any]) -> list[list[float]] | None:
+        pts = [nodes[n] for n in way["nodes"] if n in nodes]
+        if len(pts) > 1 and pts[0] == pts[-1]:
+            pts = pts[:-1]
+        return pts if len(pts) >= 3 else None
+
+    buildings: list[dict[str, Any]] = []
+    areas: list[dict[str, Any]] = []
+    trees: list[list[float]] = []
+    for e in data["elements"]:
+        t = e.get("tags") or {}
+        if not t:
+            continue
+        if e["type"] == "node":
+            if t.get("natural") == "tree":
+                trees.append([*nodes[e["id"]], 3.0])
+            continue
+        rings = [ring(e)] if e["type"] == "way" else [ring(ways[mb["ref"]]) for mb in e.get("members", []) if mb["type"] == "way" and mb.get("role") == "outer" and mb["ref"] in ways]
+        for pts in filter(None, rings):
+            if "building" in t:
+                buildings.append({"shape": pts, "h": _levels_height(t), "use": _building_use(t), "tone": round((e["id"] % 997) / 997, 3)})
+            elif kind := _area_kind(t):
+                areas.append({"kind": kind[0], "use": kind[1], "shape": pts})
+    return {"buildings": buildings, "areas": areas, "trees": trees}
 
 
 def _cell(cols: list[float], rows: list[float], x: float, y: float) -> tuple[int, int]:
@@ -213,6 +283,7 @@ def build_specs() -> tuple[NetworkSpec, NetworkSpec]:
         focus=("john", "king"),
         no_left=NO_LEFT,
         source=source,
+        context=load_context(m, ox, oy),
     )
     bike = down.with_class(
         "king",

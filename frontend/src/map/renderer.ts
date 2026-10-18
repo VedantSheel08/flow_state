@@ -26,11 +26,10 @@ export const C = {
   bike: '#6F9B7C',
   white: 'rgba(246,246,242,0.92)',
   yellow: '#E2B93B',
+  green: '#CEEAD6',
   shadow: 'rgba(31,41,55,0.16)',
   roofLine: '#B9BFC7',
-  tree: '#A8C79A',
-  treeLight: '#BCD7AE',
-  treeShadow: 'rgba(35,55,35,0.13)',
+  tree: '#BFE0C8',
   water: '#C3D9EA',
   label: '#4B5563',
 }
@@ -209,6 +208,8 @@ function drawGround(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera, la
     ctx.fillStyle = (C as Record<string, string>)[use] ?? C.residential
     ctx.fill(path)
   }
+  ctx.fillStyle = C.green
+  ctx.fill(scene.green)
   ctx.fillStyle = '#D6D9DD'
   ctx.fill(scene.parking)
   if (s > 2.5) {
@@ -338,28 +339,19 @@ function drawGround(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera, la
     }
   }
 
-  // ---- roofs (traffic drives below the tree canopy, beside the buildings) --
+  // ---- buildings: tinted footprints (traffic drives below the tree canopy, beside them) --
   if (layers.buildings) {
-  if (layers.buildings) {
-    for (const r of scene.roofs) {
+    ctx.strokeStyle = C.roofLine
+    ctx.lineWidth = Math.max(0.15, px * 0.8)
+    for (const r of scene.buildings) {
       ctx.fillStyle = r.fill
       ctx.fill(r.path)
-      ctx.strokeStyle = C.roofLine
-      ctx.lineWidth = Math.max(0.15, px * 0.8)
       ctx.stroke(r.path)
-    }
-    if (s > 1.5) {
-      ctx.strokeStyle = 'rgba(160,168,178,0.55)'
-      ctx.lineWidth = Math.max(0.1, px * 0.6)
-      ctx.stroke(scene.roofLines)
-      ctx.fillStyle = 'rgba(205,210,216,0.7)'
-      ctx.fill(scene.roofUnits)
     }
     ctx.fillStyle = 'rgba(201,214,226,0.9)'
     ctx.fill(scene.shelters)
     ctx.fillStyle = '#6B7280'
     ctx.fill(scene.shelterRoof)
-  }
   }
 }
 
@@ -373,18 +365,8 @@ function drawCanopy(ctx: CanvasRenderingContext2D, scene: Scene, cam: Camera, la
   const k = s * dpr
   ctx.setTransform(k, 0, 0, -k, (W / 2 - cam.x * s) * dpr, (H / 2 + cam.y * s) * dpr)
   if (layers.trees) {
-    if (s > 1.2) {
-      ctx.fillStyle = C.treeShadow
-      ctx.fill(scene.treeShadows)
-    }
-    ctx.globalAlpha = s > 1.2 ? 1 : 0.55
     ctx.fillStyle = C.tree
     ctx.fill(scene.treeCanopy)
-    ctx.globalAlpha = 1
-    if (s > 1.2) {
-      ctx.fillStyle = C.treeLight
-      ctx.fill(scene.treeLight)
-    }
   }
   if (layers.signals && s > 1.4) {
     ctx.fillStyle = '#20242B'

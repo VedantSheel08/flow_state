@@ -39,6 +39,8 @@ export interface Scene {
   blocks: Map<string, Path2D>
   parking: Path2D
   parkingLines: Path2D
+  /** real parks, gardens and grass from OpenStreetMap */
+  green: Path2D
   parkPaths: Path2D
   water: Path2D
   fields: Path2D
@@ -75,13 +77,10 @@ export interface Scene {
   busBox: Path2D
   shelters: Path2D
   shelterRoof: Path2D
+  /** flat footprints, grouped by roof tint, and the shadows they cast */
+  buildings: { path: Path2D; fill: string }[]
   buildingShadows: Path2D
-  roofs: { path: Path2D; fill: string }[]
-  roofLines: Path2D
-  roofUnits: Path2D
-  treeShadows: Path2D
   treeCanopy: Path2D
-  treeLight: Path2D
   signals: SignalHead[]
   signalHousings: Path2D
   mastArms: Path2D
@@ -157,6 +156,7 @@ export function buildScene(net: NetworkGeom): Scene {
     blocks: new Map(),
     parking: new Path2D(),
     parkingLines: new Path2D(),
+    green: new Path2D(),
     parkPaths: new Path2D(),
     water: new Path2D(),
     fields: new Path2D(),
@@ -193,13 +193,9 @@ export function buildScene(net: NetworkGeom): Scene {
     busBox: new Path2D(),
     shelters: new Path2D(),
     shelterRoof: new Path2D(),
+    buildings: [],
     buildingShadows: new Path2D(),
-    roofs: [],
-    roofLines: new Path2D(),
-    roofUnits: new Path2D(),
-    treeShadows: new Path2D(),
     treeCanopy: new Path2D(),
-    treeLight: new Path2D(),
     signals: [],
     signalHousings: new Path2D(),
     mastArms: new Path2D(),
@@ -239,6 +235,8 @@ export function buildScene(net: NetworkGeom): Scene {
           }
         }
       }
+    } else if (kind === 'green') {
+      addPolygon(s.green, f.shape as Pt[])
     } else if (kind === 'park') {
       /* drawn as block use */
     } else if (kind === 'path') {
@@ -267,42 +265,23 @@ export function buildScene(net: NetworkGeom): Scene {
     }
   }
 
-  // ---- buildings ------------------------------------------------------
+  // ---- buildings: flat footprints, lightly tinted by use -----------------
   const roofPaths = new Map<string, Path2D>()
   for (const b of city.buildings) {
+    // shadow cast to the south-east, longer for taller buildings
     const sh = b.shape as Pt[]
     const k = 0.3
-    const moved = sh.map(([x, y]) => [x + b.h * k, y - b.h * k] as Pt)
-    addPolygon(s.buildingShadows, convexHull([...sh, ...moved]))
+    addPolygon(s.buildingShadows, convexHull([...sh, ...sh.map(([x, y]) => [x + b.h * k, y - b.h * k] as Pt)]))
     const palette = ROOF[b.use] ?? ROOF.commercial
     const fill = palette[Math.floor(b.tone * palette.length) % palette.length]
     if (!roofPaths.has(fill)) roofPaths.set(fill, new Path2D())
     addPolygon(roofPaths.get(fill)!, sh)
-    // parapet + rooftop plant on taller buildings
-    const xs = sh.map((p) => p[0])
-    const ys = sh.map((p) => p[1])
-    const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]
-    if (b.h > 12 && x1 - x0 > 6 && y1 - y0 > 6) {
-      s.roofLines.rect(x0 + 0.7, y0 + 0.7, x1 - x0 - 1.4, y1 - y0 - 1.4)
-      const hseed = hash(`${x0},${y0}`)
-      const n = 1 + (hseed % 3)
-      for (let i = 0; i < n; i++) {
-        const w = 1.2 + ((hseed >>> (i * 3)) % 4) * 0.35
-        const ux = x0 + 2 + (((hseed >>> (i * 5)) % 100) / 100) * Math.max(0, x1 - x0 - 4 - w)
-        const uy = y0 + 2 + (((hseed >>> (i * 7 + 2)) % 100) / 100) * Math.max(0, y1 - y0 - 4 - w)
-        s.roofUnits.rect(ux, uy, w, w * 0.8)
-      }
-    }
   }
-  s.roofs = [...roofPaths.entries()].map(([fill, path]) => ({ fill, path }))
+  s.buildings = [...roofPaths.entries()].map(([fill, path]) => ({ fill, path }))
 
   const addTree = (x: number, y: number, r: number) => {
-    s.treeShadows.moveTo(x + r * 0.35 + r, y - r * 0.35)
-    s.treeShadows.arc(x + r * 0.35, y - r * 0.35, r, 0, Math.PI * 2)
     s.treeCanopy.moveTo(x + r, y)
     s.treeCanopy.arc(x, y, r, 0, Math.PI * 2)
-    s.treeLight.moveTo(x - r * 0.25 + r * 0.55, y + r * 0.25)
-    s.treeLight.arc(x - r * 0.25, y + r * 0.25, r * 0.55, 0, Math.PI * 2)
   }
   for (const [x, y, r] of city.trees) addTree(x, y, r)
 

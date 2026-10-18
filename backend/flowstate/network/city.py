@@ -82,6 +82,7 @@ ONEWAY_LANES: dict[str, list[LaneDef]] = {
 }
 
 CURB_RADIUS = 7.0
+BUILDING_SETBACK = 4.0  # real buildings stand this far behind the back of the sidewalk
 
 
 def half_width(cls: str, oneway: bool = False) -> float:
@@ -130,6 +131,8 @@ class NetworkSpec:
     focus: tuple[str, str] | None = None  # (ns street, ew street) of the default camera junction
     no_left: list[tuple[str, str]] = field(default_factory=list)  # (approach street, cross street): left turns prohibited
     source: dict[str, Any] = field(default_factory=dict)
+    # real buildings / open spaces / trees ({"buildings", "areas", "trees"}) drawn instead of procedural blocks
+    context: dict[str, Any] = field(default_factory=dict)
 
     def with_class(self, street_id: str, cls: str, new_id: str, title: str, description: str) -> "NetworkSpec":
         def swap(lst: list[Street]) -> list[Street]:
@@ -506,6 +509,89 @@ def _rect(x0: float, y0: float, x1: float, y1: float) -> list[list[float]]:
     return [[round(x0, 2), round(y0, 2)], [round(x1, 2), round(y0, 2)], [round(x1, 2), round(y1, 2)], [round(x0, 2), round(y1, 2)]]
 
 
+def _clip_convex(pts: list[list[float]], clip: list[list[float]]) -> list[list[float]]:
+    """Sutherland-Hodgman clip of a polygon to a convex, counter-clockwise polygon."""
+    out = pts
+    for e0, e1 in zip(clip, clip[1:] + clip[:1]):
+        src, out = out, []
+        if not src:
+            break
+        ex, ey = e1[0] - e0[0], e1[1] - e0[1]
+        side = lambda p: ex * (p[1] - e0[1]) - ey * (p[0] - e0[0])  # noqa: E731  (>= 0: left of the edge, inside)
+        for a, c in zip(src, src[1:] + src[:1]):
+            sa, sc = side(a), side(c)
+            if sc >= 0:
+                if sa < 0:
+                    out.append(_lerp(a, c, sa / (sa - sc)))
+                out.append(c)
+            elif sa >= 0:
+                out.append(_lerp(a, c, sa / (sa - sc)))
+    return [[round(x, 1), round(y, 1)] for x, y in out]
+
+
+def _lerp(a: list[float], c: list[float], t: float) -> list[float]:
+    return [a[0] + (c[0] - a[0]) * t, a[1] + (c[1] - a[1]) * t]
+
+
+def _area(pts: list[list[float]]) -> float:
+    return abs(sum(a[0] * c[1] - c[0] * a[1] for a, c in zip(pts, pts[1:] + pts[:1]))) / 2
+
+
+def _bbox(pts: list[list[float]]) -> tuple[float, float, float, float]:
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def _overlaps(a: tuple[float, float, float, float], b: tuple[float, float, float, float]) -> bool:
+    return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+
+
+Plot = tuple[tuple[float, float, float, float], list[list[float]], tuple[float, float, float, float] | None]  # block, buildable ground, POI ground
+
+
+def _plot(x0: float, y0: float, x1: float, y1: float, poi_ground: tuple[float, float, float, float] | None) -> Plot:
+    """A block, the ground real context may cover (BUILDING_SETBACK behind the sidewalk,
+    corners rounded like the block) and the part a POI takes, if any."""
+    s = BUILDING_SETBACK
+    return (x0, y0, x1, y1), _round_rect(x0 + s, y0 + s, x1 - s, y1 - s, CURB_RADIUS + 1.0), poi_ground
+
+
+def _place_context(context: dict[str, Any], plots: list[Plot], corridors: list[tuple[float, float, float, float]], limit: tuple[float, float, float, float],
+                   buildings: list[dict[str, Any]], features: list[dict[str, Any]], trees: list[list[float]]) -> None:
+    """Fit the real map context around the simulated streets without adding any road.
+
+    Inside a block, a shape is clipped to the block's buildable ground (minus any POI
+    ground it lands on); outside every block (the fringe past the street stubs and around
+    the map) it is kept whole unless it comes within BUILDING_SETBACK of a simulated street."""
+    s = BUILDING_SETBACK
+    near = [(r[0] - s, r[1] - s, r[2] + s, r[3] + s) for r in corridors]
+
+    def fit(shape: list[list[float]]) -> list[list[float]] | None:
+        bx = _bbox(shape)
+        cx, cy = (bx[0] + bx[2]) / 2, (bx[1] + bx[3]) / 2
+        if not (limit[0] <= cx <= limit[2] and limit[1] <= cy <= limit[3]):
+            return None
+        plot = next((p for p in plots if p[0][0] <= cx <= p[0][2] and p[0][1] <= cy <= p[0][3]), None)
+        if plot:
+            _, ground, taken = plot
+            if taken and taken[0] <= cx <= taken[2] and taken[1] <= cy <= taken[3]:
+                return None
+            shape = _clip_convex(shape, ground)
+        elif any(_overlaps(bx, r) for r in near):
+            return None
+        return shape if len(shape) >= 3 and _area(shape) >= 12.0 else None
+
+    for b in context.get("buildings", []):
+        if shape := fit(b["shape"]):
+            buildings.append({**b, "shape": shape})
+    for a in context.get("areas", []):
+        if shape := fit(a["shape"]):
+            features.append({"kind": a["kind"], "use": a["use"], "shape": shape})
+    for x, y, r in context.get("trees", []):
+        if fit([[x - 2, y - 2], [x + 2, y - 2], [x + 2, y + 2], [x - 2, y + 2]]):
+            trees.append([x, y, r])
+
+
 def _grid_lines(streets: list[Street], cross: list[Street]) -> list[dict[str, Any]]:
     """Distinct street lines along one axis (streets that share a line, e.g. Windsor
     and Widmer, are one line), each with the streets on it and their extents."""
@@ -652,6 +738,8 @@ def build_layout(spec: NetworkSpec, records: list[dict[str, Any]], net_path: Pat
     pois_out: list[dict[str, Any]] = []
     zones: list[dict[str, Any]] = []
     core = set(spec.core_cells)
+    real = bool(spec.context)
+    plots: list[Plot] = []
     for i0, j0, i1, j1 in _merge_cells(cols, rows, col_mid, row_mid):
         cells = [(i, j) for i in range(i0, i1 + 1) for j in range(j0, j1 + 1)]
         x0, y0, x1, y1 = bounds(i0, j0, i1, j1)
@@ -668,13 +756,23 @@ def build_layout(spec: NetworkSpec, records: list[dict[str, Any]], net_path: Pat
             zones.append({"id": bid, "use": use, "edges": zone_edges, "core": is_core, "cell": [i0, j0]})
         inner = (x0 + 2.0, y0 + 2.0, x1 - 2.0, y1 - 2.0)
         if poi:
-            info = _poi_layout(poi, inner, fr, rng, buildings, features, trees)
+            info = _poi_layout(poi, inner, fr, rng, buildings, features, trees, frontage_strips=not real)
             # responders start (and end) on the first access edge: lead with one that is reachable and has ways on
             info["access"] = sorted(info["access"], key=lambda e: tuple(-v for v in onward.get(e, (0, 0))))
             pois_out.append({"id": poi.id, "kind": poi.kind, "name": poi.name, "cell": [i0, j0], **({"note": poi.note} if poi.note else {}), **info})
+            plots.append(_plot(x0, y0, x1, y1, _poi_ground(poi, inner)))
+        elif real:
+            plots.append(_plot(x0, y0, x1, y1, None))
         else:
             _block_buildings(inner, use, is_core, outer, rng, buildings, trees)
-        _street_trees((x0, y0, x1, y1), rng, trees, use)
+        if not real:
+            _street_trees((x0, y0, x1, y1), rng, trees, use)
+
+    if real:
+        # simulated streets (fringe stubs included) that real context must never cover
+        corridors = [(ln["pos"] - ln["hw"], max(lo - 15, y_lo), ln["pos"] + ln["hw"], min(hi + 15, y_hi)) for ln in cols for lo, hi in ln["extents"]]
+        corridors += [(max(lo - 15, x_lo), ln["pos"] - ln["hw"], min(hi + 15, x_hi), ln["pos"] + ln["hw"]) for ln in rows for lo, hi in ln["extents"]]
+        _place_context(spec.context, plots, corridors, (bx0 - 150, by0 - 150, bx1 + 150, by1 + 150), buildings, features, trees)
 
     # street labels (one per segment between junctions, centred)
     labels: list[dict[str, Any]] = []
@@ -803,14 +901,24 @@ def _street_trees(rect, rng, trees, use) -> None:
             trees.append([round(px, 1), round(py, 1), round(rng.uniform(2.2, 3.2), 1)])
 
 
-def _poi_layout(poi: Poi, rect, frontage, rng, buildings, features, trees) -> dict[str, Any]:
+def _poi_ground(poi: Poi, rect):
+    """Part of the block the POI occupies (all of it unless ``poi.area`` names a share)."""
+    if not poi.area:
+        return rect
+    bx0, by0, bx1, by1 = rect
+    fx0, fy0, fx1, fy1 = poi.area
+    return (bx0 + (bx1 - bx0) * fx0, by0 + (by1 - by0) * fy0, bx0 + (bx1 - bx0) * fx1, by0 + (by1 - by0) * fy1)
+
+
+def _poi_layout(poi: Poi, rect, frontage, rng, buildings, features, trees, frontage_strips: bool = True) -> dict[str, Any]:
     if poi.area:
         # the POI takes part of the block; the remaining strips are built up as downtown frontage
+        # (unless real buildings fill them, see _place_context)
         bx0, by0, bx1, by1 = rect
-        fx0, fy0, fx1, fy1 = poi.area
-        sub = (bx0 + (bx1 - bx0) * fx0, by0 + (by1 - by0) * fy0, bx0 + (bx1 - bx0) * fx1, by0 + (by1 - by0) * fy1)
-        for strip in ((bx0, by0, sub[0] - 3, by1), (sub[2] + 3, by0, bx1, by1), (sub[0], by0, sub[2], sub[1] - 3), (sub[0], sub[3] + 3, sub[2], by1)):
-            _block_buildings(strip, "commercial", True, False, rng, buildings, trees)
+        sub = _poi_ground(poi, rect)
+        if frontage_strips:
+            for strip in ((bx0, by0, sub[0] - 3, by1), (sub[2] + 3, by0, bx1, by1), (sub[0], by0, sub[2], sub[1] - 3), (sub[0], sub[3] + 3, sub[2], by1)):
+                _block_buildings(strip, "commercial", True, False, rng, buildings, trees)
         rect = sub
     x0, y0, x1, y1 = rect
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2

@@ -5,7 +5,7 @@ import { useStore, type Layers as L } from '../lib/store'
 import { mapApi } from './MapView'
 
 const LAYER_LABELS: [keyof L, string, string][] = [
-  ['buildings', 'Buildings', 'Roofs, shadows and shelters'],
+  ['buildings', 'Buildings', 'Footprints, shadows and shelters'],
   ['trees', 'Trees', 'Street tree canopy'],
   ['labels', 'Street & place labels', ''],
   ['pedestrians', 'Pedestrians', 'SUMO striping model'],
