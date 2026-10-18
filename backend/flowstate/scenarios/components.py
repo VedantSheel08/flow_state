@@ -218,13 +218,18 @@ class ResponderGuard:
         T = eng.T
         route, idx = T.vehicle.getRoute(vid), T.vehicle.getRouteIndex(vid)
         nxt = route[idx + 1] if idx + 1 < len(route) else None
+        # the unit lands wholly on the exit lane (moveTo places its front): a body left hanging back into the
+        # junction would sit on whichever vehicle it was deadlocked with
+        front = T.vehicle.getLength(vid) + 1.0
         for link in T.lane.getLinks(T.vehicle.getLaneID(vid)):
             target = link[0]
             if nxt is not None and not target.startswith(f"{nxt}_"):
                 continue
-            if any(T.vehicle.getLanePosition(v) < 15.0 for v in T.lane.getLastStepVehicleIDs(target)):
+            if T.lane.getLength(target) < front + 15.0:
                 continue
-            T.vehicle.moveTo(vid, target, 2.0)
+            if any(T.vehicle.getLanePosition(v) - T.vehicle.getLength(v) < front + 15.0 for v in T.lane.getLastStepVehicleIDs(target)):
+                continue
+            T.vehicle.moveTo(vid, target, front)
             self.rescues += 1
             eng.emit("emergency", f"{eng.label(vid).split(' →')[0]} cleared a junction deadlock", "warning", vehicle=vid)
             return
