@@ -308,9 +308,7 @@ export function ResultsView() {
         </div>
       </div>
       <main className="relative z-10 mx-auto flex max-w-[1100px] flex-col gap-8 px-4 pb-[72px] pt-10 min-[720px]:px-8">
-        <div className="flex w-fit max-w-full flex-col gap-2.5 rounded-[28px] bg-white/35 px-7 py-5 backdrop-blur-2xl">
-          <h1 className="m-0 text-balance text-[32px] font-[650] leading-[1.19] tracking-[-0.02em]">FlowState vs fixed-time signals</h1>
-        </div>
+        <h1 className="m-0 text-balance pt-2 text-center text-[40px] font-[650] leading-[1.1] tracking-[-0.03em]">Fixed-time <span className="text-ink-3">vs</span> FlowState</h1>
         <SideBySide />
         <Headline />
         <HeadlineMeasures />

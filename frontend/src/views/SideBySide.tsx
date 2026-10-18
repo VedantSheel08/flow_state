@@ -15,8 +15,8 @@ import { Cap, H2 } from './resultsUi'
 type Loaded = { asset: DemoAsset; net: NetworkGeom; scene: Scene }
 const SPEEDS = [1, 2, 4]
 const panel = 'rounded-[22px] bg-white/60 shadow-[0_10px_40px_-14px_rgb(12_19_34/0.2),inset_0_0_0_1px_rgb(255_255_255/0.75),0_0_0_1px_rgb(12_19_34/0.05)] backdrop-blur-2xl'
-// Frosted halo around each map: blurs the page behind it and fades out towards the outer edge.
-const HALO = 'pointer-events-none absolute -inset-8 rounded-[54px] bg-[rgb(110_120_135/0.15)] backdrop-blur-xl [mask-composite:intersect] [-webkit-mask-composite:source-in] [mask-image:linear-gradient(to_right,transparent,#000_34px,#000_calc(100%_-_34px),transparent),linear-gradient(to_bottom,transparent,#000_34px,#000_calc(100%_-_34px),transparent)]'
+// Apple-style glass card: soft white, hairline edge, gentle depth.
+const shell = 'rounded-[30px] bg-[rgb(12_19_34/0.04)] shadow-[0_34px_80px_-26px_rgb(37_99_235/0.30),0_12px_30px_-14px_rgb(12_19_34/0.18),inset_0_0_0_1px_rgb(12_19_34/0.12)] backdrop-blur-2xl'
 const LEFT_COLOR = COLOR[BASE]
 const RIGHT_COLOR = COLOR[FS]
 
@@ -28,7 +28,7 @@ const swapIn = (target: Swap, mine: Swap) => { Object.assign(target, mine) }
 const swapOut = (target: Swap, mine: Swap) => { Object.assign(mine, target) }
 
 /** Camera shared by both maps so they always show the same place and zoom. 'follow' keeps each map on its own ambulance; dragging or zooming switches to 'free'. */
-export type ViewMode = 'follow' | 'network' | 'free'
+export type ViewMode = 'junction' | 'follow' | 'network' | 'free'
 export interface SharedView { cx: number; cy: number; scale: number }
 const MIN_ZOOM = 0.5
 const MAX_ZOOM = 40
@@ -49,7 +49,14 @@ interface MapProps {
 function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label }: MapProps) {
   const ref = useRef<HTMLCanvasElement>(null)
   const modeRef = useRef(mode)
-  useEffect(() => { modeRef.current = mode }, [mode])
+  useEffect(() => {
+    modeRef.current = mode
+    if (mode === 'junction' || mode === 'follow') view.current.scale = 0 // re-frame from the default zoom
+  }, [mode, view])
+  const miniRef = useRef<HTMLCanvasElement>(null)
+  const [mx0, my0, mx1, my1] = scene.roadBounds
+  const MINI = 132
+  const miniK = (MINI - 16) / Math.max(mx1 - mx0, my1 - my0)
   const freeRef = useRef(onFree)
   useEffect(() => { freeRef.current = onFree }, [onFree])
   const lastT = useRef(-1)
@@ -63,7 +70,10 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label 
     const mine = { ground: { canvas: null, view: new Camera(), key: '', builds: 0 } as Swap, canopy: { canvas: null, view: new Camera(), key: '', builds: 0 } as Swap }
     const tlsIds = net.tls.map((x) => x.id)
     const [rx0, ry0, rx1, ry1] = scene.roadBounds
-    let raf = 0, visible = true, held: [number, number] | null = null
+    const signalled = net.junctions.filter((j) => tlsIds.includes(j.id))
+    const roads = net.edges.map((e) => e.lanes.find((l) => l.role === 'car')?.shape).filter((sh): sh is number[] => !!sh && sh.length >= 4)
+    let current: (typeof signalled)[number] | null = null
+    let raf = 0, visible = true, held: [number, number] | null = null, lastTs = 0
     let drag: { x: number; y: number; cx: number; cy: number } | null = null
     const io = new IntersectionObserver((e) => { visible = e.some((x) => x.isIntersecting) })
     io.observe(cv)
@@ -90,14 +100,30 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label 
       lastT.current = t
       cam.setViewport(w, h)
       const v = view.current, m = modeRef.current
+      const ts = performance.now()
+      const ease = 1 - Math.exp(-Math.min(0.25, lastTs ? (ts - lastTs) / 1000 : 0.016) * 5) // frame-rate independent glide
+      lastTs = ts
       if (m === 'network') {
         v.scale = Math.min(w / (rx1 - rx0 + 60), h / (ry1 - ry0 + 60))
         v.cx = (rx0 + rx1) / 2; v.cy = (ry0 + ry1) / 2
+      } else if (m === 'junction') {
+        // frame the intersection nearest the ambulance; glide to the next one as it travels (with a margin so it does not flicker between two)
+        const at = held ?? [(rx0 + rx1) / 2, (ry0 + ry1) / 2]
+        const dist = (j: { x: number; y: number }) => Math.hypot(j.x - at[0], j.y - at[1])
+        const best = signalled.reduce((a, j) => (dist(j) < dist(a) ? j : a), signalled[0])
+        if (best && (!current || dist(best) + 25 < dist(current))) current = best
+        // centre the junction, but slide towards the ambulance once it is more than 20 m from it so it never leaves the frame
+        const slide = (d: number) => d - Math.max(-20, Math.min(20, d))
+        const tx = (current?.x ?? (rx0 + rx1) / 2) + (current && held && me ? slide(held[0] - current.x) : 0)
+        const ty = (current?.y ?? (ry0 + ry1) / 2) + (current && held && me ? slide(held[1] - current.y) : 0)
+        if (!v.scale || v.scale < 1) { v.scale = Math.min(w, h) / 185; v.cx = tx; v.cy = ty }
+        v.cx = jumped ? tx : v.cx + (tx - v.cx) * ease
+        v.cy = jumped ? ty : v.cy + (ty - v.cy) * ease
       } else if (m === 'follow') {
         const [hx, hy] = held ?? [(rx0 + rx1) / 2, (ry0 + ry1) / 2]
         if (!v.scale || v.scale < 3) v.scale = Math.min(w, h) / 120
-        v.cx = jumped ? hx : v.cx + (hx - v.cx) * 0.25
-        v.cy = jumped ? hy : v.cy + (hy - v.cy) * 0.25
+        v.cx = jumped ? hx : v.cx + (hx - v.cx) * Math.max(ease, 0.2)
+        v.cy = jumped ? hy : v.cy + (hy - v.cy) * Math.max(ease, 0.2)
       }
       cam.jump(v.cx, v.cy, v.scale)
       const frameState = side.frames[Math.min(side.frames.length - 1, Math.max(0, Math.floor(t - side.frames[0].t)))]
@@ -117,6 +143,26 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label 
       ctx.clearRect(0, 0, cv.width, cv.height)
       render(ctx, scene, cam, st, dpr)
       swapOut(groundCache, mine.ground); swapOut(canopyCache, mine.canopy)
+      const mc = miniRef.current
+      if (mc) {
+        const mctx = mc.getContext('2d')!
+        if (mc.width !== Math.round(MINI * dpr)) { mc.width = Math.round(MINI * dpr); mc.height = Math.round(MINI * dpr) }
+        const X = (x: number) => 8 + (x - rx0) * miniK, Y = (y: number) => MINI - 8 - (y - ry0) * miniK
+        mctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        mctx.clearRect(0, 0, MINI, MINI)
+        mctx.lineCap = 'round'; mctx.lineJoin = 'round'; mctx.strokeStyle = '#c3cad6'; mctx.lineWidth = 3
+        for (const sh of roads) {
+          mctx.beginPath(); mctx.moveTo(X(sh[0]), Y(sh[1]))
+          for (let i = 2; i < sh.length; i += 2) mctx.lineTo(X(sh[i]), Y(sh[i + 1]))
+          mctx.stroke()
+        }
+        mctx.fillStyle = 'rgba(60,70,90,0.55)'
+        for (const p of placed) mctx.fillRect(X(p.x) - 0.9, Y(p.y) - 0.9, 1.8, 1.8)
+        const vw = (w / v.scale) * miniK, vh = (h / v.scale) * miniK
+        mctx.strokeStyle = '#0c1322'; mctx.lineWidth = 1.5
+        mctx.beginPath(); mctx.roundRect(X(v.cx) - vw / 2, Y(v.cy) - vh / 2, vw, vh, 3); mctx.stroke()
+        if (me) { mctx.fillStyle = '#ff3b30'; mctx.beginPath(); mctx.arc(X(me.x), Y(me.y), 3, 0, Math.PI * 2); mctx.fill() }
+      }
       if (me) { // ring the ambulance so it can be found in traffic
         const [sx, sy] = cam.toScreen(me.x, me.y)
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -161,9 +207,24 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label 
       cv.removeEventListener('wheel', onWheel); cv.removeEventListener('pointerdown', onDown); cv.removeEventListener('pointermove', onMove)
       cv.removeEventListener('pointerup', onUp); cv.removeEventListener('pointercancel', onUp)
     }
-  }, [scene, net, side, ambulance, clock, view])
+  }, [scene, net, side, ambulance, clock, view, miniK])
 
-  return <canvas ref={ref} role="img" aria-label={`${label}. Drag to move, scroll to zoom.`} className="block h-full w-full cursor-grab touch-none" />
+  const jumpTo = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    const wx = mx0 + (e.clientX - r.left - 8) / miniK, wy = my0 + (MINI - 8 - (e.clientY - r.top)) / miniK
+    onFree()
+    const v = view.current
+    if (!v.scale || v.scale < 3) v.scale = 7
+    v.cx = Math.max(mx0, Math.min(mx1, wx)); v.cy = Math.max(my0, Math.min(my1, wy))
+  }
+
+  return (
+    <>
+      <canvas ref={ref} role="img" aria-label={`${label}. Drag to move, scroll to zoom.`} className="block h-full w-full cursor-grab touch-none" />
+      <canvas ref={miniRef} aria-label="Whole network. Click to move there." onPointerDown={jumpTo} style={{ width: MINI, height: MINI }}
+        className="absolute bottom-3 right-3 z-10 cursor-pointer rounded-[18px] bg-white/75 shadow-[0_6px_20px_-8px_rgb(12_19_34/0.35),0_0_0_1px_rgb(12_19_34/0.08)] backdrop-blur-xl" />
+    </>
+  )
 }
 
 // ---- measured numbers ------------------------------------------------------
@@ -301,7 +362,7 @@ function Replay({ data }: { data: Loaded }) {
 
 function Player({ data, example, setExample }: { data: Loaded; example: number | null; setExample: (id: number) => void }) {
   const { asset, net, scene } = data
-  const [mode, setMode] = useState<ViewMode>('follow')
+  const [mode, setMode] = useState<ViewMode>('junction')
   const [speed, setSpeed] = useState(1)
   const [playing, setPlaying] = useState(true)
   const view = useRef<SharedView>({ cx: 300, cy: 300, scale: 0 })
@@ -338,14 +399,16 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
 
   return (
     <section className="flex flex-col gap-7">
-      <div className="grid gap-x-20 gap-y-16 py-6 min-[860px]:grid-cols-2">
+      <div className="grid gap-x-10 gap-y-12 py-2 min-[860px]:grid-cols-2">
         {sides.map((x) => (
           <div key={x.name} className="flex flex-col items-center gap-6">
-            <span className="text-[22px] font-[650] leading-none tracking-[-0.02em] text-ink">{x.name}</span>
-            <div className="relative w-full">
-              <div aria-hidden className={HALO} />
-              <div className="relative h-[380px] overflow-hidden rounded-[26px] bg-[#e9ecef] shadow-[0_0_0_1px_rgb(110_120_135/0.25),0_14px_40px_-18px_rgb(12_19_34/0.3)] min-[860px]:h-[500px]">
+            <span className="text-[34px] font-[650] leading-none tracking-[-0.03em] text-ink">{x.name}</span>
+            <div className={cn('w-full p-2.5', shell)}>
+              <div className="relative h-[380px] overflow-hidden rounded-[22px] bg-[#e9ecef] min-[860px]:h-[490px]">
                 <SimMap scene={scene} net={net} side={x.side} ambulance={example} clock={clock} mode={mode} view={view} onFree={() => setMode('free')} label={x.label} />
+                {(mode === 'junction' || mode === 'follow') && (
+                  <div aria-hidden className="pointer-events-none absolute inset-0 backdrop-blur-[2px] [mask-image:radial-gradient(ellipse_at_center,transparent_66%,#000_100%)]" />
+                )}
               </div>
             </div>
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -363,7 +426,7 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
         <button type="button" onClick={restart} aria-label="Restart" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-ink-2 transition-colors hover:bg-white"><RotateCcw size={15} /></button>
         <input type="range" aria-label="Replay position" min={win[0]} max={win[1]} step={0.1} value={t} onChange={(e) => seek(Number(e.target.value))} className="min-w-[140px] flex-1 accent-[#0c1322]" />
         <Segmented label="Speed" value={speed} onChange={setSpeed} options={SPEEDS.map((s) => ({ v: s, label: `${s}×` }))} />
-        <Segmented label="Camera" value={mode} onChange={setMode} options={[{ v: 'follow' as ViewMode, label: 'Follow' }, { v: 'network' as ViewMode, label: 'Network' }, { v: 'free' as ViewMode, label: 'Free' }]} />
+        <Segmented label="Camera" value={mode} onChange={setMode} options={[{ v: 'junction' as ViewMode, label: 'Intersection' }, { v: 'follow' as ViewMode, label: 'Follow' }, { v: 'network' as ViewMode, label: 'Whole map' }, { v: 'free' as ViewMode, label: 'Free' }]} />
         <div className="inline-flex rounded-full bg-muted/80 p-0.5">
           <button type="button" aria-label="Zoom out" onClick={() => zoom(1 / 1.5)} className="inline-flex h-7 w-8 items-center justify-center rounded-full text-ink-2 hover:bg-white hover:shadow-thumb"><Minus size={14} /></button>
           <button type="button" aria-label="Zoom in" onClick={() => zoom(1.5)} className="inline-flex h-7 w-8 items-center justify-center rounded-full text-ink-2 hover:bg-white hover:shadow-thumb"><Plus size={14} /></button>
@@ -380,14 +443,14 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
       )}
 
       <div className="flex flex-col gap-4 pt-4">
-        <h3 className="m-0 w-fit rounded-full bg-white/35 px-5 py-2 text-[22px] font-[650] tracking-[-0.02em] backdrop-blur-2xl">Every ambulance in this run</h3>
+        <h3 className="m-0 text-[24px] font-[650] tracking-[-0.025em]">Every ambulance in this run</h3>
         <Units asset={asset} example={example} onPick={setExample} />
       </div>
 
       <div className="flex flex-col gap-4 pt-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="m-0 w-fit rounded-full bg-white/35 px-5 py-2 text-[22px] font-[650] tracking-[-0.02em] backdrop-blur-2xl">Across {asset.aggregate.episodes} held-out runs</h3>
-          <span className="rounded-full bg-white/35 px-3 py-1.5 text-[12px] text-ink-3 backdrop-blur-2xl">Green: clearly better · red: clearly worse · gray: no clear difference</span>
+          <h3 className="m-0 text-[24px] font-[650] tracking-[-0.025em]">Across {asset.aggregate.episodes} held-out runs</h3>
+          <span className="text-[12px] text-ink-3">Green: clearly better · red: clearly worse · gray: no clear difference</span>
         </div>
         <Aggregate asset={asset} />
       </div>
