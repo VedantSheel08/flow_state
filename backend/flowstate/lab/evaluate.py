@@ -15,7 +15,7 @@ from typing import Any
 
 import numpy as np
 
-from ..rl.demand import SCENARIOS, TRAIN_SCENARIOS
+from ..rl.demand import BASE_SCENARIOS, TRAIN_SCENARIOS
 from .forecast import intensity_for, lab_dir
 
 TUNE_SEEDS = list(range(1100, 1106))
@@ -92,10 +92,10 @@ def tune(workers: int = 4, rounds: tuple[int, ...] = (1, 2)) -> dict[str, Any]:
 def evaluate_paired(workers: int = 4) -> dict[str, Any]:
     cids = ["fixed_time", "queue_heuristic", "ml_forecast"]
     t0 = time.time()
-    rows = _run([(c, sc, s) for sc in SCENARIOS for s in TEST_SEEDS for c in cids], workers)
+    rows = _run([(c, sc, s) for sc in BASE_SCENARIOS for s in TEST_SEEDS for c in cids], workers)
     ml_rows = [r for r in rows if r["controller"] == "ml_forecast" and r["ml"]]
-    per_scenario = {sc: paired([r for r in rows if r["scenario"] == sc], "queue_heuristic", "ml_forecast")["mean_wait_s"] for sc in SCENARIOS}
-    summary = {"episodes": len(rows) // len(cids), "seeds": TEST_SEEDS, "scenarios": list(SCENARIOS),
+    per_scenario = {sc: paired([r for r in rows if r["scenario"] == sc], "queue_heuristic", "ml_forecast")["mean_wait_s"] for sc in BASE_SCENARIOS}
+    summary = {"episodes": len(rows) // len(cids), "seeds": TEST_SEEDS, "scenarios": list(BASE_SCENARIOS),
                "ml_vs_heuristic": paired(rows, "queue_heuristic", "ml_forecast"),
                "heuristic_vs_fixed": paired(rows, "fixed_time", "queue_heuristic"),
                "ml_vs_fixed": paired(rows, "fixed_time", "ml_forecast"),

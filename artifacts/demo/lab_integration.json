@@ -1,0 +1,137 @@
+{
+ "listed": [
+  "demo_rush_hour",
+  "demo_spillback",
+  "demo_incident"
+ ],
+ "manifestSchema": "flowstate.demo-scenarios/1",
+ "scenarios": {
+  "demo_rush_hour": {
+   "job": "done",
+   "wall_s": 15.5,
+   "error": null,
+   "replayId": "queue_heuristic__ml_forecast__demo_rush_hour__4003__1",
+   "demandSha": "641a1bab31ab2096",
+   "duration_s": 1475,
+   "sameDemand": true,
+   "diff": {
+    "mean_wait_s": [
+     178.5,
+     159.94
+    ],
+    "queue_max_veh": [
+     238.0,
+     200.0
+    ],
+    "spillback_pct": [
+     7.3,
+     5.34
+    ],
+    "teleports": [
+     4.0,
+     1.0
+    ],
+    "collisions": [
+     0.0,
+     0.0
+    ]
+   },
+   "live": {
+    "frames": 339,
+    "obs": 68,
+    "t_last": 339,
+    "errors": [],
+    "wall_s": 45.0,
+    "speed": 8,
+    "frames_per_wall_s": 7.5,
+    "sim_s_per_wall_s": 7.5,
+    "worker_rss_mb_max": 218.9
+   }
+  },
+  "demo_spillback": {
+   "job": "done",
+   "wall_s": 20.5,
+   "error": null,
+   "replayId": "queue_heuristic__ml_forecast__demo_spillback__4003__1",
+   "demandSha": "f5f912fe379b0495",
+   "duration_s": 1500,
+   "sameDemand": true,
+   "diff": {
+    "mean_wait_s": [
+     224.22,
+     237.8
+    ],
+    "queue_max_veh": [
+     324.0,
+     305.0
+    ],
+    "spillback_pct": [
+     17.38,
+     19.63
+    ],
+    "teleports": [
+     2.0,
+     2.0
+    ],
+    "collisions": [
+     0.0,
+     0.0
+    ]
+   },
+   "live": {
+    "frames": 343,
+    "obs": 69,
+    "t_last": 343,
+    "errors": [],
+    "wall_s": 45.0,
+    "speed": 8,
+    "frames_per_wall_s": 7.6,
+    "sim_s_per_wall_s": 7.6,
+    "worker_rss_mb_max": 262.8
+   }
+  },
+  "demo_incident": {
+   "job": "done",
+   "wall_s": 16.7,
+   "error": null,
+   "replayId": "queue_heuristic__ml_forecast__demo_incident__4006__1",
+   "demandSha": "6da37e8de66c8b79",
+   "duration_s": 1500,
+   "sameDemand": true,
+   "diff": {
+    "mean_wait_s": [
+     213.98,
+     244.29
+    ],
+    "queue_max_veh": [
+     328.0,
+     360.0
+    ],
+    "spillback_pct": [
+     13.18,
+     17.23
+    ],
+    "teleports": [
+     5.0,
+     5.0
+    ],
+    "collisions": [
+     0.0,
+     0.0
+    ]
+   },
+   "live": {
+    "frames": 339,
+    "obs": 68,
+    "t_last": 339,
+    "errors": [],
+    "wall_s": 45.0,
+    "speed": 8,
+    "frames_per_wall_s": 7.5,
+    "sim_s_per_wall_s": 7.5,
+    "worker_rss_mb_max": 262.9
+   }
+  }
+ },
+ "note": "Live check: the Python test client parses every 8x frame itself, so frames/s here is a lower bound, not the server's capacity. CPU/RAM/latency come from performance.json."
+}

@@ -44,6 +44,14 @@ SCENARIOS: dict[str, Scenario] = {
 }
 TRAIN_SCENARIOS = ("balanced", "ns_heavy", "ew_heavy", "pulse")
 HELD_OUT_SCENARIOS = ("rush_ramp",)
+BASE_SCENARIOS = TRAIN_SCENARIOS + HELD_OUT_SCENARIOS  # the five used by the forecaster and the held-out evaluation
+
+# Demo scenarios live in flowstate.demo (pure data, no import of this module) and are registered here so the lab API, the
+# recorder and the live worker accept them by id. They are never part of TRAIN_SCENARIOS / HELD_OUT_SCENARIOS.
+from ..demo.scenarios import SPECS as DEMO_SPECS, write_routes as write_demo_routes  # noqa: E402
+
+for _d in DEMO_SPECS.values():
+    SCENARIOS[_d.id] = Scenario(_d.id, _d.title, _d.description, _d.base_vph / 8.0, _d.horizon_s)
 
 
 def _side(edge: str) -> str:
@@ -90,6 +98,8 @@ def write_routes(path: Path, grid: GridInfo, net_path: Path, scenario: str, seed
 
     sc = SCENARIOS[scenario]
     horizon = horizon_s or sc.horizon_s
+    if scenario in DEMO_SPECS:  # demo scenarios (flowstate.demo): flows, turning bias, incidents
+        return write_demo_routes(path, net_path, scenario, seed, horizon, intensity, VTYPES, intensity_multiplier(seed))
     net = sumolib.net.readNet(str(net_path), withInternal=False)
     rng = random.Random(f"{scenario}-{seed}")
     mult = intensity * intensity_multiplier(seed)

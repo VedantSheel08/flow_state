@@ -1,0 +1,4201 @@
+{
+ "schema": "flowstate.demo-scenarios/1",
+ "generated_at": "2026-10-17T23:33:54",
+ "git": "8a8d2a0",
+ "network": {
+  "id": "rl_grid",
+  "layout": "2x2 signalised grid, junctions A0 B0 A1 B1, 200 m two-lane links, 8 entries / 8 exits",
+  "compatibleWith": "flowstate.rl.sim.SignalSim / flowstate.lab (Intelligence Lab, port 8015)",
+  "notCompatibleWith": "Toronto district scenarios (different network)"
+ },
+ "api": {
+  "scenarioList": "GET /api/lab/status -> scenarios[]",
+  "manifest": "GET /api/lab/demo-scenarios",
+  "record": "POST /api/lab/replays {left,right,scenario,seed,intensity}",
+  "live": "WS /ws/live {cmd:'start', scenario, controller, seed, intensity, speed}",
+  "controllers": [
+   "fixed_time",
+   "queue_heuristic",
+   "ml_forecast"
+  ]
+ },
+ "defaultScenario": "demo_rush_hour",
+ "defaultRationale": "Highest visual-clarity checklist score computed on non-ML controllers over all benchmark seeds (visible buildup, localised origin, recovery inside the run, clean run, heavy enough); ties go to the middle tier. ML results play no part in the choice.",
+ "recommendedSequence": [
+  "demo_rush_hour",
+  "demo_spillback",
+  "demo_incident"
+ ],
+ "markerKinds": [
+  "queue_buildup",
+  "spillback",
+  "predicted_spillback",
+  "controller_intervention",
+  "recovery",
+  "incident"
+ ],
+ "benchmarkRef": {
+  "file": "artifacts/demo/benchmark.json",
+  "episodes": 90,
+  "seeds": [
+   4001,
+   4002,
+   4003,
+   4004,
+   4005,
+   4006,
+   4007,
+   4008,
+   4009,
+   4010
+  ],
+  "git": "8a8d2a0",
+  "generated_at": "2026-10-17T23:30:31"
+ },
+ "performance": {
+  "machine": {
+   "platform": "Windows-11-10.0.26200-SP0",
+   "logical_cores": 8,
+   "ram_gb": 34.3
+  },
+  "method": "one episode per fresh process, run alone, frames recorded; seed = illustrative demo seed",
+  "git": "8a8d2a0",
+  "generated_at": "2026-10-17T23:33:53",
+  "budget": {
+   "per_simulated_second_ms": 1000,
+   "decision_interval_ms": 5000,
+   "step_budget_ms_for_0.25s_live_tick": 250
+  },
+  "episodes": [
+   {
+    "scenario": "demo_rush_hour",
+    "controller": "queue_heuristic",
+    "seed": 4003,
+    "sim_seconds": 1475.0,
+    "wall_s": 22.24,
+    "cpu_s": 21.0,
+    "cpu_cores_avg": 0.94,
+    "peak_rss_mb": 224.1,
+    "speed_x_realtime": 66.3,
+    "sumo_step": {
+     "mean_ms": 4.721,
+     "p50_ms": 4.759,
+     "p95_ms": 8.237,
+     "p99_ms": 11.531,
+     "max_ms": 41.503,
+     "n": 1475
+    },
+    "measure_and_frame": {
+     "mean_ms": 4.837,
+     "p50_ms": 4.781,
+     "p95_ms": 8.216,
+     "p99_ms": 9.924,
+     "max_ms": 117.662,
+     "n": 1475
+    },
+    "per_simulated_second_ms": {
+     "mean": 9.558,
+     "p95": 16.432,
+     "p99": 20.022,
+     "max": 119.855
+    },
+    "observation": {
+     "mean_ms": 0.818,
+     "p50_ms": 0.77,
+     "p95_ms": 1.069,
+     "p99_ms": 1.473,
+     "max_ms": 2.895,
+     "n": 295
+    },
+    "inference": {
+     "mean_ms": 9.135,
+     "p50_ms": 8.946,
+     "p95_ms": 11.045,
+     "p99_ms": 12.949,
+     "max_ms": 13.543,
+     "n": 295
+    },
+    "decision": {
+     "mean_ms": 0.28,
+     "p50_ms": 0.265,
+     "p95_ms": 0.573,
+     "p99_ms": 0.711,
+     "max_ms": 2.362,
+     "n": 295
+    },
+    "frames": 1475,
+    "vehicles_peak": 305,
+    "teleports": 4,
+    "collisions": 0
+   },
+   {
+    "scenario": "demo_rush_hour",
+    "controller": "ml_forecast",
+    "seed": 4003,
+    "sim_seconds": 1470.0,
+    "wall_s": 23.28,
+    "cpu_s": 21.23,
+    "cpu_cores_avg": 0.91,
+    "peak_rss_mb": 221.5,
+    "speed_x_realtime": 63.1,
+    "sumo_step": {
+     "mean_ms": 4.655,
+     "p50_ms": 4.949,
+     "p95_ms": 8.117,
+     "p99_ms": 10.163,
+     "max_ms": 47.652,
+     "n": 1470
+    },
+    "measure_and_frame": {
+     "mean_ms": 4.757,
+     "p50_ms": 5.004,
+     "p95_ms": 8.275,
+     "p99_ms": 11.428,
+     "max_ms": 94.721,
+     "n": 1470
+    },
+    "per_simulated_second_ms": {
+     "mean": 9.412,
+     "p95": 16.409,
+     "p99": 19.807,
+     "max": 101.464
+    },
+    "observation": {
+     "mean_ms": 0.87,
+     "p50_ms": 0.8,
+     "p95_ms": 1.13,
+     "p99_ms": 1.782,
+     "max_ms": 5.387,
+     "n": 294
+    },
+    "inference": {
+     "mean_ms": 9.325,
+     "p50_ms": 9.172,
+     "p95_ms": 10.893,
+     "p99_ms": 11.95,
+     "max_ms": 13.081,
+     "n": 294
+    },
+    "decision": {
+     "mean_ms": 0.599,
+     "p50_ms": 0.554,
+     "p95_ms": 1.229,
+     "p99_ms": 1.803,
+     "max_ms": 4.436,
+     "n": 294
+    },
+    "frames": 1470,
+    "vehicles_peak": 283,
+    "teleports": 1,
+    "collisions": 0
+   },
+   {
+    "scenario": "demo_spillback",
+    "controller": "queue_heuristic",
+    "seed": 4003,
+    "sim_seconds": 1500.0,
+    "wall_s": 34.85,
+    "cpu_s": 33.23,
+    "cpu_cores_avg": 0.95,
+    "peak_rss_mb": 269.0,
+    "speed_x_realtime": 43.0,
+    "sumo_step": {
+     "mean_ms": 8.255,
+     "p50_ms": 8.541,
+     "p95_ms": 12.21,
+     "p99_ms": 15.783,
+     "max_ms": 68.86,
+     "n": 1500
+    },
+    "measure_and_frame": {
+     "mean_ms": 8.777,
+     "p50_ms": 8.938,
+     "p95_ms": 12.7,
+     "p99_ms": 15.263,
+     "max_ms": 156.73,
+     "n": 1500
+    },
+    "per_simulated_second_ms": {
+     "mean": 17.032,
+     "p95": 24.712,
+     "p99": 30.544,
+     "max": 161.366
+    },
+    "observation": {
+     "mean_ms": 0.904,
+     "p50_ms": 0.839,
+     "p95_ms": 1.082,
+     "p99_ms": 1.342,
+     "max_ms": 9.941,
+     "n": 300
+    },
+    "inference": {
+     "mean_ms": 9.715,
+     "p50_ms": 9.498,
+     "p95_ms": 11.566,
+     "p99_ms": 13.194,
+     "max_ms": 15.974,
+     "n": 300
+    },
+    "decision": {
+     "mean_ms": 0.33,
+     "p50_ms": 0.288,
+     "p95_ms": 0.684,
+     "p99_ms": 1.108,
+     "max_ms": 2.627,
+     "n": 300
+    },
+    "frames": 1500,
+    "vehicles_peak": 426,
+    "teleports": 2,
+    "collisions": 0
+   },
+   {
+    "scenario": "demo_spillback",
+    "controller": "ml_forecast",
+    "seed": 4003,
+    "sim_seconds": 1500.0,
+    "wall_s": 35.63,
+    "cpu_s": 34.06,
+    "cpu_cores_avg": 0.96,
+    "peak_rss_mb": 271.4,
+    "speed_x_realtime": 42.1,
+    "sumo_step": {
+     "mean_ms": 8.578,
+     "p50_ms": 8.654,
+     "p95_ms": 12.74,
+     "p99_ms": 19.138,
+     "max_ms": 98.67,
+     "n": 1500
+    },
+    "measure_and_frame": {
+     "mean_ms": 9.048,
+     "p50_ms": 8.94,
+     "p95_ms": 13.188,
+     "p99_ms": 15.77,
+     "max_ms": 162.94,
+     "n": 1500
+    },
+    "per_simulated_second_ms": {
+     "mean": 17.626,
+     "p95": 25.854,
+     "p99": 34.191,
+     "max": 169.533
+    },
+    "observation": {
+     "mean_ms": 0.916,
+     "p50_ms": 0.834,
+     "p95_ms": 1.229,
+     "p99_ms": 2.742,
+     "max_ms": 3.718,
+     "n": 300
+    },
+    "inference": {
+     "mean_ms": 9.897,
+     "p50_ms": 9.536,
+     "p95_ms": 12.177,
+     "p99_ms": 15.65,
+     "max_ms": 18.764,
+     "n": 300
+    },
+    "decision": {
+     "mean_ms": 0.631,
+     "p50_ms": 0.576,
+     "p95_ms": 1.402,
+     "p99_ms": 1.672,
+     "max_ms": 2.117,
+     "n": 300
+    },
+    "frames": 1500,
+    "vehicles_peak": 412,
+    "teleports": 2,
+    "collisions": 0
+   },
+   {
+    "scenario": "demo_incident",
+    "controller": "queue_heuristic",
+    "seed": 4006,
+    "sim_seconds": 1500.0,
+    "wall_s": 31.68,
+    "cpu_s": 29.97,
+    "cpu_cores_avg": 0.95,
+    "peak_rss_mb": 255.5,
+    "speed_x_realtime": 47.3,
+    "sumo_step": {
+     "mean_ms": 7.387,
+     "p50_ms": 7.134,
+     "p95_ms": 12.509,
+     "p99_ms": 14.922,
+     "max_ms": 69.273,
+     "n": 1500
+    },
+    "measure_and_frame": {
+     "mean_ms": 7.776,
+     "p50_ms": 7.31,
+     "p95_ms": 13.132,
+     "p99_ms": 15.62,
+     "max_ms": 141.782,
+     "n": 1500
+    },
+    "per_simulated_second_ms": {
+     "mean": 15.163,
+     "p95": 25.443,
+     "p99": 29.421,
+     "max": 152.303
+    },
+    "observation": {
+     "mean_ms": 0.929,
+     "p50_ms": 0.835,
+     "p95_ms": 1.148,
+     "p99_ms": 2.964,
+     "max_ms": 5.147,
+     "n": 300
+    },
+    "inference": {
+     "mean_ms": 9.84,
+     "p50_ms": 9.548,
+     "p95_ms": 11.881,
+     "p99_ms": 15.104,
+     "max_ms": 17.262,
+     "n": 300
+    },
+    "decision": {
+     "mean_ms": 0.307,
+     "p50_ms": 0.278,
+     "p95_ms": 0.668,
+     "p99_ms": 0.912,
+     "max_ms": 1.499,
+     "n": 300
+    },
+    "frames": 1500,
+    "vehicles_peak": 405,
+    "teleports": 5,
+    "collisions": 0
+   },
+   {
+    "scenario": "demo_incident",
+    "controller": "ml_forecast",
+    "seed": 4006,
+    "sim_seconds": 1500.0,
+    "wall_s": 19.12,
+    "cpu_s": 18.89,
+    "cpu_cores_avg": 0.99,
+    "peak_rss_mb": 266.0,
+    "speed_x_realtime": 78.5,
+    "sumo_step": {
+     "mean_ms": 4.442,
+     "p50_ms": 4.286,
+     "p95_ms": 8.507,
+     "p99_ms": 10.509,
+     "max_ms": 44.723,
+     "n": 1500
+    },
+    "measure_and_frame": {
+     "mean_ms": 4.516,
+     "p50_ms": 4.217,
+     "p95_ms": 8.398,
+     "p99_ms": 10.862,
+     "max_ms": 111.092,
+     "n": 1500
+    },
+    "per_simulated_second_ms": {
+     "mean": 8.958,
+     "p95": 16.177,
+     "p99": 22.343,
+     "max": 113.269
+    },
+    "observation": {
+     "mean_ms": 0.519,
+     "p50_ms": 0.404,
+     "p95_ms": 0.878,
+     "p99_ms": 0.984,
+     "max_ms": 2.179,
+     "n": 300
+    },
+    "inference": {
+     "mean_ms": 5.343,
+     "p50_ms": 4.837,
+     "p95_ms": 7.693,
+     "p99_ms": 8.183,
+     "max_ms": 10.19,
+     "n": 300
+    },
+    "decision": {
+     "mean_ms": 0.388,
+     "p50_ms": 0.357,
+     "p95_ms": 0.926,
+     "p99_ms": 1.293,
+     "max_ms": 1.909,
+     "n": 300
+    },
+    "frames": 1500,
+    "vehicles_peak": 442,
+    "teleports": 5,
+    "collisions": 0
+   }
+  ],
+  "checks": {
+   "per_second_p99_under_250ms": true,
+   "decision_p99_under_5s": true
+  },
+  "summary": {
+   "max_peak_rss_mb": 271.4,
+   "max_cpu_cores_avg": 0.99,
+   "worst_p99_per_second_ms": 34.191,
+   "min_speed_x_realtime": 42.1
+  }
+ },
+ "scenarios": [
+  {
+   "id": "demo_rush_hour",
+   "title": "Heavy rush hour (inbound to the north-east)",
+   "description": "Morning commute: the south and west entries carry about twice the demand of the north and east entries, and 65 % of it heads for the north-east corner. Demand is already high when the run starts, peaks from minute 4 to 10 and eases after minute 13. The queue starts at the junctions that feed that corner.",
+   "kind": "rush_hour",
+   "tier": "heavy",
+   "lab": {
+    "scenario": "demo_rush_hour",
+    "seed": 4003,
+    "intensity": 1.0,
+    "horizonS": 900.0,
+    "drainS": 600.0,
+    "intensityRange": [
+     0.5,
+     1.4
+    ],
+    "defaultComparison": {
+     "left": "queue_heuristic",
+     "right": "ml_forecast"
+    },
+    "pairRequest": {
+     "left": "queue_heuristic",
+     "right": "ml_forecast",
+     "scenario": "demo_rush_hour",
+     "seed": 4003,
+     "intensity": 1.0
+    },
+    "liveStart": {
+     "cmd": "start",
+     "scenario": "demo_rush_hour",
+     "controller": "queue_heuristic",
+     "seed": 4003,
+     "intensity": 1.0,
+     "speed": 4
+    },
+    "replayId": "queue_heuristic__ml_forecast__demo_rush_hour__4003__1"
+   },
+   "seeds": {
+    "illustrative": 4003,
+    "benchmark": [
+     4001,
+     4002,
+     4003,
+     4004,
+     4005,
+     4006,
+     4007,
+     4008,
+     4009,
+     4010
+    ],
+    "design": [
+     9001,
+     9002,
+     9003
+    ],
+    "illustrativeRule": "benchmark seed with median scheduled vehicle count (demand only; outcome-blind)"
+   },
+   "demand": {
+    "flows": [
+     {
+      "entry": "left0A0",
+      "vphAtPeakMultiplier1": 694,
+      "toExits": {
+       "B1top1": 0.325,
+       "B1right1": 0.325,
+       "A0left0": 0.058,
+       "A1left1": 0.058,
+       "B0right0": 0.058,
+       "A0bottom0": 0.058,
+       "B0bottom1": 0.058,
+       "A1top0": 0.058
+      },
+      "profile": [
+       [
+        0,
+        0.75
+       ],
+       [
+        90,
+        1.0
+       ],
+       [
+        240,
+        1.1
+       ],
+       [
+        540,
+        1.1
+       ],
+       [
+        700,
+        0.6
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "inbound commuters"
+     },
+     {
+      "entry": "left1A1",
+      "vphAtPeakMultiplier1": 694,
+      "toExits": {
+       "B1top1": 0.325,
+       "B1right1": 0.325,
+       "A0left0": 0.058,
+       "A1left1": 0.058,
+       "B0right0": 0.058,
+       "A0bottom0": 0.058,
+       "B0bottom1": 0.058,
+       "A1top0": 0.058
+      },
+      "profile": [
+       [
+        0,
+        0.75
+       ],
+       [
+        90,
+        1.0
+       ],
+       [
+        240,
+        1.1
+       ],
+       [
+        540,
+        1.1
+       ],
+       [
+        700,
+        0.6
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "inbound commuters"
+     },
+     {
+      "entry": "bottom0A0",
+      "vphAtPeakMultiplier1": 694,
+      "toExits": {
+       "B1top1": 0.325,
+       "B1right1": 0.325,
+       "A0left0": 0.058,
+       "A1left1": 0.058,
+       "B0right0": 0.058,
+       "A0bottom0": 0.058,
+       "B0bottom1": 0.058,
+       "A1top0": 0.058
+      },
+      "profile": [
+       [
+        0,
+        0.75
+       ],
+       [
+        90,
+        1.0
+       ],
+       [
+        240,
+        1.1
+       ],
+       [
+        540,
+        1.1
+       ],
+       [
+        700,
+        0.6
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "inbound commuters"
+     },
+     {
+      "entry": "bottom1B0",
+      "vphAtPeakMultiplier1": 694,
+      "toExits": {
+       "B1top1": 0.325,
+       "B1right1": 0.325,
+       "A0left0": 0.058,
+       "A1left1": 0.058,
+       "B0right0": 0.058,
+       "A0bottom0": 0.058,
+       "B0bottom1": 0.058,
+       "A1top0": 0.058
+      },
+      "profile": [
+       [
+        0,
+        0.75
+       ],
+       [
+        90,
+        1.0
+       ],
+       [
+        240,
+        1.1
+       ],
+       [
+        540,
+        1.1
+       ],
+       [
+        700,
+        0.6
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "inbound commuters"
+     },
+     {
+      "entry": "right0B0",
+      "vphAtPeakMultiplier1": 336,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.75
+       ],
+       [
+        90,
+        1.0
+       ],
+       [
+        240,
+        1.1
+       ],
+       [
+        540,
+        1.1
+       ],
+       [
+        700,
+        0.6
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "outbound / cross traffic"
+     },
+     {
+      "entry": "right1B1",
+      "vphAtPeakMultiplier1": 336,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.75
+       ],
+       [
+        90,
+        1.0
+       ],
+       [
+        240,
+        1.1
+       ],
+       [
+        540,
+        1.1
+       ],
+       [
+        700,
+        0.6
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "outbound / cross traffic"
+     },
+     {
+      "entry": "top0A1",
+      "vphAtPeakMultiplier1": 336,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.75
+       ],
+       [
+        90,
+        1.0
+       ],
+       [
+        240,
+        1.1
+       ],
+       [
+        540,
+        1.1
+       ],
+       [
+        700,
+        0.6
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "outbound / cross traffic"
+     },
+     {
+      "entry": "top1B1",
+      "vphAtPeakMultiplier1": 336,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.75
+       ],
+       [
+        90,
+        1.0
+       ],
+       [
+        240,
+        1.1
+       ],
+       [
+        540,
+        1.1
+       ],
+       [
+        700,
+        0.6
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "outbound / cross traffic"
+     }
+    ],
+    "incidents": [],
+    "entries": [
+     "left0A0",
+     "left1A1",
+     "right0B0",
+     "right1B1",
+     "bottom0A0",
+     "bottom1B0",
+     "top0A1",
+     "top1B1"
+    ],
+    "exits": [
+     "A0left0",
+     "A1left1",
+     "B0right0",
+     "B1right1",
+     "A0bottom0",
+     "B0bottom1",
+     "A1top0",
+     "B1top1"
+    ],
+    "vehiclesScheduled": 907,
+    "vehiclesPerSeed": {
+     "mean": 911.2,
+     "min": 775,
+     "max": 1101
+    },
+    "demandSha256": "641a1bab31ab2096",
+    "matchedAcrossControllers": true,
+    "peakDemandVph": 4532.0
+   },
+   "expectedBehavior": [
+    "Queues appear within 2 minutes and the network is saturated by minute 5",
+    "Stop-and-go on the approaches to the north-east corner (B1), with spillback into the links that feed it",
+    "Queues do not clear until well after demand eases (minute 13)"
+   ],
+   "phases": [
+    {
+     "id": "buildup",
+     "fromS": 0,
+     "toS": 300,
+     "what": "queues form at the junctions feeding the north-east corner"
+    },
+    {
+     "id": "peak",
+     "fromS": 300,
+     "toS": 780,
+     "what": "saturated: standing queues, spillback between neighbouring junctions"
+    },
+    {
+     "id": "recovery",
+     "fromS": 780,
+     "toS": 1500,
+     "what": "demand eases; the queues drain only if the signals discharge them efficiently"
+    }
+   ],
+   "benchmark": {
+    "kind": "multi-seed, paired, frozen protocol (conclusions)",
+    "seeds": [
+     4001,
+     4002,
+     4003,
+     4004,
+     4005,
+     4006,
+     4007,
+     4008,
+     4009,
+     4010
+    ],
+    "byController": {
+     "fixed_time": {
+      "mean_wait_s": {
+       "mean": 159.32,
+       "sd": 23.89,
+       "min": 116.4,
+       "max": 194.7,
+       "median": 164.35
+      },
+      "p95_travel_s": {
+       "mean": 777.49,
+       "sd": 73.47,
+       "min": 641.6,
+       "max": 842.5,
+       "median": 807.35
+      },
+      "throughput_vph": {
+       "mean": 2582.0,
+       "sd": 164.01,
+       "min": 2376.0,
+       "max": 2880.0,
+       "median": 2530.0
+      },
+      "queue_peak_veh": {
+       "mean": 203.4,
+       "sd": 41.78,
+       "min": 130.0,
+       "max": 273.0,
+       "median": 205.5
+      },
+      "spillback_pct": {
+       "mean": 7.24,
+       "sd": 2.63,
+       "min": 4.06,
+       "max": 12.8,
+       "median": 6.71
+      },
+      "spilled_links_peak": {
+       "mean": 2.4,
+       "sd": 0.7,
+       "min": 2.0,
+       "max": 4.0,
+       "median": 2.0
+      },
+      "near_standstill_seconds": {
+       "mean": 167.0,
+       "sd": 120.63,
+       "min": 35.0,
+       "max": 445.0,
+       "median": 145.0
+      },
+      "t_cleared_s": {
+       "mean": 1066.0,
+       "sd": 159.27,
+       "min": 765.0,
+       "max": 1320.0,
+       "median": 1062.5
+      },
+      "teleports": {
+       "mean": 0.4,
+       "sd": 0.97,
+       "min": 0.0,
+       "max": 3.0,
+       "median": 0.0
+      },
+      "collisions": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      },
+      "completed_fraction": {
+       "mean": 0.96,
+       "sd": 0.05,
+       "min": 0.87,
+       "max": 1.0,
+       "median": 0.97
+      },
+      "never_inserted": {
+       "mean": 7.3,
+       "sd": 16.03,
+       "min": 0.0,
+       "max": 46.0,
+       "median": 0.0
+      }
+     },
+     "queue_heuristic": {
+      "mean_wait_s": {
+       "mean": 153.97,
+       "sd": 39.01,
+       "min": 92.9,
+       "max": 195.8,
+       "median": 158.8
+      },
+      "p95_travel_s": {
+       "mean": 695.92,
+       "sd": 126.29,
+       "min": 502.5,
+       "max": 833.4,
+       "median": 729.85
+      },
+      "throughput_vph": {
+       "mean": 2638.4,
+       "sd": 91.45,
+       "min": 2504.0,
+       "max": 2776.0,
+       "median": 2624.0
+      },
+      "queue_peak_veh": {
+       "mean": 195.7,
+       "sd": 47.36,
+       "min": 127.0,
+       "max": 286.0,
+       "median": 192.5
+      },
+      "spillback_pct": {
+       "mean": 6.55,
+       "sd": 3.18,
+       "min": 2.65,
+       "max": 13.28,
+       "median": 6.29
+      },
+      "spilled_links_peak": {
+       "mean": 3.0,
+       "sd": 0.94,
+       "min": 2.0,
+       "max": 5.0,
+       "median": 3.0
+      },
+      "near_standstill_seconds": {
+       "mean": 74.0,
+       "sd": 85.56,
+       "min": 0.0,
+       "max": 270.0,
+       "median": 37.5
+      },
+      "t_cleared_s": {
+       "mean": 1057.5,
+       "sd": 187.25,
+       "min": 750.0,
+       "max": 1395.0,
+       "median": 1057.5
+      },
+      "teleports": {
+       "mean": 1.2,
+       "sd": 1.48,
+       "min": 0.0,
+       "max": 4.0,
+       "median": 0.5
+      },
+      "collisions": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      },
+      "completed_fraction": {
+       "mean": 0.99,
+       "sd": 0.03,
+       "min": 0.92,
+       "max": 1.0,
+       "median": 1.0
+      },
+      "never_inserted": {
+       "mean": 0.2,
+       "sd": 0.63,
+       "min": 0.0,
+       "max": 2.0,
+       "median": 0.0
+      }
+     },
+     "ml_forecast": {
+      "mean_wait_s": {
+       "mean": 160.5,
+       "sd": 43.47,
+       "min": 86.7,
+       "max": 222.1,
+       "median": 167.9
+      },
+      "p95_travel_s": {
+       "mean": 706.27,
+       "sd": 139.91,
+       "min": 482.5,
+       "max": 918.7,
+       "median": 728.15
+      },
+      "throughput_vph": {
+       "mean": 2589.2,
+       "sd": 122.07,
+       "min": 2480.0,
+       "max": 2836.0,
+       "median": 2534.0
+      },
+      "queue_peak_veh": {
+       "mean": 203.8,
+       "sd": 44.86,
+       "min": 123.0,
+       "max": 261.0,
+       "median": 210.0
+      },
+      "spillback_pct": {
+       "mean": 7.69,
+       "sd": 3.83,
+       "min": 1.41,
+       "max": 13.73,
+       "median": 7.86
+      },
+      "spilled_links_peak": {
+       "mean": 3.1,
+       "sd": 1.1,
+       "min": 1.0,
+       "max": 4.0,
+       "median": 3.5
+      },
+      "near_standstill_seconds": {
+       "mean": 109.0,
+       "sd": 105.27,
+       "min": 0.0,
+       "max": 345.0,
+       "median": 82.5
+      },
+      "t_cleared_s": {
+       "mean": 1064.5,
+       "sd": 150.17,
+       "min": 800.0,
+       "max": 1260.0,
+       "median": 1110.0
+      },
+      "teleports": {
+       "mean": 1.9,
+       "sd": 1.85,
+       "min": 0.0,
+       "max": 6.0,
+       "median": 1.5
+      },
+      "collisions": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      },
+      "completed_fraction": {
+       "mean": 0.99,
+       "sd": 0.03,
+       "min": 0.94,
+       "max": 1.0,
+       "median": 1.0
+      },
+      "never_inserted": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      }
+     }
+    },
+    "mlVsHeuristic": {
+     "mean_wait_s": {
+      "left_mean": 153.97,
+      "right_mean": 160.5,
+      "mean_diff": 6.53,
+      "pct": 4.24,
+      "ci95": [
+       -2.84,
+       16.872
+      ],
+      "clear": false,
+      "better": 3,
+      "worse": 7,
+      "pairs": 10
+     },
+     "p95_travel_s": {
+      "left_mean": 695.92,
+      "right_mean": 706.27,
+      "mean_diff": 10.35,
+      "pct": 1.49,
+      "ci95": [
+       -28.371,
+       55.093
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 5,
+      "pairs": 10
+     },
+     "throughput_vph": {
+      "left_mean": 2638.4,
+      "right_mean": 2589.2,
+      "mean_diff": -49.2,
+      "pct": -1.86,
+      "ci95": [
+       -113.2,
+       10.0
+      ],
+      "clear": false,
+      "better": 6,
+      "worse": 4,
+      "pairs": 10
+     },
+     "queue_peak_veh": {
+      "left_mean": 195.7,
+      "right_mean": 203.8,
+      "mean_diff": 8.1,
+      "pct": 4.14,
+      "ci95": [
+       -10.1,
+       26.0
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 5,
+      "pairs": 10
+     },
+     "spillback_pct": {
+      "left_mean": 6.547,
+      "right_mean": 7.693,
+      "mean_diff": 1.146,
+      "pct": 17.5,
+      "ci95": [
+       -0.454,
+       2.822
+      ],
+      "clear": false,
+      "better": 4,
+      "worse": 6,
+      "pairs": 10
+     },
+     "spilled_links_peak": {
+      "left_mean": 3.0,
+      "right_mean": 3.1,
+      "mean_diff": 0.1,
+      "pct": 3.33,
+      "ci95": [
+       -0.4,
+       0.6
+      ],
+      "clear": false,
+      "better": 3,
+      "worse": 4,
+      "pairs": 10
+     },
+     "near_standstill_seconds": {
+      "left_mean": 74.0,
+      "right_mean": 109.0,
+      "mean_diff": 35.0,
+      "pct": 47.3,
+      "ci95": [
+       -16.5,
+       100.0
+      ],
+      "clear": false,
+      "better": 3,
+      "worse": 7,
+      "pairs": 10
+     },
+     "t_cleared_s": {
+      "left_mean": 1057.5,
+      "right_mean": 1064.5,
+      "mean_diff": 7.0,
+      "pct": 0.66,
+      "ci95": [
+       -48.0,
+       54.5
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 5,
+      "pairs": 10
+     },
+     "teleports": {
+      "left_mean": 1.2,
+      "right_mean": 1.9,
+      "mean_diff": 0.7,
+      "pct": 58.33,
+      "ci95": [
+       -0.5,
+       1.9
+      ],
+      "clear": false,
+      "better": 3,
+      "worse": 5,
+      "pairs": 10
+     },
+     "collisions": {
+      "left_mean": 0.0,
+      "right_mean": 0.0,
+      "mean_diff": 0.0,
+      "pct": null,
+      "ci95": [
+       0.0,
+       0.0
+      ],
+      "clear": false,
+      "better": 0,
+      "worse": 0,
+      "pairs": 10
+     },
+     "completed_fraction": {
+      "left_mean": 0.989,
+      "right_mean": 0.987,
+      "mean_diff": -0.002,
+      "pct": -0.21,
+      "ci95": [
+       -0.01,
+       0.005
+      ],
+      "clear": false,
+      "better": 1,
+      "worse": 3,
+      "pairs": 10
+     },
+     "never_inserted": {
+      "left_mean": 0.2,
+      "right_mean": 0.0,
+      "mean_diff": -0.2,
+      "pct": -100.0,
+      "ci95": [
+       -0.6,
+       0.0
+      ],
+      "clear": false,
+      "better": 1,
+      "worse": 0,
+      "pairs": 10
+     }
+    },
+    "heuristicVsFixed": {
+     "mean_wait_s": {
+      "left_mean": 159.32,
+      "right_mean": 153.97,
+      "mean_diff": -5.35,
+      "pct": -3.36,
+      "ci95": [
+       -19.231,
+       8.822
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 5,
+      "pairs": 10
+     },
+     "p95_travel_s": {
+      "left_mean": 777.49,
+      "right_mean": 695.92,
+      "mean_diff": -81.57,
+      "pct": -10.49,
+      "ci95": [
+       -137.26,
+       -23.558
+      ],
+      "clear": true,
+      "better": 9,
+      "worse": 1,
+      "pairs": 10
+     },
+     "throughput_vph": {
+      "left_mean": 2582.0,
+      "right_mean": 2638.4,
+      "mean_diff": 56.4,
+      "pct": 2.18,
+      "ci95": [
+       -32.0,
+       141.6
+      ],
+      "clear": false,
+      "better": 7,
+      "worse": 3,
+      "pairs": 10
+     },
+     "queue_peak_veh": {
+      "left_mean": 203.4,
+      "right_mean": 195.7,
+      "mean_diff": -7.7,
+      "pct": -3.79,
+      "ci95": [
+       -28.105,
+       11.803
+      ],
+      "clear": false,
+      "better": 6,
+      "worse": 4,
+      "pairs": 10
+     },
+     "spillback_pct": {
+      "left_mean": 7.241,
+      "right_mean": 6.547,
+      "mean_diff": -0.694,
+      "pct": -9.58,
+      "ci95": [
+       -2.038,
+       0.719
+      ],
+      "clear": false,
+      "better": 7,
+      "worse": 3,
+      "pairs": 10
+     },
+     "spilled_links_peak": {
+      "left_mean": 2.4,
+      "right_mean": 3.0,
+      "mean_diff": 0.6,
+      "pct": 25.0,
+      "ci95": [
+       0.0,
+       1.2
+      ],
+      "clear": false,
+      "better": 1,
+      "worse": 5,
+      "pairs": 10
+     },
+     "near_standstill_seconds": {
+      "left_mean": 167.0,
+      "right_mean": 74.0,
+      "mean_diff": -93.0,
+      "pct": -55.69,
+      "ci95": [
+       -160.512,
+       -42.487
+      ],
+      "clear": true,
+      "better": 8,
+      "worse": 1,
+      "pairs": 10
+     },
+     "t_cleared_s": {
+      "left_mean": 1066.0,
+      "right_mean": 1057.5,
+      "mean_diff": -8.5,
+      "pct": -0.8,
+      "ci95": [
+       -55.5,
+       39.0
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 4,
+      "pairs": 10
+     },
+     "teleports": {
+      "left_mean": 0.4,
+      "right_mean": 1.2,
+      "mean_diff": 0.8,
+      "pct": 200.0,
+      "ci95": [
+       -0.1,
+       1.8
+      ],
+      "clear": false,
+      "better": 2,
+      "worse": 4,
+      "pairs": 10
+     },
+     "collisions": {
+      "left_mean": 0.0,
+      "right_mean": 0.0,
+      "mean_diff": 0.0,
+      "pct": null,
+      "ci95": [
+       0.0,
+       0.0
+      ],
+      "clear": false,
+      "better": 0,
+      "worse": 0,
+      "pairs": 10
+     },
+     "completed_fraction": {
+      "left_mean": 0.957,
+      "right_mean": 0.989,
+      "mean_diff": 0.032,
+      "pct": 3.35,
+      "ci95": [
+       0.015,
+       0.051
+      ],
+      "clear": true,
+      "better": 7,
+      "worse": 0,
+      "pairs": 10
+     },
+     "never_inserted": {
+      "left_mean": 7.3,
+      "right_mean": 0.2,
+      "mean_diff": -7.1,
+      "pct": -97.26,
+      "ci95": [
+       -16.9,
+       0.0
+      ],
+      "clear": false,
+      "better": 2,
+      "worse": 0,
+      "pairs": 10
+     }
+    },
+    "forecast": {
+     "truePositive": 384,
+     "falsePositive": 32,
+     "falseNegative": 3572,
+     "precision": 0.923,
+     "recall": 0.097,
+     "median_lead_s": 20.0,
+     "runs": 10
+    },
+    "clarity": {
+     "checks": {
+      "visible_buildup": true,
+      "localised_origin": true,
+      "recovers_in_run": false,
+      "clean_run": true,
+      "heavy_enough": true
+     },
+     "score": 4,
+     "median_buildup_to_peak_s": 450.0,
+     "most_common_first_full_approach": "A1:S",
+     "share_with_that_origin": 0.65
+    },
+    "heuristicMeanWaitRangeS": [
+     92.9,
+     195.8
+    ]
+   },
+   "illustrative": {
+    "kind": "single seed, for watching only; not a general result",
+    "seed": 4003,
+    "byController": {
+     "fixed_time": {
+      "mean_wait_s": 161.4,
+      "p95_travel_s": 833.3,
+      "throughput_vph": 2596.0,
+      "queue_peak_veh": 221.0,
+      "spillback_pct": 6.52,
+      "spilled_links_peak": 3,
+      "near_standstill_seconds": 115.0,
+      "t_cleared_s": 1040.0,
+      "teleports": 0,
+      "collisions": 0,
+      "completed_fraction": 0.9526,
+      "never_inserted": 0
+     },
+     "queue_heuristic": {
+      "mean_wait_s": 178.5,
+      "p95_travel_s": 783.9,
+      "throughput_vph": 2592.0,
+      "queue_peak_veh": 236.0,
+      "spillback_pct": 7.3,
+      "spilled_links_peak": 3,
+      "near_standstill_seconds": 125.0,
+      "t_cleared_s": 1170.0,
+      "teleports": 4,
+      "collisions": 0,
+      "completed_fraction": 1.0,
+      "never_inserted": 0
+     },
+     "ml_forecast": {
+      "mean_wait_s": 159.9,
+      "p95_travel_s": 704.0,
+      "throughput_vph": 2636.0,
+      "queue_peak_veh": 199.0,
+      "spillback_pct": 5.34,
+      "spilled_links_peak": 2,
+      "near_standstill_seconds": 80.0,
+      "t_cleared_s": 1120.0,
+      "teleports": 1,
+      "collisions": 0,
+      "completed_fraction": 1.0,
+      "never_inserted": 0
+     }
+    },
+    "waitPercentileAmongSeedsHeuristic": 70.0,
+    "incident": [],
+    "demand": {
+     "scheduled": 907,
+     "inserted": 907,
+     "completed": 907,
+     "onRoadAtEnd": 0,
+     "neverInserted": 0,
+     "teleportedVehicles": 4,
+     "incidentVehicles": 0,
+     "unaccounted": 0,
+     "completedFraction": 1.0
+    }
+   },
+   "markers": {
+    "rules": {
+     "queue_buildup": "first 10 s with halted vehicles on the 16 approaches >= 5 % of their storage, held for 3 consecutive samples (15 s)",
+     "congested": "first time halted vehicles reach 15 % of approach storage (3 consecutive samples)",
+     "spillback": "first sample where an internal link has halted vehicles filling >= 50 % of its storage (same rule as the lab's spillback %)",
+     "predicted_spillback": "first forecast (30 s ahead) of an approach queue >= 50 % of its storage while its current queue is still below 50 %; 'verified' when that approach reaches 50 % within 60 s (the forecaster's own spillback definition)",
+     "controller_intervention": "decisions where the ML-forecast controller differs from the plain heuristic (clustered into 30 s bins)",
+     "recovery_start": "first time after the queue peak that halted vehicles stay below 80 % of the peak for 30 s",
+     "recovery_half": "first time after the peak that halted vehicles stay below 50 % of the peak for 30 s",
+     "cleared": "first time after the peak that halted vehicles stay below 10 % of approach storage for 30 s",
+     "near_standstill": "network mean speed below 1.5 m/s with >= 50 % of vehicles halted, held for 30 s"
+    },
+    "seed": 4003,
+    "illustrative": {
+     "queue_heuristic": [
+      {
+       "kind": "queue_buildup",
+       "tSec": 180.0,
+       "label": "Queues start to build"
+      },
+      {
+       "kind": "predicted_spillback",
+       "tSec": 265.0,
+       "label": "Forecast: B1:W queue will fill to 24 of 48 within 30 s",
+       "approach": "B1:W",
+       "verified": false,
+       "leadS": null
+      },
+      {
+       "kind": "spillback",
+       "tSec": 350.0,
+       "label": "Spillback begins on link A1B1",
+       "link": "A1B1"
+      },
+      {
+       "kind": "queue_buildup",
+       "tSec": 445.0,
+       "label": "Network congested (15 % of approach storage halted)",
+       "level": "congested"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 635.0,
+       "label": "Recovery begins (queue below 80 % of peak)",
+       "level": "start"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 940.0,
+       "label": "Queue halved from peak",
+       "level": "half"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 1170.0,
+       "label": "Queues cleared (below 10 % of storage)",
+       "level": "cleared"
+      }
+     ],
+     "ml_forecast": [
+      {
+       "kind": "controller_intervention",
+       "tSec": 60.0,
+       "label": "ML changed 7 signal decision(s)",
+       "count": 7
+      },
+      {
+       "kind": "queue_buildup",
+       "tSec": 180.0,
+       "label": "Queues start to build"
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 240.0,
+       "label": "ML changed 3 signal decision(s)",
+       "count": 3
+      },
+      {
+       "kind": "spillback",
+       "tSec": 260.0,
+       "label": "Spillback begins on link A0A1",
+       "link": "A0A1"
+      },
+      {
+       "kind": "predicted_spillback",
+       "tSec": 415.0,
+       "label": "Forecast: A1:S queue will fill to 28 of 48 within 30 s",
+       "approach": "A1:S",
+       "verified": true,
+       "leadS": 15.0
+      },
+      {
+       "kind": "queue_buildup",
+       "tSec": 450.0,
+       "label": "Network congested (15 % of approach storage halted)",
+       "level": "congested"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 665.0,
+       "label": "Recovery begins (queue below 80 % of peak)",
+       "level": "start"
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 780.0,
+       "label": "ML changed 4 signal decision(s)",
+       "count": 4
+      },
+      {
+       "kind": "recovery",
+       "tSec": 1060.0,
+       "label": "Queue halved from peak",
+       "level": "half"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 1120.0,
+       "label": "Queues cleared (below 10 % of storage)",
+       "level": "cleared"
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 1230.0,
+       "label": "ML changed 5 signal decision(s)",
+       "count": 5
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 1350.0,
+       "label": "ML changed 4 signal decision(s)",
+       "count": 4
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 1380.0,
+       "label": "ML changed 9 signal decision(s)",
+       "count": 9
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "demo_spillback",
+   "title": "Spillback-prone asymmetric demand",
+   "description": "A heavy northbound stream enters at the south-east (B0) and almost all of it turns into the short link B0-B1, while strong westbound cross traffic and a left-turning flow load junction B1. A surge on the northbound stream between minutes 5.5 and 10.5 pushes the B0-B1 link past its storage, so the queue spills back into B0 and then along the south corridor. Total demand is moderate: the problem is the geometry, not the volume.",
+   "kind": "asymmetric_spillback",
+   "tier": "severe",
+   "lab": {
+    "scenario": "demo_spillback",
+    "seed": 4003,
+    "intensity": 1.0,
+    "horizonS": 900.0,
+    "drainS": 600.0,
+    "intensityRange": [
+     0.5,
+     1.4
+    ],
+    "defaultComparison": {
+     "left": "queue_heuristic",
+     "right": "ml_forecast"
+    },
+    "pairRequest": {
+     "left": "queue_heuristic",
+     "right": "ml_forecast",
+     "scenario": "demo_spillback",
+     "seed": 4003,
+     "intensity": 1.0
+    },
+    "liveStart": {
+     "cmd": "start",
+     "scenario": "demo_spillback",
+     "controller": "queue_heuristic",
+     "seed": 4003,
+     "intensity": 1.0,
+     "speed": 4
+    },
+    "replayId": "queue_heuristic__ml_forecast__demo_spillback__4003__1"
+   },
+   "seeds": {
+    "illustrative": 4003,
+    "benchmark": [
+     4001,
+     4002,
+     4003,
+     4004,
+     4005,
+     4006,
+     4007,
+     4008,
+     4009,
+     4010
+    ],
+    "design": [
+     9001,
+     9002,
+     9003
+    ],
+    "illustrativeRule": "benchmark seed with median scheduled vehicle count (demand only; outcome-blind)"
+   },
+   "demand": {
+    "flows": [
+     {
+      "entry": "bottom1B0",
+      "vphAtPeakMultiplier1": 1330,
+      "toExits": {
+       "B1top1": 0.88,
+       "A0left0": 0.017,
+       "A1left1": 0.017,
+       "B0right0": 0.017,
+       "B1right1": 0.017,
+       "A0bottom0": 0.017,
+       "B0bottom1": 0.017,
+       "A1top0": 0.017
+      },
+      "profile": [
+       [
+        0,
+        0.65
+       ],
+       [
+        150,
+        1.0
+       ],
+       [
+        280,
+        1.0
+       ],
+       [
+        340,
+        1.6
+       ],
+       [
+        540,
+        1.6
+       ],
+       [
+        620,
+        1.0
+       ],
+       [
+        700,
+        0.8
+       ],
+       [
+        800,
+        0.5
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "northbound stream into B1 (surges)"
+     },
+     {
+      "entry": "right1B1",
+      "vphAtPeakMultiplier1": 1064,
+      "toExits": {
+       "A1left1": 0.4,
+       "A0left0": 0.4,
+       "B0right0": 0.033,
+       "B1right1": 0.033,
+       "A0bottom0": 0.033,
+       "B0bottom1": 0.033,
+       "A1top0": 0.033,
+       "B1top1": 0.033
+      },
+      "profile": [
+       [
+        0,
+        0.65
+       ],
+       [
+        150,
+        1.0
+       ],
+       [
+        600,
+        1.0
+       ],
+       [
+        800,
+        0.5
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "westbound cross traffic at B1"
+     },
+     {
+      "entry": "left0A0",
+      "vphAtPeakMultiplier1": 1026,
+      "toExits": {
+       "B0right0": 0.375,
+       "B1right1": 0.375,
+       "A0left0": 0.042,
+       "A1left1": 0.042,
+       "A0bottom0": 0.042,
+       "B0bottom1": 0.042,
+       "A1top0": 0.042,
+       "B1top1": 0.042
+      },
+      "profile": [
+       [
+        0,
+        0.65
+       ],
+       [
+        150,
+        1.0
+       ],
+       [
+        600,
+        1.0
+       ],
+       [
+        800,
+        0.5
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "eastbound corridor along the south"
+     },
+     {
+      "entry": "top0A1",
+      "vphAtPeakMultiplier1": 817,
+      "toExits": {
+       "B1right1": 0.6,
+       "A0left0": 0.057,
+       "A1left1": 0.057,
+       "B0right0": 0.057,
+       "A0bottom0": 0.057,
+       "B0bottom1": 0.057,
+       "A1top0": 0.057,
+       "B1top1": 0.057
+      },
+      "profile": [
+       [
+        0,
+        0.65
+       ],
+       [
+        150,
+        1.0
+       ],
+       [
+        600,
+        1.0
+       ],
+       [
+        800,
+        0.5
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": "left turns onto the A1-B1 link"
+     },
+     {
+      "entry": "left1A1",
+      "vphAtPeakMultiplier1": 570,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.65
+       ],
+       [
+        150,
+        1.0
+       ],
+       [
+        600,
+        1.0
+       ],
+       [
+        800,
+        0.5
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "top1B1",
+      "vphAtPeakMultiplier1": 570,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.65
+       ],
+       [
+        150,
+        1.0
+       ],
+       [
+        600,
+        1.0
+       ],
+       [
+        800,
+        0.5
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "bottom0A0",
+      "vphAtPeakMultiplier1": 532,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.65
+       ],
+       [
+        150,
+        1.0
+       ],
+       [
+        600,
+        1.0
+       ],
+       [
+        800,
+        0.5
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "right0B0",
+      "vphAtPeakMultiplier1": 532,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.65
+       ],
+       [
+        150,
+        1.0
+       ],
+       [
+        600,
+        1.0
+       ],
+       [
+        800,
+        0.5
+       ],
+       [
+        900,
+        0.3
+       ]
+      ],
+      "note": ""
+     }
+    ],
+    "incidents": [],
+    "entries": [
+     "left0A0",
+     "left1A1",
+     "right0B0",
+     "right1B1",
+     "bottom0A0",
+     "bottom1B0",
+     "top0A1",
+     "top1B1"
+    ],
+    "exits": [
+     "A0left0",
+     "A1left1",
+     "B0right0",
+     "B1right1",
+     "A0bottom0",
+     "B0bottom1",
+     "A1top0",
+     "B1top1"
+    ],
+    "vehiclesScheduled": 1448,
+    "vehiclesPerSeed": {
+     "mean": 1445.1,
+     "min": 1218,
+     "max": 1582
+    },
+    "demandSha256": "f5f912fe379b0495",
+    "matchedAcrossControllers": true,
+    "peakDemandVph": 10306.0
+   },
+   "expectedBehavior": [
+    "The B0-B1 link fills first (peak at the surge), then queues spill back into junction B0",
+    "Eastbound corridor traffic is blocked at B0 although it has green: a queue that is not at its own stop line",
+    "Recovery begins once the surge ends, around minute 11"
+   ],
+   "phases": [
+    {
+     "id": "buildup",
+     "fromS": 0,
+     "toS": 340,
+     "what": "asymmetric demand loads B1 and the B0-B1 link"
+    },
+    {
+     "id": "surge",
+     "fromS": 340,
+     "toS": 640,
+     "what": "northbound surge: B0-B1 overflows, spillback into B0"
+    },
+    {
+     "id": "recovery",
+     "fromS": 640,
+     "toS": 1500,
+     "what": "demand returns to base; spillback dissolves from downstream to upstream"
+    }
+   ],
+   "benchmark": {
+    "kind": "multi-seed, paired, frozen protocol (conclusions)",
+    "seeds": [
+     4001,
+     4002,
+     4003,
+     4004,
+     4005,
+     4006,
+     4007,
+     4008,
+     4009,
+     4010
+    ],
+    "byController": {
+     "fixed_time": {
+      "mean_wait_s": {
+       "mean": 182.68,
+       "sd": 35.21,
+       "min": 130.9,
+       "max": 223.9,
+       "median": 189.6
+      },
+      "p95_travel_s": {
+       "mean": 770.66,
+       "sd": 90.41,
+       "min": 541.6,
+       "max": 891.3,
+       "median": 783.05
+      },
+      "throughput_vph": {
+       "mean": 3766.0,
+       "sd": 126.23,
+       "min": 3576.0,
+       "max": 3952.0,
+       "median": 3778.0
+      },
+      "queue_peak_veh": {
+       "mean": 241.6,
+       "sd": 31.78,
+       "min": 190.0,
+       "max": 285.0,
+       "median": 250.5
+      },
+      "spillback_pct": {
+       "mean": 11.2,
+       "sd": 4.4,
+       "min": 5.64,
+       "max": 18.73,
+       "median": 10.18
+      },
+      "spilled_links_peak": {
+       "mean": 3.2,
+       "sd": 0.92,
+       "min": 2.0,
+       "max": 5.0,
+       "median": 3.0
+      },
+      "near_standstill_seconds": {
+       "mean": 174.5,
+       "sd": 117.65,
+       "min": 20.0,
+       "max": 350.0,
+       "median": 147.5
+      },
+      "t_cleared_s": {
+       "mean": 1299.0,
+       "sd": 178.23,
+       "min": 1055.0,
+       "max": 1500.0,
+       "median": 1322.5
+      },
+      "teleports": {
+       "mean": 0.6,
+       "sd": 1.26,
+       "min": 0.0,
+       "max": 4.0,
+       "median": 0.0
+      },
+      "collisions": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      },
+      "completed_fraction": {
+       "mean": 0.93,
+       "sd": 0.05,
+       "min": 0.85,
+       "max": 1.0,
+       "median": 0.94
+      },
+      "never_inserted": {
+       "mean": 26.3,
+       "sd": 32.66,
+       "min": 0.0,
+       "max": 94.0,
+       "median": 13.5
+      }
+     },
+     "queue_heuristic": {
+      "mean_wait_s": {
+       "mean": 208.33,
+       "sd": 35.69,
+       "min": 139.9,
+       "max": 235.7,
+       "median": 220.9
+      },
+      "p95_travel_s": {
+       "mean": 805.85,
+       "sd": 94.07,
+       "min": 628.8,
+       "max": 949.2,
+       "median": 819.2
+      },
+      "throughput_vph": {
+       "mean": 3599.2,
+       "sd": 88.2,
+       "min": 3476.0,
+       "max": 3764.0,
+       "median": 3586.0
+      },
+      "queue_peak_veh": {
+       "mean": 263.0,
+       "sd": 42.42,
+       "min": 187.0,
+       "max": 318.0,
+       "median": 271.0
+      },
+      "spillback_pct": {
+       "mean": 13.23,
+       "sd": 4.49,
+       "min": 6.38,
+       "max": 20.52,
+       "median": 13.27
+      },
+      "spilled_links_peak": {
+       "mean": 3.5,
+       "sd": 0.71,
+       "min": 2.0,
+       "max": 4.0,
+       "median": 4.0
+      },
+      "near_standstill_seconds": {
+       "mean": 125.0,
+       "sd": 122.66,
+       "min": 5.0,
+       "max": 355.0,
+       "median": 112.5
+      },
+      "t_cleared_s": {
+       "mean": 1386.0,
+       "sd": 154.66,
+       "min": 1060.0,
+       "max": 1500.0,
+       "median": 1452.5
+      },
+      "teleports": {
+       "mean": 1.8,
+       "sd": 1.48,
+       "min": 0.0,
+       "max": 5.0,
+       "median": 2.0
+      },
+      "collisions": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      },
+      "completed_fraction": {
+       "mean": 0.93,
+       "sd": 0.05,
+       "min": 0.84,
+       "max": 1.0,
+       "median": 0.93
+      },
+      "never_inserted": {
+       "mean": 8.2,
+       "sd": 22.22,
+       "min": 0.0,
+       "max": 71.0,
+       "median": 0.0
+      }
+     },
+     "ml_forecast": {
+      "mean_wait_s": {
+       "mean": 214.01,
+       "sd": 33.75,
+       "min": 155.6,
+       "max": 261.0,
+       "median": 213.5
+      },
+      "p95_travel_s": {
+       "mean": 837.39,
+       "sd": 91.93,
+       "min": 660.4,
+       "max": 985.4,
+       "median": 839.75
+      },
+      "throughput_vph": {
+       "mean": 3516.4,
+       "sd": 135.67,
+       "min": 3364.0,
+       "max": 3764.0,
+       "median": 3520.0
+      },
+      "queue_peak_veh": {
+       "mean": 275.0,
+       "sd": 40.84,
+       "min": 208.0,
+       "max": 358.0,
+       "median": 272.0
+      },
+      "spillback_pct": {
+       "mean": 14.72,
+       "sd": 5.28,
+       "min": 7.6,
+       "max": 24.83,
+       "median": 13.04
+      },
+      "spilled_links_peak": {
+       "mean": 3.8,
+       "sd": 0.79,
+       "min": 3.0,
+       "max": 5.0,
+       "median": 4.0
+      },
+      "near_standstill_seconds": {
+       "mean": 192.5,
+       "sd": 205.25,
+       "min": 10.0,
+       "max": 575.0,
+       "median": 90.0
+      },
+      "t_cleared_s": {
+       "mean": 1398.0,
+       "sd": 144.84,
+       "min": 1095.0,
+       "max": 1500.0,
+       "median": 1485.0
+      },
+      "teleports": {
+       "mean": 2.0,
+       "sd": 1.83,
+       "min": 0.0,
+       "max": 6.0,
+       "median": 1.5
+      },
+      "collisions": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      },
+      "completed_fraction": {
+       "mean": 0.92,
+       "sd": 0.07,
+       "min": 0.79,
+       "max": 1.0,
+       "median": 0.91
+      },
+      "never_inserted": {
+       "mean": 22.3,
+       "sd": 37.46,
+       "min": 0.0,
+       "max": 120.0,
+       "median": 8.5
+      }
+     }
+    },
+    "mlVsHeuristic": {
+     "mean_wait_s": {
+      "left_mean": 208.33,
+      "right_mean": 214.01,
+      "mean_diff": 5.68,
+      "pct": 2.73,
+      "ci95": [
+       -3.831,
+       15.15
+      ],
+      "clear": false,
+      "better": 3,
+      "worse": 7,
+      "pairs": 10
+     },
+     "p95_travel_s": {
+      "left_mean": 805.85,
+      "right_mean": 837.39,
+      "mean_diff": 31.54,
+      "pct": 3.91,
+      "ci95": [
+       10.738,
+       52.711
+      ],
+      "clear": true,
+      "better": 1,
+      "worse": 9,
+      "pairs": 10
+     },
+     "throughput_vph": {
+      "left_mean": 3599.2,
+      "right_mean": 3516.4,
+      "mean_diff": -82.8,
+      "pct": -2.3,
+      "ci95": [
+       -181.21,
+       15.2
+      ],
+      "clear": false,
+      "better": 3,
+      "worse": 7,
+      "pairs": 10
+     },
+     "queue_peak_veh": {
+      "left_mean": 263.0,
+      "right_mean": 275.0,
+      "mean_diff": 12.0,
+      "pct": 4.56,
+      "ci95": [
+       -2.202,
+       27.103
+      ],
+      "clear": false,
+      "better": 4,
+      "worse": 6,
+      "pairs": 10
+     },
+     "spillback_pct": {
+      "left_mean": 13.231,
+      "right_mean": 14.718,
+      "mean_diff": 1.487,
+      "pct": 11.24,
+      "ci95": [
+       0.084,
+       2.772
+      ],
+      "clear": true,
+      "better": 2,
+      "worse": 8,
+      "pairs": 10
+     },
+     "spilled_links_peak": {
+      "left_mean": 3.5,
+      "right_mean": 3.8,
+      "mean_diff": 0.3,
+      "pct": 8.57,
+      "ci95": [
+       0.0,
+       0.6
+      ],
+      "clear": false,
+      "better": 0,
+      "worse": 3,
+      "pairs": 10
+     },
+     "near_standstill_seconds": {
+      "left_mean": 125.0,
+      "right_mean": 192.5,
+      "mean_diff": 67.5,
+      "pct": 54.0,
+      "ci95": [
+       -24.0,
+       166.513
+      ],
+      "clear": false,
+      "better": 2,
+      "worse": 8,
+      "pairs": 10
+     },
+     "t_cleared_s": {
+      "left_mean": 1386.0,
+      "right_mean": 1398.0,
+      "mean_diff": 12.0,
+      "pct": 0.87,
+      "ci95": [
+       -3.0,
+       25.5
+      ],
+      "clear": false,
+      "better": 1,
+      "worse": 5,
+      "pairs": 10
+     },
+     "teleports": {
+      "left_mean": 1.8,
+      "right_mean": 2.0,
+      "mean_diff": 0.2,
+      "pct": 11.11,
+      "ci95": [
+       -1.4,
+       1.9
+      ],
+      "clear": false,
+      "better": 2,
+      "worse": 4,
+      "pairs": 10
+     },
+     "collisions": {
+      "left_mean": 0.0,
+      "right_mean": 0.0,
+      "mean_diff": 0.0,
+      "pct": null,
+      "ci95": [
+       0.0,
+       0.0
+      ],
+      "clear": false,
+      "better": 0,
+      "worse": 0,
+      "pairs": 10
+     },
+     "completed_fraction": {
+      "left_mean": 0.932,
+      "right_mean": 0.916,
+      "mean_diff": -0.017,
+      "pct": -1.78,
+      "ci95": [
+       -0.039,
+       0.003
+      ],
+      "clear": false,
+      "better": 1,
+      "worse": 8,
+      "pairs": 10
+     },
+     "never_inserted": {
+      "left_mean": 8.2,
+      "right_mean": 22.3,
+      "mean_diff": 14.1,
+      "pct": 171.95,
+      "ci95": [
+       -8.2,
+       42.0
+      ],
+      "clear": false,
+      "better": 1,
+      "worse": 5,
+      "pairs": 10
+     }
+    },
+    "heuristicVsFixed": {
+     "mean_wait_s": {
+      "left_mean": 182.68,
+      "right_mean": 208.33,
+      "mean_diff": 25.65,
+      "pct": 14.04,
+      "ci95": [
+       14.01,
+       38.211
+      ],
+      "clear": true,
+      "better": 0,
+      "worse": 10,
+      "pairs": 10
+     },
+     "p95_travel_s": {
+      "left_mean": 770.66,
+      "right_mean": 805.85,
+      "mean_diff": 35.19,
+      "pct": 4.57,
+      "ci95": [
+       -7.552,
+       69.06
+      ],
+      "clear": false,
+      "better": 2,
+      "worse": 8,
+      "pairs": 10
+     },
+     "throughput_vph": {
+      "left_mean": 3766.0,
+      "right_mean": 3599.2,
+      "mean_diff": -166.8,
+      "pct": -4.43,
+      "ci95": [
+       -251.2,
+       -74.0
+      ],
+      "clear": true,
+      "better": 2,
+      "worse": 8,
+      "pairs": 10
+     },
+     "queue_peak_veh": {
+      "left_mean": 241.6,
+      "right_mean": 263.0,
+      "mean_diff": 21.4,
+      "pct": 8.86,
+      "ci95": [
+       8.0,
+       38.3
+      ],
+      "clear": true,
+      "better": 1,
+      "worse": 9,
+      "pairs": 10
+     },
+     "spillback_pct": {
+      "left_mean": 11.197,
+      "right_mean": 13.231,
+      "mean_diff": 2.034,
+      "pct": 18.17,
+      "ci95": [
+       0.789,
+       3.774
+      ],
+      "clear": true,
+      "better": 1,
+      "worse": 9,
+      "pairs": 10
+     },
+     "spilled_links_peak": {
+      "left_mean": 3.2,
+      "right_mean": 3.5,
+      "mean_diff": 0.3,
+      "pct": 9.38,
+      "ci95": [
+       -0.2,
+       0.8
+      ],
+      "clear": false,
+      "better": 2,
+      "worse": 5,
+      "pairs": 10
+     },
+     "near_standstill_seconds": {
+      "left_mean": 174.5,
+      "right_mean": 125.0,
+      "mean_diff": -49.5,
+      "pct": -28.37,
+      "ci95": [
+       -111.0,
+       33.525
+      ],
+      "clear": false,
+      "better": 9,
+      "worse": 1,
+      "pairs": 10
+     },
+     "t_cleared_s": {
+      "left_mean": 1299.0,
+      "right_mean": 1386.0,
+      "mean_diff": 87.0,
+      "pct": 6.7,
+      "ci95": [
+       19.5,
+       162.5
+      ],
+      "clear": true,
+      "better": 2,
+      "worse": 6,
+      "pairs": 10
+     },
+     "teleports": {
+      "left_mean": 0.6,
+      "right_mean": 1.8,
+      "mean_diff": 1.2,
+      "pct": 200.0,
+      "ci95": [
+       0.1,
+       2.2
+      ],
+      "clear": true,
+      "better": 2,
+      "worse": 7,
+      "pairs": 10
+     },
+     "collisions": {
+      "left_mean": 0.0,
+      "right_mean": 0.0,
+      "mean_diff": 0.0,
+      "pct": null,
+      "ci95": [
+       0.0,
+       0.0
+      ],
+      "clear": false,
+      "better": 0,
+      "worse": 0,
+      "pairs": 10
+     },
+     "completed_fraction": {
+      "left_mean": 0.927,
+      "right_mean": 0.932,
+      "mean_diff": 0.006,
+      "pct": 0.59,
+      "ci95": [
+       -0.026,
+       0.03
+      ],
+      "clear": false,
+      "better": 7,
+      "worse": 2,
+      "pairs": 10
+     },
+     "never_inserted": {
+      "left_mean": 26.3,
+      "right_mean": 8.2,
+      "mean_diff": -18.1,
+      "pct": -68.82,
+      "ci95": [
+       -43.102,
+       8.8
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 1,
+      "pairs": 10
+     }
+    },
+    "forecast": {
+     "truePositive": 1786,
+     "falsePositive": 62,
+     "falseNegative": 4641,
+     "precision": 0.966,
+     "recall": 0.278,
+     "median_lead_s": 15.0,
+     "runs": 10
+    },
+    "clarity": {
+     "checks": {
+      "visible_buildup": true,
+      "localised_origin": false,
+      "recovers_in_run": false,
+      "clean_run": false,
+      "heavy_enough": true
+     },
+     "score": 2,
+     "median_buildup_to_peak_s": 535.0,
+     "most_common_first_full_approach": "B1:S",
+     "share_with_that_origin": 0.4
+    },
+    "heuristicMeanWaitRangeS": [
+     139.9,
+     235.7
+    ]
+   },
+   "illustrative": {
+    "kind": "single seed, for watching only; not a general result",
+    "seed": 4003,
+    "byController": {
+     "fixed_time": {
+      "mean_wait_s": 175.2,
+      "p95_travel_s": 756.9,
+      "throughput_vph": 3772.0,
+      "queue_peak_veh": 234.0,
+      "spillback_pct": 16.15,
+      "spilled_links_peak": 3,
+      "near_standstill_seconds": 350.0,
+      "t_cleared_s": 1500.0,
+      "teleports": 0,
+      "collisions": 0,
+      "completed_fraction": 0.8819,
+      "never_inserted": 53
+     },
+     "queue_heuristic": {
+      "mean_wait_s": 224.2,
+      "p95_travel_s": 804.4,
+      "throughput_vph": 3476.0,
+      "queue_peak_veh": 318.0,
+      "spillback_pct": 17.38,
+      "spilled_links_peak": 4,
+      "near_standstill_seconds": 190.0,
+      "t_cleared_s": 1460.0,
+      "teleports": 2,
+      "collisions": 0,
+      "completed_fraction": 0.9302,
+      "never_inserted": 0
+     },
+     "ml_forecast": {
+      "mean_wait_s": 237.8,
+      "p95_travel_s": 842.3,
+      "throughput_vph": 3372.0,
+      "queue_peak_veh": 304.0,
+      "spillback_pct": 19.63,
+      "spilled_links_peak": 5,
+      "near_standstill_seconds": 305.0,
+      "t_cleared_s": 1500.0,
+      "teleports": 2,
+      "collisions": 0,
+      "completed_fraction": 0.8964,
+      "never_inserted": 5
+     }
+    },
+    "waitPercentileAmongSeedsHeuristic": 60.0,
+    "incident": [],
+    "demand": {
+     "scheduled": 1448,
+     "inserted": 1448,
+     "completed": 1347,
+     "onRoadAtEnd": 101,
+     "neverInserted": 0,
+     "teleportedVehicles": 2,
+     "incidentVehicles": 0,
+     "unaccounted": 0,
+     "completedFraction": 0.9302
+    }
+   },
+   "markers": {
+    "rules": {
+     "queue_buildup": "first 10 s with halted vehicles on the 16 approaches >= 5 % of their storage, held for 3 consecutive samples (15 s)",
+     "congested": "first time halted vehicles reach 15 % of approach storage (3 consecutive samples)",
+     "spillback": "first sample where an internal link has halted vehicles filling >= 50 % of its storage (same rule as the lab's spillback %)",
+     "predicted_spillback": "first forecast (30 s ahead) of an approach queue >= 50 % of its storage while its current queue is still below 50 %; 'verified' when that approach reaches 50 % within 60 s (the forecaster's own spillback definition)",
+     "controller_intervention": "decisions where the ML-forecast controller differs from the plain heuristic (clustered into 30 s bins)",
+     "recovery_start": "first time after the queue peak that halted vehicles stay below 80 % of the peak for 30 s",
+     "recovery_half": "first time after the peak that halted vehicles stay below 50 % of the peak for 30 s",
+     "cleared": "first time after the peak that halted vehicles stay below 10 % of approach storage for 30 s",
+     "near_standstill": "network mean speed below 1.5 m/s with >= 50 % of vehicles halted, held for 30 s"
+    },
+    "seed": 4003,
+    "illustrative": {
+     "queue_heuristic": [
+      {
+       "kind": "queue_buildup",
+       "tSec": 120.0,
+       "label": "Queues start to build"
+      },
+      {
+       "kind": "spillback",
+       "tSec": 195.0,
+       "label": "Spillback begins on link B0B1",
+       "link": "B0B1"
+      },
+      {
+       "kind": "queue_buildup",
+       "tSec": 210.0,
+       "label": "Network congested (15 % of approach storage halted)",
+       "level": "congested"
+      },
+      {
+       "kind": "predicted_spillback",
+       "tSec": 225.0,
+       "label": "Forecast: B1:S queue will fill to 25 of 48 within 30 s",
+       "approach": "B1:S",
+       "verified": true,
+       "leadS": 20.0
+      },
+      {
+       "kind": "recovery",
+       "tSec": 735.0,
+       "label": "Recovery begins (queue below 80 % of peak)",
+       "level": "start"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 1120.0,
+       "label": "Queue halved from peak",
+       "level": "half"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 1460.0,
+       "label": "Queues cleared (below 10 % of storage)",
+       "level": "cleared"
+      }
+     ],
+     "ml_forecast": [
+      {
+       "kind": "controller_intervention",
+       "tSec": 30.0,
+       "label": "ML changed 1 signal decision(s)",
+       "count": 1
+      },
+      {
+       "kind": "queue_buildup",
+       "tSec": 120.0,
+       "label": "Queues start to build"
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 120.0,
+       "label": "ML changed 2 signal decision(s)",
+       "count": 2
+      },
+      {
+       "kind": "predicted_spillback",
+       "tSec": 195.0,
+       "label": "Forecast: A0:W queue will fill to 26 of 51 within 30 s",
+       "approach": "A0:W",
+       "verified": false,
+       "leadS": null
+      },
+      {
+       "kind": "spillback",
+       "tSec": 205.0,
+       "label": "Spillback begins on link B0B1",
+       "link": "B0B1"
+      },
+      {
+       "kind": "queue_buildup",
+       "tSec": 255.0,
+       "label": "Network congested (15 % of approach storage halted)",
+       "level": "congested"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 875.0,
+       "label": "Recovery begins (queue below 80 % of peak)",
+       "level": "start"
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 960.0,
+       "label": "ML changed 2 signal decision(s)",
+       "count": 2
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 990.0,
+       "label": "ML changed 2 signal decision(s)",
+       "count": 2
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 1200.0,
+       "label": "ML changed 3 signal decision(s)",
+       "count": 3
+      },
+      {
+       "kind": "recovery",
+       "tSec": 1250.0,
+       "label": "Queue halved from peak",
+       "level": "half"
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 1350.0,
+       "label": "ML changed 3 signal decision(s)",
+       "count": 3
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "demo_incident",
+   "title": "Serious incident, near-gridlock",
+   "description": "Busy, roughly balanced rush-hour demand. At minute 2.5 a heavy vehicle breaks down in the left lane of the central link B0-B1, and at minute 4 a second one stops in the right lane: the link is fully blocked for about 3 minutes (kept under SUMO's 240 s deadlock limit), then half-blocked until minute 9. Queues spill back through B0 and the south corridor into several links at once. Breakdowns are real stopped vehicles inserted into the lane (within about 30 s of schedule).",
+   "kind": "incident",
+   "tier": "gridlock",
+   "lab": {
+    "scenario": "demo_incident",
+    "seed": 4006,
+    "intensity": 1.0,
+    "horizonS": 900.0,
+    "drainS": 600.0,
+    "intensityRange": [
+     0.5,
+     1.4
+    ],
+    "defaultComparison": {
+     "left": "queue_heuristic",
+     "right": "ml_forecast"
+    },
+    "pairRequest": {
+     "left": "queue_heuristic",
+     "right": "ml_forecast",
+     "scenario": "demo_incident",
+     "seed": 4006,
+     "intensity": 1.0
+    },
+    "liveStart": {
+     "cmd": "start",
+     "scenario": "demo_incident",
+     "controller": "queue_heuristic",
+     "seed": 4006,
+     "intensity": 1.0,
+     "speed": 4
+    },
+    "replayId": "queue_heuristic__ml_forecast__demo_incident__4006__1"
+   },
+   "seeds": {
+    "illustrative": 4006,
+    "benchmark": [
+     4001,
+     4002,
+     4003,
+     4004,
+     4005,
+     4006,
+     4007,
+     4008,
+     4009,
+     4010
+    ],
+    "design": [
+     9001,
+     9002,
+     9003
+    ],
+    "illustrativeRule": "benchmark seed with median scheduled vehicle count (demand only; outcome-blind)"
+   },
+   "demand": {
+    "flows": [
+     {
+      "entry": "left0A0",
+      "vphAtPeakMultiplier1": 714,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.8
+       ],
+       [
+        120,
+        1.0
+       ],
+       [
+        520,
+        1.0
+       ],
+       [
+        680,
+        0.5
+       ],
+       [
+        900,
+        0.25
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "left1A1",
+      "vphAtPeakMultiplier1": 714,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.8
+       ],
+       [
+        120,
+        1.0
+       ],
+       [
+        520,
+        1.0
+       ],
+       [
+        680,
+        0.5
+       ],
+       [
+        900,
+        0.25
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "right0B0",
+      "vphAtPeakMultiplier1": 714,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.8
+       ],
+       [
+        120,
+        1.0
+       ],
+       [
+        520,
+        1.0
+       ],
+       [
+        680,
+        0.5
+       ],
+       [
+        900,
+        0.25
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "right1B1",
+      "vphAtPeakMultiplier1": 714,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.8
+       ],
+       [
+        120,
+        1.0
+       ],
+       [
+        520,
+        1.0
+       ],
+       [
+        680,
+        0.5
+       ],
+       [
+        900,
+        0.25
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "bottom0A0",
+      "vphAtPeakMultiplier1": 714,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.8
+       ],
+       [
+        120,
+        1.0
+       ],
+       [
+        520,
+        1.0
+       ],
+       [
+        680,
+        0.5
+       ],
+       [
+        900,
+        0.25
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "bottom1B0",
+      "vphAtPeakMultiplier1": 714,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.8
+       ],
+       [
+        120,
+        1.0
+       ],
+       [
+        520,
+        1.0
+       ],
+       [
+        680,
+        0.5
+       ],
+       [
+        900,
+        0.25
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "top0A1",
+      "vphAtPeakMultiplier1": 714,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.8
+       ],
+       [
+        120,
+        1.0
+       ],
+       [
+        520,
+        1.0
+       ],
+       [
+        680,
+        0.5
+       ],
+       [
+        900,
+        0.25
+       ]
+      ],
+      "note": ""
+     },
+     {
+      "entry": "top1B1",
+      "vphAtPeakMultiplier1": 714,
+      "toExits": "uniform",
+      "profile": [
+       [
+        0,
+        0.8
+       ],
+       [
+        120,
+        1.0
+       ],
+       [
+        520,
+        1.0
+       ],
+       [
+        680,
+        0.5
+       ],
+       [
+        900,
+        0.25
+       ]
+      ],
+      "note": ""
+     }
+    ],
+    "incidents": [
+     {
+      "edge": "B0B1",
+      "lane": 1,
+      "t_s": 150,
+      "duration_s": 390,
+      "pos_m": 70,
+      "label": "left-lane breakdown"
+     },
+     {
+      "edge": "B0B1",
+      "lane": 0,
+      "t_s": 240,
+      "duration_s": 180,
+      "pos_m": 70,
+      "label": "right-lane breakdown"
+     }
+    ],
+    "entries": [
+     "left0A0",
+     "left1A1",
+     "right0B0",
+     "right1B1",
+     "bottom0A0",
+     "bottom1B0",
+     "top0A1",
+     "top1B1"
+    ],
+    "exits": [
+     "A0left0",
+     "A1left1",
+     "B0right0",
+     "B1right1",
+     "A0bottom0",
+     "B0bottom1",
+     "A1top0",
+     "B1top1"
+    ],
+    "vehiclesScheduled": 1171,
+    "vehiclesPerSeed": {
+     "mean": 1137.7,
+     "min": 966,
+     "max": 1291
+    },
+    "demandSha256": "6da37e8de66c8b79",
+    "matchedAcrossControllers": true,
+    "peakDemandVph": 5712.0
+   },
+   "expectedBehavior": [
+    "Ordinary congestion for the first 2.5 minutes, then queues grow fast once the central link is blocked",
+    "Spillback in about four or five links at once and near-standstill traffic for minutes (the worst of the three scenarios)",
+    "Recovery only after both breakdowns clear and demand eases; some vehicles are still queued at minute 25 in a fraction of runs",
+    "SUMO may rescue a few vehicles from real deadlocks (teleports): they are counted and reported, never hidden"
+   ],
+   "phases": [
+    {
+     "id": "buildup",
+     "fromS": 0,
+     "toS": 150,
+     "what": "heavy demand, ordinary congestion"
+    },
+    {
+     "id": "incident",
+     "fromS": 150,
+     "toS": 560,
+     "what": "left lane blocked from 2.5 min, fully blocked 4.2-7.0 min, left lane still blocked to 9 min"
+    },
+    {
+     "id": "recovery",
+     "fromS": 560,
+     "toS": 1500,
+     "what": "lanes reopened; demand easing; queues discharge"
+    }
+   ],
+   "benchmark": {
+    "kind": "multi-seed, paired, frozen protocol (conclusions)",
+    "seeds": [
+     4001,
+     4002,
+     4003,
+     4004,
+     4005,
+     4006,
+     4007,
+     4008,
+     4009,
+     4010
+    ],
+    "byController": {
+     "fixed_time": {
+      "mean_wait_s": {
+       "mean": 193.59,
+       "sd": 32.12,
+       "min": 140.1,
+       "max": 228.8,
+       "median": 206.05
+      },
+      "p95_travel_s": {
+       "mean": 827.77,
+       "sd": 100.56,
+       "min": 648.6,
+       "max": 960.8,
+       "median": 857.05
+      },
+      "throughput_vph": {
+       "mean": 2997.2,
+       "sd": 170.51,
+       "min": 2644.0,
+       "max": 3268.0,
+       "median": 2996.0
+      },
+      "queue_peak_veh": {
+       "mean": 303.4,
+       "sd": 53.9,
+       "min": 218.0,
+       "max": 357.0,
+       "median": 331.0
+      },
+      "spillback_pct": {
+       "mean": 12.61,
+       "sd": 5.73,
+       "min": 5.83,
+       "max": 25.1,
+       "median": 12.48
+      },
+      "spilled_links_peak": {
+       "mean": 4.3,
+       "sd": 0.82,
+       "min": 3.0,
+       "max": 6.0,
+       "median": 4.0
+      },
+      "near_standstill_seconds": {
+       "mean": 275.5,
+       "sd": 205.64,
+       "min": 75.0,
+       "max": 775.0,
+       "median": 235.0
+      },
+      "t_cleared_s": {
+       "mean": 1189.5,
+       "sd": 150.97,
+       "min": 965.0,
+       "max": 1500.0,
+       "median": 1207.5
+      },
+      "teleports": {
+       "mean": 2.5,
+       "sd": 3.6,
+       "min": 0.0,
+       "max": 10.0,
+       "median": 1.0
+      },
+      "collisions": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      },
+      "completed_fraction": {
+       "mean": 0.96,
+       "sd": 0.06,
+       "min": 0.8,
+       "max": 1.0,
+       "median": 0.97
+      },
+      "never_inserted": {
+       "mean": 10.8,
+       "sd": 24.72,
+       "min": 0.0,
+       "max": 79.0,
+       "median": 0.0
+      }
+     },
+     "queue_heuristic": {
+      "mean_wait_s": {
+       "mean": 227.49,
+       "sd": 37.36,
+       "min": 156.0,
+       "max": 280.3,
+       "median": 230.65
+      },
+      "p95_travel_s": {
+       "mean": 889.27,
+       "sd": 77.03,
+       "min": 728.1,
+       "max": 982.8,
+       "median": 911.15
+      },
+      "throughput_vph": {
+       "mean": 2748.4,
+       "sd": 183.08,
+       "min": 2496.0,
+       "max": 3020.0,
+       "median": 2806.0
+      },
+      "queue_peak_veh": {
+       "mean": 332.7,
+       "sd": 61.52,
+       "min": 216.0,
+       "max": 398.0,
+       "median": 337.0
+      },
+      "spillback_pct": {
+       "mean": 17.14,
+       "sd": 7.65,
+       "min": 6.65,
+       "max": 34.19,
+       "median": 16.32
+      },
+      "spilled_links_peak": {
+       "mean": 4.7,
+       "sd": 0.82,
+       "min": 4.0,
+       "max": 6.0,
+       "median": 4.5
+      },
+      "near_standstill_seconds": {
+       "mean": 375.0,
+       "sd": 278.28,
+       "min": 65.0,
+       "max": 985.0,
+       "median": 310.0
+      },
+      "t_cleared_s": {
+       "mean": 1271.0,
+       "sd": 163.97,
+       "min": 1035.0,
+       "max": 1500.0,
+       "median": 1255.0
+      },
+      "teleports": {
+       "mean": 6.8,
+       "sd": 5.63,
+       "min": 0.0,
+       "max": 16.0,
+       "median": 5.5
+      },
+      "collisions": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      },
+      "completed_fraction": {
+       "mean": 0.94,
+       "sd": 0.08,
+       "min": 0.73,
+       "max": 1.0,
+       "median": 0.97
+      },
+      "never_inserted": {
+       "mean": 11.5,
+       "sd": 33.0,
+       "min": 0.0,
+       "max": 105.0,
+       "median": 0.0
+      }
+     },
+     "ml_forecast": {
+      "mean_wait_s": {
+       "mean": 209.99,
+       "sd": 38.47,
+       "min": 144.5,
+       "max": 246.8,
+       "median": 217.9
+      },
+      "p95_travel_s": {
+       "mean": 869.54,
+       "sd": 80.52,
+       "min": 725.7,
+       "max": 987.0,
+       "median": 864.55
+      },
+      "throughput_vph": {
+       "mean": 2796.0,
+       "sd": 121.52,
+       "min": 2584.0,
+       "max": 3012.0,
+       "median": 2810.0
+      },
+      "queue_peak_veh": {
+       "mean": 321.2,
+       "sd": 66.88,
+       "min": 227.0,
+       "max": 430.0,
+       "median": 327.5
+      },
+      "spillback_pct": {
+       "mean": 18.41,
+       "sd": 9.92,
+       "min": 7.9,
+       "max": 37.95,
+       "median": 15.39
+      },
+      "spilled_links_peak": {
+       "mean": 4.9,
+       "sd": 0.99,
+       "min": 4.0,
+       "max": 7.0,
+       "median": 5.0
+      },
+      "near_standstill_seconds": {
+       "mean": 410.5,
+       "sd": 316.84,
+       "min": 65.0,
+       "max": 975.0,
+       "median": 372.5
+      },
+      "t_cleared_s": {
+       "mean": 1269.0,
+       "sd": 155.92,
+       "min": 1030.0,
+       "max": 1500.0,
+       "median": 1287.5
+      },
+      "teleports": {
+       "mean": 10.0,
+       "sd": 18.6,
+       "min": 0.0,
+       "max": 61.0,
+       "median": 3.5
+      },
+      "collisions": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "min": 0.0,
+       "max": 0.0,
+       "median": 0.0
+      },
+      "completed_fraction": {
+       "mean": 0.91,
+       "sd": 0.14,
+       "min": 0.59,
+       "max": 1.0,
+       "median": 0.95
+      },
+      "never_inserted": {
+       "mean": 26.6,
+       "sd": 57.21,
+       "min": 0.0,
+       "max": 157.0,
+       "median": 0.0
+      }
+     }
+    },
+    "mlVsHeuristic": {
+     "mean_wait_s": {
+      "left_mean": 227.49,
+      "right_mean": 209.99,
+      "mean_diff": -17.5,
+      "pct": -7.69,
+      "ci95": [
+       -45.97,
+       5.213
+      ],
+      "clear": false,
+      "better": 6,
+      "worse": 4,
+      "pairs": 10
+     },
+     "p95_travel_s": {
+      "left_mean": 889.27,
+      "right_mean": 869.54,
+      "mean_diff": -19.73,
+      "pct": -2.22,
+      "ci95": [
+       -56.879,
+       16.272
+      ],
+      "clear": false,
+      "better": 6,
+      "worse": 4,
+      "pairs": 10
+     },
+     "throughput_vph": {
+      "left_mean": 2748.4,
+      "right_mean": 2796.0,
+      "mean_diff": 47.6,
+      "pct": 1.73,
+      "ci95": [
+       -69.21,
+       170.81
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 5,
+      "pairs": 10
+     },
+     "queue_peak_veh": {
+      "left_mean": 332.7,
+      "right_mean": 321.2,
+      "mean_diff": -11.5,
+      "pct": -3.46,
+      "ci95": [
+       -34.505,
+       9.803
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 4,
+      "pairs": 10
+     },
+     "spillback_pct": {
+      "left_mean": 17.145,
+      "right_mean": 18.409,
+      "mean_diff": 1.264,
+      "pct": 7.37,
+      "ci95": [
+       -1.614,
+       5.208
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 5,
+      "pairs": 10
+     },
+     "spilled_links_peak": {
+      "left_mean": 4.7,
+      "right_mean": 4.9,
+      "mean_diff": 0.2,
+      "pct": 4.26,
+      "ci95": [
+       -0.3,
+       0.7
+      ],
+      "clear": false,
+      "better": 2,
+      "worse": 3,
+      "pairs": 10
+     },
+     "near_standstill_seconds": {
+      "left_mean": 375.0,
+      "right_mean": 410.5,
+      "mean_diff": 35.5,
+      "pct": 9.47,
+      "ci95": [
+       -58.0,
+       141.0
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 5,
+      "pairs": 10
+     },
+     "t_cleared_s": {
+      "left_mean": 1271.0,
+      "right_mean": 1269.0,
+      "mean_diff": -2.0,
+      "pct": -0.16,
+      "ci95": [
+       -43.0,
+       43.0
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 3,
+      "pairs": 10
+     },
+     "teleports": {
+      "left_mean": 6.8,
+      "right_mean": 10.0,
+      "mean_diff": 3.2,
+      "pct": 47.06,
+      "ci95": [
+       -4.1,
+       14.7
+      ],
+      "clear": false,
+      "better": 4,
+      "worse": 3,
+      "pairs": 10
+     },
+     "collisions": {
+      "left_mean": 0.0,
+      "right_mean": 0.0,
+      "mean_diff": 0.0,
+      "pct": null,
+      "ci95": [
+       0.0,
+       0.0
+      ],
+      "clear": false,
+      "better": 0,
+      "worse": 0,
+      "pairs": 10
+     },
+     "completed_fraction": {
+      "left_mean": 0.936,
+      "right_mean": 0.91,
+      "mean_diff": -0.027,
+      "pct": -2.84,
+      "ci95": [
+       -0.087,
+       0.012
+      ],
+      "clear": false,
+      "better": 5,
+      "worse": 3,
+      "pairs": 10
+     },
+     "never_inserted": {
+      "left_mean": 11.5,
+      "right_mean": 26.6,
+      "mean_diff": 15.1,
+      "pct": 131.3,
+      "ci95": [
+       0.0,
+       44.5
+      ],
+      "clear": false,
+      "better": 0,
+      "worse": 2,
+      "pairs": 10
+     }
+    },
+    "heuristicVsFixed": {
+     "mean_wait_s": {
+      "left_mean": 193.59,
+      "right_mean": 227.49,
+      "mean_diff": 33.9,
+      "pct": 17.51,
+      "ci95": [
+       20.64,
+       48.842
+      ],
+      "clear": true,
+      "better": 0,
+      "worse": 10,
+      "pairs": 10
+     },
+     "p95_travel_s": {
+      "left_mean": 827.77,
+      "right_mean": 889.27,
+      "mean_diff": 61.5,
+      "pct": 7.43,
+      "ci95": [
+       24.409,
+       99.462
+      ],
+      "clear": true,
+      "better": 2,
+      "worse": 8,
+      "pairs": 10
+     },
+     "throughput_vph": {
+      "left_mean": 2997.2,
+      "right_mean": 2748.4,
+      "mean_diff": -248.8,
+      "pct": -8.3,
+      "ci95": [
+       -379.22,
+       -106.38
+      ],
+      "clear": true,
+      "better": 1,
+      "worse": 9,
+      "pairs": 10
+     },
+     "queue_peak_veh": {
+      "left_mean": 303.4,
+      "right_mean": 332.7,
+      "mean_diff": 29.3,
+      "pct": 9.66,
+      "ci95": [
+       -5.2,
+       65.7
+      ],
+      "clear": false,
+      "better": 4,
+      "worse": 6,
+      "pairs": 10
+     },
+     "spillback_pct": {
+      "left_mean": 12.608,
+      "right_mean": 17.145,
+      "mean_diff": 4.537,
+      "pct": 35.99,
+      "ci95": [
+       2.022,
+       6.666
+      ],
+      "clear": true,
+      "better": 1,
+      "worse": 9,
+      "pairs": 10
+     },
+     "spilled_links_peak": {
+      "left_mean": 4.3,
+      "right_mean": 4.7,
+      "mean_diff": 0.4,
+      "pct": 9.3,
+      "ci95": [
+       -0.1,
+       0.9
+      ],
+      "clear": false,
+      "better": 1,
+      "worse": 4,
+      "pairs": 10
+     },
+     "near_standstill_seconds": {
+      "left_mean": 275.5,
+      "right_mean": 375.0,
+      "mean_diff": 99.5,
+      "pct": 36.12,
+      "ci95": [
+       -14.0,
+       198.5
+      ],
+      "clear": false,
+      "better": 3,
+      "worse": 7,
+      "pairs": 10
+     },
+     "t_cleared_s": {
+      "left_mean": 1189.5,
+      "right_mean": 1271.0,
+      "mean_diff": 81.5,
+      "pct": 6.85,
+      "ci95": [
+       26.5,
+       136.0
+      ],
+      "clear": true,
+      "better": 2,
+      "worse": 7,
+      "pairs": 10
+     },
+     "teleports": {
+      "left_mean": 2.5,
+      "right_mean": 6.8,
+      "mean_diff": 4.3,
+      "pct": 172.0,
+      "ci95": [
+       0.8,
+       7.8
+      ],
+      "clear": true,
+      "better": 2,
+      "worse": 7,
+      "pairs": 10
+     },
+     "collisions": {
+      "left_mean": 0.0,
+      "right_mean": 0.0,
+      "mean_diff": 0.0,
+      "pct": null,
+      "ci95": [
+       0.0,
+       0.0
+      ],
+      "clear": false,
+      "better": 0,
+      "worse": 0,
+      "pairs": 10
+     },
+     "completed_fraction": {
+      "left_mean": 0.955,
+      "right_mean": 0.936,
+      "mean_diff": -0.019,
+      "pct": -1.97,
+      "ci95": [
+       -0.04,
+       0.003
+      ],
+      "clear": false,
+      "better": 3,
+      "worse": 6,
+      "pairs": 10
+     },
+     "never_inserted": {
+      "left_mean": 10.8,
+      "right_mean": 11.5,
+      "mean_diff": 0.7,
+      "pct": 6.48,
+      "ci95": [
+       -3.91,
+       7.2
+      ],
+      "clear": false,
+      "better": 2,
+      "worse": 1,
+      "pairs": 10
+     }
+    },
+    "forecast": {
+     "truePositive": 1073,
+     "falsePositive": 57,
+     "falseNegative": 5152,
+     "precision": 0.95,
+     "recall": 0.172,
+     "median_lead_s": 15.0,
+     "runs": 10
+    },
+    "clarity": {
+     "checks": {
+      "visible_buildup": true,
+      "localised_origin": false,
+      "recovers_in_run": false,
+      "clean_run": false,
+      "heavy_enough": true
+     },
+     "score": 2,
+     "median_buildup_to_peak_s": 570.0,
+     "most_common_first_full_approach": "A1:E",
+     "share_with_that_origin": 0.35
+    },
+    "heuristicMeanWaitRangeS": [
+     156.0,
+     280.3
+    ]
+   },
+   "illustrative": {
+    "kind": "single seed, for watching only; not a general result",
+    "seed": 4006,
+    "byController": {
+     "fixed_time": {
+      "mean_wait_s": 198.7,
+      "p95_travel_s": 874.3,
+      "throughput_vph": 3156.0,
+      "queue_peak_veh": 293.0,
+      "spillback_pct": 9.72,
+      "spilled_links_peak": 4,
+      "near_standstill_seconds": 160.0,
+      "t_cleared_s": 1165.0,
+      "teleports": 1,
+      "collisions": 0,
+      "completed_fraction": 0.9727,
+      "never_inserted": 0
+     },
+     "queue_heuristic": {
+      "mean_wait_s": 214.2,
+      "p95_travel_s": 858.7,
+      "throughput_vph": 3020.0,
+      "queue_peak_veh": 328.0,
+      "spillback_pct": 13.18,
+      "spilled_links_peak": 4,
+      "near_standstill_seconds": 240.0,
+      "t_cleared_s": 1240.0,
+      "teleports": 5,
+      "collisions": 0,
+      "completed_fraction": 0.9761,
+      "never_inserted": 0
+     },
+     "ml_forecast": {
+      "mean_wait_s": 244.2,
+      "p95_travel_s": 900.4,
+      "throughput_vph": 2816.0,
+      "queue_peak_veh": 357.0,
+      "spillback_pct": 17.23,
+      "spilled_links_peak": 5,
+      "near_standstill_seconds": 420.0,
+      "t_cleared_s": 1320.0,
+      "teleports": 5,
+      "collisions": 0,
+      "completed_fraction": 0.9428,
+      "never_inserted": 0
+     }
+    },
+    "waitPercentileAmongSeedsHeuristic": 30.0,
+    "incident": [
+     {
+      "vehicle": "v235",
+      "stoppedFrom_s": 162.0,
+      "stoppedTo_s": 551.0,
+      "scheduled_s": 150
+     },
+     {
+      "vehicle": "v382",
+      "stoppedFrom_s": 250.0,
+      "stoppedTo_s": 429.0,
+      "scheduled_s": 240
+     }
+    ],
+    "demand": {
+     "scheduled": 1171,
+     "inserted": 1171,
+     "completed": 1143,
+     "onRoadAtEnd": 28,
+     "neverInserted": 0,
+     "teleportedVehicles": 5,
+     "incidentVehicles": 2,
+     "unaccounted": 0,
+     "completedFraction": 0.9761
+    }
+   },
+   "markers": {
+    "rules": {
+     "queue_buildup": "first 10 s with halted vehicles on the 16 approaches >= 5 % of their storage, held for 3 consecutive samples (15 s)",
+     "congested": "first time halted vehicles reach 15 % of approach storage (3 consecutive samples)",
+     "spillback": "first sample where an internal link has halted vehicles filling >= 50 % of its storage (same rule as the lab's spillback %)",
+     "predicted_spillback": "first forecast (30 s ahead) of an approach queue >= 50 % of its storage while its current queue is still below 50 %; 'verified' when that approach reaches 50 % within 60 s (the forecaster's own spillback definition)",
+     "controller_intervention": "decisions where the ML-forecast controller differs from the plain heuristic (clustered into 30 s bins)",
+     "recovery_start": "first time after the queue peak that halted vehicles stay below 80 % of the peak for 30 s",
+     "recovery_half": "first time after the peak that halted vehicles stay below 50 % of the peak for 30 s",
+     "cleared": "first time after the peak that halted vehicles stay below 10 % of approach storage for 30 s",
+     "near_standstill": "network mean speed below 1.5 m/s with >= 50 % of vehicles halted, held for 30 s"
+    },
+    "seed": 4006,
+    "illustrative": {
+     "queue_heuristic": [
+      {
+       "kind": "queue_buildup",
+       "tSec": 125.0,
+       "label": "Queues start to build"
+      },
+      {
+       "kind": "incident",
+       "tSec": 162.0,
+       "label": "Vehicle breaks down and blocks a lane",
+       "vehicle": "v235"
+      },
+      {
+       "kind": "incident",
+       "tSec": 250.0,
+       "label": "Vehicle breaks down and blocks a lane",
+       "vehicle": "v382"
+      },
+      {
+       "kind": "spillback",
+       "tSec": 270.0,
+       "label": "Spillback begins on link A1A0",
+       "link": "A1A0"
+      },
+      {
+       "kind": "queue_buildup",
+       "tSec": 285.0,
+       "label": "Network congested (15 % of approach storage halted)",
+       "level": "congested"
+      },
+      {
+       "kind": "predicted_spillback",
+       "tSec": 355.0,
+       "label": "Forecast: A1:S queue will fill to 24 of 48 within 30 s",
+       "approach": "A1:S",
+       "verified": true,
+       "leadS": 5.0
+      },
+      {
+       "kind": "incident",
+       "tSec": 430.0,
+       "label": "Breakdown clears",
+       "vehicle": "v382"
+      },
+      {
+       "kind": "incident",
+       "tSec": 552.0,
+       "label": "Breakdown clears",
+       "vehicle": "v235"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 850.0,
+       "label": "Recovery begins (queue below 80 % of peak)",
+       "level": "start"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 990.0,
+       "label": "Queue halved from peak",
+       "level": "half"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 1240.0,
+       "label": "Queues cleared (below 10 % of storage)",
+       "level": "cleared"
+      }
+     ],
+     "ml_forecast": [
+      {
+       "kind": "controller_intervention",
+       "tSec": 30.0,
+       "label": "ML changed 2 signal decision(s)",
+       "count": 2
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 60.0,
+       "label": "ML changed 2 signal decision(s)",
+       "count": 2
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 90.0,
+       "label": "ML changed 1 signal decision(s)",
+       "count": 1
+      },
+      {
+       "kind": "queue_buildup",
+       "tSec": 95.0,
+       "label": "Queues start to build"
+      },
+      {
+       "kind": "incident",
+       "tSec": 164.0,
+       "label": "Vehicle breaks down and blocks a lane",
+       "vehicle": "v235"
+      },
+      {
+       "kind": "incident",
+       "tSec": 251.0,
+       "label": "Vehicle breaks down and blocks a lane",
+       "vehicle": "v382"
+      },
+      {
+       "kind": "queue_buildup",
+       "tSec": 275.0,
+       "label": "Network congested (15 % of approach storage halted)",
+       "level": "congested"
+      },
+      {
+       "kind": "predicted_spillback",
+       "tSec": 290.0,
+       "label": "Forecast: A1:S queue will fill to 25 of 48 within 30 s",
+       "approach": "A1:S",
+       "verified": true,
+       "leadS": 25.0
+      },
+      {
+       "kind": "spillback",
+       "tSec": 315.0,
+       "label": "Spillback begins on link A0A1",
+       "link": "A0A1"
+      },
+      {
+       "kind": "incident",
+       "tSec": 431.0,
+       "label": "Breakdown clears",
+       "vehicle": "v382"
+      },
+      {
+       "kind": "incident",
+       "tSec": 554.0,
+       "label": "Breakdown clears",
+       "vehicle": "v235"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 850.0,
+       "label": "Recovery begins (queue below 80 % of peak)",
+       "level": "start"
+      },
+      {
+       "kind": "recovery",
+       "tSec": 1110.0,
+       "label": "Queue halved from peak",
+       "level": "half"
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 1140.0,
+       "label": "ML changed 2 signal decision(s)",
+       "count": 2
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 1200.0,
+       "label": "ML changed 4 signal decision(s)",
+       "count": 4
+      },
+      {
+       "kind": "controller_intervention",
+       "tSec": 1230.0,
+       "label": "ML changed 3 signal decision(s)",
+       "count": 3
+      },
+      {
+       "kind": "recovery",
+       "tSec": 1320.0,
+       "label": "Queues cleared (below 10 % of storage)",
+       "level": "cleared"
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,393 @@
+{
+ "machine": {
+  "platform": "Windows-11-10.0.26200-SP0",
+  "logical_cores": 8,
+  "ram_gb": 34.3
+ },
+ "method": "one episode per fresh process, run alone, frames recorded; seed = illustrative demo seed",
+ "git": "8a8d2a0",
+ "generated_at": "2026-10-17T23:33:53",
+ "budget": {
+  "per_simulated_second_ms": 1000,
+  "decision_interval_ms": 5000,
+  "step_budget_ms_for_0.25s_live_tick": 250
+ },
+ "episodes": [
+  {
+   "scenario": "demo_rush_hour",
+   "controller": "queue_heuristic",
+   "seed": 4003,
+   "sim_seconds": 1475.0,
+   "wall_s": 22.24,
+   "cpu_s": 21.0,
+   "cpu_cores_avg": 0.94,
+   "peak_rss_mb": 224.1,
+   "speed_x_realtime": 66.3,
+   "sumo_step": {
+    "mean_ms": 4.721,
+    "p50_ms": 4.759,
+    "p95_ms": 8.237,
+    "p99_ms": 11.531,
+    "max_ms": 41.503,
+    "n": 1475
+   },
+   "measure_and_frame": {
+    "mean_ms": 4.837,
+    "p50_ms": 4.781,
+    "p95_ms": 8.216,
+    "p99_ms": 9.924,
+    "max_ms": 117.662,
+    "n": 1475
+   },
+   "per_simulated_second_ms": {
+    "mean": 9.558,
+    "p95": 16.432,
+    "p99": 20.022,
+    "max": 119.855
+   },
+   "observation": {
+    "mean_ms": 0.818,
+    "p50_ms": 0.77,
+    "p95_ms": 1.069,
+    "p99_ms": 1.473,
+    "max_ms": 2.895,
+    "n": 295
+   },
+   "inference": {
+    "mean_ms": 9.135,
+    "p50_ms": 8.946,
+    "p95_ms": 11.045,
+    "p99_ms": 12.949,
+    "max_ms": 13.543,
+    "n": 295
+   },
+   "decision": {
+    "mean_ms": 0.28,
+    "p50_ms": 0.265,
+    "p95_ms": 0.573,
+    "p99_ms": 0.711,
+    "max_ms": 2.362,
+    "n": 295
+   },
+   "frames": 1475,
+   "vehicles_peak": 305,
+   "teleports": 4,
+   "collisions": 0
+  },
+  {
+   "scenario": "demo_rush_hour",
+   "controller": "ml_forecast",
+   "seed": 4003,
+   "sim_seconds": 1470.0,
+   "wall_s": 23.28,
+   "cpu_s": 21.23,
+   "cpu_cores_avg": 0.91,
+   "peak_rss_mb": 221.5,
+   "speed_x_realtime": 63.1,
+   "sumo_step": {
+    "mean_ms": 4.655,
+    "p50_ms": 4.949,
+    "p95_ms": 8.117,
+    "p99_ms": 10.163,
+    "max_ms": 47.652,
+    "n": 1470
+   },
+   "measure_and_frame": {
+    "mean_ms": 4.757,
+    "p50_ms": 5.004,
+    "p95_ms": 8.275,
+    "p99_ms": 11.428,
+    "max_ms": 94.721,
+    "n": 1470
+   },
+   "per_simulated_second_ms": {
+    "mean": 9.412,
+    "p95": 16.409,
+    "p99": 19.807,
+    "max": 101.464
+   },
+   "observation": {
+    "mean_ms": 0.87,
+    "p50_ms": 0.8,
+    "p95_ms": 1.13,
+    "p99_ms": 1.782,
+    "max_ms": 5.387,
+    "n": 294
+   },
+   "inference": {
+    "mean_ms": 9.325,
+    "p50_ms": 9.172,
+    "p95_ms": 10.893,
+    "p99_ms": 11.95,
+    "max_ms": 13.081,
+    "n": 294
+   },
+   "decision": {
+    "mean_ms": 0.599,
+    "p50_ms": 0.554,
+    "p95_ms": 1.229,
+    "p99_ms": 1.803,
+    "max_ms": 4.436,
+    "n": 294
+   },
+   "frames": 1470,
+   "vehicles_peak": 283,
+   "teleports": 1,
+   "collisions": 0
+  },
+  {
+   "scenario": "demo_spillback",
+   "controller": "queue_heuristic",
+   "seed": 4003,
+   "sim_seconds": 1500.0,
+   "wall_s": 34.85,
+   "cpu_s": 33.23,
+   "cpu_cores_avg": 0.95,
+   "peak_rss_mb": 269.0,
+   "speed_x_realtime": 43.0,
+   "sumo_step": {
+    "mean_ms": 8.255,
+    "p50_ms": 8.541,
+    "p95_ms": 12.21,
+    "p99_ms": 15.783,
+    "max_ms": 68.86,
+    "n": 1500
+   },
+   "measure_and_frame": {
+    "mean_ms": 8.777,
+    "p50_ms": 8.938,
+    "p95_ms": 12.7,
+    "p99_ms": 15.263,
+    "max_ms": 156.73,
+    "n": 1500
+   },
+   "per_simulated_second_ms": {
+    "mean": 17.032,
+    "p95": 24.712,
+    "p99": 30.544,
+    "max": 161.366
+   },
+   "observation": {
+    "mean_ms": 0.904,
+    "p50_ms": 0.839,
+    "p95_ms": 1.082,
+    "p99_ms": 1.342,
+    "max_ms": 9.941,
+    "n": 300
+   },
+   "inference": {
+    "mean_ms": 9.715,
+    "p50_ms": 9.498,
+    "p95_ms": 11.566,
+    "p99_ms": 13.194,
+    "max_ms": 15.974,
+    "n": 300
+   },
+   "decision": {
+    "mean_ms": 0.33,
+    "p50_ms": 0.288,
+    "p95_ms": 0.684,
+    "p99_ms": 1.108,
+    "max_ms": 2.627,
+    "n": 300
+   },
+   "frames": 1500,
+   "vehicles_peak": 426,
+   "teleports": 2,
+   "collisions": 0
+  },
+  {
+   "scenario": "demo_spillback",
+   "controller": "ml_forecast",
+   "seed": 4003,
+   "sim_seconds": 1500.0,
+   "wall_s": 35.63,
+   "cpu_s": 34.06,
+   "cpu_cores_avg": 0.96,
+   "peak_rss_mb": 271.4,
+   "speed_x_realtime": 42.1,
+   "sumo_step": {
+    "mean_ms": 8.578,
+    "p50_ms": 8.654,
+    "p95_ms": 12.74,
+    "p99_ms": 19.138,
+    "max_ms": 98.67,
+    "n": 1500
+   },
+   "measure_and_frame": {
+    "mean_ms": 9.048,
+    "p50_ms": 8.94,
+    "p95_ms": 13.188,
+    "p99_ms": 15.77,
+    "max_ms": 162.94,
+    "n": 1500
+   },
+   "per_simulated_second_ms": {
+    "mean": 17.626,
+    "p95": 25.854,
+    "p99": 34.191,
+    "max": 169.533
+   },
+   "observation": {
+    "mean_ms": 0.916,
+    "p50_ms": 0.834,
+    "p95_ms": 1.229,
+    "p99_ms": 2.742,
+    "max_ms": 3.718,
+    "n": 300
+   },
+   "inference": {
+    "mean_ms": 9.897,
+    "p50_ms": 9.536,
+    "p95_ms": 12.177,
+    "p99_ms": 15.65,
+    "max_ms": 18.764,
+    "n": 300
+   },
+   "decision": {
+    "mean_ms": 0.631,
+    "p50_ms": 0.576,
+    "p95_ms": 1.402,
+    "p99_ms": 1.672,
+    "max_ms": 2.117,
+    "n": 300
+   },
+   "frames": 1500,
+   "vehicles_peak": 412,
+   "teleports": 2,
+   "collisions": 0
+  },
+  {
+   "scenario": "demo_incident",
+   "controller": "queue_heuristic",
+   "seed": 4006,
+   "sim_seconds": 1500.0,
+   "wall_s": 31.68,
+   "cpu_s": 29.97,
+   "cpu_cores_avg": 0.95,
+   "peak_rss_mb": 255.5,
+   "speed_x_realtime": 47.3,
+   "sumo_step": {
+    "mean_ms": 7.387,
+    "p50_ms": 7.134,
+    "p95_ms": 12.509,
+    "p99_ms": 14.922,
+    "max_ms": 69.273,
+    "n": 1500
+   },
+   "measure_and_frame": {
+    "mean_ms": 7.776,
+    "p50_ms": 7.31,
+    "p95_ms": 13.132,
+    "p99_ms": 15.62,
+    "max_ms": 141.782,
+    "n": 1500
+   },
+   "per_simulated_second_ms": {
+    "mean": 15.163,
+    "p95": 25.443,
+    "p99": 29.421,
+    "max": 152.303
+   },
+   "observation": {
+    "mean_ms": 0.929,
+    "p50_ms": 0.835,
+    "p95_ms": 1.148,
+    "p99_ms": 2.964,
+    "max_ms": 5.147,
+    "n": 300
+   },
+   "inference": {
+    "mean_ms": 9.84,
+    "p50_ms": 9.548,
+    "p95_ms": 11.881,
+    "p99_ms": 15.104,
+    "max_ms": 17.262,
+    "n": 300
+   },
+   "decision": {
+    "mean_ms": 0.307,
+    "p50_ms": 0.278,
+    "p95_ms": 0.668,
+    "p99_ms": 0.912,
+    "max_ms": 1.499,
+    "n": 300
+   },
+   "frames": 1500,
+   "vehicles_peak": 405,
+   "teleports": 5,
+   "collisions": 0
+  },
+  {
+   "scenario": "demo_incident",
+   "controller": "ml_forecast",
+   "seed": 4006,
+   "sim_seconds": 1500.0,
+   "wall_s": 19.12,
+   "cpu_s": 18.89,
+   "cpu_cores_avg": 0.99,
+   "peak_rss_mb": 266.0,
+   "speed_x_realtime": 78.5,
+   "sumo_step": {
+    "mean_ms": 4.442,
+    "p50_ms": 4.286,
+    "p95_ms": 8.507,
+    "p99_ms": 10.509,
+    "max_ms": 44.723,
+    "n": 1500
+   },
+   "measure_and_frame": {
+    "mean_ms": 4.516,
+    "p50_ms": 4.217,
+    "p95_ms": 8.398,
+    "p99_ms": 10.862,
+    "max_ms": 111.092,
+    "n": 1500
+   },
+   "per_simulated_second_ms": {
+    "mean": 8.958,
+    "p95": 16.177,
+    "p99": 22.343,
+    "max": 113.269
+   },
+   "observation": {
+    "mean_ms": 0.519,
+    "p50_ms": 0.404,
+    "p95_ms": 0.878,
+    "p99_ms": 0.984,
+    "max_ms": 2.179,
+    "n": 300
+   },
+   "inference": {
+    "mean_ms": 5.343,
+    "p50_ms": 4.837,
+    "p95_ms": 7.693,
+    "p99_ms": 8.183,
+    "max_ms": 10.19,
+    "n": 300
+   },
+   "decision": {
+    "mean_ms": 0.388,
+    "p50_ms": 0.357,
+    "p95_ms": 0.926,
+    "p99_ms": 1.293,
+    "max_ms": 1.909,
+    "n": 300
+   },
+   "frames": 1500,
+   "vehicles_peak": 442,
+   "teleports": 5,
+   "collisions": 0
+  }
+ ],
+ "checks": {
+  "per_second_p99_under_250ms": true,
+  "decision_p99_under_5s": true
+ },
+ "summary": {
+  "max_peak_rss_mb": 271.4,
+  "max_cpu_cores_avg": 0.99,
+  "worst_p99_per_second_ms": 34.191,
+  "min_speed_x_realtime": 42.1
+ }
+}

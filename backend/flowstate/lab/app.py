@@ -93,6 +93,17 @@ def comparison_eval() -> dict[str, Any]:
     return {k: v for k, v in d.items() if k != "rows"}
 
 
+@app.get("/api/lab/demo-scenarios")
+def demo_scenarios() -> dict[str, Any]:
+    """The demo scenario package manifest (``flowstate.demo``): scenarios, seeds, expected behaviour, measured results, replay markers."""
+    from ..demo.manifest import load
+
+    d = load()
+    if d is None:
+        raise HTTPException(404, "demo scenario manifest not built yet: python -m flowstate.demo.cli manifest")
+    return d
+
+
 # ------------------------------------------------------------------------------------------------------------ replays
 @app.get("/api/lab/replays")
 def replays() -> dict[str, Any]:
