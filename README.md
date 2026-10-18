@@ -35,7 +35,8 @@ flowchart LR
    uses libsumo, SUMO's in-process binding, to observe every vehicle and to set signal states programmatically.
 3. **Reinforcement learning.** A PPO agent is trained with Stable-Baselines3 and a Gymnasium environment wrapped around SUMO. It
    learns signal policies from interaction, with congestion and delay measurements as the reward. Fixed-time and adaptive heuristic
-   controllers run alongside it as benchmarks, on exactly the same traffic.
+   controllers run alongside it as benchmarks, on exactly the same traffic. The PPO agent is trained but has not yet beaten the
+   adaptive heuristic, so the heuristic stays our verified controller.
 4. **Predictive machine learning.** Two gradient-boosted models, trained on 256 SUMO episodes (about 927,000 approach samples), take
    queue lengths, waiting times, signal states, downstream occupancy and recent history and predict how many vehicles will be
    halted on each approach 30 and 60 seconds ahead. On held-out seeds the 30 s model cuts prediction error by about 49 % against a
@@ -43,7 +44,8 @@ flowchart LR
 5. **Signal optimisation.** The controllers decide from live measurements and, in the forecast-assisted version, from the congestion
    forecast. Every request goes through **SafeSignal**, which always runs the full yellow and all-red, keeps a minimum green
    (14 s, including pedestrian clearance) and forces a change at the maximum green (60 s). A controller can ask for a switch;
-   it cannot make an unsafe one.
+   it cannot make an unsafe one. We are also testing stronger predictive optimisation strategies aimed at cutting real vehicle waiting
+   times further.
 6. **Gemini.** Google's Gemini API powers the plain-language layer: it explains congestion patterns, interprets results and helps
    plan experiments. It never touches the signals. Its answers are checked against the measured simulation numbers, and there
    is an offline fallback when no key is available.
