@@ -778,13 +778,13 @@ function HeadToHead({ d }: { d: DemandResults }) {
       <div className="flex min-w-0 flex-[999_1_540px] flex-col gap-4">
         <div className="flex flex-col gap-1">
           <H2>Every run, head to head</H2>
-          <Cap>Each dot is one seed run twice, once per controller. Below the diagonal, FlowState waited less.</Cap>
+          <Cap>Each run is a pair: orange is fixed-time, on the diagonal; blue is FlowState, directly above or below. Below the diagonal, FlowState waited less.</Cap>
         </div>
         <div className="overflow-x-auto">
-          <div className="relative" style={{ width: 520, height: 500 }}>
+          <div className="relative" style={{ width: 740, height: 500 }}>
             <svg width={520} height={500} role="img" aria-label={`Paired mean waits: FlowState waited less in ${wins} of ${pts.length} runs`} onMouseLeave={() => setHover(null)}>
               <text x={14} y={4 + S / 2} transform={`rotate(-90 14 ${4 + S / 2})`} textAnchor="middle" fontSize={12} fontWeight={500} fill="#46505f">
-                FlowState wait (s)
+                Mean wait (s)
               </text>
               <text x={60 + S / 2} y={488} textAnchor="middle" fontSize={12} fontWeight={500} fill="#46505f">
                 Fixed-time wait (s)
@@ -812,35 +812,54 @@ function HeadToHead({ d }: { d: DemandResults }) {
                 <text x={12} y={22} fontSize={12} fontWeight={600} fill="#46505f">
                   Fixed-time waited less
                 </text>
-                {pts.map((p, i) => {
-                  const win = p.y <= p.x
-                  const c = win ? COLOR[FS] : COLOR[BASE]
-                  const h = held.has(p.s)
-                  return (
-                    <g key={`${p.s}/${p.seed}`} onMouseEnter={() => setHover(i)} style={{ cursor: 'default' }}>
-                      <circle cx={px(p.x)} cy={S - px(p.y)} r={12} fill="transparent" />
-                      <circle cx={px(p.x)} cy={S - px(p.y)} r={5.5} fill={h ? '#fff' : c} stroke={h ? c : '#fff'} strokeWidth={h ? 2.5 : 2} />
-                      {hover === i && <circle cx={px(p.x)} cy={S - px(p.y)} r={9} fill="none" stroke="#0c1322" strokeWidth={2} />}
-                    </g>
-                  )
-                })}
+                {([BASE, FS] as const).map((c) =>
+                  pts.map((p, i) => {
+                    const h = held.has(p.s)
+                    const cy = S - px(c === BASE ? p.x : p.y)
+                    return (
+                      <g
+                        key={`${c}/${p.s}/${p.seed}`}
+                        onMouseEnter={() => setHover(i)}
+                        className="transition-opacity duration-150"
+                        style={{ cursor: 'default', opacity: hover != null && hover !== i ? 0.3 : 1 }}
+                      >
+                        <circle cx={px(p.x)} cy={cy} r={12} fill="transparent" />
+                        <circle cx={px(p.x)} cy={cy} r={5.5} fill={h ? '#fff' : COLOR[c]} stroke={h ? COLOR[c] : '#fff'} strokeWidth={h ? 2.5 : 2} />
+                      </g>
+                    )
+                  }),
+                )}
+                {hp && (
+                  <g pointerEvents="none">
+                    <line x1={px(hp.x)} x2={px(hp.x)} y1={S - px(hp.x)} y2={S - px(hp.y)} stroke="#0c1322" strokeWidth={1.5} strokeDasharray="3 3" />
+                    {([BASE, FS] as const).map((c) => {
+                      const cy = S - px(c === BASE ? hp.x : hp.y)
+                      return (
+                        <g key={c}>
+                          <circle cx={px(hp.x)} cy={cy} r={7} fill={held.has(hp.s) ? '#fff' : COLOR[c]} stroke="#0c1322" strokeWidth={2} />
+                          {held.has(hp.s) && <circle cx={px(hp.x)} cy={cy} r={3.5} fill={COLOR[c]} />}
+                        </g>
+                      )
+                    })}
+                  </g>
+                )}
               </g>
             </svg>
             {hp && (
               <div
-                className="tnum pointer-events-none absolute z-10 w-[200px] rounded-[10px] bg-ink px-3 py-2.5 text-[12px] leading-[1.5] text-white shadow-tip"
-                style={{ left: Math.min(60 + px(hp.x) + 16, 520 - 200), top: Math.max(0, 4 + S - px(hp.y) - 70) }}
+                className="tnum pointer-events-none absolute z-10 w-[200px] rounded-[10px] bg-ink/70 px-3 py-2.5 text-[12px] leading-[1.5] text-white shadow-[0_4px_16px_rgba(12,19,34,0.12)] backdrop-blur-sm"
+                style={{ left: 536, top: Math.min(Math.max(0, 4 + S - px(hp.y) - 40), 500 - 110) }}
               >
                 <div className="font-semibold">
                   {titles[hp.s]} · seed {hp.seed}
                 </div>
-                <div className="flex justify-between text-[#c7ccd6]">
+                <div className="flex justify-between text-[#dfe3ea]">
                   <span className="flex items-center gap-1.5">
                     <Swatch c={BASE} /> Fixed-time
                   </span>
                   <span>{hp.x.toFixed(1)} s</span>
                 </div>
-                <div className="flex justify-between text-[#c7ccd6]">
+                <div className="flex justify-between text-[#dfe3ea]">
                   <span className="flex items-center gap-1.5">
                     <Swatch c={FS} /> FlowState
                   </span>
@@ -872,12 +891,12 @@ function HeadToHead({ d }: { d: DemandResults }) {
         <div className="flex flex-col gap-2.5 text-[12px] text-ink-2">
           <Eyebrow>Legend</Eyebrow>
           <span className="flex items-center gap-2.5">
-            <span className="h-2.5 w-2.5 rounded-full" style={{ background: COLOR[FS] }} />
-            FlowState waited less
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: COLOR[BASE] }} />
+            Fixed-time (before FlowState)
           </span>
           <span className="flex items-center gap-2.5">
-            <span className="h-2.5 w-2.5 rounded-full" style={{ background: COLOR[BASE] }} />
-            Fixed-time waited less
+            <span className="h-2.5 w-2.5 rounded-full" style={{ background: COLOR[FS] }} />
+            FlowState (after)
           </span>
           {[...held].some((h) => d.perScenario[h]) && (
             <span className="flex items-center gap-2.5">
@@ -887,7 +906,7 @@ function HeadToHead({ d }: { d: DemandResults }) {
           )}
         </div>
         <p className="tnum m-0 text-[12px] leading-[1.5] text-ink-3">
-          Hover any dot for its pattern, seed and both waits. The biggest gap: {titles[far.s]?.toLowerCase()}, seed {far.seed}: {far.x.toFixed(1)} s → {far.y.toFixed(1)} s.
+          Hover any dot to highlight its pair, with its pattern, seed and both waits. The biggest gap: {titles[far.s]?.toLowerCase()}, seed {far.seed}: {far.x.toFixed(1)} s → {far.y.toFixed(1)} s.
         </p>
       </div>
     </section>
