@@ -9,7 +9,9 @@ export type DemoEv = [number, number, number]
 export interface DemoFrame { t: number; v: DemoVeh[]; s: string[]; e?: DemoEv[] }
 export interface DemoSide { controller: string; frames: DemoFrame[] }
 export interface UnitSide { travelS: number; stoppedRedS: number; stoppedQueueS: number; finished: boolean; departS: number; first: number | null; last: number | null; id?: number }
-export interface DemoUnit { id: number; left: UnitSide; right: UnitSide; savedS: number | null; call?: number }
+export interface DemoUnit { id: number; left: UnitSide; right: UnitSide; savedS: number | null; call?: number; label?: string; kind?: string }
+export interface DemoFocus { kind: 'point' | 'junction' | 'network' | 'ambulance'; x?: number; y?: number; label?: string; id?: string }
+export interface DemoKpi { key: string; label: string; unit: string }
 export interface AggStat { mean_diff: number; ci95: [number, number]; pairs: number; better: number; worse: number; left_mean: number; right_mean: number; pct: number | null }
 export interface DemoTotals { ev_total: number; ev_unfinished: number; ev_travel_mean_s: number; ev_stopped_red_s: number; ev_stopped_queue_s: number; mean_wait_civilian_s: number; mean_travel_s: number; throughput_vph: number; queue_total_mean_veh: number; car?: Record<string, number>; priority?: Record<string, number | string> | null }
 export interface DemoAsset {
@@ -30,7 +32,16 @@ export interface DemoAsset {
   totals: { left: DemoTotals; right: DemoTotals }
   aggregate: { episodes: number; seeds: number[]; metrics: Record<string, AggStat> }
   rightIncludes: string
+  /** schema 3 */
+  units?: DemoUnit[]
+  focus?: DemoFocus
+  kpis?: DemoKpi[]
+  tagline?: string
+  dt?: number
 }
+
+export interface DemoHeadline { key: string; label: string; unit: string; left: number | null; right: number | null; pct: number | null; ci95: [number, number] | null; better: number | null; worse: number | null }
+export interface DemoIndex { network: string; builtAt: string; seeds: number[]; scenarios: { id: string; title: string; tagline: string; units: number; headline: DemoHeadline }[] }
 
 export const STATUS_TEXT = ['moving', 'stopped at a red light', 'stuck behind queued cars', 'moving, green light ahead']
 
@@ -50,6 +61,7 @@ const CAR_KEYS: Record<string, string> = { car_waiting: 'mean_wait_civilian_s', 
 
 /** Fills the page-level fields from main's car metrics so one component serves both asset schemas. */
 export function normalise(asset: DemoAsset): DemoAsset {
+  asset.ambulances ??= asset.units ?? []
   for (const side of ['left', 'right'] as const) {
     const t = asset.totals[side]
     if (t.car) {
@@ -61,6 +73,28 @@ export function normalise(asset: DemoAsset): DemoAsset {
   for (const [from, to] of Object.entries(CAR_KEYS)) if (m[from] && !m[to]) m[to] = m[from]
   return asset
 }
+
+const cache = new Map<string, Promise<unknown>>()
+const once = <T,>(key: string, make: () => Promise<T>): Promise<T> => {
+  let p = cache.get(key) as Promise<T> | undefined
+  if (!p) { p = make(); cache.set(key, p); p.catch(() => cache.delete(key)) }
+  return p
+}
+const getJson = async <T,>(url: string, what: string): Promise<T> => {
+  const r = await fetch(url)
+  if (!r.ok) throw new Error(`${what} not found (${r.status})`)
+  return r.json() as Promise<T>
+}
+/** The list of recorded scenarios. */
+export const loadIndex = () => once('index', () => getJson<DemoIndex>(`${BASE}index.json`, 'Recorded scenarios'))
+/** The map description of a recorded network (once per network). */
+export const loadNetwork = (id: string) => once(`net:${id}`, () => getJson<NetworkGeom>(`${BASE}${id}-network.json`, 'Map'))
+/** One scenario's recorded pair. */
+export const loadScenario = (id: string) => once(`sc:${id}`, async () => {
+  const r = await fetch(`${BASE}${id}/pair.json.gz`)
+  if (!r.ok) throw new Error(`Recorded run not found (${r.status})`)
+  return normalise(await gunzipJson<DemoAsset>(r))
+})
 
 let loading: Promise<{ asset: DemoAsset; net: NetworkGeom }> | null = null
 /** Fetches the recorded pair, then the map description of the network it was recorded on. */
@@ -91,22 +125,43 @@ const byId = (f: DemoFrame) => {
 
 export function frameAt(frames: DemoFrame[], t: number): { a: DemoFrame; b: DemoFrame; u: number } {
   const first = frames[0].t
-  const i = Math.min(frames.length - 1, Math.max(0, Math.floor(t - first)))
+  const dt = frames.length > 1 ? frames[1].t - first : 1
+  const i = Math.min(frames.length - 1, Math.max(0, Math.floor((t - first) / dt)))
   const a = frames[i], b = frames[Math.min(frames.length - 1, i + 1)]
   const span = b.t - a.t
   return { a, b, u: span > 0 ? Math.min(1, Math.max(0, (t - a.t) / span)) : 0 }
 }
 
 const lerpAngle = (a: number, b: number, u: number) => a + ((((b - a) % 360) + 540) % 360 - 180) * u
+const RAD = Math.PI / 180
 
-/** Vehicles at time t, interpolated between the two recorded one-second frames (a car that appears or leaves is drawn from the frame that has it). */
+/**
+ * Vehicles at time t, interpolated between the two recorded frames that bracket it. Cubic Hermite with SUMO's own heading and speed as end tangents,
+ * so a vehicle passes through every recorded position and follows its turning path (the same idea as the live map's playout). A car that appears or
+ * leaves between the two frames is drawn from the frame that has it.
+ */
 export function sample(frames: DemoFrame[], t: number): Placed[] {
   const { a, b, u } = frameAt(frames, t)
   const nb = byId(b)
+  const span = b.t - a.t
   return a.v.map((r) => {
     const n = nb.get(r[0])
-    if (!n || n === r) return { id: r[0], x: r[1] / 10, y: r[2] / 10, angle: r[3], speed: r[5] / 10, type: r[4] }
-    return { id: r[0], x: (r[1] + (n[1] - r[1]) * u) / 10, y: (r[2] + (n[2] - r[2]) * u) / 10, angle: lerpAngle(r[3], n[3], u), speed: (r[5] + (n[5] - r[5]) * u) / 10, type: r[4] }
+    if (!n || n === r || span <= 0) return { id: r[0], x: r[1] / 10, y: r[2] / 10, angle: r[3], speed: r[5] / 10, type: r[4] }
+    const x0 = r[1] / 10, y0 = r[2] / 10, x1 = n[1] / 10, y1 = n[2] / 10
+    const v0 = r[5] / 10, v1 = n[5] / 10
+    const dx = x1 - x0, dy = y1 - y0, chord = Math.hypot(dx, dy)
+    if (chord > Math.max(v0, v1, 1) * span * 3 + 2) return { id: r[0], x: x0, y: y0, angle: r[3], speed: v0, type: r[4] } // teleport: hold, do not fly
+    const m0x = Math.sin(r[3] * RAD) * v0 * span, m0y = Math.cos(r[3] * RAD) * v0 * span
+    const m1x = Math.sin(n[3] * RAD) * v1 * span, m1y = Math.cos(n[3] * RAD) * v1 * span
+    const u2 = u * u, u3 = u2 * u
+    const h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2
+    const x = h00 * x0 + h10 * m0x + h01 * x1 + h11 * m1x
+    const y = h00 * y0 + h10 * m0y + h01 * y1 + h11 * m1y
+    const d00 = 6 * u2 - 6 * u, d10 = 3 * u2 - 4 * u + 1, d01 = -6 * u2 + 6 * u, d11 = 3 * u2 - 2 * u
+    const tx = d00 * x0 + d10 * m0x + d01 * x1 + d11 * m1x, ty = d00 * y0 + d10 * m0y + d01 * y1 + d11 * m1y
+    const speed = v0 + (v1 - v0) * u
+    const angle = speed > 0.5 && Math.hypot(tx, ty) > 1e-3 ? (Math.atan2(tx, ty) / RAD + 360) % 360 : lerpAngle(r[3], n[3], u)
+    return { id: r[0], x, y, angle, speed, type: r[4] }
   })
 }
 

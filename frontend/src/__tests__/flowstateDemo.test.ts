@@ -8,9 +8,12 @@ const frames: DemoFrame[] = [
 ]
 
 describe('frameAt / sample', () => {
-  it('interpolates between one-second frames', () => {
+  it('interpolates between one-second frames along the recorded heading and speed (Hermite)', () => {
     const [a] = sample(frames, 10.5)
-    expect(a).toMatchObject({ id: 1, x: 105, y: 200, speed: 12 })
+    expect(a.id).toBe(1)
+    expect(a.x).toBeCloseTo(104.5, 5) // 0.5·100 + 0.125·10 + 0.5·110 − 0.125·14
+    expect(a.y).toBeCloseTo(200, 5)
+    expect(a.speed).toBe(12)
   })
   it('takes the short way round the compass', () => {
     const amb = sample(frames, 10.5).find((p) => p.id === 2)!

@@ -5,7 +5,7 @@ from flowstate.replay.record import asset, paired
 
 
 def _run(seed, ev, queue, waiting, frames=()):
-    return {"seed": seed, "tlsIds": ["j1"], "frames": list(frames), "ambulances": [],
+    return {"seed": seed, "tlsIds": ["j1"], "frames": list(frames), "units": [], "focus": {"kind": "network"},
             "metrics": {"ev_travel_mean_s": ev, "ev_stopped_red_s": 0.0, "ev_stopped_queue_s": 0.0, "queue_total_mean_veh": queue, "throughput_vph": 1000.0,
                         "teleports": 0, "collisions": 0, "car": {"waiting": waiting, "speed": 20.0, "trips": 50}}}
 
@@ -23,18 +23,26 @@ def test_paired_signs_and_counts():
 
 def test_asset_lists_every_ambulance_and_picks_by_rule():
     def unit(call, iid, travel, red, queue, finished=True):
-        return {"id": f"amb{call}", "call": call, "intId": iid, "travelS": travel, "stoppedRedS": red, "stoppedQueueS": queue, "finished": finished,
-                "departS": 10.0, "first": 10, "last": 10 + int(travel)}
+        return {"vid": f"amb{call}", "label": f"Ambulance {call}", "kind": "ambulance", "call": call, "id": iid, "travelS": travel, "stoppedRedS": red,
+                "stoppedQueueS": queue, "finished": finished, "departS": 10.0 + call, "first": 10, "last": 10 + int(travel)}
 
     left = _run(1, 100.0, 20.0, 25.0, [{"t": 0, "v": [], "s": [""]}])
     right = _run(1, 80.0, 18.0, 24.0, [{"t": 0, "v": [], "s": [""]}])
-    left["ambulances"] = [unit(1, 5, 120.0, 10.0, 30.0), unit(2, 6, 150.0, 0.0, 5.0), unit(3, 7, 90.0, 0.0, 0.0, finished=False)]
-    right["ambulances"] = [unit(1, 50, 70.0, 0.0, 2.0), unit(2, 60, 60.0, 0.0, 0.0), unit(3, 70, 80.0, 0.0, 0.0)]
-    doc = asset({"seed": 1, "left": left, "right": right}, {}, [1])
-    assert [u["call"] for u in doc["ambulances"]] == [1, 2, 3]
-    assert doc["ambulances"][2]["savedS"] is None  # unfinished on one side is reported, not dropped
+    left["units"] = [unit(1, 5, 120.0, 10.0, 30.0), unit(2, 6, 150.0, 0.0, 5.0), unit(3, 7, 90.0, 0.0, 0.0, finished=False)]
+    right["units"] = [unit(1, 50, 70.0, 0.0, 2.0), unit(2, 60, 60.0, 0.0, 0.0), unit(3, 70, 80.0, 0.0, 0.0)]
+    left["focus"] = {"kind": "network"}
+    doc = asset("ambulance", {"seed": 1, "left": left, "right": right}, {}, [1])
+    assert [u["label"] for u in doc["units"]] == ["Ambulance 1", "Ambulance 2", "Ambulance 3"]
+    assert doc["units"][2]["savedS"] is None  # unfinished on one side is reported, not dropped
     assert doc["example"] == 5  # call 1: queued >= 10 s on the left and held <= 3 s on the right; call 2 saved more but was not queue-blocked
-    assert doc["ambulances"][0]["right"]["id"] == 50 and doc["codes"] == "main" and doc["network"] == "district"
+    assert doc["units"][0]["right"]["id"] == 50 and doc["codes"] == "main" and doc["network"] == "district" and doc["kpis"][0]["key"] == "ev_travel_mean_s"
+
+
+def test_queue_rule_summary():
+    from flowstate.replay.heuristic import QueueResponsive
+
+    q = QueueResponsive()
+    assert q.summary()["gapOuts"] == 0 and "min 10 s" in q.summary()["rule"]
 
 
 def test_priority_rule_constants_and_summary():

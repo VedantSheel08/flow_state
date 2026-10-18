@@ -1,0 +1,96 @@
+{
+ "network": "district",
+ "builtAt": "2026-10-18T06:47:19",
+ "seeds": [
+  3100,
+  3101,
+  3102,
+  3103,
+  3104,
+  3105,
+  3106,
+  3107
+ ],
+ "scenarios": [
+  {
+   "id": "ambulance",
+   "title": "Ambulance dispatch",
+   "tagline": "Calls from the hospital, measured call-to-scene",
+   "units": 2,
+   "headline": {
+    "key": "ev_travel_mean_s",
+    "label": "Call-to-scene time",
+    "unit": "s",
+    "left": 135.562,
+    "right": 112.756,
+    "pct": -16.82,
+    "ci95": [
+     -43.269,
+     -0.813
+    ],
+    "better": 7,
+    "worse": 1
+   }
+  },
+  {
+   "id": "rush_hour",
+   "title": "Rush hour",
+   "tagline": "Peak demand across the network",
+   "units": 0,
+   "headline": {
+    "key": "car_waiting",
+    "label": "Mean wait per vehicle",
+    "unit": "s",
+    "left": 24.55,
+    "right": 20.613,
+    "pct": -16.04,
+    "ci95": [
+     -4.875,
+     -3.162
+    ],
+    "better": 8,
+    "worse": 0
+   }
+  },
+  {
+   "id": "accident",
+   "title": "Collision",
+   "tagline": "A crash blocks lanes; responders are dispatched",
+   "units": 1,
+   "headline": {
+    "key": "car_waiting",
+    "label": "Mean wait per vehicle",
+    "unit": "s",
+    "left": 24.825,
+    "right": 21.338,
+    "pct": -14.05,
+    "ci95": [
+     -4.838,
+     -2.15
+    ],
+    "better": 8,
+    "worse": 0
+   }
+  },
+  {
+   "id": "construction",
+   "title": "Work zone",
+   "tagline": "A closure with a signed detour",
+   "units": 0,
+   "headline": {
+    "key": "car_waiting",
+    "label": "Mean wait per vehicle",
+    "unit": "s",
+    "left": 24.513,
+    "right": 20.975,
+    "pct": -14.43,
+    "ci95": [
+     -4.55,
+     -2.463
+    ],
+    "better": 8,
+    "worse": 0
+   }
+  }
+ ]
+}
