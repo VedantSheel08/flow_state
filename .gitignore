@@ -41,3 +41,5 @@ data/networks/_*/
 # RL experiments: intermediate checkpoints and raw trainer stdout stay out of git (listed with SHA-256 in artifacts/rl/MANIFEST.json)
 artifacts/rl/run*/checkpoints/
 artifacts/rl/run*/train_stdout.log
+data/lab/
+lab/dist/
