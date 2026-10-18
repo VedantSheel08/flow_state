@@ -274,10 +274,6 @@ function Overview() {
             <div className="text-ink-3">Control</div>
             <div className="font-medium text-ink">{stats?.signals.mode === 'actuated' ? 'Actuated' : 'Fixed-time'}</div>
           </div>
-          <div>
-            <div className="text-ink-3">Emergency pre-emptions</div>
-            <div className="tnum font-medium text-ink">{num(stats?.signals.preemptions ?? 0)}</div>
-          </div>
         </div>
       </Section>
     </div>
@@ -522,7 +518,6 @@ function JunctionInspector({ id }: { id: string }) {
           </div>
           <div className="mt-1.5 text-[11px] text-ink-3">
             Phase {d.signal.phase + 1} of {phases.length}
-            {d.signal.heldBy && <span className="ml-1 font-medium text-accent">· pre-empted for {d.signal.heldBy}</span>}
           </div>
         </Section>
       )}
@@ -567,7 +562,7 @@ function EventList() {
   const set = useStore((s) => s.set)
   const networks = useStore((s) => s.networks)
   const run = useStore((s) => s.run)
-  if (!events.length) return <Empty title="No events yet">Incidents, dispatches, signal pre-emptions and measured congestion appear here as SUMO reports them.</Empty>
+  if (!events.length) return <Empty title="No events yet">Incidents, dispatches and measured congestion appear here as SUMO reports them.</Empty>
   const net = networks[run?.network ?? 'district']
   const onClick = (e: SimEvent) => {
     if (e.vehicle) {

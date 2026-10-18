@@ -183,22 +183,11 @@ export interface StatsMessage {
   edges: Record<string, [number, number, number]>
   incidents: Incident[]
   tracked: Tracked[]
-  signals: { mode: string; preemptions: number; tspExtensions: number; tspSeconds: number }
-  emergency?: EmergencySummary
+  signals: { mode: string; tspExtensions: number; tspSeconds: number }
   scenario: Record<string, unknown>
   status: RunStatus
 }
 
-// drivers making way for units with their lights on (sim/emergency.py)
-export interface EmergencySummary {
-  enabled: boolean
-  yields: number
-  crossHolds: number
-  gapHolds: number
-  laneMoves: number
-  maxConcurrent: number
-  yieldingNow: number
-}
 
 // [id, typeCode, x, y, angle(deg, 0 = north, clockwise), speed m/s, signals bitmask]
 export type VehicleTuple = [string, number, number, number, number, number, number]
@@ -220,8 +209,7 @@ export interface RunResults {
   last: Kpi
   teleports: number
   collisions: number
-  signals: { mode: string; preemptions: number; tspExtensions: number; tspSeconds: number }
-  emergency?: EmergencySummary
+  signals: { mode: string; tspExtensions: number; tspSeconds: number }
   scenario: Record<string, unknown>
   tracked: Tracked[]
   incidents: Incident[]
@@ -292,7 +280,6 @@ export interface JunctionDetail {
     program: string
     nextSwitch: number
     phases: { duration: number; state: string }[]
-    heldBy: string | null
   }
   maxQueue: number
 }

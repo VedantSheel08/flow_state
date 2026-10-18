@@ -28,8 +28,8 @@ def opt(*pairs: tuple[str, str]) -> list[dict[str, Any]]:
     return [{"value": v, "label": l} for v, l in pairs]
 
 
-def common(demand: int = 1500, duration: int = 10, bikes: int = 5, preemption: bool | None = None) -> list[ParamSpec]:
-    out = [
+def common(demand: int = 1500, duration: int = 10, bikes: int = 5) -> list[ParamSpec]:
+    return [
         ParamSpec(key="duration", label="Run length", type="select", default=duration, group=S,
                   options=[{"value": v, "label": f"{v} min"} for v in (5, 10, 15, 30, 60)], description="Simulated time after a 90 s warm-up."),
         ParamSpec(key="demand", label="Base demand", type="int", default=demand, min=400, max=3200, step=100, unit="veh/h", group=S,
@@ -41,12 +41,6 @@ def common(demand: int = 1500, duration: int = 10, bikes: int = 5, preemption: b
         ParamSpec(key="signals", label="Signal control", type="select", default="fixed", group=S,
                   options=opt(("fixed", "Fixed-time"), ("actuated", "Actuated"))),
     ]
-    if preemption is not None:
-        out.append(ParamSpec(key="preemption", label="Emergency pre-emption", type="bool", default=preemption, group=S,
-                             description="Hold or advance signals for approaching emergency vehicles (never skips amber, all-red or walk clearance)."))
-        out.append(ParamSpec(key="yield_to_ev", label="Drivers yield to sirens", type="bool", default=True, group=S,
-                             description="Drivers near a unit with its lights on move out of its lane, slow down beside it and hold back at the junction it is entering."))
-    return out
 
 
 def loc(label: str = "Location") -> ParamSpec:
@@ -84,7 +78,7 @@ def _rush(sc: Scenario) -> Recipe:
 @scenario(ScenarioSpec(
     id="accident", title="Road Accident", category="Incident", tagline="Collision blocks lanes, responders attend",
     description="A collision at a random valid location blocks one or more lanes with crashed vehicles. Police (and paramedics if serious) are dispatched from their stations; aware drivers re-route; the scene clears after a drawn clearance time.",
-    params=[*common(1700, 15, preemption=True), loc("Collision location"),
+    params=[*common(1700, 15), loc("Collision location"),
             ParamSpec(key="severity", label="Severity", type="select", default="random",
                       options=opt(("random", "Random"), ("minor", "Minor · 1 lane"), ("moderate", "Moderate · most lanes"), ("severe", "Severe · closed")))],
     measures=["Queue behind the scene", "Detours", "Responder travel"],
@@ -98,10 +92,10 @@ def _accident(sc: Scenario) -> Recipe:
 @scenario(ScenarioSpec(
     id="ambulance", title="Ambulance Dispatch", category="Emergency", tagline="Calls from Mount Sinai Hospital",
     description="Emergency calls arrive at random times and places. Each ambulance drives a real SUMO route from the hospital to the scene, stays on scene, then returns. Response time is measured against the free-flow travel time.",
-    params=[*common(1600, 10, preemption=True),
+    params=[*common(1600, 10),
             ParamSpec(key="calls", label="Calls", type="int", default=2, min=1, max=4, step=1)],
-    measures=["Response time vs. free-flow", "Signal pre-emptions"],
-    assumptions=["Ambulances use SUMO's bluelight device and red lights may be passed slowly; nearby drivers clear its lane, slow beside it and hold at the junction it enters.", "Free-flow time assumes 125 % of the posted limit."],
+    measures=["Response time vs. free-flow"],
+    assumptions=["Ambulances get no priority from the simulation: they stop at red lights and other drivers do not pull over; clearing their path is left to the signal controller.", "Free-flow time assumes 125 % of the posted limit."],
 ))
 def _ambulance(sc: Scenario) -> Recipe:
     p = sc.params
@@ -111,10 +105,10 @@ def _ambulance(sc: Scenario) -> Recipe:
 @scenario(ScenarioSpec(
     id="pursuit", title="Police Pursuit", category="Emergency", tagline="Evading vehicle, converging units",
     description="A stolen vehicle flees, changing destination every 20–35 s. Police units pursue its live position through the street network. Contact for 6 s stops the suspect; long pursuits are called off.",
-    params=[*common(1400, 10, preemption=True),
+    params=[*common(1400, 10),
             ParamSpec(key="units", label="Police units", type="int", default=2, min=1, max=4, step=1),
             ParamSpec(key="max_minutes", label="Call off after", type="int", default=6, min=2, max=20, step=1, unit="min")],
-    measures=["Time to stop", "Closest approach", "Pre-emptions"],
+    measures=["Time to stop", "Closest approach"],
     assumptions=["Simplified pursuit model: the suspect obeys lane rules but drives aggressively; units follow its current or next street."],
 ))
 def _pursuit(sc: Scenario) -> Recipe:
@@ -208,7 +202,7 @@ def _weather(sc: Scenario) -> Recipe:
 @scenario(ScenarioSpec(
     id="disruption", title="Random Urban Disruption", category="Mixed", tagline="Seeded mix of incidents and surges",
     description="Two or three disruptions drawn from collisions, work zones, ambulance calls and demand spikes, on distinct streets so they remain valid together.",
-    params=[*common(1600, 15, preemption=True),
+    params=[*common(1600, 15),
             ParamSpec(key="intensity", label="Disruptions", type="int", default=3, min=2, max=4, step=1)],
     measures=["Network delay", "Queues", "Emergency response"],
 ))

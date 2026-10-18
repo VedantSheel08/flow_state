@@ -35,12 +35,11 @@ from ..network.info import NetInfo
 from ..performance.network_cache import load_network
 from ..scenarios.base import Scenario
 from .demand import DemandGenerator
-from .emergency import EmergencyCorridor
 from .events import Event, EventLog
 from .metrics import Metrics
 from .safety import SafetyObservations
 from .signals import SignalManager, write_actuated_programs
-from .vtypes import EMERGENCY_TYPES, MODE_OF, TYPE_CODES, base_type, write_vtypes
+from .vtypes import EMERGENCY_TYPES, MODE_OF, QUIET, TYPE_CODES, base_type, write_vtypes
 
 log = logging.getLogger(__name__)
 
@@ -151,8 +150,8 @@ class Engine:
         self._last_edge_poll = -1e9
         self.kpi: dict[str, Any] = {}
         scenario.instantiate(config.seed, self.net)
-        self.signals = SignalManager(self, config.signal_mode, scenario.preemption, scenario.tsp)
-        self.corridor = EmergencyCorridor(self, scenario.yield_to_ev)
+        self.signals = SignalManager(self, config.signal_mode, scenario.tsp)
+        self._quiet: set[str] = set()
 
     # ------------------------------------------------------------------ setup
     def start(self) -> None:
@@ -202,7 +201,6 @@ class Engine:
             if e.to in controlled and e.kind in ("street", "entry"):
                 self._approach_lanes.setdefault(e.to, []).extend(self.net.street_segment(e.id))
         self.signals.start()
-        self.corridor.start()
         self.scenario.on_start(self)
         log.info("engine %s started: %s seed=%s signals=%s", label, self.scenario.spec.id, self.config.seed, self.config.signal_mode)
 
@@ -232,6 +230,18 @@ class Engine:
 
     def emergency_active(self) -> list[str]:
         return [v for v, tr in self.tracked.items() if tr.kind in ("ambulance", "police", "responder") and v in self.vehicles and tr.data.get("priority", True)]
+
+    def _lights_off(self) -> None:
+        """A unit that turns its lights off switches to its ``@quiet`` type and keeps to the limit again."""
+        for vid, tr in self.tracked.items():
+            if tr.kind in ("ambulance", "police", "responder") and vid in self.vehicles and vid not in self._quiet and not tr.data.get("priority", True):
+                self._quiet.add(vid)
+                quiet = f"{self.vtype.get(vid) or self.T.vehicle.getTypeID(vid)}{QUIET}"
+                try:
+                    self.T.vehicle.setType(vid, quiet)
+                    self.vtype[vid] = quiet
+                except Exception as e:  # noqa: BLE001
+                    log.debug("could not switch %s to %s: %s", vid, quiet, e)
 
     def buses_active(self) -> list[str]:
         return [v for v, tr in self.tracked.items() if tr.kind == "bus" and v in self.vehicles]
@@ -455,7 +465,7 @@ class Engine:
         prof = self.scenario.demand(self.t)
         self.demand.step(self.t, self.dt, prof, self.scenario.density)
         self.scenario.on_step(self, self.t)
-        self.corridor.step(self.t)
+        self._lights_off()
         self.signals.step(self.t)
         T.simulationStep()
         self.t = T.simulation.getTime() - self.warmup
@@ -590,7 +600,6 @@ class Engine:
             "incidents": [i.to_dict() for i in self.incidents.values()],
             "tracked": [tr.to_dict() for tr in self.tracked.values()],
             "signals": self.signals.summary(),
-            "emergency": self.corridor.summary(),
             "scenario": self.scenario.status(self),
         }
 
@@ -649,7 +658,6 @@ class Engine:
                 "state": self.tls_state[jid], "phase": self.tls_phase.get(jid), "program": prog,
                 "nextSwitch": round(T.trafficlight.getNextSwitch(jid) - self.warmup - self.t, 1),
                 "phases": [{"duration": d, "state": s} for d, s in self.net.tls_programs.get(jid, [])],
-                "heldBy": self.signals.tls[jid].held_by if jid in self.signals.tls else None,
             }
         out["maxQueue"] = self.metrics.junction_queue_max.get(jid, 0)
         return out
@@ -667,7 +675,6 @@ class Engine:
                                  "pendingNow": len(self.T.simulation.getPendingVehicles()),
                                  "note": "Submitted vehicles may still be pending or be discarded by SUMO; they are not departures. Legacy metrics include warm-up."},
             "signals": self.signals.summary(),
-            "emergency": self.corridor.summary(),
             "scenario": self.scenario.results(self),
             "tracked": [tr.to_dict() for tr in self.tracked.values()],
             "incidents": [i.to_dict() for i in self.incidents.values()],

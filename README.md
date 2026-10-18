@@ -45,7 +45,7 @@ cd frontend && npm install && npm run dev                # terminal 2
    live phases, a countdown and approach queues. Events are clickable.
 6. **Analytics** shows time series from live measurements, per-mode trip statistics and a **controlled
    comparison**: two headless SUMO runs with the same seed that differ in exactly one setting (signal control,
-   pre-emption, transit priority, King Street design, or weather vs. clear).
+   transit priority, King Street design, or weather vs. clear).
 7. **Run history** lists every generated run with its seed. **Reproduce** regenerates it exactly.
 
 Keyboard: `Space` play/pause · `R` restart same seed · `N` new variation · `H` default view · `F` fit network ·
@@ -80,15 +80,16 @@ compiled with `netconvert` (`backend/flowstate/network/toronto.py` + `city.py`):
 **Driver behaviour.** Car following uses IDM; lane changing uses SL2015 with the sublane model (0.8 m lateral
 resolution). Each run draws 8 driver profiles per vehicle class from bounded normal distributions (headway,
 acceleration, deceleration, gap, lane-change eagerness) using the run seed. SUMO adds per-vehicle desired-speed
-factors. Vehicle dimensions follow North-American averages. Emergency vehicles use SUMO's bluelight device.
+factors. Vehicle dimensions follow North-American averages. Emergency vehicles get no priority from the simulation: they
+stop at red lights and other drivers do not pull over; clearing their path is left to the signal controller.
 
 **Demand.** Trips are Poisson arrivals from a time-varying origin–destination model: network fringe by compass
 side, or city-block frontages (driveways and parking). Scenarios can add venue attractors and generators.
 Routes are SUMO shortest-time routes, and 35% of vehicles carry the periodic rerouting device.
 
 **Signals.** There are two base modes, both executed by SUMO: *fixed-time* (the netconvert plans) and
-*actuated* (SUMO's gap-based actuated control with automatic detectors). Emergency pre-emption and transit
-signal priority only hold or end the current green early, and never skip amber, all-red or pedestrian clearance.
+*actuated* (SUMO's gap-based actuated control with automatic detectors). Transit
+signal priority only holds the current green, and never skips amber, all-red or pedestrian clearance.
 New strategies can subclass `SignalPolicy` in `sim/signals.py`.
 
 **Scenarios** (`scenarios/catalog.py` composes reusable components from `scenarios/components.py`):
@@ -97,7 +98,7 @@ New strategies can subclass `SignalPolicy` in `sim/signals.py`.
 | --- | --- | --- |
 | Rush Hour | peak intensity, timing, OD imbalance | delay, queues, throughput |
 | Road Accident | location (any valid mid-block segment), severity, lanes, time, clearance, responder delay | queue behind the scene, detours, responder arrival |
-| Ambulance Dispatch | call times and scenes | response time vs. free-flow, pre-emptions |
+| Ambulance Dispatch | call times and scenes | response time vs. free-flow |
 | Police Pursuit | origin, evasive re-targeting, unit dispatch | time to stop, closest approach |
 | Bike Lane Conversion | demand (network chosen by parameter) | cyclist speed, car travel time, corridor speeds |
 | Construction | location, lane or full closure | merge queue, detour |

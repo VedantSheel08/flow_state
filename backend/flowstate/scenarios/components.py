@@ -174,8 +174,8 @@ class ResponderGuard:
 
     * closures that appear while a unit is already en route: re-plan its route with current travel times;
     * a unit whose stop is in a lane it never reached (blocked lane change) gets the stop moved to its own lane;
-    * a unit wedged inside a junction (SUMO's bluelight device makes nearby cars yield to it, and a car that yields
-      inside the junction can lock the unit in) is placed on the far side after ``JUNCTION_STUCK_S`` instead of waiting
+    * a unit wedged inside a junction (a car stopped in the same junction box can lock it in) is placed on the far
+      side after ``JUNCTION_STUCK_S`` instead of waiting
       for SUMO's 240 s teleport. Each of these is counted in ``rescues`` and reported in the results.
     """
 

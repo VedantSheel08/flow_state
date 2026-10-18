@@ -11,7 +11,6 @@ from scenario_audit import Audit, custom_scenario, run_audit
 
 from flowstate.scenarios.catalog import CATALOG
 from flowstate.scenarios.components import Construction, EmergencyDispatch, poi_edges
-from flowstate.sim.emergency import YIELD_LC_MODE
 
 SEEDS = [int(s) for s in os.environ.get("FLOWSTATE_SWEEP_SEEDS", "1,2").split(",")]
 # Gridlock teleports of ordinary vehicles that no scenario component owns. SUMO's junction model can wedge a ring of
@@ -155,32 +154,6 @@ def test_every_ambulance_call_is_answered(seed):
     assert not problems(a), problems(a)
 
 
-def test_drivers_make_way_and_resume_their_trips():
-    """Drivers yield to a unit with its lights on, and every command is released once it has gone by."""
-    yielded: set[str] = set()
-    stuck: list[tuple[float, str]] = []
-    last_active = [-1e9]
-
-    def watch(eng, audit):
-        yielded.update(eng.corridor.yielding)
-        if eng.emergency_active():
-            last_active[0] = eng.t
-        elif eng.t - last_active[0] > 1.0 and int(eng.t * 4) % 20 == 0:
-            assert not eng.corridor.yielding, f"drivers still yielding with no unit active: {list(eng.corridor.yielding)}"
-            for vid in yielded & set(eng.vehicles):
-                if eng.T.vehicle.getLaneChangeMode(vid) == YIELD_LC_MODE:  # SUMO's bluelight device adjusts it too
-                    stuck.append((eng.t, vid))
-
-    a = run_audit("ambulance", 7, {"calls": 2}, duration=10, on_step=watch)
-    summary = a.extra["emergency"]
-    assert summary["enabled"] and summary["yields"] > 0 and summary["crossHolds"] > 0, summary
-    assert summary["yieldingNow"] == 0, summary
-    assert not stuck, f"lane-change mode never restored: {stuck[:5]}"
-    assert not a.emergency_collisions, a.emergency_collisions
-    assert not problems(a), problems(a)
-
-
-
 def test_ambulance_drives_around_a_closed_street():
     """Put a full closure on the ambulance's own shortest route: it must find another way and still arrive."""
     state = {}
@@ -241,7 +214,7 @@ def test_pursuit_units_chase_and_the_pursuit_ends(seed):
     suspect = next(t for t in a.tracked if t["id"] == "suspect")
     assert suspect["status"] in ("stopped", "in custody", "en route")
     assert len(a.roads["suspect"]) >= 8, "the suspect must actually drive through the district"
-    # SUMO's bluelight vehicles occasionally clip a civilian at a junction exit; one such contact is tolerated, as in the sweep
+    # units occasionally clip a civilian at a junction exit; one such contact is tolerated, as in the sweep
     assert not a.owned_teleports and len(a.emergency_collisions) <= 1, (a.owned_teleports, a.emergency_collisions)
 
 
