@@ -149,10 +149,12 @@ export const MapView = memo(function MapView({ net }: { net: NetworkGeom }) {
     // screen area clear of the scenario rail, the top bars and the run bar
     const safe: Rect = { x0: 0, y0: 0, x1: 0, y1: 0 }
     const measureSafe = () => {
-      const rail = parseFloat(getComputedStyle(wrapRef.current!).getPropertyValue('--rail-w')) || 0
+      const css = getComputedStyle(wrapRef.current!)
+      const rail = parseFloat(css.getPropertyValue('--rail-w')) || 0
+      const inspector = parseFloat(css.getPropertyValue('--inspector-w')) || 0
       safe.x0 = rail + 16
       safe.y0 = 108 // below the camera bar and its Recenter button
-      safe.x1 = Math.max(safe.x0 + 40, cam.width - 64) // clear of the zoom controls
+      safe.x1 = Math.max(safe.x0 + 40, cam.width - inspector - 64) // clear of the inspector and the zoom controls
       safe.y1 = Math.max(safe.y0 + 40, cam.height - 128) // above the run bar and the scenario banner
     }
     const unsubscribe = useStore.subscribe(() => {

@@ -97,13 +97,12 @@ function useShortcuts() {
 function MapStage() {
   const netId = useNetwork()
   const net = useStore((s) => s.networks[netId])
-  const status = useStore((s) => s.status)
   const conn = useStore((s) => s.connection)
-  const run = useStore((s) => s.run)
   const pick = useStore((s) => s.pick)
   const railOpen = useStore((s) => s.panels.left)
-  // left-anchored map overlays sit beside the floating scenario rail
-  const railStyle = { '--rail-w': railOpen ? '260px' : '64px' } as CSSProperties
+  const inspectorOpen = useStore((s) => s.panels.right)
+  // map overlays sit beside the floating scenario rail (left) and inspector (right)
+  const railStyle = { '--rail-w': railOpen ? '260px' : '64px', '--inspector-w': inspectorOpen ? '352px' : '64px' } as CSSProperties
   return (
     <main className="relative min-w-0 flex-1" style={railStyle}>
       {net ? (
@@ -132,25 +131,8 @@ function MapStage() {
           </div>
         </div>
       )}
-      {!run && conn === 'open' && net && status.state === 'idle' && (
-        <div className="glass anim-in pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-xl px-4 py-2.5 text-center">
-          <div className="text-[13px] font-semibold text-ink">{net.title}</div>
-          <div className="text-[11.5px] text-ink-3">Pick a scenario and press Generate &amp; Run · drag to pan, scroll to zoom</div>
-          <div className="mt-1.5 flex items-center justify-center gap-3 text-[11px] text-ink-3">
-            <span className="flex items-center gap-1">
-              <span className="kbd">←</span>
-              <span className="kbd">→</span> intersections
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="kbd">F</span> network
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="kbd">\</span> map only
-            </span>
-          </div>
-        </div>
-      )}
       <ScenarioRail />
+      <RightPanel />
       <RunBar />
     </main>
   )
@@ -160,7 +142,7 @@ function Toasts() {
   const toasts = useStore((s) => s.toasts)
   const rightOpen = useStore((s) => s.panels.right && s.view === 'simulate')
   return (
-    <div className={cn('pointer-events-none fixed bottom-20 z-50 flex flex-col items-end gap-2', rightOpen ? 'right-[356px]' : 'right-[72px]')}>
+    <div className={cn('pointer-events-none fixed bottom-20 z-50 flex flex-col items-end gap-2', rightOpen ? 'right-[364px]' : 'right-[76px]')}>
       {toasts.map((t) => (
         <div
           key={t.id}
@@ -187,7 +169,6 @@ export default function App() {
         <div className="flex min-h-0 flex-1">
           <div className={cn('flex min-h-0 min-w-0 flex-1', view !== 'simulate' && 'hidden')}>
             <MapStage />
-            <RightPanel />
           </div>
           {view === 'results' && <ResultsView />}
           {view === 'analyze' && <AnalyticsView />}

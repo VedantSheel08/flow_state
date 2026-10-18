@@ -1,7 +1,7 @@
 import { Expand, PanelLeft, PanelRight, Shrink } from 'lucide-react'
 import { useStore, type View } from '../lib/store'
 import { cn } from '../lib/format'
-import { Dot, Tip } from './ui'
+import { Tip } from './ui'
 
 const TABS: { id: View; label: string }[] = [
   { id: 'simulate', label: 'Simulation' },
@@ -39,8 +39,6 @@ function PanelToggle({ label, active, onClick, children }: { label: string; acti
 export function Header() {
   const view = useStore((s) => s.view)
   const set = useStore((s) => s.set)
-  const conn = useStore((s) => s.connection)
-  const health = useStore((s) => s.health)
   const run = useStore((s) => s.run)
   const networks = useStore((s) => s.networks)
   const panels = useStore((s) => s.panels)
@@ -52,7 +50,6 @@ export function Header() {
       <div className="flex shrink-0 items-center gap-2.5">
         <Logo />
         <span className="text-[14px] font-[650] tracking-[-0.01em] text-ink">FlowState</span>
-        <span className="hidden h-[18px] items-center rounded-[6px] px-[7px] text-[10.5px] font-semibold text-ink-3 shadow-[inset_0_0_0_1px_var(--color-border-strong)] lg:inline-flex">SUMO twin</span>
       </div>
       <nav aria-label="Main" className="flex gap-[22px] self-stretch">
         {TABS.map((t) => (
@@ -70,13 +67,7 @@ export function Header() {
         ))}
       </nav>
       <div className="ml-auto flex items-center gap-2.5 text-[12px] text-ink-2">
-        <span className="hidden text-ink-3 md:inline">{view === 'results' ? 'rl_grid · 2×2 signalised' : netTitle}</span>
-        <Tip label={conn === 'open' ? `Connected to the simulation server (${health?.backend ?? 'TraCI'})` : 'Simulation server unreachable — retrying'}>
-          <span className="flex h-6 items-center gap-1.5 rounded-full bg-subtle px-[9px] shadow-[inset_0_0_0_1px_var(--color-border)]">
-            <Dot tone={conn === 'open' ? 'good' : conn === 'connecting' ? 'warn' : 'bad'} />
-            <span className="font-medium text-ink-2">{conn === 'open' ? `SUMO ${health?.sumo ?? ''}` : conn === 'connecting' ? 'Connecting…' : 'Offline'}</span>
-          </span>
-        </Tip>
+        <span className="hidden text-ink-3 md:inline">{view === 'results' ? 'rl_grid · 2×2 signalised' : netTitle.split(' · ')[0]}</span>
         {view === 'simulate' && (
           <>
             <div className="h-4 w-px bg-border" />
