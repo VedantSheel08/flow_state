@@ -25,14 +25,15 @@ from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from ..rl.demand import SCENARIOS
-from . import intel_api
+from . import intel_api, studio_api
 from . import record as R
 from .control import CONTROLLERS
 from .forecast import Forecaster, lab_dir
 
 app = FastAPI(title="FlowState Intelligence Lab")
+app.include_router(studio_api.router)  # read-only: results, ambulance stories, what the AI sees
 app.include_router(intel_api.router)  # versioned intelligence contract (additive: the /api/lab/* endpoints are unchanged)
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5176", "http://127.0.0.1:5176"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5176", "http://127.0.0.1:5176", "http://localhost:5177", "http://127.0.0.1:5177", "http://localhost:5178", "http://127.0.0.1:5178"], allow_methods=["*"], allow_headers=["*"])
 CTX = mp.get_context("spawn")
 _geometry: dict[str, Any] | None = None
 _jobs: dict[str, dict[str, Any]] = {}
@@ -113,8 +114,8 @@ def replay(rid: str) -> Response:
 
 
 class PairRequest(BaseModel):
-    left: Literal["fixed_time", "queue_heuristic", "ml_forecast"] = "queue_heuristic"
-    right: Literal["fixed_time", "queue_heuristic", "ml_forecast"] = "ml_forecast"
+    left: Literal["fixed_time", "queue_heuristic", "ml_forecast", "queue_heuristic_ev", "ml_forecast_ev"] = "queue_heuristic"
+    right: Literal["fixed_time", "queue_heuristic", "ml_forecast", "queue_heuristic_ev", "ml_forecast_ev"] = "ml_forecast_ev"
     scenario: str = "rush_ramp"
     seed: int = Field(3100, ge=0, le=99999)
     intensity: float = Field(1.0, ge=0.5, le=1.4)
@@ -217,6 +218,8 @@ class Live:
         if self.cmd_q is None or self.status not in ("running", "starting"):
             return
         self.cmd_q.put(msg)
+        if msg["cmd"] == "camera":
+            self.cfg["camera"] = msg["junction"]
         if msg["cmd"] in ("pause", "resume"):
             self.paused = msg["cmd"] == "pause"
             await self.broadcast(json.dumps({"type": "state", **self.state()}))
@@ -318,7 +321,10 @@ async def live_ws(ws: WebSocket) -> None:
                     await ws.send_text(json.dumps({"type": "error", "error": "forecaster not trained yet"}))
                     continue
                 await live.start({"scenario": sc, "controller": ctl, "seed": int(msg.get("seed", 3100)) % 100000,
-                                  "intensity": max(0.5, min(1.4, float(msg.get("intensity", 1.0)))), "speed": max(0.25, min(32.0, float(msg.get("speed", 4))))})
+                                  "intensity": max(0.5, min(1.4, float(msg.get("intensity", 1.0)))), "speed": max(0.25, min(32.0, float(msg.get("speed", 4)))),
+                                  "perception": bool(msg.get("perception", False)), "camera": str(msg.get("camera", "A0"))})
+            elif cmd == "camera":
+                await live.command({"cmd": "camera", "junction": str(msg.get("junction", "A0"))})
             elif cmd in ("pause", "resume"):
                 await live.command({"cmd": cmd})
             elif cmd == "speed":

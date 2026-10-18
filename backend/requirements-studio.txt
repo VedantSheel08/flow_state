@@ -1,0 +1,8 @@
+# Optional extras for the Studio's "What the AI sees" panels; each panel degrades with an explanation if its package is missing.
+numpy
+scikit-learn
+psutil
+opencv-python-headless
+gymnasium
+stable-baselines3
+torch  # CPU build: pip install torch --index-url https://download.pytorch.org/whl/cpu

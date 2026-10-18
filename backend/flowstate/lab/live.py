@@ -19,6 +19,9 @@ def worker(cmd_q: Any, out_q: Any, cfg: dict[str, Any]) -> None:
     from . import health
     from .contract import build_report, model_block, observed_extra
     from .control import make_controller
+    from .perception import Perception, poses
+
+    EV_TEXT = ["moving", "stopped at a red light", "stuck behind queued cars", "moving, green light ahead"]  # measured from SUMO state, see LabSim._track_emergency
     from .sim import LabSim
 
     sim = None
@@ -32,6 +35,8 @@ def worker(cmd_q: Any, out_q: Any, cfg: dict[str, Any]) -> None:
         model_desc = model_block(health.status())
         out_q.put({"type": "started", "manifest": {k: v for k, v in manifest.items() if k != "sha256"} | {"demandSha": manifest["sha256"]},
                    "controller": info, "forecaster": sim.forecaster.meta if sim.forecaster else None})
+        percep = Perception() if cfg.get("perception") else None  # what the forecaster / PPO / camera see: read-only, bounded to every 5 s
+        camera_jid, poses_prev, poses_cur = cfg.get("camera") if cfg.get("camera") in C.CONTROLLED else C.CONTROLLED[0], None, None
         speed, paused, dropped = float(cfg.get("speed", 4.0)), False, 0
         wall_ref, sim_ref = time.perf_counter(), sim.t
         while not sim.done:
@@ -45,6 +50,8 @@ def worker(cmd_q: Any, out_q: Any, cfg: dict[str, Any]) -> None:
                         paused = True
                     elif c["cmd"] == "resume":
                         paused, wall_ref, sim_ref = False, time.perf_counter(), sim.t
+                    elif c["cmd"] == "camera" and c.get("junction") in C.CONTROLLED:
+                        camera_jid = c["junction"]
                     elif c["cmd"] == "speed":
                         speed, wall_ref, sim_ref = max(0.25, min(32.0, float(c["value"]))), time.perf_counter(), sim.t
             except queue.Empty:
@@ -52,9 +59,12 @@ def worker(cmd_q: Any, out_q: Any, cfg: dict[str, Any]) -> None:
             if paused:
                 time.sleep(0.05)
                 continue
+            if percep is not None:
+                poses_prev, poses_cur = poses_cur, poses(sim)  # poses one second apart: the camera tells stopped from moving by comparing them
             if int(sim.t) % int(C.DECISION_S) == 0:
                 sim.observe()
-                for jid, a in zip(C.CONTROLLED, ctl.decide(sim)):
+                actions = ctl.decide(sim)
+                for jid, a in zip(C.CONTROLLED, actions):
                     if a:
                         sim.request(jid)
                 fc = sim.forecast
@@ -65,10 +75,14 @@ def worker(cmd_q: Any, out_q: Any, cfg: dict[str, Any]) -> None:
                     msg["mlChanged"] = ctl.last_changed
                     msg["mlStats"] = ctl.stats()
                 msg["timing"] = sim.timing()
+                if percep is not None:
+                    msg["perception"] = {"forecaster": percep.forecaster_view(sim), "ppo": percep.ppo_view(sim, list(actions)),
+                                         "camera": percep.camera_view(sim, camera_jid, poses_cur or [], poses_prev, sim.t)}
                 msg["intel"] = build_report(t=sim.t, queues=sim.state.X[:, 0].tolist(), extra=observed_extra(sim.state.X), source="live",
                                             forecast=fc and {k: v.tolist() for k, v in fc.items() if k in ("p30", "p60", "lo30", "hi30", "lo60", "hi60")},
                                             model=model_desc if fc else None, context={"scenario": cfg["scenario"], "seed": int(cfg["seed"])},
-                                            controller={"id": cfg["controller"], "mlInControl": bool(info.get("mlInControl"))},
+                                            controller={"id": cfg["controller"], "mlInControl": bool(info.get("mlInControl")), "emergencyGreen": bool(info.get("emergencyGreen"))},
+                                            emergency=[{"id": v, "status": code, "state": EV_TEXT[code], "metresToNextSignal": round(d, 1) if d >= 0 else None} for v, (code, d) in sim.ev_status.items()],
                                             decisions=getattr(ctl, "last_evidence", []))
                 _put(out_q, msg)
             sim.advance(C.STEP_S)

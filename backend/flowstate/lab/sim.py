@@ -12,7 +12,7 @@ produced the RL report). The lab adds:
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -137,6 +137,9 @@ class LabSim(SignalSim):
         self.topo = Topology(self)
         self.record = record
         self.forecaster: Any = None  # set by the caller; predictions are shadow-only unless a controller reads them
+        # Like the main simulator, the lab gives emergency vehicles NO special treatment: they stop at red lights and queue behind other cars.
+        # A controller only reacts to them if it is the "emergency green" variant (``*_ev``), which sets this flag before the run.
+        self.controllers_see_emergency = False
 
     def reset(self, scenario: str, seed: int, horizon: float | None = None, drain_s: float = 0.0, intensity: float = 1.0) -> dict[str, Any]:
         m = super().reset(scenario, seed, horizon, drain_s, intensity)
@@ -147,6 +150,8 @@ class LabSim(SignalSim):
         self.vtype: dict[str, int] = {}
         self.frames: list[dict[str, Any]] = []
         self.forecast: dict[str, Any] | None = None
+        self.ev_status: dict[str, tuple[int, float]] = {}  # emergency vehicle -> (status code, metres to the next signal), this step
+        self.ev_stop: dict[str, list[float]] = {}  # emergency vehicle -> [seconds stopped at a red light, seconds stuck in a queue]
         self.step_ms: list[float] = []
         self.infer_ms: list[float] = []
         self.obs_ms: list[float] = []
@@ -180,9 +185,35 @@ class LabSim(SignalSim):
             if v >= 0.0:  # libsumo reports INVALID_DOUBLE_VALUE (-2^30) for a vehicle that is being teleported
                 co2 += v
         self.co2_g += co2 * C.STEP_S / 1000.0  # mg/s over one step -> g
+        self._track_emergency(subs)
         if self.record:
             self.frames.append(self._frame(subs))
         return out
+
+    EV_MOVING, EV_RED, EV_QUEUE, EV_GREEN = 0, 1, 2, 3  # emergency vehicle status codes (also written into replay frames)
+
+    def approach(self, jid: str, direction: str):  # type: ignore[override]
+        a = super().approach(jid, direction)
+        return a if self.controllers_see_emergency else replace(a, emergency=False)
+
+    def _track_emergency(self, subs: dict[str, dict[int, Any]]) -> None:
+        """Why is each emergency vehicle not moving? Stopped within 12 m of a red/amber stop line = a red light; stopped anywhere else = a queue."""
+        self.ev_status = {}
+        for vid in self.emergency_ids & set(subs):
+            r = subs[vid]
+            speed = r.get(tc.VAR_SPEED, 0.0)
+            if speed < -1e5:  # libsumo's invalid marker (vehicle being teleported)
+                continue
+            nxt = T.vehicle.getNextTLS(vid)
+            tls = nxt[0] if nxt else None  # (tls id, link index, distance, state)
+            dist = float(tls[2]) if tls else -1.0
+            if speed < 0.1:
+                red = tls is not None and dist <= 12.0 and tls[3] in "rRyY"
+                code = self.EV_RED if red else self.EV_QUEUE
+                self.ev_stop.setdefault(vid, [0.0, 0.0])[0 if red else 1] += C.STEP_S
+            else:
+                code = self.EV_GREEN if tls is not None and dist <= 80.0 and tls[3] in "Gg" else self.EV_MOVING
+            self.ev_status[vid] = (code, dist)
 
     def _frame(self, subs: dict[str, dict[int, Any]]) -> dict[str, Any]:
         veh = []
@@ -197,7 +228,8 @@ class LabSim(SignalSim):
             waits.append(w)
             veh.append([int(vid[1:]), int(round(x * 10)), int(round(y * 10)), int(round(r[tc.VAR_ANGLE])), self.vtype.get(vid, 0),
                         int(round(r[tc.VAR_SPEED] * 10)), 1 if w > 0 else 0])
-        return {"t": int(self.t), "v": veh, "s": [self.signals[j].state for j in C.CONTROLLED], "k": self.kpis(waits)}
+        return {"t": int(self.t), "v": veh, "s": [self.signals[j].state for j in C.CONTROLLED], "k": self.kpis(waits),
+                "e": [[int(v[1:]), code, int(round(d * 10))] for v, (code, d) in self.ev_status.items()]}
 
     def kpis(self, waits: list[float] | None = None) -> list[float]:
         """Instantaneous measured KPIs: [in network, halting on approaches, mean current wait, arrived, CO2 kg, teleports, collisions, pending]."""
@@ -222,6 +254,23 @@ class LabSim(SignalSim):
         m = super().metrics()
         m["co2_kg"] = round(self.co2_g / 1000.0, 3)
         m["co2_g_per_veh"] = round(self.co2_g / max(1, m["vehicles_completed"]), 1)
+        civ = [d for v, d in self.arrived.items() if v not in self.emergency_ids]  # (travel, wait, loss) of every non-emergency vehicle
+        m["mean_wait_civilian_s"] = float(np.mean([d[1] for d in civ])) if civ else 0.0
+        m["mean_travel_civilian_s"] = float(np.mean([d[0] for d in civ])) if civ else 0.0
+        # every scheduled emergency vehicle counts; one still on the road at the end is measured up to that moment (a lower bound, flagged)
+        units = []
+        for v in sorted((v for v in self.emergency_ids if self.sched[v] <= self.t), key=lambda x: self.sched[x]):  # only units already due to depart
+            done = self.arrived.get(v)
+            red, queue = self.ev_stop.get(v, [0.0, 0.0])
+            units.append({"id": v, "depart_s": self.sched[v], "travel_s": round(done[0] if done else self.t - self.sched[v], 1), "finished": done is not None,
+                          "stopped_red_s": red, "stopped_queue_s": queue})
+        m["ev_total"] = len(units)
+        m["ev_unfinished"] = sum(1 for u in units if not u["finished"])
+        m["ev_travel_mean_s"] = float(np.mean([u["travel_s"] for u in units])) if units else 0.0
+        m["ev_stopped_red_s"] = float(np.mean([u["stopped_red_s"] for u in units])) if units else 0.0
+        m["ev_stopped_queue_s"] = float(np.mean([u["stopped_queue_s"] for u in units])) if units else 0.0
+        m["ev_units"] = units
+        m["controllers_see_emergency"] = self.controllers_see_emergency
         return m
 
     def timing(self) -> dict[str, float]:

@@ -10,7 +10,7 @@ Manual start: `cd backend; ..\.venv\Scripts\python -m flowstate.lab.cli serve --
 Paired replays live in `data/lab/replays/` (git-ignored, about 10 MB). `run-lab.ps1` records them if they are missing
 (`python -m flowstate.lab.cli record`, about 2 minutes).
 
-See also: [INTELLIGENCE_API.md](INTELLIGENCE_API.md) (versioned API, model health, commands) and [FORECAST_AUDIT.md](FORECAST_AUDIT.md) (leakage audit, per-scenario/junction/severity accuracy, known weaknesses).
+See also: [STUDIO.md](STUDIO.md) (the separate Studio app), [INTELLIGENCE_API.md](INTELLIGENCE_API.md) (versioned API, model health, commands) and [FORECAST_AUDIT.md](FORECAST_AUDIT.md) (leakage audit, per-scenario/junction/severity accuracy, known weaknesses).
 
 ## What runs
 
@@ -39,32 +39,68 @@ detector-like features: counts, halts, waiting, downstream occupancy, signal sta
 * Inference: trees are evaluated as flat NumPy arrays and match scikit-learn to 1e-13. Each control decision takes about 8 ms
   (16 approaches x 2 horizons, single thread).
 
-## ML-assisted control (`artifacts/lab/comparison_eval.json`)
+## Ambulances and ML-assisted control (`artifacts/lab/comparison_eval.json`)
 
-`ForecastAware` is the tuned queue heuristic plus two bounded uses of the forecast:
+**Ambulances.** As on main, the simulator gives emergency vehicles no priority: they stop at red lights and wait in the same queues as other cars, and no driver pulls over.
+The lab's controllers are blind to them by default. A controller whose id ends in `_ev` (`queue_heuristic_ev`, `ml_forecast_ev`) turns the lights ahead of an ambulance green
+(the heuristic's existing emergency rule, so it is *not* machine learning, and SafeSignal limits still apply). The ambulance still cannot pass queued cars. Ambulance state
+(moving / stopped at a red light / stuck behind queued cars) is measured from SUMO's own next-signal and speed values, and is recorded per second in every replay.
 
-* each stage's demand is shifted by β x (predicted queue - current queue), capped at ±6 vehicles;
-* a stage whose exit approach is predicted to reach 0.7 x capacity is treated as blocked.
+`ForecastAware` is the tuned queue heuristic plus two bounded uses of the forecast: each stage's demand is shifted by β x (predicted queue - current queue), capped at ±6 vehicles
+(β = 0.1, chosen on tuning seeds 1100-1105 under the previous, ambulance-aware controllers), and a stage whose exit approach is predicted to reach 0.7 x capacity is treated as blocked.
 
-β = 0.1 was chosen on tuning seeds 1100-1105. On those seeds it scored 100.0 s against the heuristic's 103.2 s.
+Five arms were each run on 60 paired episodes (5 scenarios x seeds 3100-3111, never used for training or tuning), with identical demand per pair (checked by hash).
 
-**Held-out result (60 paired episodes, 5 scenarios x seeds 3100-3111): no measurable improvement.**
+**Forecast alone** (`queue_heuristic` -> `ml_forecast`, neither gives ambulances priority):
 
-| Metric | Heuristic (no ML) | Heuristic + ML | Mean Δ | 95% CI |
+| Metric | Left | Right | Mean Δ | 95% CI |
 |---|---|---|---|---|
-| Mean waiting time (s) | 106.1 | 107.8 | +1.68 | [-0.79, 4.24] |
-| Mean travel time (s) | 209.7 | 210.9 | +1.18 | [-1.56, 4.25] |
-| Throughput (veh/h) | 2786 | 2787 | +0.3 | [-17.7, 16.9] |
-| Mean queued vehicles | 69.9 | 72.0 | +2.13 | [0.20, 4.20] (worse) |
-| CO2 estimate (kg) | 593.7 | 601.5 | +7.9 | [-0.9, 16.8] |
-| Teleports / episode | 0.98 | 1.22 | +0.23 | [-0.05, 0.57] |
-| Collisions | 0 | 0 | 0 | |
+| Mean wait, all vehicles except ambulances (s) | 105.3 | 106.6 | +1.3 | [-1.9, 4.6] |
+| Mean travel time (s) | 210.1 | 210.3 | +0.2 | [-3.4, 3.7] |
+| Throughput (veh/h) | 2783 | 2778 | -5 | [-26, 15] |
+| Mean queued vehicles | 69.4 | 71.1 | +1.7 | [-0.4, 4.0] |
+| CO2 estimate (kg) | 595.7 | 602.0 | +6.3 | [-4.1, 16.5] |
+| Teleports / episode | 0.87 | 1.07 | +0.20 | [-0.07, 0.48] |
+| Ambulance travel time (s) | 201.7 | 209.4 | +7.7 | [1.1, 15.3] |
+| Ambulance stopped at red lights (s) | 21.7 | 22.4 | +0.6 | [-2.6, 4.2] |
+| Ambulance stuck behind queues (s) | 76.6 | 83.7 | +7.2 | [0.8, 14.3] |
 
-The forecast changed 2,597 of 38,377 eligible decisions (6.8%), and 2,576 of those were longer holds for predicted spillback.
-Individual seeds go either way. For example, rush-ramp seed 3100 is 17 s better with ML. The UI always shows the multi-seed result next to a single replay.
+The forecast does not reliably improve waiting, travel time, throughput or queues, and it makes ambulances slower when nobody clears their lights.
 
-For comparison, the heuristic against fixed-time on the same episodes: mean wait -2.66 s, CI [-6.76, 1.74], which is not clear.
-The 95th-percentile travel time is -27.0 s, CI [-45.5, -8.8], and emergency-vehicle stopped time is -43.8 s, CI [-52.4, -35.8].
+**Ambulance green rule alone** (`queue_heuristic` -> `queue_heuristic_ev`):
+
+| Metric | Left | Right | Mean Δ | 95% CI |
+|---|---|---|---|---|
+| Mean wait, all vehicles except ambulances (s) | 105.3 | 106.4 | +1.1 | [-0.9, 3.3] |
+| Mean travel time (s) | 210.1 | 209.7 | -0.4 | [-2.8, 1.8] |
+| Throughput (veh/h) | 2783 | 2786 | +4 | [-15, 22] |
+| Mean queued vehicles | 69.4 | 69.9 | +0.5 | [-1.0, 1.9] |
+| CO2 estimate (kg) | 595.7 | 593.7 | -2.0 | [-9.1, 4.6] |
+| Teleports / episode | 0.87 | 0.98 | +0.12 | [-0.18, 0.42] |
+| Ambulance travel time (s) | 201.7 | 158.0 | -43.7 | [-50.5, -37.0] |
+| Ambulance stopped at red lights (s) | 21.7 | 6.7 | -15.0 | [-17.5, -12.5] |
+| Ambulance stuck behind queues (s) | 76.6 | 52.4 | -24.2 | [-30.4, -18.2] |
+
+It is a large, consistent win for ambulances (better in 60 of 60 pairs) and costs everyone else nothing measurable. Ambulances still sit in queues for about 52 s on average.
+
+**The demo pair** (`queue_heuristic` -> `ml_forecast_ev`: ML forecast plus ambulance green):
+
+| Metric | Left | Right | Mean Δ | 95% CI |
+|---|---|---|---|---|
+| Mean wait, all vehicles except ambulances (s) | 105.3 | 108.1 | +2.8 | [0.2, 5.5] |
+| Mean travel time (s) | 210.1 | 210.9 | +0.8 | [-2.1, 3.7] |
+| Throughput (veh/h) | 2783 | 2787 | +4 | [-18, 25] |
+| Mean queued vehicles | 69.4 | 72.0 | +2.6 | [0.5, 4.9] |
+| CO2 estimate (kg) | 595.7 | 601.5 | +5.8 | [-4.0, 15.8] |
+| Teleports / episode | 0.87 | 1.22 | +0.35 | [0.02, 0.70] |
+| Ambulance travel time (s) | 201.7 | 159.1 | -42.6 | [-51.8, -34.0] |
+| Ambulance stopped at red lights (s) | 21.7 | 8.3 | -13.5 | [-16.6, -10.5] |
+| Ambulance stuck behind queues (s) | 76.6 | 55.0 | -21.5 | [-28.2, -15.1] |
+
+The ambulance gain is the controller rule, not the forecast. Other vehicles are slightly worse off (see the first row; the Results tab in the Studio flags what is clearly worse).
+
+For reference, the heuristic against fixed-time: mean wait -3.52 s, CI [-7.45, 0.74] (not clear).
+The forecast changed 2,915 of 38,035 eligible decisions in the forecast-only arm (7.7%).
 
 ## Performance (this machine, 8 logical cores, shared)
 

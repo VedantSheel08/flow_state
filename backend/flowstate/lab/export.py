@@ -49,9 +49,12 @@ def build(write: bool = True) -> dict[str, Any]:
         out["forecastNote"] = "forecast_breakdown.json is missing or was computed for a different model artifact: run `python -m flowstate.lab.cli benchmark`"
     if cmp_:
         s = cmp_["summary"]
-        keys = ("mean_wait_s", "mean_travel_s", "throughput_vph", "queue_total_mean_veh", "co2_kg", "teleports", "collisions", "emergency_mean_stopped_s")
+        keys = ("mean_wait_s", "mean_wait_civilian_s", "mean_travel_s", "throughput_vph", "queue_total_mean_veh", "co2_kg", "teleports", "collisions",
+                "ev_travel_mean_s", "ev_stopped_red_s", "ev_stopped_queue_s")
         out["controllers"] = {"source": "comparison_eval.json", "episodes": s["episodes"], "seeds": s["seeds"], "scenarios": s["scenarios"], "mlInfluence": s["ml_influence"],
-                              "pairs": {name: {m: s[name][m] for m in keys} for name in ("ml_vs_heuristic", "heuristic_vs_fixed", "ml_vs_fixed")},
+                              "arms": s.get("arms"),
+                              "pairs": {name: {m: s[name][m] for m in keys if m in s[name]} for name in ("ml_vs_heuristic", "heuristic_vs_fixed", "ml_vs_fixed", "ml_ev_vs_heuristic",
+                                                                                                     "ev_rule_effect_on_heuristic", "ev_rule_effect_on_ml", "ml_vs_heuristic_both_with_ev") if name in s},
                               "mlVsHeuristicWaitByScenario": s["ml_vs_heuristic_wait_by_scenario"],
                               "reading": "ci95 spanning zero means no reliable difference; 'better'/'worse' count paired episodes"}
     if perf:

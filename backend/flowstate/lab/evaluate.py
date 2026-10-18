@@ -21,7 +21,8 @@ from .forecast import intensity_for, lab_dir
 TUNE_SEEDS = list(range(1100, 1106))
 TEST_SEEDS = list(range(3100, 3112))
 METRICS = ["mean_wait_s", "mean_travel_s", "p95_travel_s", "throughput_vph", "queue_total_mean_veh", "queue_max_veh", "spillback_pct",
-           "co2_kg", "teleports", "collisions", "vehicles_completed", "emergency_mean_stopped_s"]
+           "co2_kg", "teleports", "collisions", "vehicles_completed", "emergency_mean_stopped_s", "mean_wait_civilian_s", "mean_travel_civilian_s",
+           "ev_travel_mean_s", "ev_stopped_red_s", "ev_stopped_queue_s", "ev_unfinished"]
 HIGHER_BETTER = {"throughput_vph", "vehicles_completed"}
 
 
@@ -90,15 +91,22 @@ def tune(workers: int = 4, rounds: tuple[int, ...] = (1, 2)) -> dict[str, Any]:
 
 
 def evaluate_paired(workers: int = 4) -> dict[str, Any]:
-    cids = ["fixed_time", "queue_heuristic", "ml_forecast"]
+    cids = ["fixed_time", "queue_heuristic", "queue_heuristic_ev", "ml_forecast", "ml_forecast_ev"]  # *_ev = controller turns the lights ahead of an ambulance green
     t0 = time.time()
     rows = _run([(c, sc, s) for sc in SCENARIOS for s in TEST_SEEDS for c in cids], workers)
-    ml_rows = [r for r in rows if r["controller"] == "ml_forecast" and r["ml"]]
+    ml_rows = [r for r in rows if r["controller"] == "ml_forecast" and r["ml"]]  # influence stats of the pure-ML arm
     per_scenario = {sc: paired([r for r in rows if r["scenario"] == sc], "queue_heuristic", "ml_forecast")["mean_wait_s"] for sc in SCENARIOS}
     summary = {"episodes": len(rows) // len(cids), "seeds": TEST_SEEDS, "scenarios": list(SCENARIOS),
                "ml_vs_heuristic": paired(rows, "queue_heuristic", "ml_forecast"),
                "heuristic_vs_fixed": paired(rows, "fixed_time", "queue_heuristic"),
                "ml_vs_fixed": paired(rows, "fixed_time", "ml_forecast"),
+               # the demo pair (right side also clears lights for ambulances) and the attribution of its effect: forecast vs emergency-green rule
+               "ml_ev_vs_heuristic": paired(rows, "queue_heuristic", "ml_forecast_ev"),
+               "ev_rule_effect_on_heuristic": paired(rows, "queue_heuristic", "queue_heuristic_ev"),
+               "ev_rule_effect_on_ml": paired(rows, "ml_forecast", "ml_forecast_ev"),
+               "ml_vs_heuristic_both_with_ev": paired(rows, "queue_heuristic_ev", "ml_forecast_ev"),
+               "arms": {"fixed_time": "pre-timed, ignores ambulances", "queue_heuristic": "no ML, no ambulance priority", "queue_heuristic_ev": "no ML, lights ahead of ambulances green",
+                        "ml_forecast": "ML forecast, no ambulance priority", "ml_forecast_ev": "ML forecast + lights ahead of ambulances green"},
                "ml_vs_heuristic_wait_by_scenario": per_scenario,
                "ml_influence": {"decisions": sum(r["ml"]["decisions"] for r in ml_rows), "changed": sum(r["ml"]["changed"] for r in ml_rows),
                                 "switchedEarlier": sum(r["ml"]["switchedEarlier"] for r in ml_rows), "heldLonger": sum(r["ml"]["heldLonger"] for r in ml_rows)},

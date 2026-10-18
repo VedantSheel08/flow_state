@@ -29,7 +29,8 @@ python -m flowstate.cli serve --port 8000                # terminal 1
 cd frontend && npm install && npm run dev                # terminal 2
 ```
 
-**Intelligence Lab** (forecasting and ML vs non-ML signal control, standalone): `.un-lab.ps1`, then open <http://localhost:5176>. See [docs/INTELLIGENCE_LAB.md](docs/INTELLIGENCE_LAB.md).
+**Intelligence Lab** (forecasting and ML vs non-ML signal control, standalone): `.
+un-lab.ps1`, then open <http://localhost:5176>. See [docs/INTELLIGENCE_LAB.md](docs/INTELLIGENCE_LAB.md). **FlowState Studio** (polished ML comparison, ambulance behaviour, and what the AI sees): `.un-studio.ps1`, then open <http://localhost:5178>; see [docs/STUDIO.md](docs/STUDIO.md).
 
 ## Using it
 

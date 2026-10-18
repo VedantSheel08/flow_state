@@ -32,6 +32,7 @@ def test_labsim_measures_exactly_like_signalsim():
     lab = LabSim("t-lab", record=True)
     try:
         lab.reset("balanced", 3000, 180, 60)
+        lab.controllers_see_emergency = True  # the lab hides ambulances from controllers by default; the plain RL simulator does not, so match it here
         ctl = make("queue_heuristic")[0]
         while not lab.done:
             _drive(lab, ctl, 1)

@@ -1,0 +1,184 @@
+"""Studio backend: ambulances get no simulator priority, emergency-green controllers, ambulance metrics, perception (PPO shadow, camera), Gemini preview, story API."""
+
+from __future__ import annotations
+
+import json
+
+import numpy as np
+import pytest
+
+from flowstate.lab import ask as K
+from flowstate.lab import contract
+from flowstate.lab.control import make_controller
+from flowstate.lab.sim import LabSim
+from flowstate.rl import config as C
+
+pytestmark = pytest.mark.filterwarnings("ignore::DeprecationWarning")
+
+
+def _run(sim: LabSim, ctl, seconds: float, watch=None):
+    """Drive the controller for ``seconds`` of simulated time; ``watch(sim)`` is called at every 5 s decision."""
+    end = sim.t + seconds
+    while sim.t < end and not sim.done:
+        sim.observe()
+        for jid, a in zip(C.CONTROLLED, ctl.decide(sim)):
+            if a:
+                sim.request(jid)
+        if watch:
+            watch(sim)
+        sim.advance(C.DECISION_S)
+
+
+def _first_ambulance_time(sim: LabSim) -> float:
+    return min(sim.sched[v] for v in sim.emergency_ids)
+
+
+def test_ambulances_get_no_priority_unless_the_controller_is_an_ev_variant():
+    sim = LabSim("t-ev")
+    try:
+        sim.reset("rush_ramp", 3100, 900, 0, 1.18)
+        t0 = _first_ambulance_time(sim)
+        flagged = {"blind": 0, "ev": 0}
+
+        def watch(key):
+            def f(s: LabSim) -> None:
+                if s.ev_status:
+                    flagged[key] += sum(1 for j in C.CONTROLLED for d in C.DIRECTIONS if s.approach(j, d).emergency)
+            return f
+
+        ctl, info = make_controller("queue_heuristic", sim)
+        assert sim.controllers_see_emergency is False and info["emergencyGreen"] is False
+        _run(sim, ctl, t0 + 120, watch("blind"))
+        assert flagged["blind"] == 0  # the controller never learns an ambulance is there
+        sim.reset("rush_ramp", 3100, 900, 0, 1.18)
+        ctl, info = make_controller("queue_heuristic_ev", sim)
+        assert sim.controllers_see_emergency is True and info["emergencyGreen"] is True
+        _run(sim, ctl, t0 + 120, watch("ev"))
+        assert flagged["ev"] > 0  # the emergency-green variant does see it
+    finally:
+        sim.close()
+
+
+def test_controller_ids_and_flags():
+    sim = LabSim("t-ids")
+    try:
+        for cid, ml, ev in (("fixed_time", False, False), ("queue_heuristic", False, False), ("queue_heuristic_ev", False, True), ("ml_forecast", True, False), ("ml_forecast_ev", True, True)):
+            ctl, info = make_controller(cid, sim)
+            assert sim.controllers_see_emergency is ev and info["mlInControl"] is ml and info["emergencyGreen"] is ev, cid
+            if ml:
+                assert ctl.id.endswith("_ev") == ev
+    finally:
+        sim.close()
+
+
+def test_ambulance_metrics_count_every_unit_and_flag_unfinished():
+    sim = LabSim("t-evm")
+    try:
+        sim.reset("rush_ramp", 3100, 900, 0, 1.18)
+        ctl, _ = make_controller("queue_heuristic", sim)
+        _run(sim, ctl, 260)  # stop early: some ambulances are still driving
+        m = sim.metrics()
+        due = sum(1 for v in sim.emergency_ids if sim.sched[v] <= sim.t)
+        assert m["ev_total"] == due == len(m["ev_units"]) < len(sim.emergency_ids) and m["ev_unfinished"] == sum(1 for u in m["ev_units"] if not u["finished"])
+        assert m["ev_unfinished"] > 0 and all(u["travel_s"] >= 0 for u in m["ev_units"])  # unfinished units are measured up to now, not dropped
+        assert m["mean_wait_civilian_s"] > 0 and m["controllers_see_emergency"] is False
+        stopped = sum(u["stopped_red_s"] + u["stopped_queue_s"] for u in m["ev_units"])
+        assert stopped > 0 and all(u["stopped_red_s"] + u["stopped_queue_s"] <= u["travel_s"] + 1 for u in m["ev_units"])
+    finally:
+        sim.close()
+
+
+def test_perception_views_are_consistent_with_sumo():
+    from flowstate.lab.perception import OBS_NAMES, Perception, poses
+
+    P = Perception()
+    if P._cv2() is None:
+        pytest.skip("opencv-python-headless is not installed")
+    sim = LabSim("t-perc", record=True)
+    try:
+        sim.reset("rush_ramp", 3100, 900, 0, 1.18)
+        ctl, _ = make_controller("ml_forecast_ev", sim)
+        ctl.reset(sim)
+        prev = cur = None
+        views = {}
+        for step in range(150):
+            prev, cur = cur, poses(sim)
+            if step % 5 == 0:
+                sim.observe()
+                act = ctl.decide(sim)
+                for j, a in zip(C.CONTROLLED, act):
+                    if a:
+                        sim.request(j)
+                if step == 145:
+                    views = {"cam": P.camera_view(sim, "A0", cur, prev, sim.t), "ppo": P.ppo_view(sim, act), "fc": P.forecaster_view(sim)}
+            sim.advance(1.0)
+            sim.frames.clear()
+        cam, ppo, fc = views["cam"], views["ppo"], views["fc"]
+        assert cam["available"] and cam["synthetic"] and cam["frame"].startswith("data:image/jpeg;base64,") and cam["mask"].startswith("data:image/png;base64,")
+        assert 60 < P._car_px < 250 and len(cam["approaches"]) == 4 and cam["truthVehiclesInView"] > 0
+        assert cam["precision"] is None or cam["precision"] >= 0.85  # blobs that are not vehicles would show up here
+        assert abs(sum(a["error"] for a in cam["approaches"])) <= 8  # queue estimate close to SUMO's own count
+        assert len(fc["matrix"]) == 16 and len(fc["matrix"][0]) == len(fc["features"]) == 19
+        assert len(OBS_NAMES) == 33
+        if ppo["available"]:
+            assert np.array(ppo["observation"]).shape == (4, 33) and np.allclose(np.sum(ppo["probabilities"], axis=1), 1.0, atol=1e-2)
+            assert len(ppo["agrees"]) == 4 and ppo["validationPassed"] is False and "never controls" in ppo["role"]
+        else:
+            assert "observation" in ppo and ppo["reason"]  # degrades to observation-only with a reason
+    finally:
+        sim.close()
+
+
+def test_gemini_preview_exposes_prompt_draft_and_grounding(monkeypatch):
+    from flowstate.intelligence.gemini import GuardedGemini
+
+    class Client:
+        def generate_json(self, system, user, schema):
+            return {"answer": "The forecast error is 2.23 vehicles and 99.9 percent of ambulances are fine.", "scenario_request": None}
+
+    monkeypatch.setattr(K, "facts", lambda r, l: {"forecastBenchmark": {"30": {"overall": {"mae": 2.23}}}})
+    monkeypatch.setattr(K, "_guard", lambda: GuardedGemini(api_key="k-not-real", client_factory=lambda m, t, k: Client()))
+    r = K.answer("how accurate?", None, None)
+    assert r["sentToGemini"] is True and r["prompt"]["system"] == K.SYSTEM and json.loads(r["prompt"]["user"])["FACTS"]["forecastBenchmark"]["30"]["overall"]["mae"] == 2.23
+    assert r["geminiDraft"].startswith("The forecast error") and r["grounding"]["ungrounded"] == ["99.9"] and r["source"] == "measurements"
+    monkeypatch.setattr(K, "_guard", lambda: GuardedGemini(api_key=""))
+    r = K.answer("how accurate?", None, None)
+    assert r["sentToGemini"] is False and r["geminiDraft"] is None and r["grounding"] is None  # nothing left the server
+
+
+def test_report_carries_measured_emergency_state():
+    rep = contract.build_report(t=10, queues=[0.0] * 16, source="live", controller={"id": "ml_forecast_ev", "mlInControl": True, "emergencyGreen": True},
+                                emergency=[{"id": 57, "status": 2, "state": "stuck behind queued cars", "metresToNextSignal": 31.4}])
+    assert rep["observed"]["emergencyVehicles"][0]["state"] == "stuck behind queued cars" and rep["interventions"]["controller"]["emergencyGreen"] is True
+    assert contract.build_report(t=1, queues=[0.0] * 16)["observed"]["emergencyVehicles"] == []
+
+
+def test_studio_api_meta_and_story(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+    from flowstate.lab import app as A
+    from flowstate.lab import record as R
+
+    with TestClient(A.app) as c:
+        m = c.get("/api/studio/meta").json()
+        assert m["gemini"]["inControlLoop"] is False and m["ppo"]["validationPassed"] is False and len(m["observation"]["names"]) == 33
+        assert c.get("/api/studio/replays/..%2Fx/story").status_code in (400, 404)
+        ev = next((i for i, s in R.index().items() if s["right"].endswith("_ev")), None)
+        if ev is None:
+            pytest.skip("no ambulance-green replay recorded locally (python -m flowstate.lab.cli record)")
+        s = c.get(f"/api/studio/replays/{ev}/story").json()
+        assert s["sides"]["right"]["emergencyGreen"] is True and s["sides"]["left"]["emergencyGreen"] is False
+        for side in ("left", "right"):
+            assert s["sides"][side]["ambulances"], side
+            for a in s["sides"][side]["ambulances"]:
+                last = -1
+                for t0, t1, code in a["segments"]:
+                    assert t0 > last and t1 >= t0 and code in (0, 1, 2, 3)  # ordered, non-overlapping, known status
+                    last = t1
+        r = c.post("/api/studio/gemini", json={"question": "What happens to ambulances?", "replayId": ev}).json()
+        assert r["source"] == "measurements" and "no priority" in r["answer"] and r["prompt"]["chars"] > 0
+        # the right side's lights were cleared for ambulances, so it spent less time stopped at reds than the left side
+        t = s["sides"]
+        assert (t["right"]["totals"]["ev_stopped_red_s"] or 0) <= (t["left"]["totals"]["ev_stopped_red_s"] or 0) + 1.0

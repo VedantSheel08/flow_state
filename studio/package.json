@@ -1,0 +1,17 @@
+{
+  "name": "flowstate-studio",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5178 --strictPort",
+    "build": "tsc --noEmit -p . && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 5178",
+    "test": "vitest run"
+  },
+  "dependencies": { "react": "^19.2.8", "react-dom": "^19.2.8" },
+  "devDependencies": {
+    "@types/react": "^19.2.18", "@types/react-dom": "^19.2.7", "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^29.1.1", "typescript": "~6.0.2", "vite": "^8.3.0", "vitest": "^5.0.5"
+  }
+}

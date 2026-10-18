@@ -112,13 +112,23 @@ CONTROLLERS = {
     "fixed_time": "Fixed-time (30 s greens)",
     "queue_heuristic": "Queue-responsive heuristic (no ML)",
     "ml_forecast": "Queue heuristic + ML forecast",
+    "queue_heuristic_ev": "Queue heuristic + emergency green",
+    "ml_forecast_ev": "Queue heuristic + ML forecast + emergency green",
 }
+# Emergency vehicles: the simulator gives them no priority (as on main). A controller only turns the lights ahead of one green when its id ends in
+# ``_ev``; this is the existing queue-heuristic emergency rule (switch to the ambulance's stage as soon as SafeSignal allows, hold while it is on the
+# approach), not machine learning. The ambulance still queues behind other cars and still stops at reds the controller has not cleared.
+EV_SUFFIX = "_ev"
 
 
 def make_controller(cid: str, sim: Any, *, shadow_forecast: bool = True) -> tuple[Controller, dict[str, Any]]:
     """Build a lab controller. Attaches the forecaster to ``sim`` (shadow-only for non-ML controllers: shown, never used)."""
     from .forecast import Forecaster
 
+    head, at, tail = cid.partition("@")
+    ev = head.endswith(EV_SUFFIX)
+    cid = (head[: -len(EV_SUFFIX)] if ev else head) + at + tail
+    sim.controllers_see_emergency = ev
     fc = Forecaster.load_default()
     if cid.startswith("ml_forecast"):
         if fc is None:
@@ -128,8 +138,8 @@ def make_controller(cid: str, sim: Any, *, shadow_forecast: bool = True) -> tupl
         if "@" in cid:  # explicit parameters for tuning: ml_forecast@beta,bound,spill
             b, bd, sp = (float(x) for x in cid.split("@")[1].split(","))
             params |= {"beta": b, "bound": bd, "spill": sp}
-        ctl = ForecastAware(**params, id=cid)
-        return ctl, {"requested": cid, "used": cid, "mlInControl": True, "params": params}
+        ctl = ForecastAware(**params, id=cid + (EV_SUFFIX if ev else ""))
+        return ctl, {"requested": cid + (EV_SUFFIX if ev else ""), "used": cid, "mlInControl": True, "emergencyGreen": ev, "params": params}
     sim.forecaster = fc if shadow_forecast else None
     ctl, info = make(cid)
-    return ctl, info | {"mlInControl": False}
+    return ctl, info | {"mlInControl": False, "emergencyGreen": ev}

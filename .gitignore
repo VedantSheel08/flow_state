@@ -43,3 +43,4 @@ artifacts/rl/run*/checkpoints/
 artifacts/rl/run*/train_stdout.log
 data/lab/
 lab/dist/
+studio/dist/

@@ -1,6 +1,6 @@
 {
  "schema": "flowstate.benchmark-export/1",
- "generatedAt": "2026-10-17T23:06:06",
+ "generatedAt": "2026-10-18T02:50:01",
  "labels": {
   "forecast": "model predictions scored against later SUMO measurements on held-out seeds",
   "controllers": "paired SUMO runs, measured",
@@ -1265,44 +1265,44 @@
   "regimeShiftCheck": {
    "note": "recorded replays only (a handful of episodes); a direction check, not a benchmark",
    "not_ml_controlled_30s": {
-    "n": 38880,
-    "mae": 2.588,
-    "persistence_mae": 4.642,
-    "skill_vs_persistence": 0.442,
-    "bias": -0.066,
-    "rmse": 4.216,
-    "mean_true_queue": 6.21,
-    "episodes": 9
+    "n": 43072,
+    "mae": 2.726,
+    "persistence_mae": 4.952,
+    "skill_vs_persistence": 0.45,
+    "bias": -0.046,
+    "rmse": 4.387,
+    "mean_true_queue": 6.83,
+    "episodes": 10
    },
    "not_ml_controlled_60s": {
-    "n": 38016,
-    "mae": 3.092,
-    "persistence_mae": 3.789,
-    "skill_vs_persistence": 0.184,
-    "bias": -0.183,
-    "rmse": 4.828,
-    "mean_true_queue": 6.34,
-    "episodes": 9
+    "n": 42112,
+    "mae": 3.336,
+    "persistence_mae": 3.542,
+    "skill_vs_persistence": 0.058,
+    "bias": -0.185,
+    "rmse": 5.137,
+    "mean_true_queue": 6.97,
+    "episodes": 10
    },
    "ml_controlled_30s": {
-    "n": 21040,
-    "mae": 2.332,
-    "persistence_mae": 4.151,
-    "skill_vs_persistence": 0.438,
-    "bias": 0.078,
-    "rmse": 3.886,
-    "mean_true_queue": 4.85,
-    "episodes": 5
+    "n": 25472,
+    "mae": 2.615,
+    "persistence_mae": 4.554,
+    "skill_vs_persistence": 0.426,
+    "bias": -0.005,
+    "rmse": 4.287,
+    "mean_true_queue": 6.0,
+    "episodes": 6
    },
    "ml_controlled_60s": {
-    "n": 20560,
-    "mae": 2.825,
-    "persistence_mae": 3.063,
-    "skill_vs_persistence": 0.078,
-    "bias": -0.017,
-    "rmse": 4.535,
-    "mean_true_queue": 4.94,
-    "episodes": 5
+    "n": 24896,
+    "mae": 3.161,
+    "persistence_mae": 3.464,
+    "skill_vs_persistence": 0.088,
+    "bias": -0.136,
+    "rmse": 5.024,
+    "mean_true_queue": 6.12,
+    "episodes": 6
    }
   }
  },
@@ -1331,13 +1331,890 @@
    "rush_ramp"
   ],
   "mlInfluence": {
-   "decisions": 38377,
-   "changed": 2597,
-   "switchedEarlier": 21,
-   "heldLonger": 2576
+   "decisions": 38035,
+   "changed": 2915,
+   "switchedEarlier": 12,
+   "heldLonger": 2903
+  },
+  "arms": {
+   "fixed_time": "pre-timed, ignores ambulances",
+   "queue_heuristic": "no ML, no ambulance priority",
+   "queue_heuristic_ev": "no ML, lights ahead of ambulances green",
+   "ml_forecast": "ML forecast, no ambulance priority",
+   "ml_forecast_ev": "ML forecast + lights ahead of ambulances green"
   },
   "pairs": {
    "ml_vs_heuristic": {
+    "mean_wait_s": {
+     "left_mean": 105.285,
+     "right_mean": 106.575,
+     "mean_diff": 1.29,
+     "pct": 1.23,
+     "ci95": [
+      -2.073,
+      4.442
+     ],
+     "pairs": 60,
+     "better": 30,
+     "worse": 30
+    },
+    "mean_wait_civilian_s": {
+     "left_mean": 105.288,
+     "right_mean": 106.552,
+     "mean_diff": 1.264,
+     "pct": 1.2,
+     "ci95": [
+      -1.941,
+      4.596
+     ],
+     "pairs": 60,
+     "better": 30,
+     "worse": 30
+    },
+    "mean_travel_s": {
+     "left_mean": 210.124,
+     "right_mean": 210.344,
+     "mean_diff": 0.22,
+     "pct": 0.1,
+     "ci95": [
+      -3.388,
+      3.737
+     ],
+     "pairs": 60,
+     "better": 30,
+     "worse": 30
+    },
+    "throughput_vph": {
+     "left_mean": 2782.667,
+     "right_mean": 2778.067,
+     "mean_diff": -4.6,
+     "pct": -0.17,
+     "ci95": [
+      -25.935,
+      15.2
+     ],
+     "pairs": 60,
+     "better": 33,
+     "worse": 26
+    },
+    "queue_total_mean_veh": {
+     "left_mean": 69.371,
+     "right_mean": 71.098,
+     "mean_diff": 1.727,
+     "pct": 2.49,
+     "ci95": [
+      -0.351,
+      4.018
+     ],
+     "pairs": 60,
+     "better": 26,
+     "worse": 34
+    },
+    "co2_kg": {
+     "left_mean": 595.71,
+     "right_mean": 601.972,
+     "mean_diff": 6.262,
+     "pct": 1.05,
+     "ci95": [
+      -4.105,
+      16.502
+     ],
+     "pairs": 60,
+     "better": 29,
+     "worse": 31
+    },
+    "teleports": {
+     "left_mean": 0.867,
+     "right_mean": 1.067,
+     "mean_diff": 0.2,
+     "pct": 23.08,
+     "ci95": [
+      -0.067,
+      0.483
+     ],
+     "pairs": 60,
+     "better": 7,
+     "worse": 13
+    },
+    "collisions": {
+     "left_mean": 0.0,
+     "right_mean": 0.0,
+     "mean_diff": 0.0,
+     "pct": null,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "pairs": 60,
+     "better": 0,
+     "worse": 0
+    },
+    "ev_travel_mean_s": {
+     "left_mean": 201.704,
+     "right_mean": 209.431,
+     "mean_diff": 7.727,
+     "pct": 3.83,
+     "ci95": [
+      1.133,
+      15.332
+     ],
+     "pairs": 60,
+     "better": 24,
+     "worse": 36
+    },
+    "ev_stopped_red_s": {
+     "left_mean": 21.735,
+     "right_mean": 22.384,
+     "mean_diff": 0.649,
+     "pct": 2.99,
+     "ci95": [
+      -2.636,
+      4.218
+     ],
+     "pairs": 60,
+     "better": 28,
+     "worse": 32
+    },
+    "ev_stopped_queue_s": {
+     "left_mean": 76.552,
+     "right_mean": 83.718,
+     "mean_diff": 7.166,
+     "pct": 9.36,
+     "ci95": [
+      0.809,
+      14.34
+     ],
+     "pairs": 60,
+     "better": 27,
+     "worse": 33
+    }
+   },
+   "heuristic_vs_fixed": {
+    "mean_wait_s": {
+     "left_mean": 108.802,
+     "right_mean": 105.285,
+     "mean_diff": -3.517,
+     "pct": -3.23,
+     "ci95": [
+      -7.45,
+      0.742
+     ],
+     "pairs": 60,
+     "better": 36,
+     "worse": 24
+    },
+    "mean_wait_civilian_s": {
+     "left_mean": 108.763,
+     "right_mean": 105.288,
+     "mean_diff": -3.475,
+     "pct": -3.2,
+     "ci95": [
+      -7.43,
+      0.577
+     ],
+     "pairs": 60,
+     "better": 36,
+     "worse": 24
+    },
+    "mean_travel_s": {
+     "left_mean": 213.174,
+     "right_mean": 210.124,
+     "mean_diff": -3.05,
+     "pct": -1.43,
+     "ci95": [
+      -7.832,
+      1.886
+     ],
+     "pairs": 60,
+     "better": 33,
+     "worse": 27
+    },
+    "throughput_vph": {
+     "left_mean": 2793.0,
+     "right_mean": 2782.667,
+     "mean_diff": -10.333,
+     "pct": -0.37,
+     "ci95": [
+      -39.403,
+      17.0
+     ],
+     "pairs": 60,
+     "better": 30,
+     "worse": 30
+    },
+    "queue_total_mean_veh": {
+     "left_mean": 66.169,
+     "right_mean": 69.371,
+     "mean_diff": 3.203,
+     "pct": 4.84,
+     "ci95": [
+      0.896,
+      5.573
+     ],
+     "pairs": 60,
+     "better": 21,
+     "worse": 39
+    },
+    "co2_kg": {
+     "left_mean": 589.862,
+     "right_mean": 595.71,
+     "mean_diff": 5.847,
+     "pct": 0.99,
+     "ci95": [
+      -7.223,
+      18.852
+     ],
+     "pairs": 60,
+     "better": 28,
+     "worse": 32
+    },
+    "teleports": {
+     "left_mean": 0.433,
+     "right_mean": 0.867,
+     "mean_diff": 0.433,
+     "pct": 100.0,
+     "ci95": [
+      0.067,
+      0.85
+     ],
+     "pairs": 60,
+     "better": 7,
+     "worse": 14
+    },
+    "collisions": {
+     "left_mean": 0.0,
+     "right_mean": 0.0,
+     "mean_diff": 0.0,
+     "pct": null,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "pairs": 60,
+     "better": 0,
+     "worse": 0
+    },
+    "ev_travel_mean_s": {
+     "left_mean": 211.206,
+     "right_mean": 201.704,
+     "mean_diff": -9.502,
+     "pct": -4.5,
+     "ci95": [
+      -20.771,
+      1.735
+     ],
+     "pairs": 60,
+     "better": 37,
+     "worse": 23
+    },
+    "ev_stopped_red_s": {
+     "left_mean": 20.818,
+     "right_mean": 21.735,
+     "mean_diff": 0.916,
+     "pct": 4.4,
+     "ci95": [
+      -2.404,
+      4.225
+     ],
+     "pairs": 60,
+     "better": 30,
+     "worse": 30
+    },
+    "ev_stopped_queue_s": {
+     "left_mean": 82.119,
+     "right_mean": 76.552,
+     "mean_diff": -5.567,
+     "pct": -6.78,
+     "ci95": [
+      -13.254,
+      1.705
+     ],
+     "pairs": 60,
+     "better": 36,
+     "worse": 24
+    }
+   },
+   "ml_vs_fixed": {
+    "mean_wait_s": {
+     "left_mean": 108.802,
+     "right_mean": 106.575,
+     "mean_diff": -2.227,
+     "pct": -2.05,
+     "ci95": [
+      -6.212,
+      1.854
+     ],
+     "pairs": 60,
+     "better": 36,
+     "worse": 24
+    },
+    "mean_wait_civilian_s": {
+     "left_mean": 108.763,
+     "right_mean": 106.552,
+     "mean_diff": -2.212,
+     "pct": -2.03,
+     "ci95": [
+      -6.183,
+      1.828
+     ],
+     "pairs": 60,
+     "better": 36,
+     "worse": 24
+    },
+    "mean_travel_s": {
+     "left_mean": 213.174,
+     "right_mean": 210.344,
+     "mean_diff": -2.83,
+     "pct": -1.33,
+     "ci95": [
+      -7.812,
+      1.984
+     ],
+     "pairs": 60,
+     "better": 37,
+     "worse": 23
+    },
+    "throughput_vph": {
+     "left_mean": 2793.0,
+     "right_mean": 2778.067,
+     "mean_diff": -14.933,
+     "pct": -0.53,
+     "ci95": [
+      -43.2,
+      13.867
+     ],
+     "pairs": 60,
+     "better": 28,
+     "worse": 29
+    },
+    "queue_total_mean_veh": {
+     "left_mean": 66.169,
+     "right_mean": 71.098,
+     "mean_diff": 4.93,
+     "pct": 7.45,
+     "ci95": [
+      2.217,
+      7.923
+     ],
+     "pairs": 60,
+     "better": 18,
+     "worse": 42
+    },
+    "co2_kg": {
+     "left_mean": 589.862,
+     "right_mean": 601.972,
+     "mean_diff": 12.11,
+     "pct": 2.05,
+     "ci95": [
+      -2.063,
+      27.003
+     ],
+     "pairs": 60,
+     "better": 31,
+     "worse": 29
+    },
+    "teleports": {
+     "left_mean": 0.433,
+     "right_mean": 1.067,
+     "mean_diff": 0.633,
+     "pct": 146.15,
+     "ci95": [
+      0.267,
+      1.067
+     ],
+     "pairs": 60,
+     "better": 6,
+     "worse": 18
+    },
+    "collisions": {
+     "left_mean": 0.0,
+     "right_mean": 0.0,
+     "mean_diff": 0.0,
+     "pct": null,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "pairs": 60,
+     "better": 0,
+     "worse": 0
+    },
+    "ev_travel_mean_s": {
+     "left_mean": 211.206,
+     "right_mean": 209.431,
+     "mean_diff": -1.775,
+     "pct": -0.84,
+     "ci95": [
+      -15.085,
+      12.739
+     ],
+     "pairs": 60,
+     "better": 35,
+     "worse": 25
+    },
+    "ev_stopped_red_s": {
+     "left_mean": 20.818,
+     "right_mean": 22.384,
+     "mean_diff": 1.565,
+     "pct": 7.52,
+     "ci95": [
+      -1.81,
+      5.276
+     ],
+     "pairs": 60,
+     "better": 31,
+     "worse": 29
+    },
+    "ev_stopped_queue_s": {
+     "left_mean": 82.119,
+     "right_mean": 83.718,
+     "mean_diff": 1.599,
+     "pct": 1.95,
+     "ci95": [
+      -7.632,
+      10.887
+     ],
+     "pairs": 60,
+     "better": 32,
+     "worse": 27
+    }
+   },
+   "ml_ev_vs_heuristic": {
+    "mean_wait_s": {
+     "left_mean": 105.285,
+     "right_mean": 107.822,
+     "mean_diff": 2.537,
+     "pct": 2.41,
+     "ci95": [
+      -0.141,
+      5.21
+     ],
+     "pairs": 60,
+     "better": 27,
+     "worse": 33
+    },
+    "mean_wait_civilian_s": {
+     "left_mean": 105.288,
+     "right_mean": 108.108,
+     "mean_diff": 2.82,
+     "pct": 2.68,
+     "ci95": [
+      0.204,
+      5.55
+     ],
+     "pairs": 60,
+     "better": 27,
+     "worse": 33
+    },
+    "mean_travel_s": {
+     "left_mean": 210.124,
+     "right_mean": 210.884,
+     "mean_diff": 0.76,
+     "pct": 0.36,
+     "ci95": [
+      -2.119,
+      3.739
+     ],
+     "pairs": 60,
+     "better": 29,
+     "worse": 31
+    },
+    "throughput_vph": {
+     "left_mean": 2782.667,
+     "right_mean": 2786.533,
+     "mean_diff": 3.867,
+     "pct": 0.14,
+     "ci95": [
+      -17.867,
+      24.67
+     ],
+     "pairs": 60,
+     "better": 30,
+     "worse": 28
+    },
+    "queue_total_mean_veh": {
+     "left_mean": 69.371,
+     "right_mean": 71.993,
+     "mean_diff": 2.622,
+     "pct": 3.78,
+     "ci95": [
+      0.521,
+      4.875
+     ],
+     "pairs": 60,
+     "better": 22,
+     "worse": 38
+    },
+    "co2_kg": {
+     "left_mean": 595.71,
+     "right_mean": 601.549,
+     "mean_diff": 5.84,
+     "pct": 0.98,
+     "ci95": [
+      -4.03,
+      15.841
+     ],
+     "pairs": 60,
+     "better": 29,
+     "worse": 31
+    },
+    "teleports": {
+     "left_mean": 0.867,
+     "right_mean": 1.217,
+     "mean_diff": 0.35,
+     "pct": 40.38,
+     "ci95": [
+      0.016,
+      0.7
+     ],
+     "pairs": 60,
+     "better": 6,
+     "worse": 16
+    },
+    "collisions": {
+     "left_mean": 0.0,
+     "right_mean": 0.0,
+     "mean_diff": 0.0,
+     "pct": null,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "pairs": 60,
+     "better": 0,
+     "worse": 0
+    },
+    "ev_travel_mean_s": {
+     "left_mean": 201.704,
+     "right_mean": 159.054,
+     "mean_diff": -42.65,
+     "pct": -21.14,
+     "ci95": [
+      -51.8,
+      -34.045
+     ],
+     "pairs": 60,
+     "better": 58,
+     "worse": 2
+    },
+    "ev_stopped_red_s": {
+     "left_mean": 21.735,
+     "right_mean": 8.279,
+     "mean_diff": -13.455,
+     "pct": -61.91,
+     "ci95": [
+      -16.631,
+      -10.485
+     ],
+     "pairs": 60,
+     "better": 52,
+     "worse": 8
+    },
+    "ev_stopped_queue_s": {
+     "left_mean": 76.552,
+     "right_mean": 55.023,
+     "mean_diff": -21.529,
+     "pct": -28.12,
+     "ci95": [
+      -28.206,
+      -15.117
+     ],
+     "pairs": 60,
+     "better": 53,
+     "worse": 7
+    }
+   },
+   "ev_rule_effect_on_heuristic": {
+    "mean_wait_s": {
+     "left_mean": 105.285,
+     "right_mean": 106.14,
+     "mean_diff": 0.855,
+     "pct": 0.81,
+     "ci95": [
+      -1.238,
+      2.932
+     ],
+     "pairs": 60,
+     "better": 26,
+     "worse": 34
+    },
+    "mean_wait_civilian_s": {
+     "left_mean": 105.288,
+     "right_mean": 106.433,
+     "mean_diff": 1.145,
+     "pct": 1.09,
+     "ci95": [
+      -0.887,
+      3.287
+     ],
+     "pairs": 60,
+     "better": 26,
+     "worse": 34
+    },
+    "mean_travel_s": {
+     "left_mean": 210.124,
+     "right_mean": 209.707,
+     "mean_diff": -0.417,
+     "pct": -0.2,
+     "ci95": [
+      -2.773,
+      1.824
+     ],
+     "pairs": 60,
+     "better": 32,
+     "worse": 28
+    },
+    "throughput_vph": {
+     "left_mean": 2782.667,
+     "right_mean": 2786.2,
+     "mean_diff": 3.533,
+     "pct": 0.13,
+     "ci95": [
+      -15.068,
+      22.068
+     ],
+     "pairs": 60,
+     "better": 30,
+     "worse": 28
+    },
+    "queue_total_mean_veh": {
+     "left_mean": 69.371,
+     "right_mean": 69.864,
+     "mean_diff": 0.493,
+     "pct": 0.71,
+     "ci95": [
+      -0.965,
+      1.892
+     ],
+     "pairs": 60,
+     "better": 25,
+     "worse": 35
+    },
+    "co2_kg": {
+     "left_mean": 595.71,
+     "right_mean": 593.699,
+     "mean_diff": -2.011,
+     "pct": -0.34,
+     "ci95": [
+      -9.067,
+      4.559
+     ],
+     "pairs": 60,
+     "better": 32,
+     "worse": 28
+    },
+    "teleports": {
+     "left_mean": 0.867,
+     "right_mean": 0.983,
+     "mean_diff": 0.117,
+     "pct": 13.46,
+     "ci95": [
+      -0.183,
+      0.417
+     ],
+     "pairs": 60,
+     "better": 7,
+     "worse": 13
+    },
+    "collisions": {
+     "left_mean": 0.0,
+     "right_mean": 0.0,
+     "mean_diff": 0.0,
+     "pct": null,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "pairs": 60,
+     "better": 0,
+     "worse": 0
+    },
+    "ev_travel_mean_s": {
+     "left_mean": 201.704,
+     "right_mean": 158.04,
+     "mean_diff": -43.664,
+     "pct": -21.65,
+     "ci95": [
+      -50.473,
+      -36.964
+     ],
+     "pairs": 60,
+     "better": 60,
+     "worse": 0
+    },
+    "ev_stopped_red_s": {
+     "left_mean": 21.735,
+     "right_mean": 6.744,
+     "mean_diff": -14.991,
+     "pct": -68.97,
+     "ci95": [
+      -17.535,
+      -12.519
+     ],
+     "pairs": 60,
+     "better": 59,
+     "worse": 1
+    },
+    "ev_stopped_queue_s": {
+     "left_mean": 76.552,
+     "right_mean": 52.373,
+     "mean_diff": -24.179,
+     "pct": -31.58,
+     "ci95": [
+      -30.406,
+      -18.238
+     ],
+     "pairs": 60,
+     "better": 53,
+     "worse": 7
+    }
+   },
+   "ev_rule_effect_on_ml": {
+    "mean_wait_s": {
+     "left_mean": 106.575,
+     "right_mean": 107.822,
+     "mean_diff": 1.247,
+     "pct": 1.17,
+     "ci95": [
+      -1.594,
+      4.141
+     ],
+     "pairs": 60,
+     "better": 26,
+     "worse": 34
+    },
+    "mean_wait_civilian_s": {
+     "left_mean": 106.552,
+     "right_mean": 108.108,
+     "mean_diff": 1.557,
+     "pct": 1.46,
+     "ci95": [
+      -1.202,
+      4.282
+     ],
+     "pairs": 60,
+     "better": 26,
+     "worse": 34
+    },
+    "mean_travel_s": {
+     "left_mean": 210.344,
+     "right_mean": 210.884,
+     "mean_diff": 0.54,
+     "pct": 0.26,
+     "ci95": [
+      -2.525,
+      3.632
+     ],
+     "pairs": 60,
+     "better": 30,
+     "worse": 30
+    },
+    "throughput_vph": {
+     "left_mean": 2778.067,
+     "right_mean": 2786.533,
+     "mean_diff": 8.467,
+     "pct": 0.3,
+     "ci95": [
+      -10.935,
+      27.4
+     ],
+     "pairs": 60,
+     "better": 31,
+     "worse": 28
+    },
+    "queue_total_mean_veh": {
+     "left_mean": 71.098,
+     "right_mean": 71.993,
+     "mean_diff": 0.895,
+     "pct": 1.26,
+     "ci95": [
+      -1.752,
+      3.344
+     ],
+     "pairs": 60,
+     "better": 23,
+     "worse": 37
+    },
+    "co2_kg": {
+     "left_mean": 601.972,
+     "right_mean": 601.549,
+     "mean_diff": -0.423,
+     "pct": -0.07,
+     "ci95": [
+      -12.86,
+      10.959
+     ],
+     "pairs": 60,
+     "better": 26,
+     "worse": 34
+    },
+    "teleports": {
+     "left_mean": 1.067,
+     "right_mean": 1.217,
+     "mean_diff": 0.15,
+     "pct": 14.06,
+     "ci95": [
+      -0.183,
+      0.5
+     ],
+     "pairs": 60,
+     "better": 9,
+     "worse": 10
+    },
+    "collisions": {
+     "left_mean": 0.0,
+     "right_mean": 0.0,
+     "mean_diff": 0.0,
+     "pct": null,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "pairs": 60,
+     "better": 0,
+     "worse": 0
+    },
+    "ev_travel_mean_s": {
+     "left_mean": 209.431,
+     "right_mean": 159.054,
+     "mean_diff": -50.377,
+     "pct": -24.05,
+     "ci95": [
+      -63.092,
+      -40.262
+     ],
+     "pairs": 60,
+     "better": 58,
+     "worse": 2
+    },
+    "ev_stopped_red_s": {
+     "left_mean": 22.384,
+     "right_mean": 8.279,
+     "mean_diff": -14.105,
+     "pct": -63.01,
+     "ci95": [
+      -17.328,
+      -11.013
+     ],
+     "pairs": 60,
+     "better": 54,
+     "worse": 4
+    },
+    "ev_stopped_queue_s": {
+     "left_mean": 83.718,
+     "right_mean": 55.023,
+     "mean_diff": -28.695,
+     "pct": -34.28,
+     "ci95": [
+      -38.309,
+      -20.776
+     ],
+     "pairs": 60,
+     "better": 55,
+     "worse": 4
+    }
+   },
+   "ml_vs_heuristic_both_with_ev": {
     "mean_wait_s": {
      "left_mean": 106.14,
      "right_mean": 107.822,
@@ -1346,6 +2223,19 @@
      "ci95": [
       -0.79,
       4.235
+     ],
+     "pairs": 60,
+     "better": 25,
+     "worse": 35
+    },
+    "mean_wait_civilian_s": {
+     "left_mean": 106.433,
+     "right_mean": 108.108,
+     "mean_diff": 1.675,
+     "pct": 1.57,
+     "ci95": [
+      -0.86,
+      4.336
      ],
      "pairs": 60,
      "better": 25,
@@ -1429,298 +2319,112 @@
      "better": 0,
      "worse": 0
     },
-    "emergency_mean_stopped_s": {
-     "left_mean": 59.107,
-     "right_mean": 63.296,
-     "mean_diff": 4.19,
-     "pct": 7.09,
+    "ev_travel_mean_s": {
+     "left_mean": 158.04,
+     "right_mean": 159.054,
+     "mean_diff": 1.014,
+     "pct": 0.64,
      "ci95": [
-      -1.031,
-      9.807
+      -6.057,
+      7.64
      ],
      "pairs": 60,
-     "better": 28,
-     "worse": 32
-    }
-   },
-   "heuristic_vs_fixed": {
-    "mean_wait_s": {
-     "left_mean": 108.802,
-     "right_mean": 106.14,
-     "mean_diff": -2.662,
-     "pct": -2.45,
-     "ci95": [
-      -6.764,
-      1.743
-     ],
-     "pairs": 60,
-     "better": 38,
-     "worse": 22
+     "better": 32,
+     "worse": 28
     },
-    "mean_travel_s": {
-     "left_mean": 213.174,
-     "right_mean": 209.707,
-     "mean_diff": -3.467,
-     "pct": -1.63,
+    "ev_stopped_red_s": {
+     "left_mean": 6.744,
+     "right_mean": 8.279,
+     "mean_diff": 1.536,
+     "pct": 22.77,
      "ci95": [
-      -8.474,
-      1.548
+      -0.165,
+      3.233
      ],
      "pairs": 60,
-     "better": 38,
-     "worse": 22
+     "better": 20,
+     "worse": 38
     },
-    "throughput_vph": {
-     "left_mean": 2793.0,
-     "right_mean": 2786.2,
-     "mean_diff": -6.8,
-     "pct": -0.24,
+    "ev_stopped_queue_s": {
+     "left_mean": 52.373,
+     "right_mean": 55.023,
+     "mean_diff": 2.65,
+     "pct": 5.06,
      "ci95": [
-      -34.735,
-      20.002
-     ],
-     "pairs": 60,
-     "better": 29,
-     "worse": 30
-    },
-    "queue_total_mean_veh": {
-     "left_mean": 66.169,
-     "right_mean": 69.864,
-     "mean_diff": 3.696,
-     "pct": 5.59,
-     "ci95": [
-      1.4,
-      6.161
-     ],
-     "pairs": 60,
-     "better": 21,
-     "worse": 39
-    },
-    "co2_kg": {
-     "left_mean": 589.862,
-     "right_mean": 593.699,
-     "mean_diff": 3.837,
-     "pct": 0.65,
-     "ci95": [
-      -8.078,
-      16.935
-     ],
-     "pairs": 60,
-     "better": 34,
-     "worse": 26
-    },
-    "teleports": {
-     "left_mean": 0.433,
-     "right_mean": 0.983,
-     "mean_diff": 0.55,
-     "pct": 126.92,
-     "ci95": [
-      0.166,
-      1.033
-     ],
-     "pairs": 60,
-     "better": 7,
-     "worse": 17
-    },
-    "collisions": {
-     "left_mean": 0.0,
-     "right_mean": 0.0,
-     "mean_diff": 0.0,
-     "pct": null,
-     "ci95": [
-      0.0,
-      0.0
-     ],
-     "pairs": 60,
-     "better": 0,
-     "worse": 0
-    },
-    "emergency_mean_stopped_s": {
-     "left_mean": 102.938,
-     "right_mean": 59.107,
-     "mean_diff": -43.831,
-     "pct": -42.58,
-     "ci95": [
-      -52.365,
-      -35.809
-     ],
-     "pairs": 60,
-     "better": 57,
-     "worse": 3
-    }
-   },
-   "ml_vs_fixed": {
-    "mean_wait_s": {
-     "left_mean": 108.802,
-     "right_mean": 107.822,
-     "mean_diff": -0.98,
-     "pct": -0.9,
-     "ci95": [
-      -5.412,
-      3.808
-     ],
-     "pairs": 60,
-     "better": 35,
-     "worse": 25
-    },
-    "mean_travel_s": {
-     "left_mean": 213.174,
-     "right_mean": 210.884,
-     "mean_diff": -2.29,
-     "pct": -1.07,
-     "ci95": [
-      -7.447,
-      2.998
+      -2.333,
+      7.991
      ],
      "pairs": 60,
      "better": 33,
      "worse": 27
-    },
-    "throughput_vph": {
-     "left_mean": 2793.0,
-     "right_mean": 2786.533,
-     "mean_diff": -6.467,
-     "pct": -0.23,
-     "ci95": [
-      -34.668,
-      19.668
-     ],
-     "pairs": 60,
-     "better": 29,
-     "worse": 30
-    },
-    "queue_total_mean_veh": {
-     "left_mean": 66.169,
-     "right_mean": 71.993,
-     "mean_diff": 5.825,
-     "pct": 8.8,
-     "ci95": [
-      3.077,
-      9.013
-     ],
-     "pairs": 60,
-     "better": 15,
-     "worse": 45
-    },
-    "co2_kg": {
-     "left_mean": 589.862,
-     "right_mean": 601.549,
-     "mean_diff": 11.687,
-     "pct": 1.98,
-     "ci95": [
-      -2.568,
-      27.643
-     ],
-     "pairs": 60,
-     "better": 29,
-     "worse": 31
-    },
-    "teleports": {
-     "left_mean": 0.433,
-     "right_mean": 1.217,
-     "mean_diff": 0.783,
-     "pct": 180.77,
-     "ci95": [
-      0.267,
-      1.4
-     ],
-     "pairs": 60,
-     "better": 7,
-     "worse": 16
-    },
-    "collisions": {
-     "left_mean": 0.0,
-     "right_mean": 0.0,
-     "mean_diff": 0.0,
-     "pct": null,
-     "ci95": [
-      0.0,
-      0.0
-     ],
-     "pairs": 60,
-     "better": 0,
-     "worse": 0
-    },
-    "emergency_mean_stopped_s": {
-     "left_mean": 102.938,
-     "right_mean": 63.296,
-     "mean_diff": -39.641,
-     "pct": -38.51,
-     "ci95": [
-      -49.051,
-      -30.76
-     ],
-     "pairs": 60,
-     "better": 52,
-     "worse": 8
     }
    }
   },
   "mlVsHeuristicWaitByScenario": {
    "balanced": {
-    "left_mean": 92.689,
-    "right_mean": 98.088,
-    "mean_diff": 5.398,
-    "pct": 5.82,
+    "left_mean": 95.685,
+    "right_mean": 96.469,
+    "mean_diff": 0.784,
+    "pct": 0.82,
     "ci95": [
-     -0.196,
-     12.906
+     -7.206,
+     9.219
     ],
     "pairs": 12,
-    "better": 3,
-    "worse": 9
+    "better": 5,
+    "worse": 7
    },
    "ns_heavy": {
-    "left_mean": 97.034,
-    "right_mean": 100.113,
-    "mean_diff": 3.079,
-    "pct": 3.17,
+    "left_mean": 95.903,
+    "right_mean": 99.524,
+    "mean_diff": 3.621,
+    "pct": 3.78,
     "ci95": [
-     -1.8,
-     8.363
+     -1.661,
+     8.979
     ],
     "pairs": 12,
     "better": 5,
     "worse": 7
    },
    "ew_heavy": {
-    "left_mean": 96.103,
-    "right_mean": 93.836,
-    "mean_diff": -2.267,
-    "pct": -2.36,
+    "left_mean": 92.232,
+    "right_mean": 93.009,
+    "mean_diff": 0.776,
+    "pct": 0.84,
     "ci95": [
-     -4.805,
-     0.024
+     -3.029,
+     5.242
     ],
     "pairs": 12,
-    "better": 7,
-    "worse": 5
+    "better": 8,
+    "worse": 4
    },
    "pulse": {
-    "left_mean": 83.106,
-    "right_mean": 85.174,
-    "mean_diff": 2.068,
-    "pct": 2.49,
+    "left_mean": 80.055,
+    "right_mean": 85.719,
+    "mean_diff": 5.664,
+    "pct": 7.08,
     "ci95": [
-     -3.949,
-     8.363
+     0.196,
+     11.313
     ],
     "pairs": 12,
     "better": 5,
     "worse": 7
    },
    "rush_ramp": {
-    "left_mean": 161.767,
-    "right_mean": 161.9,
-    "mean_diff": 0.132,
-    "pct": 0.08,
+    "left_mean": 162.55,
+    "right_mean": 158.156,
+    "mean_diff": -4.394,
+    "pct": -2.7,
     "ci95": [
-     -5.745,
-     5.479
+     -14.389,
+     5.231
     ],
     "pairs": 12,
-    "better": 5,
-    "worse": 7
+    "better": 7,
+    "worse": 5
    }
   },
   "reading": "ci95 spanning zero means no reliable difference; 'better'/'worse' count paired episodes"

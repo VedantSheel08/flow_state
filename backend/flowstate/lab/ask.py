@@ -83,7 +83,7 @@ def facts(replay_id: str | None, live: dict[str, Any] | None) -> dict[str, Any]:
     f = lab_dir() / "comparison_eval.json"
     if f.exists():
         ev = json.loads(f.read_text())
-        out["pairedEvaluation"] = ev.get("summary")
+        out["pairedEvaluation"] = _trim_eval(ev.get("summary") or {})
     f = lab_dir() / "forecast_eval.json"
     if f.exists():
         fe = json.loads(f.read_text())
@@ -121,6 +121,19 @@ def facts(replay_id: str | None, live: dict[str, Any] | None) -> dict[str, Any]:
     return out
 
 
+_EVAL_PAIRS = ("ml_vs_heuristic", "ev_rule_effect_on_heuristic", "ml_ev_vs_heuristic", "heuristic_vs_fixed")
+_EVAL_METRICS = ("mean_wait_s", "mean_wait_civilian_s", "mean_travel_s", "queue_total_mean_veh", "ev_travel_mean_s", "ev_stopped_red_s", "ev_stopped_queue_s")
+
+
+def _trim_eval(s: dict[str, Any]) -> dict[str, Any]:
+    """Only the pairs and metrics an answer can use: keeps the prompt small (every number kept is a measured value)."""
+    out: dict[str, Any] = {"episodes": s.get("episodes"), "arms": s.get("arms")}
+    for p in _EVAL_PAIRS:
+        if p in s:
+            out[p] = {m: {k: s[p][m][k] for k in ("left_mean", "right_mean", "mean_diff", "ci95", "pairs")} for m in _EVAL_METRICS if m in s[p]}
+    return out
+
+
 def _approach_keys() -> list[str]:
     from .contract import approach_table
 
@@ -151,6 +164,13 @@ def deterministic(question: str, F: dict[str, Any]) -> tuple[str, dict[str, Any]
         m = r["measured"]["mean_wait_s"]
         parts.append(f"In this paired run ({r['scenario']}, seed {r['seed']}), mean waiting time was {m['left']} s for {r['left']} and {m['right']} s for {r['right']} "
                      f"({m['diff']:+} s). Both runs used identical demand.")
+    ev = (F.get("pairedEvaluation") or {}).get("ev_rule_effect_on_heuristic")
+    if ev and any(w in q for w in ("ambulance", "emergency", "siren")):
+        t, r, qu, cw = ev["ev_travel_mean_s"], ev["ev_stopped_red_s"], ev["ev_stopped_queue_s"], ev["mean_wait_civilian_s"]
+        parts.append(f"The simulator gives ambulances no priority: they stop at red lights and queue behind other cars. When the controller turns the lights ahead of an ambulance green, "
+                     f"its average travel time changes by {t['mean_diff']} s (95% CI {t['ci95'][0]} to {t['ci95'][1]}), time stopped at red lights by {r['mean_diff']} s and time stuck behind queues by "
+                     f"{qu['mean_diff']} s. It still waits about {qu['right_mean']} s in queues, because cars in front cannot be cleared. Other vehicles' mean wait changes by "
+                     f"{cw['mean_diff']} s (CI {cw['ci95'][0]} to {cw['ci95'][1]}).")
     fb = F.get("forecastBenchmark")
     if fb and fb.get("30") and fb.get("60") and any(w in q for w in ("forecast", "predict", "accura", "reliab", "confiden", "model", "trust", "wrong", "weak")):
         o30, o60 = fb["30"]["overall"], fb["60"]["overall"]
@@ -193,12 +213,16 @@ def answer(question: str, replay_id: str | None, live: dict[str, Any] | None) ->
     F = facts(replay_id, live)
     text, req = deterministic(question, F)
     source, note, rejected = "measurements", None, []
+    user = json.dumps({"QUESTION": question, "FACTS": F}, sort_keys=True)
+    sent, draft, checked = False, None, None
     g = _guard()
     if g.available:
         try:
-            out = g.generate_json(SYSTEM, json.dumps({"QUESTION": question, "FACTS": F}, sort_keys=True), SCHEMA)
+            sent = True
+            out = g.generate_json(SYSTEM, user, SCHEMA)
             draft = str(out.get("answer", "")).strip()
             ok, bad = grounded(draft, F)
+            checked = {"numbersInDraft": len(_NUM.findall(draft)), "ungrounded": bad}
             if draft and ok:
                 text, source = draft, "gemini"
                 req = _valid_request(out.get("scenario_request")) or (req if out.get("scenario_request") else None)
@@ -212,4 +236,7 @@ def answer(question: str, replay_id: str | None, live: dict[str, Any] | None) ->
             note = f"Gemini error ({type(exc).__name__}); answer built from measurements"
     else:
         note = "Gemini not configured (no server-side key) or temporarily closed; answer built from measurements"
-    return {"answer": text, "source": source, "note": note, "rejectedNumbers": rejected, "scenarioRequest": req, "facts": F}
+    return {"answer": text, "source": source, "note": note, "rejectedNumbers": rejected, "scenarioRequest": req, "facts": F,
+            # exactly what Gemini is given (never raw simulation state, never any control API), for the inspector
+            "prompt": {"system": SYSTEM, "user": user, "schema": SCHEMA, "chars": len(SYSTEM) + len(user), "approxTokens": (len(SYSTEM) + len(user)) // 4},
+            "sentToGemini": sent, "geminiDraft": draft, "grounding": checked}

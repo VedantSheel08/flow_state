@@ -1541,45 +1541,45 @@
  "regime_shift_check": {
   "note": "recorded replays only (a handful of episodes); a direction check, not a benchmark",
   "not_ml_controlled_30s": {
-   "n": 38880,
-   "mae": 2.588,
-   "persistence_mae": 4.642,
-   "skill_vs_persistence": 0.442,
-   "bias": -0.066,
-   "rmse": 4.216,
-   "mean_true_queue": 6.21,
-   "episodes": 9
+   "n": 43072,
+   "mae": 2.726,
+   "persistence_mae": 4.952,
+   "skill_vs_persistence": 0.45,
+   "bias": -0.046,
+   "rmse": 4.387,
+   "mean_true_queue": 6.83,
+   "episodes": 10
   },
   "not_ml_controlled_60s": {
-   "n": 38016,
-   "mae": 3.092,
-   "persistence_mae": 3.789,
-   "skill_vs_persistence": 0.184,
-   "bias": -0.183,
-   "rmse": 4.828,
-   "mean_true_queue": 6.34,
-   "episodes": 9
+   "n": 42112,
+   "mae": 3.336,
+   "persistence_mae": 3.542,
+   "skill_vs_persistence": 0.058,
+   "bias": -0.185,
+   "rmse": 5.137,
+   "mean_true_queue": 6.97,
+   "episodes": 10
   },
   "ml_controlled_30s": {
-   "n": 21040,
-   "mae": 2.332,
-   "persistence_mae": 4.151,
-   "skill_vs_persistence": 0.438,
-   "bias": 0.078,
-   "rmse": 3.886,
-   "mean_true_queue": 4.85,
-   "episodes": 5
+   "n": 25472,
+   "mae": 2.615,
+   "persistence_mae": 4.554,
+   "skill_vs_persistence": 0.426,
+   "bias": -0.005,
+   "rmse": 4.287,
+   "mean_true_queue": 6.0,
+   "episodes": 6
   },
   "ml_controlled_60s": {
-   "n": 20560,
-   "mae": 2.825,
-   "persistence_mae": 3.063,
-   "skill_vs_persistence": 0.078,
-   "bias": -0.017,
-   "rmse": 4.535,
-   "mean_true_queue": 4.94,
-   "episodes": 5
+   "n": 24896,
+   "mae": 3.161,
+   "persistence_mae": 3.464,
+   "skill_vs_persistence": 0.088,
+   "bias": -0.136,
+   "rmse": 5.024,
+   "mean_true_queue": 6.12,
+   "episodes": 6
   }
  },
- "wall_s": 95.8
+ "wall_s": 74.5
 }

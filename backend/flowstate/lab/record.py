@@ -23,7 +23,9 @@ COMPARE = [("mean_wait_s", "Mean waiting time", "s", -1), ("mean_travel_s", "Mea
            ("p95_travel_s", "95th-pct travel time", "s", -1), ("throughput_vph", "Throughput (demand window)", "veh/h", 1),
            ("queue_total_mean_veh", "Mean queued vehicles", "veh", -1), ("queue_max_veh", "Peak queued vehicles", "veh", -1),
            ("spillback_pct", "Spillback", "% block-s", -1), ("co2_kg", "CO2 (HBEFA3 estimate)", "kg", -1),
-           ("teleports", "Teleports", "", -1), ("collisions", "Collisions", "", -1), ("vehicles_completed", "Vehicles completed", "", 1)]
+           ("teleports", "Teleports", "", -1), ("collisions", "Collisions", "", -1), ("vehicles_completed", "Vehicles completed", "", 1),
+           ("mean_wait_civilian_s", "Mean wait, all vehicles except ambulances", "s", -1), ("ev_travel_mean_s", "Ambulance travel time", "s", -1),
+           ("ev_stopped_red_s", "Ambulance stopped at red lights", "s", -1), ("ev_stopped_queue_s", "Ambulance stuck behind queues", "s", -1)]
 
 
 def replays_dir() -> Path:
@@ -139,10 +141,12 @@ def index() -> dict[str, Any]:
 
 
 DEFAULT_PAIRS = [
-    ("queue_heuristic", "ml_forecast", "rush_ramp", 3100, 1.18),
+    ("queue_heuristic", "ml_forecast_ev", "rush_ramp", 3100, 1.18),  # the demo pair: ML forecast + lights cleared ahead of ambulances
+    ("queue_heuristic", "ml_forecast_ev", "pulse", 3101, 1.18),
+    ("queue_heuristic", "ml_forecast_ev", "balanced", 3102, 1.0),
+    ("queue_heuristic", "ml_forecast_ev", "ns_heavy", 3103, 1.18),
+    ("queue_heuristic", "ml_forecast", "rush_ramp", 3100, 1.18),  # forecast effect alone
     ("queue_heuristic", "ml_forecast", "pulse", 3101, 1.18),
-    ("queue_heuristic", "ml_forecast", "balanced", 3102, 1.0),
-    ("queue_heuristic", "ml_forecast", "ns_heavy", 3103, 1.18),
     ("fixed_time", "queue_heuristic", "rush_ramp", 3100, 1.18),
     ("fixed_time", "queue_heuristic", "balanced", 3102, 1.0),
 ]

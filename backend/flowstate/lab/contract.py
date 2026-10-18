@@ -44,6 +44,7 @@ def _round(v: float, d: int = 2) -> float:
 
 def build_report(*, t: float, queues: list[float], capacity: list[float] | None = None, extra: list[dict[str, Any]] | None = None,
                  forecast: dict[str, Any] | None = None, model: dict[str, Any] | None = None, controller: dict[str, Any] | None = None,
+                 emergency: list[dict[str, Any]] | None = None,
                  decisions: list[dict[str, Any]] | None = None, source: str = "live", context: dict[str, Any] | None = None) -> dict[str, Any]:
     """One time-slice of intelligence.
 
@@ -89,7 +90,7 @@ def build_report(*, t: float, queues: list[float], capacity: list[float] | None 
             rows.append(r)
         predicted = {"kind": "prediction", "madeAtT": t, "model": model, "approaches": rows}
     return {"schema": SCHEMA, "source": source, "t": t, "context": context or {},
-            "observed": {"kind": "observed", "t": t, "approaches": observed,
+            "observed": {"kind": "observed", "t": t, "approaches": observed, "emergencyVehicles": emergency or [],
                          "network": {"queued": _round(sum(queues), 1), "approachesAtOrOverHalf": sum(1 for i in range(len(table)) if queues[i] >= SPILL_FRAC * cap[i])}},
             "predicted": predicted,
             "warnings": warnings,
