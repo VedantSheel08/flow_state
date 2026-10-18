@@ -97,7 +97,9 @@ function useShortcuts() {
 function MapStage() {
   const netId = useNetwork()
   const net = useStore((s) => s.networks[netId])
+  const status = useStore((s) => s.status)
   const conn = useStore((s) => s.connection)
+  const run = useStore((s) => s.run)
   const pick = useStore((s) => s.pick)
   const railOpen = useStore((s) => s.panels.left)
   const inspectorOpen = useStore((s) => s.panels.right)
@@ -128,6 +130,24 @@ function MapStage() {
           <div>
             <div className="text-[12.5px] font-medium text-ink">Simulation server unreachable</div>
             <div className="text-[11px] text-ink-3">Reconnecting automatically. Start it with run.ps1 or `python -m flowstate.cli serve`.</div>
+          </div>
+        </div>
+      )}
+      {!run && conn === 'open' && net && status.state === 'idle' && (
+        // centred on the visible map between the scenario rail and the inspector
+        <div className="glass anim-in pointer-events-none absolute bottom-4 left-[calc(50%+(var(--rail-w)-var(--inspector-w))/2)] z-10 -translate-x-1/2 rounded-xl px-4 py-2.5 text-center">
+          <div className="text-[13px] font-semibold text-ink">{net.title}</div>
+          <div className="mt-1.5 flex items-center justify-center gap-3 whitespace-nowrap text-[11px] text-ink-3">
+            <span className="flex items-center gap-1">
+              <span className="kbd">←</span>
+              <span className="kbd">→</span> intersections
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="kbd">F</span> network
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="kbd">\</span> map only
+            </span>
           </div>
         </div>
       )}
