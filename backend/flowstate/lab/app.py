@@ -110,8 +110,8 @@ def replay(rid: str) -> Response:
 
 
 class PairRequest(BaseModel):
-    left: Literal["fixed_time", "queue_heuristic", "ml_forecast"] = "queue_heuristic"
-    right: Literal["fixed_time", "queue_heuristic", "ml_forecast"] = "ml_forecast"
+    left: Literal["fixed_time", "queue_heuristic", "ml_forecast", "pressure", "ml_pressure"] = "queue_heuristic"
+    right: Literal["fixed_time", "queue_heuristic", "ml_forecast", "pressure", "ml_pressure"] = "ml_forecast"
     scenario: str = "rush_ramp"
     seed: int = Field(3100, ge=0, le=99999)
     intensity: float = Field(1.0, ge=0.5, le=1.4)
@@ -303,7 +303,7 @@ async def live_ws(ws: WebSocket) -> None:
                 if sc not in SCENARIOS or ctl not in CONTROLLERS:
                     await ws.send_text(json.dumps({"type": "error", "error": "unknown scenario or controller"}))
                     continue
-                if ctl == "ml_forecast" and Forecaster.load_default() is None:
+                if ctl in ("ml_forecast", "ml_pressure") and Forecaster.load_default() is None:
                     await ws.send_text(json.dumps({"type": "error", "error": "forecaster not trained yet"}))
                     continue
                 await live.start({"scenario": sc, "controller": ctl, "seed": int(msg.get("seed", 3100)) % 100000,

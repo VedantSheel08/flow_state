@@ -89,6 +89,8 @@ CONTROLLERS = {
     "fixed_time": "Fixed-time (30 s greens)",
     "queue_heuristic": "Queue-responsive heuristic (no ML)",
     "ml_forecast": "Queue heuristic + ML forecast",
+    "pressure": "Downstream-aware pressure control (no ML)",
+    "ml_pressure": "Pressure control + ML arrival forecast",
 }
 
 
@@ -97,6 +99,16 @@ def make_controller(cid: str, sim: Any, *, shadow_forecast: bool = True) -> tupl
     from .forecast import Forecaster
 
     fc = Forecaster.load_default()
+    from . import optimize
+
+    if optimize.is_candidate(cid):
+        ctl, info = optimize.make(cid, sim)
+        if ctl.uses_forecast and fc is None:  # no trained forecaster: degrade to the verified heuristic, and say so
+            sim.forecaster = None
+            h, hinfo = make("queue_heuristic")
+            return h, hinfo | {"requested": cid, "fallback": True, "reason": "no trained forecaster", "mlInControl": False}
+        sim.forecaster = fc if (ctl.uses_forecast or shadow_forecast) else None
+        return ctl, info
     if cid.startswith("ml_forecast"):
         if fc is None:
             raise RuntimeError("no trained forecaster: run `python -m flowstate.lab.cli train` first")

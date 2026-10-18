@@ -1,0 +1,89 @@
+{
+ "rule": "Pre-registered selection on development data only (dev + dev_ext seeds), written before the extended dev results were seen.\n\nRule: among candidates with all 64 development pairs, a candidate is *eligible* if, versus the queue heuristic on the same pairs,\nit has zero collisions, zero SafeSignal audit violations, at most 10 % more teleports and at most 0.5 % lower throughput.\nThe deterministic pick is the eligible ``pressure@...`` with the lowest mean paired waiting-time difference; the ML pick is the\neligible ``ml_pressure@...`` with the lowest one. Both go to the final test, unchanged, together with the heuristic and the\nprevious ML controller. Writes ``artifacts/lab/optimization_v2_selection.json``.",
+ "development_seeds": "4000-4015 x balanced, ns_heavy, ew_heavy, pulse (64 pairs)",
+ "reference": "queue_heuristic",
+ "candidates": {
+  "ml_pressure@10,0.5,0,1": {
+   "eligible": true,
+   "pairs": 64,
+   "wait_diff": -2.5,
+   "wait_ci95": [
+    -5.343,
+    0.343
+   ],
+   "travel_diff": -3.742,
+   "throughput_pct": 0.6,
+   "teleports": 70,
+   "teleports_ref": 77,
+   "queue_diff": -0.541
+  },
+  "pressure@10,0.5": {
+   "eligible": true,
+   "pairs": 64,
+   "wait_diff": -2.112,
+   "wait_ci95": [
+    -4.822,
+    0.67
+   ],
+   "travel_diff": -3.094,
+   "throughput_pct": 0.65,
+   "teleports": 55,
+   "teleports_ref": 77,
+   "queue_diff": -1.12
+  },
+  "pressure@14,0.5": {
+   "eligible": true,
+   "pairs": 64,
+   "wait_diff": -0.756,
+   "wait_ci95": [
+    -3.329,
+    1.881
+   ],
+   "travel_diff": -2.905,
+   "throughput_pct": 0.47,
+   "teleports": 67,
+   "teleports_ref": 77,
+   "queue_diff": -0.832
+  },
+  "pressure@6,1": {
+   "eligible": true,
+   "pairs": 64,
+   "wait_diff": -0.879,
+   "wait_ci95": [
+    -3.461,
+    2.102
+   ],
+   "travel_diff": -1.757,
+   "throughput_pct": 0.35,
+   "teleports": 81,
+   "teleports_ref": 77,
+   "queue_diff": -0.883
+  }
+ },
+ "selected": {
+  "pressure": {
+   "id": "pressure@10,0.5",
+   "margin": 10.0,
+   "gamma": 0.5,
+   "fc_down": 0.0,
+   "beta": 0.0,
+   "dev_wait_diff": -2.112,
+   "dev_wait_ci95": [
+    -4.822,
+    0.67
+   ]
+  },
+  "ml_pressure": {
+   "id": "ml_pressure@10,0.5,0,1",
+   "margin": 10.0,
+   "gamma": 0.5,
+   "fc_down": 0.0,
+   "beta": 1.0,
+   "dev_wait_diff": -2.5,
+   "dev_wait_ci95": [
+    -5.343,
+    0.343
+   ]
+  }
+ }
+}

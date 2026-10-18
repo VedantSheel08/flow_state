@@ -1,0 +1,38 @@
+{
+ "queue_heuristic": {
+  "observation": 0.438,
+  "inference": 0.0,
+  "decide": 0.096,
+  "action_total_mean": 0.534,
+  "action_total_p95": 0.979,
+  "sumo_step": 2.444,
+  "wall_s": 6.29
+ },
+ "pressure": {
+  "observation": 0.445,
+  "inference": 0.0,
+  "decide": 0.126,
+  "action_total_mean": 0.57,
+  "action_total_p95": 1.098,
+  "sumo_step": 2.286,
+  "wall_s": 5.85
+ },
+ "ml_pressure": {
+  "observation": 0.433,
+  "inference": 4.438,
+  "decide": 0.279,
+  "action_total_mean": 5.15,
+  "action_total_p95": 7.552,
+  "sumo_step": 2.38,
+  "wall_s": 7.46
+ },
+ "ml_forecast": {
+  "observation": 0.41,
+  "inference": 4.264,
+  "decide": 0.245,
+  "action_total_mean": 4.918,
+  "action_total_p95": 7.232,
+  "sumo_step": 2.284,
+  "wall_s": 7.13
+ }
+}

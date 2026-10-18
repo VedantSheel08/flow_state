@@ -75,3 +75,9 @@ A WebSocket frame send takes about 0.2-0.4 ms. A whole 1,500 s paired episode ta
 * No Gemini key is configured locally, and the Gemini REST client (`flowstate.experiments.assistant`) is on `task/integrations`, not on this branch.
   The lab therefore answers from measurements until both are present. The Gemini path is tested with a scripted client through the real guard.
 * CO2 uses HBEFA3 with an assumed vehicle-class mapping. Use it as a paired difference only, not as an absolute inventory.
+
+## Optimization v2
+
+Why the forecast-aware heuristic did not help, and the downstream-aware pressure controllers tested on a new final set: see
+[OPTIMIZATION_V2.md](OPTIMIZATION_V2.md). In short, the forecast predicts halting under the old controller's own switching,
+so it biases decisions towards holding. No candidate beats the heuristic overall, and the heuristic remains the default.
