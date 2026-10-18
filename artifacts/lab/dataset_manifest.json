@@ -1,0 +1,1642 @@
+{
+ "episodes": {
+  "train:balanced:1000:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 95.95701680672268,
+   "teleports": 0,
+   "vehicles_scheduled": 1001
+  },
+  "train:balanced:1000:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 99.82776384535005,
+   "teleports": 0,
+   "vehicles_scheduled": 1001
+  },
+  "train:balanced:1000:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 97.53059375,
+   "teleports": 0,
+   "vehicles_scheduled": 1001
+  },
+  "train:balanced:1001:fixed_time": {
+   "rows": 3488,
+   "mean_wait_s": 61.16282705099778,
+   "teleports": 0,
+   "vehicles_scheduled": 902
+  },
+  "train:balanced:1001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 70.7112975391499,
+   "teleports": 0,
+   "vehicles_scheduled": 902
+  },
+  "train:balanced:1001:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 72.48275395033859,
+   "teleports": 0,
+   "vehicles_scheduled": 902
+  },
+  "train:balanced:1002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 62.24839224629419,
+   "teleports": 0,
+   "vehicles_scheduled": 881
+  },
+  "train:balanced:1002:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 63.8236,
+   "teleports": 0,
+   "vehicles_scheduled": 881
+  },
+  "train:balanced:1002:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 77.44892773892774,
+   "teleports": 0,
+   "vehicles_scheduled": 881
+  },
+  "train:balanced:1003:fixed_time": {
+   "rows": 3376,
+   "mean_wait_s": 50.30399038461538,
+   "teleports": 0,
+   "vehicles_scheduled": 832
+  },
+  "train:balanced:1003:queue_heuristic": {
+   "rows": 3360,
+   "mean_wait_s": 47.200624999999995,
+   "teleports": 0,
+   "vehicles_scheduled": 832
+  },
+  "train:balanced:1003:queue_heuristic@3,14,0.25": {
+   "rows": 3584,
+   "mean_wait_s": 51.159759615384615,
+   "teleports": 0,
+   "vehicles_scheduled": 832
+  },
+  "train:balanced:1004:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 87.06428086070217,
+   "teleports": 1,
+   "vehicles_scheduled": 954
+  },
+  "train:balanced:1004:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 81.74291383219955,
+   "teleports": 0,
+   "vehicles_scheduled": 954
+  },
+  "train:balanced:1004:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 81.03637951105937,
+   "teleports": 0,
+   "vehicles_scheduled": 954
+  },
+  "train:balanced:1005:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 88.36896551724138,
+   "teleports": 1,
+   "vehicles_scheduled": 1001
+  },
+  "train:balanced:1005:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 90.66799564270151,
+   "teleports": 0,
+   "vehicles_scheduled": 1001
+  },
+  "train:balanced:1005:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 91.62082672706683,
+   "teleports": 2,
+   "vehicles_scheduled": 1001
+  },
+  "train:balanced:1006:fixed_time": {
+   "rows": 3440,
+   "mean_wait_s": 36.58674324324325,
+   "teleports": 0,
+   "vehicles_scheduled": 740
+  },
+  "train:balanced:1006:queue_heuristic": {
+   "rows": 3408,
+   "mean_wait_s": 30.885391891891896,
+   "teleports": 0,
+   "vehicles_scheduled": 740
+  },
+  "train:balanced:1006:queue_heuristic@3,14,0.25": {
+   "rows": 3376,
+   "mean_wait_s": 40.74485135135135,
+   "teleports": 0,
+   "vehicles_scheduled": 740
+  },
+  "train:balanced:1007:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 102.29652675760757,
+   "teleports": 1,
+   "vehicles_scheduled": 1129
+  },
+  "train:balanced:1007:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 101.65984699453553,
+   "teleports": 2,
+   "vehicles_scheduled": 1129
+  },
+  "train:balanced:1007:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 101.62415500538212,
+   "teleports": 4,
+   "vehicles_scheduled": 1129
+  },
+  "train:balanced:1008:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 70.49177514792899,
+   "teleports": 0,
+   "vehicles_scheduled": 887
+  },
+  "train:balanced:1008:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 71.88643757159221,
+   "teleports": 0,
+   "vehicles_scheduled": 887
+  },
+  "train:balanced:1008:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 92.88940828402369,
+   "teleports": 1,
+   "vehicles_scheduled": 887
+  },
+  "train:balanced:1009:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 106.51333333333334,
+   "teleports": 0,
+   "vehicles_scheduled": 1206
+  },
+  "train:balanced:1009:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 114.88593908629441,
+   "teleports": 2,
+   "vehicles_scheduled": 1206
+  },
+  "train:balanced:1009:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 111.68716091954022,
+   "teleports": 7,
+   "vehicles_scheduled": 1206
+  },
+  "train:balanced:1010:fixed_time": {
+   "rows": 3568,
+   "mean_wait_s": 51.010561926605504,
+   "teleports": 0,
+   "vehicles_scheduled": 872
+  },
+  "train:balanced:1010:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 50.19615384615384,
+   "teleports": 0,
+   "vehicles_scheduled": 872
+  },
+  "train:balanced:1010:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 65.32134174311926,
+   "teleports": 0,
+   "vehicles_scheduled": 872
+  },
+  "train:balanced:1011:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 88.88108446298226,
+   "teleports": 0,
+   "vehicles_scheduled": 1039
+  },
+  "train:balanced:1011:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 84.63123370110331,
+   "teleports": 0,
+   "vehicles_scheduled": 1039
+  },
+  "train:balanced:1011:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 79.9427466937945,
+   "teleports": 0,
+   "vehicles_scheduled": 1039
+  },
+  "train:ns_heavy:1000:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 127.88096009975062,
+   "teleports": 4,
+   "vehicles_scheduled": 985
+  },
+  "train:ns_heavy:1000:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 124.78284745762713,
+   "teleports": 1,
+   "vehicles_scheduled": 985
+  },
+  "train:ns_heavy:1000:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 120.11620022753127,
+   "teleports": 1,
+   "vehicles_scheduled": 985
+  },
+  "train:ns_heavy:1001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 79.87496613995485,
+   "teleports": 1,
+   "vehicles_scheduled": 910
+  },
+  "train:ns_heavy:1001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 70.25207276736494,
+   "teleports": 0,
+   "vehicles_scheduled": 910
+  },
+  "train:ns_heavy:1001:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 75.4474972067039,
+   "teleports": 0,
+   "vehicles_scheduled": 910
+  },
+  "train:ns_heavy:1002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 67.81836165048543,
+   "teleports": 0,
+   "vehicles_scheduled": 825
+  },
+  "train:ns_heavy:1002:queue_heuristic": {
+   "rows": 3504,
+   "mean_wait_s": 56.24406060606061,
+   "teleports": 0,
+   "vehicles_scheduled": 825
+  },
+  "train:ns_heavy:1002:queue_heuristic@3,14,0.25": {
+   "rows": 3584,
+   "mean_wait_s": 54.29618181818183,
+   "teleports": 0,
+   "vehicles_scheduled": 825
+  },
+  "train:ns_heavy:1003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 77.04992307692308,
+   "teleports": 0,
+   "vehicles_scheduled": 915
+  },
+  "train:ns_heavy:1003:queue_heuristic": {
+   "rows": 3632,
+   "mean_wait_s": 57.83977049180327,
+   "teleports": 0,
+   "vehicles_scheduled": 915
+  },
+  "train:ns_heavy:1003:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 63.05379385964912,
+   "teleports": 0,
+   "vehicles_scheduled": 915
+  },
+  "train:ns_heavy:1004:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 91.18689142857143,
+   "teleports": 0,
+   "vehicles_scheduled": 921
+  },
+  "train:ns_heavy:1004:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 68.68449500554938,
+   "teleports": 0,
+   "vehicles_scheduled": 921
+  },
+  "train:ns_heavy:1004:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 76.96903846153846,
+   "teleports": 1,
+   "vehicles_scheduled": 921
+  },
+  "train:ns_heavy:1005:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 104.1872636262514,
+   "teleports": 0,
+   "vehicles_scheduled": 960
+  },
+  "train:ns_heavy:1005:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 80.8248712446352,
+   "teleports": 0,
+   "vehicles_scheduled": 960
+  },
+  "train:ns_heavy:1005:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 81.1901872246696,
+   "teleports": 1,
+   "vehicles_scheduled": 960
+  },
+  "train:ns_heavy:1006:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 63.48044041450776,
+   "teleports": 0,
+   "vehicles_scheduled": 774
+  },
+  "train:ns_heavy:1006:queue_heuristic": {
+   "rows": 3392,
+   "mean_wait_s": 50.015736434108526,
+   "teleports": 0,
+   "vehicles_scheduled": 774
+  },
+  "train:ns_heavy:1006:queue_heuristic@3,14,0.25": {
+   "rows": 3424,
+   "mean_wait_s": 54.106175710594314,
+   "teleports": 0,
+   "vehicles_scheduled": 774
+  },
+  "train:ns_heavy:1007:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 102.27868448098664,
+   "teleports": 0,
+   "vehicles_scheduled": 1073
+  },
+  "train:ns_heavy:1007:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 114.31486228813559,
+   "teleports": 0,
+   "vehicles_scheduled": 1073
+  },
+  "train:ns_heavy:1007:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 123.08518201284795,
+   "teleports": 0,
+   "vehicles_scheduled": 1073
+  },
+  "train:ns_heavy:1008:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 86.49716836734694,
+   "teleports": 0,
+   "vehicles_scheduled": 822
+  },
+  "train:ns_heavy:1008:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 65.32388278388278,
+   "teleports": 0,
+   "vehicles_scheduled": 822
+  },
+  "train:ns_heavy:1008:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 64.39344403444035,
+   "teleports": 0,
+   "vehicles_scheduled": 822
+  },
+  "train:ns_heavy:1009:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 100.73594390507012,
+   "teleports": 2,
+   "vehicles_scheduled": 1089
+  },
+  "train:ns_heavy:1009:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 95.61542194092827,
+   "teleports": 3,
+   "vehicles_scheduled": 1089
+  },
+  "train:ns_heavy:1009:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 95.38834090909091,
+   "teleports": 2,
+   "vehicles_scheduled": 1089
+  },
+  "train:ns_heavy:1010:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 88.1326433915212,
+   "teleports": 0,
+   "vehicles_scheduled": 817
+  },
+  "train:ns_heavy:1010:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 74.96690417690418,
+   "teleports": 0,
+   "vehicles_scheduled": 817
+  },
+  "train:ns_heavy:1010:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 80.31614123581338,
+   "teleports": 0,
+   "vehicles_scheduled": 817
+  },
+  "train:ns_heavy:1011:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 102.6343560209424,
+   "teleports": 0,
+   "vehicles_scheduled": 1035
+  },
+  "train:ns_heavy:1011:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 87.62624242424242,
+   "teleports": 0,
+   "vehicles_scheduled": 1035
+  },
+  "train:ns_heavy:1011:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 91.81216970998926,
+   "teleports": 1,
+   "vehicles_scheduled": 1035
+  },
+  "train:ew_heavy:1000:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 77.70250287026406,
+   "teleports": 0,
+   "vehicles_scheduled": 977
+  },
+  "train:ew_heavy:1000:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 74.1983741648107,
+   "teleports": 0,
+   "vehicles_scheduled": 977
+  },
+  "train:ew_heavy:1000:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 84.75311136624569,
+   "teleports": 0,
+   "vehicles_scheduled": 977
+  },
+  "train:ew_heavy:1001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 70.43603211009173,
+   "teleports": 0,
+   "vehicles_scheduled": 886
+  },
+  "train:ew_heavy:1001:queue_heuristic": {
+   "rows": 3616,
+   "mean_wait_s": 65.37237020316027,
+   "teleports": 0,
+   "vehicles_scheduled": 886
+  },
+  "train:ew_heavy:1001:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 70.79747126436781,
+   "teleports": 0,
+   "vehicles_scheduled": 886
+  },
+  "train:ew_heavy:1002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 56.96218826405868,
+   "teleports": 0,
+   "vehicles_scheduled": 825
+  },
+  "train:ew_heavy:1002:queue_heuristic": {
+   "rows": 3552,
+   "mean_wait_s": 45.37289696969697,
+   "teleports": 0,
+   "vehicles_scheduled": 825
+  },
+  "train:ew_heavy:1002:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 58.67382640586797,
+   "teleports": 0,
+   "vehicles_scheduled": 825
+  },
+  "train:ew_heavy:1003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 72.34825977301387,
+   "teleports": 0,
+   "vehicles_scheduled": 829
+  },
+  "train:ew_heavy:1003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 61.40151148730351,
+   "teleports": 0,
+   "vehicles_scheduled": 829
+  },
+  "train:ew_heavy:1003:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 66.01376829268293,
+   "teleports": 0,
+   "vehicles_scheduled": 829
+  },
+  "train:ew_heavy:1004:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 67.16318448883668,
+   "teleports": 0,
+   "vehicles_scheduled": 916
+  },
+  "train:ew_heavy:1004:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 81.2678281068525,
+   "teleports": 0,
+   "vehicles_scheduled": 916
+  },
+  "train:ew_heavy:1004:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 83.43879107981222,
+   "teleports": 1,
+   "vehicles_scheduled": 916
+  },
+  "train:ew_heavy:1005:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 78.79420819490586,
+   "teleports": 1,
+   "vehicles_scheduled": 1017
+  },
+  "train:ew_heavy:1005:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 82.33393776824036,
+   "teleports": 0,
+   "vehicles_scheduled": 1017
+  },
+  "train:ew_heavy:1005:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 85.88128400435257,
+   "teleports": 1,
+   "vehicles_scheduled": 1017
+  },
+  "train:ew_heavy:1006:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 54.371014304291286,
+   "teleports": 0,
+   "vehicles_scheduled": 795
+  },
+  "train:ew_heavy:1006:queue_heuristic": {
+   "rows": 3488,
+   "mean_wait_s": 48.04425157232704,
+   "teleports": 0,
+   "vehicles_scheduled": 795
+  },
+  "train:ew_heavy:1006:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 53.05431446540881,
+   "teleports": 0,
+   "vehicles_scheduled": 795
+  },
+  "train:ew_heavy:1007:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 69.54641509433962,
+   "teleports": 1,
+   "vehicles_scheduled": 970
+  },
+  "train:ew_heavy:1007:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 73.12942202835332,
+   "teleports": 0,
+   "vehicles_scheduled": 970
+  },
+  "train:ew_heavy:1007:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 72.33941885964913,
+   "teleports": 0,
+   "vehicles_scheduled": 970
+  },
+  "train:ew_heavy:1008:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 67.58157766990291,
+   "teleports": 0,
+   "vehicles_scheduled": 857
+  },
+  "train:ew_heavy:1008:queue_heuristic": {
+   "rows": 3600,
+   "mean_wait_s": 49.00329054842474,
+   "teleports": 0,
+   "vehicles_scheduled": 857
+  },
+  "train:ew_heavy:1008:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 59.98586776859504,
+   "teleports": 0,
+   "vehicles_scheduled": 857
+  },
+  "train:ew_heavy:1009:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 101.75962099125364,
+   "teleports": 0,
+   "vehicles_scheduled": 1209
+  },
+  "train:ew_heavy:1009:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 108.6639806763285,
+   "teleports": 1,
+   "vehicles_scheduled": 1209
+  },
+  "train:ew_heavy:1009:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 113.76169139465875,
+   "teleports": 3,
+   "vehicles_scheduled": 1209
+  },
+  "train:ew_heavy:1010:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 57.715178997613364,
+   "teleports": 0,
+   "vehicles_scheduled": 839
+  },
+  "train:ew_heavy:1010:queue_heuristic": {
+   "rows": 3456,
+   "mean_wait_s": 43.336531585220506,
+   "teleports": 0,
+   "vehicles_scheduled": 839
+  },
+  "train:ew_heavy:1010:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 57.22711217183772,
+   "teleports": 0,
+   "vehicles_scheduled": 839
+  },
+  "train:ew_heavy:1011:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 78.8490361445783,
+   "teleports": 0,
+   "vehicles_scheduled": 1001
+  },
+  "train:ew_heavy:1011:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 80.84523354564755,
+   "teleports": 0,
+   "vehicles_scheduled": 1001
+  },
+  "train:ew_heavy:1011:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 81.58992239467848,
+   "teleports": 0,
+   "vehicles_scheduled": 1001
+  },
+  "train:pulse:1000:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 96.38621885157096,
+   "teleports": 0,
+   "vehicles_scheduled": 992
+  },
+  "train:pulse:1000:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 85.99869565217392,
+   "teleports": 0,
+   "vehicles_scheduled": 992
+  },
+  "train:pulse:1000:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 92.43500579374276,
+   "teleports": 3,
+   "vehicles_scheduled": 992
+  },
+  "train:pulse:1001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 70.3298115299335,
+   "teleports": 0,
+   "vehicles_scheduled": 926
+  },
+  "train:pulse:1001:queue_heuristic": {
+   "rows": 3584,
+   "mean_wait_s": 61.373315334773224,
+   "teleports": 0,
+   "vehicles_scheduled": 926
+  },
+  "train:pulse:1001:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 68.23961240310078,
+   "teleports": 0,
+   "vehicles_scheduled": 926
+  },
+  "train:pulse:1002:fixed_time": {
+   "rows": 3584,
+   "mean_wait_s": 47.418726591760304,
+   "teleports": 0,
+   "vehicles_scheduled": 801
+  },
+  "train:pulse:1002:queue_heuristic": {
+   "rows": 3456,
+   "mean_wait_s": 42.079151061173526,
+   "teleports": 0,
+   "vehicles_scheduled": 801
+  },
+  "train:pulse:1002:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 57.807175,
+   "teleports": 0,
+   "vehicles_scheduled": 801
+  },
+  "train:pulse:1003:fixed_time": {
+   "rows": 3600,
+   "mean_wait_s": 55.0831686746988,
+   "teleports": 0,
+   "vehicles_scheduled": 830
+  },
+  "train:pulse:1003:queue_heuristic": {
+   "rows": 3536,
+   "mean_wait_s": 55.9265421686747,
+   "teleports": 0,
+   "vehicles_scheduled": 830
+  },
+  "train:pulse:1003:queue_heuristic@3,14,0.25": {
+   "rows": 3552,
+   "mean_wait_s": 57.33618072289156,
+   "teleports": 0,
+   "vehicles_scheduled": 830
+  },
+  "train:pulse:1004:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 91.63226066897347,
+   "teleports": 0,
+   "vehicles_scheduled": 906
+  },
+  "train:pulse:1004:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 94.59969318181818,
+   "teleports": 0,
+   "vehicles_scheduled": 906
+  },
+  "train:pulse:1004:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 92.50673587081893,
+   "teleports": 0,
+   "vehicles_scheduled": 906
+  },
+  "train:pulse:1005:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 77.78262693156732,
+   "teleports": 0,
+   "vehicles_scheduled": 951
+  },
+  "train:pulse:1005:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 79.76886872998934,
+   "teleports": 0,
+   "vehicles_scheduled": 951
+  },
+  "train:pulse:1005:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 83.81532537960956,
+   "teleports": 0,
+   "vehicles_scheduled": 951
+  },
+  "train:pulse:1006:fixed_time": {
+   "rows": 3568,
+   "mean_wait_s": 46.563792650918636,
+   "teleports": 0,
+   "vehicles_scheduled": 762
+  },
+  "train:pulse:1006:queue_heuristic": {
+   "rows": 3344,
+   "mean_wait_s": 43.61628608923885,
+   "teleports": 0,
+   "vehicles_scheduled": 762
+  },
+  "train:pulse:1006:queue_heuristic@3,14,0.25": {
+   "rows": 3392,
+   "mean_wait_s": 41.26589238845144,
+   "teleports": 0,
+   "vehicles_scheduled": 762
+  },
+  "train:pulse:1007:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 116.4840652173913,
+   "teleports": 3,
+   "vehicles_scheduled": 1081
+  },
+  "train:pulse:1007:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 98.88762004175365,
+   "teleports": 1,
+   "vehicles_scheduled": 1081
+  },
+  "train:pulse:1007:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 98.42200636942675,
+   "teleports": 2,
+   "vehicles_scheduled": 1081
+  },
+  "train:pulse:1008:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 60.12210220673636,
+   "teleports": 0,
+   "vehicles_scheduled": 862
+  },
+  "train:pulse:1008:queue_heuristic": {
+   "rows": 3632,
+   "mean_wait_s": 55.392853828306265,
+   "teleports": 0,
+   "vehicles_scheduled": 862
+  },
+  "train:pulse:1008:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 64.13537735849057,
+   "teleports": 0,
+   "vehicles_scheduled": 862
+  },
+  "train:pulse:1009:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 119.0024288617886,
+   "teleports": 0,
+   "vehicles_scheduled": 1169
+  },
+  "train:pulse:1009:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 138.24019501625133,
+   "teleports": 6,
+   "vehicles_scheduled": 1169
+  },
+  "train:pulse:1009:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 135.30024504084014,
+   "teleports": 4,
+   "vehicles_scheduled": 1169
+  },
+  "train:pulse:1010:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 63.86261089987327,
+   "teleports": 0,
+   "vehicles_scheduled": 796
+  },
+  "train:pulse:1010:queue_heuristic": {
+   "rows": 3472,
+   "mean_wait_s": 50.90232412060301,
+   "teleports": 0,
+   "vehicles_scheduled": 796
+  },
+  "train:pulse:1010:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 58.41422250316056,
+   "teleports": 0,
+   "vehicles_scheduled": 796
+  },
+  "train:pulse:1011:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 79.5529900332226,
+   "teleports": 0,
+   "vehicles_scheduled": 944
+  },
+  "train:pulse:1011:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 74.20418279569893,
+   "teleports": 0,
+   "vehicles_scheduled": 944
+  },
+  "train:pulse:1011:queue_heuristic@3,14,0.25": {
+   "rows": 3648,
+   "mean_wait_s": 83.61263810597521,
+   "teleports": 0,
+   "vehicles_scheduled": 944
+  },
+  "val:balanced:2000:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 48.86184397163121,
+   "teleports": 0,
+   "vehicles_scheduled": 848
+  },
+  "val:balanced:2000:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 45.90676122931443,
+   "teleports": 0,
+   "vehicles_scheduled": 848
+  },
+  "val:balanced:2001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 105.54727650727652,
+   "teleports": 0,
+   "vehicles_scheduled": 1142
+  },
+  "val:balanced:2001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 117.66776814734561,
+   "teleports": 5,
+   "vehicles_scheduled": 1142
+  },
+  "val:balanced:2002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 60.25633293124246,
+   "teleports": 0,
+   "vehicles_scheduled": 852
+  },
+  "val:balanced:2002:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 65.24879289940827,
+   "teleports": 0,
+   "vehicles_scheduled": 852
+  },
+  "val:balanced:2003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 109.24910041841004,
+   "teleports": 4,
+   "vehicles_scheduled": 1170
+  },
+  "val:balanced:2003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 108.21290502793295,
+   "teleports": 3,
+   "vehicles_scheduled": 1170
+  },
+  "val:ns_heavy:2000:fixed_time": {
+   "rows": 3440,
+   "mean_wait_s": 46.25086274509805,
+   "teleports": 0,
+   "vehicles_scheduled": 765
+  },
+  "val:ns_heavy:2000:queue_heuristic": {
+   "rows": 3456,
+   "mean_wait_s": 40.985503267973854,
+   "teleports": 0,
+   "vehicles_scheduled": 765
+  },
+  "val:ns_heavy:2001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 142.26974973931178,
+   "teleports": 0,
+   "vehicles_scheduled": 1178
+  },
+  "val:ns_heavy:2001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 125.27511918274688,
+   "teleports": 4,
+   "vehicles_scheduled": 1178
+  },
+  "val:ns_heavy:2002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 86.40373015873016,
+   "teleports": 0,
+   "vehicles_scheduled": 896
+  },
+  "val:ns_heavy:2002:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 82.75785632839225,
+   "teleports": 0,
+   "vehicles_scheduled": 896
+  },
+  "val:ns_heavy:2003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 128.84877338877337,
+   "teleports": 0,
+   "vehicles_scheduled": 1156
+  },
+  "val:ns_heavy:2003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 121.01290554414784,
+   "teleports": 2,
+   "vehicles_scheduled": 1156
+  },
+  "val:ew_heavy:2000:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 55.312994923857865,
+   "teleports": 0,
+   "vehicles_scheduled": 797
+  },
+  "val:ew_heavy:2000:queue_heuristic": {
+   "rows": 3424,
+   "mean_wait_s": 41.8117816813049,
+   "teleports": 0,
+   "vehicles_scheduled": 797
+  },
+  "val:ew_heavy:2001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 91.97017525773197,
+   "teleports": 0,
+   "vehicles_scheduled": 1147
+  },
+  "val:ew_heavy:2001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 92.84997894736843,
+   "teleports": 0,
+   "vehicles_scheduled": 1147
+  },
+  "val:ew_heavy:2002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 58.3987037037037,
+   "teleports": 0,
+   "vehicles_scheduled": 826
+  },
+  "val:ew_heavy:2002:queue_heuristic": {
+   "rows": 3504,
+   "mean_wait_s": 39.38464891041162,
+   "teleports": 0,
+   "vehicles_scheduled": 826
+  },
+  "val:ew_heavy:2003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 86.97334375,
+   "teleports": 0,
+   "vehicles_scheduled": 1117
+  },
+  "val:ew_heavy:2003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 119.74442148760332,
+   "teleports": 1,
+   "vehicles_scheduled": 1117
+  },
+  "val:pulse:2000:fixed_time": {
+   "rows": 3456,
+   "mean_wait_s": 49.38695153061224,
+   "teleports": 0,
+   "vehicles_scheduled": 784
+  },
+  "val:pulse:2000:queue_heuristic": {
+   "rows": 3440,
+   "mean_wait_s": 45.20710459183673,
+   "teleports": 0,
+   "vehicles_scheduled": 784
+  },
+  "val:pulse:2001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 92.27966101694915,
+   "teleports": 0,
+   "vehicles_scheduled": 1084
+  },
+  "val:pulse:2001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 96.20592173017509,
+   "teleports": 2,
+   "vehicles_scheduled": 1084
+  },
+  "val:pulse:2002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 69.6207942238267,
+   "teleports": 0,
+   "vehicles_scheduled": 836
+  },
+  "val:pulse:2002:queue_heuristic": {
+   "rows": 3616,
+   "mean_wait_s": 55.40098086124402,
+   "teleports": 0,
+   "vehicles_scheduled": 836
+  },
+  "val:pulse:2003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 106.07914959016392,
+   "teleports": 0,
+   "vehicles_scheduled": 1124
+  },
+  "val:pulse:2003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 106.74806818181818,
+   "teleports": 1,
+   "vehicles_scheduled": 1124
+  },
+  "test:balanced:3000:fixed_time": {
+   "rows": 3472,
+   "mean_wait_s": 43.36791720569211,
+   "teleports": 0,
+   "vehicles_scheduled": 773
+  },
+  "test:balanced:3000:queue_heuristic": {
+   "rows": 3488,
+   "mean_wait_s": 47.539974126778795,
+   "teleports": 0,
+   "vehicles_scheduled": 773
+  },
+  "test:balanced:3001:fixed_time": {
+   "rows": 3616,
+   "mean_wait_s": 73.285403930131,
+   "teleports": 0,
+   "vehicles_scheduled": 916
+  },
+  "test:balanced:3001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 65.41512595837897,
+   "teleports": 0,
+   "vehicles_scheduled": 916
+  },
+  "test:balanced:3002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 76.00502222222222,
+   "teleports": 2,
+   "vehicles_scheduled": 984
+  },
+  "test:balanced:3002:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 80.48994617868676,
+   "teleports": 0,
+   "vehicles_scheduled": 984
+  },
+  "test:balanced:3003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 129.9335044642857,
+   "teleports": 4,
+   "vehicles_scheduled": 1162
+  },
+  "test:balanced:3003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 123.3337737961926,
+   "teleports": 4,
+   "vehicles_scheduled": 1162
+  },
+  "test:balanced:3004:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 72.18252656434474,
+   "teleports": 0,
+   "vehicles_scheduled": 862
+  },
+  "test:balanced:3004:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 70.42761904761905,
+   "teleports": 0,
+   "vehicles_scheduled": 862
+  },
+  "test:balanced:3005:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 80.6366974595843,
+   "teleports": 1,
+   "vehicles_scheduled": 917
+  },
+  "test:balanced:3005:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 84.88984971098266,
+   "teleports": 1,
+   "vehicles_scheduled": 917
+  },
+  "test:balanced:3006:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 64.81226958525346,
+   "teleports": 0,
+   "vehicles_scheduled": 872
+  },
+  "test:balanced:3006:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 84.70218642117378,
+   "teleports": 0,
+   "vehicles_scheduled": 872
+  },
+  "test:balanced:3007:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 108.55861169102296,
+   "teleports": 0,
+   "vehicles_scheduled": 1076
+  },
+  "test:balanced:3007:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 108.18010504201679,
+   "teleports": 2,
+   "vehicles_scheduled": 1076
+  },
+  "test:ns_heavy:3000:fixed_time": {
+   "rows": 3584,
+   "mean_wait_s": 54.76377091377092,
+   "teleports": 0,
+   "vehicles_scheduled": 777
+  },
+  "test:ns_heavy:3000:queue_heuristic": {
+   "rows": 3488,
+   "mean_wait_s": 49.62348777348778,
+   "teleports": 0,
+   "vehicles_scheduled": 777
+  },
+  "test:ns_heavy:3001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 73.07651108518085,
+   "teleports": 0,
+   "vehicles_scheduled": 878
+  },
+  "test:ns_heavy:3001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 69.95368786127167,
+   "teleports": 0,
+   "vehicles_scheduled": 878
+  },
+  "test:ns_heavy:3002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 83.77345172031077,
+   "teleports": 1,
+   "vehicles_scheduled": 976
+  },
+  "test:ns_heavy:3002:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 80.6118991416309,
+   "teleports": 0,
+   "vehicles_scheduled": 976
+  },
+  "test:ns_heavy:3003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 113.47985294117647,
+   "teleports": 0,
+   "vehicles_scheduled": 1029
+  },
+  "test:ns_heavy:3003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 105.77935381355931,
+   "teleports": 0,
+   "vehicles_scheduled": 1029
+  },
+  "test:ns_heavy:3004:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 71.63920897284534,
+   "teleports": 0,
+   "vehicles_scheduled": 857
+  },
+  "test:ns_heavy:3004:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 63.81234813084112,
+   "teleports": 0,
+   "vehicles_scheduled": 857
+  },
+  "test:ns_heavy:3005:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 81.13650519031142,
+   "teleports": 0,
+   "vehicles_scheduled": 908
+  },
+  "test:ns_heavy:3005:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 61.44782320441989,
+   "teleports": 0,
+   "vehicles_scheduled": 908
+  },
+  "test:ns_heavy:3006:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 63.26329545454545,
+   "teleports": 0,
+   "vehicles_scheduled": 883
+  },
+  "test:ns_heavy:3006:queue_heuristic": {
+   "rows": 3344,
+   "mean_wait_s": 61.99417893544734,
+   "teleports": 0,
+   "vehicles_scheduled": 883
+  },
+  "test:ns_heavy:3007:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 87.9691304347826,
+   "teleports": 0,
+   "vehicles_scheduled": 1031
+  },
+  "test:ns_heavy:3007:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 75.72581039755352,
+   "teleports": 0,
+   "vehicles_scheduled": 1031
+  },
+  "test:ew_heavy:3000:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 62.51006738544474,
+   "teleports": 0,
+   "vehicles_scheduled": 775
+  },
+  "test:ew_heavy:3000:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 52.95582901554403,
+   "teleports": 0,
+   "vehicles_scheduled": 775
+  },
+  "test:ew_heavy:3001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 65.60295061728395,
+   "teleports": 0,
+   "vehicles_scheduled": 901
+  },
+  "test:ew_heavy:3001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 72.49924225028703,
+   "teleports": 0,
+   "vehicles_scheduled": 901
+  },
+  "test:ew_heavy:3002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 80.99378437843785,
+   "teleports": 0,
+   "vehicles_scheduled": 981
+  },
+  "test:ew_heavy:3002:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 64.50324973876698,
+   "teleports": 0,
+   "vehicles_scheduled": 981
+  },
+  "test:ew_heavy:3003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 91.54220283533262,
+   "teleports": 2,
+   "vehicles_scheduled": 1103
+  },
+  "test:ew_heavy:3003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 109.9702492211838,
+   "teleports": 3,
+   "vehicles_scheduled": 1103
+  },
+  "test:ew_heavy:3004:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 71.37053482587064,
+   "teleports": 0,
+   "vehicles_scheduled": 846
+  },
+  "test:ew_heavy:3004:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 61.231088757396456,
+   "teleports": 0,
+   "vehicles_scheduled": 846
+  },
+  "test:ew_heavy:3005:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 68.55126011560694,
+   "teleports": 0,
+   "vehicles_scheduled": 954
+  },
+  "test:ew_heavy:3005:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 82.46783425414364,
+   "teleports": 1,
+   "vehicles_scheduled": 954
+  },
+  "test:ew_heavy:3006:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 76.87144444444445,
+   "teleports": 1,
+   "vehicles_scheduled": 906
+  },
+  "test:ew_heavy:3006:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 86.85324355971895,
+   "teleports": 0,
+   "vehicles_scheduled": 906
+  },
+  "test:ew_heavy:3007:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 90.03091586794461,
+   "teleports": 0,
+   "vehicles_scheduled": 1097
+  },
+  "test:ew_heavy:3007:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 106.78252972972973,
+   "teleports": 0,
+   "vehicles_scheduled": 1097
+  },
+  "test:pulse:3000:fixed_time": {
+   "rows": 3568,
+   "mean_wait_s": 56.08822916666666,
+   "teleports": 0,
+   "vehicles_scheduled": 768
+  },
+  "test:pulse:3000:queue_heuristic": {
+   "rows": 3584,
+   "mean_wait_s": 58.76010416666666,
+   "teleports": 0,
+   "vehicles_scheduled": 768
+  },
+  "test:pulse:3001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 50.77810513447432,
+   "teleports": 0,
+   "vehicles_scheduled": 821
+  },
+  "test:pulse:3001:queue_heuristic": {
+   "rows": 3552,
+   "mean_wait_s": 44.58429963459196,
+   "teleports": 0,
+   "vehicles_scheduled": 821
+  },
+  "test:pulse:3002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 76.59178794178794,
+   "teleports": 0,
+   "vehicles_scheduled": 966
+  },
+  "test:pulse:3002:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 78.53920802534317,
+   "teleports": 0,
+   "vehicles_scheduled": 966
+  },
+  "test:pulse:3003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 98.77334391534392,
+   "teleports": 0,
+   "vehicles_scheduled": 1082
+  },
+  "test:pulse:3003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 95.68439050701186,
+   "teleports": 5,
+   "vehicles_scheduled": 1082
+  },
+  "test:pulse:3004:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 73.08072202166065,
+   "teleports": 0,
+   "vehicles_scheduled": 861
+  },
+  "test:pulse:3004:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 72.81947928994082,
+   "teleports": 0,
+   "vehicles_scheduled": 861
+  },
+  "test:pulse:3005:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 73.92046136101499,
+   "teleports": 0,
+   "vehicles_scheduled": 881
+  },
+  "test:pulse:3005:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 64.576364749082,
+   "teleports": 3,
+   "vehicles_scheduled": 881
+  },
+  "test:pulse:3006:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 69.87318287037037,
+   "teleports": 0,
+   "vehicles_scheduled": 869
+  },
+  "test:pulse:3006:queue_heuristic": {
+   "rows": 3600,
+   "mean_wait_s": 61.786996547756054,
+   "teleports": 0,
+   "vehicles_scheduled": 869
+  },
+  "test:pulse:3007:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 95.16919624217118,
+   "teleports": 0,
+   "vehicles_scheduled": 1039
+  },
+  "test:pulse:3007:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 110.12487885462554,
+   "teleports": 2,
+   "vehicles_scheduled": 1039
+  },
+  "test:rush_ramp:3000:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 80.99928571428572,
+   "teleports": 1,
+   "vehicles_scheduled": 833
+  },
+  "test:rush_ramp:3000:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 85.95230955259976,
+   "teleports": 0,
+   "vehicles_scheduled": 833
+  },
+  "test:rush_ramp:3001:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 111.24777649769587,
+   "teleports": 1,
+   "vehicles_scheduled": 955
+  },
+  "test:rush_ramp:3001:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 117.08303886925795,
+   "teleports": 4,
+   "vehicles_scheduled": 955
+  },
+  "test:rush_ramp:3002:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 121.74624870466322,
+   "teleports": 1,
+   "vehicles_scheduled": 1104
+  },
+  "test:rush_ramp:3002:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 119.83841176470588,
+   "teleports": 10,
+   "vehicles_scheduled": 1104
+  },
+  "test:rush_ramp:3003:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 133.48432296890672,
+   "teleports": 1,
+   "vehicles_scheduled": 1208
+  },
+  "test:rush_ramp:3003:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 120.29059936908517,
+   "teleports": 7,
+   "vehicles_scheduled": 1208
+  },
+  "test:rush_ramp:3004:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 102.726678700361,
+   "teleports": 1,
+   "vehicles_scheduled": 900
+  },
+  "test:rush_ramp:3004:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 104.49766954377311,
+   "teleports": 4,
+   "vehicles_scheduled": 900
+  },
+  "test:rush_ramp:3005:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 104.25058139534883,
+   "teleports": 0,
+   "vehicles_scheduled": 950
+  },
+  "test:rush_ramp:3005:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 103.88853254437869,
+   "teleports": 1,
+   "vehicles_scheduled": 950
+  },
+  "test:rush_ramp:3006:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 100.76691441441442,
+   "teleports": 0,
+   "vehicles_scheduled": 939
+  },
+  "test:rush_ramp:3006:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 103.85782559456398,
+   "teleports": 1,
+   "vehicles_scheduled": 939
+  },
+  "test:rush_ramp:3007:fixed_time": {
+   "rows": 3648,
+   "mean_wait_s": 136.2018331503842,
+   "teleports": 0,
+   "vehicles_scheduled": 1120
+  },
+  "test:rush_ramp:3007:queue_heuristic": {
+   "rows": 3648,
+   "mean_wait_s": 130.93182669789226,
+   "teleports": 3,
+   "vehicles_scheduled": 1120
+  }
+ },
+ "features": [
+  "queue",
+  "count",
+  "moving",
+  "mean_wait",
+  "down_occ",
+  "is_green",
+  "in_transition",
+  "elapsed",
+  "to_max_green",
+  "up_count",
+  "up_halting",
+  "up_released",
+  "q_lag10",
+  "q_lag20",
+  "q_lag30",
+  "count_lag30",
+  "capacity",
+  "is_entry",
+  "stage_demand_other"
+ ],
+ "horizons_s": [
+  30,
+  60
+ ],
+ "sample_s": 5.0,
+ "rows": {
+  "train": 521088,
+  "val": 115536,
+  "test": 290656
+ },
+ "wall_s": 547.9,
+ "splits": {
+  "train": {
+   "scenarios": [
+    "balanced",
+    "ns_heavy",
+    "ew_heavy",
+    "pulse"
+   ],
+   "seeds": [
+    1000,
+    1001,
+    1002,
+    1003,
+    1004,
+    1005,
+    1006,
+    1007,
+    1008,
+    1009,
+    1010,
+    1011
+   ],
+   "controllers": [
+    "fixed_time",
+    "queue_heuristic",
+    "queue_heuristic@3,14,0.25"
+   ]
+  },
+  "val": {
+   "scenarios": [
+    "balanced",
+    "ns_heavy",
+    "ew_heavy",
+    "pulse"
+   ],
+   "seeds": [
+    2000,
+    2001,
+    2002,
+    2003
+   ],
+   "controllers": [
+    "fixed_time",
+    "queue_heuristic"
+   ]
+  },
+  "test": {
+   "scenarios": [
+    "balanced",
+    "ns_heavy",
+    "ew_heavy",
+    "pulse",
+    "rush_ramp"
+   ],
+   "seeds": [
+    3000,
+    3001,
+    3002,
+    3003,
+    3004,
+    3005,
+    3006,
+    3007
+   ],
+   "controllers": [
+    "fixed_time",
+    "queue_heuristic"
+   ]
+  }
+ }
+}

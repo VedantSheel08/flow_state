@@ -1,0 +1,76 @@
+{
+ "seeds": [
+  1100,
+  1101,
+  1102,
+  1103,
+  1104,
+  1105
+ ],
+ "scenarios": [
+  "balanced",
+  "ns_heavy",
+  "ew_heavy",
+  "pulse"
+ ],
+ "base": {
+  "margin": 6.0,
+  "hold_s": 20.0,
+  "weight": 0.25
+ },
+ "mean_wait_s": {
+  "queue_heuristic": 103.171,
+  "ml_forecast@0.25,6.0,0.85": 102.797,
+  "ml_forecast@0.25,6.0,0.95": 102.921,
+  "ml_forecast@0.25,6.0,9.0": 102.921,
+  "ml_forecast@0.5,6.0,0.85": 107.782,
+  "ml_forecast@0.5,6.0,0.95": 108.036,
+  "ml_forecast@0.5,6.0,9.0": 108.036,
+  "ml_forecast@1.0,6.0,0.85": 107.627,
+  "ml_forecast@1.0,6.0,0.95": 107.627,
+  "ml_forecast@1.0,6.0,9.0": 107.627,
+  "ml_forecast@0.0,6.0,0.5": 104.585,
+  "ml_forecast@0.0,6.0,0.6": 102.363,
+  "ml_forecast@0.0,6.0,0.7": 102.603,
+  "ml_forecast@0.1,6.0,0.5": 102.29,
+  "ml_forecast@0.1,6.0,0.6": 100.081,
+  "ml_forecast@0.1,6.0,0.7": 100.021,
+  "ml_forecast@0.25,6.0,0.5": 102.641,
+  "ml_forecast@0.25,6.0,0.6": 103.438,
+  "ml_forecast@0.25,6.0,0.7": 102.76
+ },
+ "teleports": {
+  "queue_heuristic": 28,
+  "ml_forecast@0.25,6.0,0.85": 28,
+  "ml_forecast@0.25,6.0,0.95": 28,
+  "ml_forecast@0.25,6.0,9.0": 28,
+  "ml_forecast@0.5,6.0,0.85": 46,
+  "ml_forecast@0.5,6.0,0.95": 46,
+  "ml_forecast@0.5,6.0,9.0": 46,
+  "ml_forecast@1.0,6.0,0.85": 20,
+  "ml_forecast@1.0,6.0,0.95": 20,
+  "ml_forecast@1.0,6.0,9.0": 20,
+  "ml_forecast@0.0,6.0,0.5": 47,
+  "ml_forecast@0.0,6.0,0.6": 22,
+  "ml_forecast@0.0,6.0,0.7": 27,
+  "ml_forecast@0.1,6.0,0.5": 22,
+  "ml_forecast@0.1,6.0,0.6": 25,
+  "ml_forecast@0.1,6.0,0.7": 22,
+  "ml_forecast@0.25,6.0,0.5": 20,
+  "ml_forecast@0.25,6.0,0.6": 29,
+  "ml_forecast@0.25,6.0,0.7": 35
+ },
+ "best": {
+  "beta": 0.1,
+  "bound": 6.0,
+  "spill": 0.7
+ },
+ "best_id": "ml_forecast@0.1,6.0,0.7",
+ "heuristic_mean_wait_s": 103.171,
+ "best_beats_heuristic_on_tuning_seeds": true,
+ "rounds": [
+  1,
+  2
+ ],
+ "wall_s": 928.2
+}

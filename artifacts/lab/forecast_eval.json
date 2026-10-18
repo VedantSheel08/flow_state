@@ -1,0 +1,184 @@
+{
+ "kind": "HistGradientBoostingRegressor x2 (30 s, 60 s)",
+ "features": [
+  "queue",
+  "count",
+  "moving",
+  "mean_wait",
+  "down_occ",
+  "is_green",
+  "in_transition",
+  "elapsed",
+  "to_max_green",
+  "up_count",
+  "up_halting",
+  "up_released",
+  "q_lag10",
+  "q_lag20",
+  "q_lag30",
+  "count_lag30",
+  "capacity",
+  "is_entry",
+  "stage_demand_other"
+ ],
+ "chosen": {
+  "p30": {
+   "learning_rate": 0.1,
+   "max_leaf_nodes": 63,
+   "iterations": 300
+  },
+  "p60": {
+   "learning_rate": 0.1,
+   "max_leaf_nodes": 63,
+   "iterations": 300
+  }
+ },
+ "validation_mae": {
+  "p30:lr=0.05,leaves=31": 2.4162,
+  "p30:lr=0.1,leaves=31": 2.3593,
+  "p30:lr=0.1,leaves=63": 2.3181,
+  "p60:lr=0.05,leaves=31": 2.7121,
+  "p60:lr=0.1,leaves=31": 2.6893,
+  "p60:lr=0.1,leaves=63": 2.6702
+ },
+ "rows": {
+  "train": 521088,
+  "val": 115536,
+  "test": 290656
+ },
+ "train_wall_s": 251.6,
+ "test": {
+  "p30": {
+   "model": {
+    "mae": 2.232,
+    "rmse": 3.579,
+    "r2": 0.774,
+    "spill_precision": 0.801,
+    "spill_recall": 0.39,
+    "spill_f1": 0.525
+   },
+   "ridge": {
+    "mae": 2.943,
+    "rmse": 4.483,
+    "r2": 0.645,
+    "spill_precision": 0.778,
+    "spill_recall": 0.151,
+    "spill_f1": 0.253
+   },
+   "persistence": {
+    "mae": 4.379,
+    "rmse": 6.89,
+    "r2": 0.161,
+    "spill_precision": 0.421,
+    "spill_recall": 0.415,
+    "spill_f1": 0.418
+   },
+   "linear_trend": {
+    "mae": 6.495,
+    "rmse": 10.616,
+    "r2": -0.992,
+    "spill_precision": 0.229,
+    "spill_recall": 0.462,
+    "spill_f1": 0.306
+   },
+   "approach_mean": {
+    "mae": 4.635,
+    "rmse": 6.96,
+    "r2": 0.144,
+    "spill_precision": 0.0,
+    "spill_recall": 0.0,
+    "spill_f1": 0.0
+   },
+   "improvement_vs_persistence_mae_pct": 49.0
+  },
+  "p60": {
+   "model": {
+    "mae": 2.591,
+    "rmse": 4.055,
+    "r2": 0.712,
+    "spill_precision": 0.761,
+    "spill_recall": 0.342,
+    "spill_f1": 0.472
+   },
+   "ridge": {
+    "mae": 2.804,
+    "rmse": 4.307,
+    "r2": 0.675,
+    "spill_precision": 0.751,
+    "spill_recall": 0.265,
+    "spill_f1": 0.391
+   },
+   "persistence": {
+    "mae": 3.456,
+    "rmse": 5.728,
+    "r2": 0.425,
+    "spill_precision": 0.477,
+    "spill_recall": 0.467,
+    "spill_f1": 0.472
+   },
+   "linear_trend": {
+    "mae": 7.76,
+    "rmse": 13.475,
+    "r2": -2.182,
+    "spill_precision": 0.172,
+    "spill_recall": 0.514,
+    "spill_f1": 0.257
+   },
+   "approach_mean": {
+    "mae": 4.647,
+    "rmse": 6.983,
+    "r2": 0.146,
+    "spill_precision": 0.0,
+    "spill_recall": 0.0,
+    "spill_f1": 0.0
+   },
+   "improvement_vs_persistence_mae_pct": 25.0
+  },
+  "rush_ramp_only_p30": {
+   "model": {
+    "mae": 2.871,
+    "rmse": 4.445,
+    "r2": 0.787,
+    "spill_precision": 0.807,
+    "spill_recall": 0.441,
+    "spill_f1": 0.57
+   },
+   "persistence": {
+    "mae": 5.368,
+    "rmse": 8.212,
+    "r2": 0.273,
+    "spill_precision": 0.485,
+    "spill_recall": 0.477,
+    "spill_f1": 0.481
+   }
+  }
+ },
+ "inference_ms_per_decision": {
+  "mean": 8.169,
+  "p95": 11.268
+ },
+ "flat_vs_sklearn_max_abs_diff": 6.394884621840902e-14,
+ "permutation_importance_p30": {
+  "queue": 0.0618,
+  "count": 0.2455,
+  "moving": 0.1178,
+  "mean_wait": 0.1087,
+  "down_occ": 0.0203,
+  "is_green": 0.2862,
+  "in_transition": 0.0784,
+  "elapsed": 0.4289,
+  "to_max_green": 0.1723,
+  "up_count": 0.0099,
+  "up_halting": 0.0135,
+  "up_released": 0.1532,
+  "q_lag10": 0.0188,
+  "q_lag20": 0.0094,
+  "q_lag30": 0.0499,
+  "count_lag30": 0.2629,
+  "capacity": 0.0184,
+  "is_entry": 0.0,
+  "stage_demand_other": 0.0577
+ },
+ "split": "by episode: train seeds 1000-1011, val 2000-2003, test 3000-3007 (+ held-out rush_ramp scenario)",
+ "trained_at": "2026-10-17T20:41:41"
+}

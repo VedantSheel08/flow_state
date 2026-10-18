@@ -74,11 +74,13 @@ export default function LiveView({ geom, scenarios, mlAvailable, onSnapshot }: P
   const last = obs.current[obs.current.length - 1]
   // live forecast check: compare the prediction made 30 s / 60 s ago with what SUMO measures now (honest running error)
   const check = (h: number, key: 'p30' | 'p60') => {
+    const byT = new Map(obs.current.map((o) => [o.t, o]))
     let s = 0, sp = 0, n = 0
     for (const o of obs.current) {
-      const later = obs.current.find((x) => x.t === o.t + h)
-      if (!later || !o[key]) continue
-      o[key]!.forEach((p, i) => { s += Math.abs(p - later.q[i]); sp += Math.abs(o.q[i] - later.q[i]); n++ })
+      const later = byT.get(o.t + h)
+      const p = o[key]
+      if (!later || !p) continue
+      p.forEach((v, i) => { s += Math.abs(v - later.q[i]); sp += Math.abs(o.q[i] - later.q[i]); n++ })
     }
     return n ? { mae: s / n, pers: sp / n, n } : null
   }
