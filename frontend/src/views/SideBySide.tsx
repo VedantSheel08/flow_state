@@ -15,15 +15,8 @@ import { Cap, H2 } from './resultsUi'
 type Loaded = { asset: DemoAsset; net: NetworkGeom; scene: Scene }
 const SPEEDS = [1, 2, 4]
 const panel = 'rounded-[22px] bg-white/60 shadow-[0_10px_40px_-14px_rgb(12_19_34/0.2),inset_0_0_0_1px_rgb(255_255_255/0.75),0_0_0_1px_rgb(12_19_34/0.05)] backdrop-blur-2xl'
-const frame = 'rounded-[30px] shadow-[0_18px_60px_-22px_rgb(12_19_34/0.3),0_0_0_1px_rgb(110_120_135/0.28)]'
-// Frosted border: bands along each edge blur the map beneath them and fade out towards the middle.
-const FADE = 'bg-[rgb(110_120_135/0.16)]'
-const EDGES = [
-  `inset-x-0 top-0 h-9 ${FADE} [mask-image:linear-gradient(to_bottom,#000_45%,transparent)]`,
-  `inset-x-0 bottom-0 h-9 ${FADE} [mask-image:linear-gradient(to_top,#000_45%,transparent)]`,
-  `inset-y-0 left-0 w-9 ${FADE} [mask-image:linear-gradient(to_right,#000_45%,transparent)]`,
-  `inset-y-0 right-0 w-9 ${FADE} [mask-image:linear-gradient(to_left,#000_45%,transparent)]`,
-]
+// Frosted halo around each map: blurs the page behind it and fades out towards the outer edge.
+const HALO = 'pointer-events-none absolute -inset-8 rounded-[54px] bg-[rgb(110_120_135/0.15)] backdrop-blur-xl [mask-composite:intersect] [-webkit-mask-composite:source-in] [mask-image:linear-gradient(to_right,transparent,#000_34px,#000_calc(100%_-_34px),transparent),linear-gradient(to_bottom,transparent,#000_34px,#000_calc(100%_-_34px),transparent)]'
 const LEFT_COLOR = COLOR[BASE]
 const RIGHT_COLOR = COLOR[FS]
 
@@ -180,7 +173,7 @@ function AmbulanceTag({ side, id, t, span }: { side: DemoSide; id: number; t: nu
   const text = here
     ? e ? `Ambulance ${STATUS_TEXT[e.status] ?? 'moving'}${e.metresToSignal > 0 && e.status !== 0 ? ` · ${Math.round(e.metresToSignal)} m to signal` : ''}` : 'Ambulance moving'
     : span.last != null && t > span.last ? `Ambulance arrived · ${secs(span.travelS)} trip` : 'Ambulance not yet on the network'
-  return <div className="tnum truncate text-[13px] leading-none text-ink-2">{text}</div>
+  return <div className="tnum truncate text-center text-[13px] leading-none text-ink-2">{text}</div>
 }
 
 function Kpi({ label, left, right, unit = 's', digits = 0, lowerIsBetter = true }: { label: string; left: number; right: number; unit?: string; digits?: number; lowerIsBetter?: boolean }) {
@@ -345,21 +338,19 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
 
   return (
     <section className="flex flex-col gap-7">
-      <div className="grid gap-10 min-[860px]:grid-cols-2">
+      <div className="grid gap-x-20 gap-y-16 py-6 min-[860px]:grid-cols-2">
         {sides.map((x) => (
-          <div key={x.name} className="flex flex-col gap-3.5">
-            <div className="flex min-h-[54px] flex-col items-center gap-1.5 px-2 text-center">
-              <div className="flex items-baseline justify-center gap-2.5">
-                <span className="text-[20px] font-[650] leading-none tracking-[-0.02em] text-ink">{x.name}</span>
-                <span className="text-[13px] leading-none text-ink-3">{x.sub}</span>
-              </div>
-              {example != null && x.span && <AmbulanceTag side={x.side} id={example} t={t} span={x.span} />}
-            </div>
-            <div className={cn('relative h-[380px] overflow-hidden min-[860px]:h-[500px]', frame)}>
-              <div className="absolute inset-0 bg-[#e9ecef]">
+          <div key={x.name} className="flex flex-col items-center gap-6">
+            <span className="text-[22px] font-[650] leading-none tracking-[-0.02em] text-ink">{x.name}</span>
+            <div className="relative w-full">
+              <div aria-hidden className={HALO} />
+              <div className="relative h-[380px] overflow-hidden rounded-[26px] bg-[#e9ecef] shadow-[0_0_0_1px_rgb(110_120_135/0.25),0_14px_40px_-18px_rgb(12_19_34/0.3)] min-[860px]:h-[500px]">
                 <SimMap scene={scene} net={net} side={x.side} ambulance={example} clock={clock} mode={mode} view={view} onFree={() => setMode('free')} label={x.label} />
               </div>
-              {EDGES.map((e) => <div key={e} aria-hidden className={cn('pointer-events-none absolute backdrop-blur-xl', e)} />)}
+            </div>
+            <div className="flex flex-col items-center gap-1.5 text-center">
+              <span className="text-[13px] leading-none text-ink-3">{x.sub}</span>
+              {example != null && x.span && <AmbulanceTag side={x.side} id={example} t={t} span={x.span} />}
             </div>
           </div>
         ))}

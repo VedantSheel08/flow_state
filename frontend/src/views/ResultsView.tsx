@@ -299,7 +299,6 @@ function LivePlaceholder() {
 
 // ---- page ------------------------------------------------------------------
 export function ResultsView() {
-  const runs = D.overall[FS]?.metrics.mean_wait_s?.vs?.paired ?? 0
   const patterns = Object.keys(D.perScenario).length
   return (
     <div className="scroll-y min-w-0 flex-1 bg-canvas">
@@ -310,7 +309,6 @@ export function ResultsView() {
       </div>
       <main className="relative z-10 mx-auto flex max-w-[1100px] flex-col gap-8 px-4 pb-[72px] pt-10 min-[720px]:px-8">
         <div className="flex w-fit max-w-full flex-col gap-2.5 rounded-[28px] bg-white/35 px-7 py-5 backdrop-blur-2xl">
-          <Eyebrow>Results · Recorded SUMO evaluation · {runs} paired runs</Eyebrow>
           <h1 className="m-0 text-balance text-[32px] font-[650] leading-[1.19] tracking-[-0.02em]">FlowState vs fixed-time signals</h1>
         </div>
         <SideBySide />
