@@ -21,6 +21,7 @@ from .forecast import lab_dir
 from .record import replays_dir
 
 BEST_CASE_STOP_S = 3.0  # the default example is an ambulance that FlowState held for at most this long
+MIN_QUEUE_S = 10.0  # ...and that the fixed-time run left stuck behind queued cars (not alone at a red light) for at least this long
 AGG_KEYS = ("ev_travel_mean_s", "ev_stopped_red_s", "ev_stopped_queue_s", "mean_wait_civilian_s", "mean_travel_s", "queue_total_mean_veh", "throughput_vph")
 SCENARIO_TITLES = {"balanced": "Balanced", "ns_heavy": "North-south heavy", "ew_heavy": "East-west heavy", "pulse": "Alternating pulses", "rush_ramp": "Rush-hour ramp"}
 
@@ -48,7 +49,8 @@ def build(pair_id: str) -> dict[str, Any]:
                       "right": ru[vid] | {"first": rs[0] if rs else None, "last": rs[1] if rs else None},
                       "savedS": round(lu[vid]["travelS"] - ru[vid]["travelS"], 1)})
     usable = [u for u in units if u["left"]["finished"] and u["right"]["finished"] and u["left"]["first"] is not None and u["right"]["first"] is not None]
-    best = [u for u in usable if u["right"]["stoppedRedS"] + u["right"]["stoppedQueueS"] <= BEST_CASE_STOP_S and u["savedS"] > 0]
+    best = [u for u in usable if u["right"]["stoppedRedS"] + u["right"]["stoppedQueueS"] <= BEST_CASE_STOP_S and u["savedS"] > 0
+            and u["left"]["stoppedQueueS"] >= MIN_QUEUE_S and u["left"]["stoppedQueueS"] > u["left"]["stoppedRedS"]]
     example = max(best or usable, key=lambda u: u["savedS"])["id"] if usable else None
 
     def side(run: dict[str, Any]) -> dict[str, Any]:
@@ -62,7 +64,7 @@ def build(pair_id: str) -> dict[str, Any]:
     ev = json.loads((lab_dir() / "comparison_eval.json").read_text())
     agg = paired(ev["rows"], "fixed_time", "ml_forecast_ev")
     return {"schema": "flowstate.results-demo/1", "builtAt": time.strftime("%Y-%m-%dT%H:%M:%S"), "pair": pair_id, "scenario": doc["scenario"], "scenarioTitle": SCENARIO_TITLES.get(doc["scenario"], doc["scenario"]),
-            "seed": doc["seed"], "intensity": doc["intensity"], "demandSha": doc["demandSha"], "bestCaseStopS": BEST_CASE_STOP_S,
+            "seed": doc["seed"], "intensity": doc["intensity"], "demandSha": doc["demandSha"], "bestCaseStopS": BEST_CASE_STOP_S, "minQueueS": MIN_QUEUE_S,
             "left": side(left), "right": side(right), "ambulances": units, "example": example, "totals": {"left": totals(left), "right": totals(right)},
             "aggregate": {"episodes": ev["summary"]["episodes"], "seeds": ev["summary"]["seeds"], "metrics": {k: agg[k] for k in AGG_KEYS}},
             "rightIncludes": "adaptive signals + queue forecast + green corridor along the ambulance route (rule-based; only the forecaster is a trained model)"}
