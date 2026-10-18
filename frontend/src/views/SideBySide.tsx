@@ -1,5 +1,6 @@
 import { ChevronDown, Loader2, Pause, Play, RotateCcw } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { Camera } from '../map/camera'
 import { canopyCache, groundCache, render, type RenderState } from '../map/renderer'
 import { buildScene, type Scene } from '../map/scene'
@@ -142,7 +143,7 @@ function SimMap({ scene, net, side, subject, focus, clock, mode, view, onFree, l
           alpha: 1,
         })),
         persons: [], tls: Object.fromEntries(tlsIds.map((id, i) => [id, frameState.s[i] ?? ''])),
-        layers: { buildings: true, trees: true, labels: false, pedestrians: false, flow: false, signals: true },
+        layers: { buildings: true, trees: true, labels: true, pedestrians: false, flow: false, signals: true },
         selected: null, selectedJunction: null, hoverEdge: null, pickedEdge: null, tracked: new Map(), incidents: [], edges: {}, route: null, busLines: [],
         now: ts, pick: false, overlays: [], t: 0, safe: { x0: 0, y0: 0, x1: w, y1: h },
       }
@@ -350,6 +351,8 @@ export function SideBySide() {
   const [data, setData] = useState<Record<string, Loaded>>({})
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [started, setStarted] = useState(0)
+  const first = useRef(true)
   useEffect(() => {
     let live = true
     loadIndex().then((ix) => { if (live) { setIndex(ix); setTab((s) => s ?? ix.scenarios[0]?.id ?? null) } }, (e: unknown) => { if (live) setIndex({ error: e instanceof Error ? e.message : String(e) }) })
@@ -360,14 +363,16 @@ export function SideBySide() {
     if (!tab || !index || 'error' in index || data[tab]) return
     let live = true
     const recorded = index.scenarios.some((x) => x.id === tab)
-    setBusy(!recorded); setError(null)
-    const job = recorded ? loadScenario(tab) : runComparison(tab, null)
+    const live_ = catalog.length > 0 && !(first.current && recorded) // the first view uses the recorded run; every pick after that is simulated now
+    first.current = false
+    setBusy(live_); setError(null); setStarted(performance.now())
+    const job = live_ ? runComparison(tab, null).catch(() => (recorded ? loadScenario(tab) : Promise.reject(new Error('Simulation backend unreachable')))) : loadScenario(tab)
     job.then(async (asset) => {
       const net = await loadNetwork(asset.network ?? index.network)
       if (live) setData((d) => ({ ...d, [tab]: { asset, net, scene: buildScene(net) } }))
     }).catch((e: unknown) => { if (live) setError(e instanceof Error ? e.message : String(e)) }).finally(() => { if (live) setBusy(false) })
     return () => { live = false }
-  }, [tab, index, data])
+  }, [tab, index, data, catalog])
 
   if (index && 'error' in index) {
     return (
@@ -386,50 +391,114 @@ export function SideBySide() {
       {index && tab && (
         <div className="flex flex-col items-center gap-2.5">
           <div className="relative">
-            <select aria-label="Scenario" value={tab} onChange={(e) => setTab(e.target.value)}
+            <select aria-label="Scenario" value={tab} onChange={(e) => { setData((d) => { const n = { ...d }; delete n[e.target.value]; return n }); setTab(e.target.value) }}
               className="h-11 cursor-pointer appearance-none rounded-full bg-white/70 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2346505f%22 stroke-width=%222.5%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-[length:12px] bg-[right_18px_center] bg-no-repeat pl-6 pr-11 text-[15px] font-[550] text-ink shadow-[0_0_0_1px_rgb(12_19_34/0.08),0_6px_20px_-10px_rgb(12_19_34/0.25)] outline-none backdrop-blur-xl">
               {options.map((o) => <option key={o.id} value={o.id}>{o.title}</option>)}
             </select>
             <ChevronDown size={15} strokeWidth={2.5} className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-ink-3" />
           </div>
           <p className="m-0 text-center text-[13px] text-ink-3">
-            {busy ? 'Simulating both sides in SUMO…' : error ? <span className="text-bad">{error}</span> : loaded ? `${loaded.asset.tagline ?? ''}${loaded.asset.tagline ? ' · ' : ''}${runs === 1 ? 'one SUMO run per side' : `${runs} paired SUMO runs`}` : ''}
+            {busy ? 'Generating a new run…' : error ? <span className="text-bad">{error}</span> : loaded ? `${loaded.asset.tagline ?? ''}${loaded.asset.tagline ? ' · ' : ''}${runs === 1 ? 'one SUMO run per side' : `${runs} paired SUMO runs`}` : ''}
           </p>
         </div>
       )}
-      {loaded ? <Replay key={tab} data={loaded} /> : (
-        <div className="flex h-[560px] items-center justify-center gap-2 text-ink-3">{busy && <Loader2 size={16} className="animate-spin" />}{busy ? 'Running fixed-time and FlowState on the same traffic…' : 'Loading…'}</div>
-      )}
+      {loaded && !busy ? <Replay key={`${tab}:${loaded.asset.seed}`} data={loaded} /> : <Generating busy={busy} started={started} title={options.find((o) => o.id === tab)?.title ?? ''} />}
     </section>
   )
 }
 
-const EFFICIENCY: Record<string, string> = {
-  ev_travel_mean_s: 'faster emergency response', car_waiting: 'less waiting per vehicle', car_timeLoss: 'less time lost per vehicle',
-  queue_total_mean_veh: 'fewer vehicles queued', throughput_vph: 'more vehicles through',
+/** Shown while the backend runs the two simulations: the two empty map frames with what is happening and the elapsed time. */
+function Generating({ busy, started, title }: { busy: boolean; started: number; title: string }) {
+  const [now, setNow] = useState(() => performance.now())
+  useEffect(() => {
+    if (!busy) return
+    const id = setInterval(() => setNow(performance.now()), 250)
+    return () => clearInterval(id)
+  }, [busy])
+  const secsGone = Math.max(0, (now - started) / 1000)
+  const steps = ['Building the scenario and drawing its traffic', 'Running fixed-time signals in SUMO', 'Running FlowState on the same traffic', 'Recording both runs']
+  const step = Math.min(steps.length - 1, Math.floor(secsGone / 4.5))
+  return (
+    <div className="flex flex-col gap-7">
+      <div className="grid gap-x-10 gap-y-12 py-2 min-[860px]:grid-cols-2">
+        {['Fixed-time', 'FlowState'].map((n) => (
+          <div key={n} className="flex flex-col items-center gap-6">
+            <span className="text-[34px] font-[650] leading-none tracking-[-0.03em] text-ink">{n}</span>
+            <div className={cn('w-full p-2.5', shell)}>
+              <div className="relative flex h-[380px] items-center justify-center overflow-hidden rounded-[22px] bg-[#eef0f3] min-[860px]:h-[490px]">
+                <div className="absolute inset-0 animate-pulse bg-[linear-gradient(110deg,transparent_30%,rgb(255_255_255/0.55)_50%,transparent_70%)]" />
+                {busy && <Loader2 size={22} className="animate-spin text-ink-4" />}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {busy && (
+        <div className={cn('flex flex-col items-center gap-2 px-6 py-5 text-center', panel)}>
+          <span className="text-[15px] font-semibold text-ink">Generating {title}</span>
+          <span className="text-[13px] text-ink-3">{steps[step]}… <span className="tnum">{secsGone.toFixed(0)} s</span></span>
+          <div className="mt-1 h-1 w-[260px] overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-ink transition-[width] duration-300" style={{ width: `${Math.min(95, (secsGone / 18) * 100)}%` }} /></div>
+        </div>
+      )}
+    </div>
+  )
 }
 
-/** The three headline gains of this scenario over all paired runs, each with its before/after and the runs it lost. */
-function Efficiency({ asset }: { asset: DemoAsset }) {
-  const keys = asset.ambulances.length ? ['ev_travel_mean_s', 'car_waiting', 'queue_total_mean_veh'] : ['car_waiting', 'queue_total_mean_veh', 'throughput_vph']
-  const runs = asset.aggregate.episodes
+/** Per-second counts read from the recorded frames of one side: vehicles standing still and vehicles on the network. */
+function series(side: DemoSide): { t: number; stopped: number; moving: number }[] {
+  const out: { t: number; stopped: number; moving: number }[] = []
+  let next = -Infinity
+  for (const f of side.frames) {
+    if (f.t < next) continue
+    next = Math.floor(f.t) + 1
+    let stopped = 0
+    for (const v of f.v) if (v[5] < 5) stopped++
+    out.push({ t: Math.round(f.t), stopped, moving: f.v.length - stopped })
+  }
+  return out
+}
+
+const FIXED = '#eb6834', FLOW = '#2a78d6'
+
+/** Live comparison: vehicles stopped in traffic on each side, drawn up to the replay position (both curves come from the same recorded runs as the maps). */
+function LiveChart({ asset, t, win }: { asset: DemoAsset; t: number; win: [number, number] }) {
+  const data = useMemo(() => {
+    const L = series(asset.left), R = series(asset.right)
+    const byT = new Map(R.map((r) => [r.t, r.stopped]))
+    return L.filter((p) => p.t >= win[0] && p.t <= win[1]).map((p) => ({ t: p.t, fixed: p.stopped, flow: byT.get(p.t) ?? null }))
+  }, [asset, win])
+  const shown = data.filter((p) => p.t <= t)
+  const last = shown[shown.length - 1]
+  const ymax = Math.max(5, ...data.map((p) => Math.max(p.fixed, p.flow ?? 0)))
+  const mean = (k: 'fixed' | 'flow') => (shown.length ? shown.reduce((a, p) => a + (p[k] ?? 0), 0) / shown.length : 0)
   return (
-    <div className="grid gap-5 min-[720px]:grid-cols-3">
-      {keys.map((k) => {
-        const m = asset.aggregate.metrics[k]
-        if (!m || m.pct == null) return null
-        const lower = LOWER_IS_BETTER.has(k)
-        const good = lower ? m.mean_diff < 0 : m.mean_diff > 0
-        const sure = m.pairs >= 3 && (m.ci95[0] > 0 || m.ci95[1] < 0)
-        const unit = k === 'throughput_vph' ? ' veh/h' : k === 'queue_total_mean_veh' ? '' : ' s'
-        return (
-          <div key={k} title={`95% interval of the change: ${num(m.ci95[0], 1)} to ${num(m.ci95[1], 1)}`} className={cn('flex flex-col items-center gap-1.5 px-5 py-6 text-center', panel)}>
-            <span className={cn('tnum text-[44px] font-[650] leading-none tracking-[-0.04em]', !sure ? 'text-ink-3' : good ? 'text-ink' : 'text-bad')}>{Math.abs(m.pct).toFixed(0)}%</span>
-            <span className="text-[14px] font-[550] text-ink">{good ? EFFICIENCY[k] : EFFICIENCY[k].replace(/^(faster|less|fewer|more)/, (w) => ({ faster: 'slower', less: 'more', fewer: 'more', more: 'fewer' })[w] ?? w)}</span>
-            <span className="tnum text-[12px] text-ink-3">{num(m.left_mean, k === 'queue_total_mean_veh' ? 1 : 0)}{unit} → {num(m.right_mean, k === 'queue_total_mean_veh' ? 1 : 0)}{unit} · {runs > 1 ? `better in ${m.better} of ${runs}` : 'one run'}</span>
-          </div>
-        )
-      })}
+    <div className={cn('flex flex-col gap-3 px-6 pb-4 pt-5', panel)}>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[15px] font-semibold text-ink">Vehicles stopped in traffic</span>
+          <span className="text-[12px] text-ink-3">Counted every second from both recorded runs · drawn as the replay plays</span>
+        </div>
+        <div className="tnum flex gap-5 text-[13px]">
+          <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full" style={{ background: FIXED }} />Fixed-time <b className="font-[650] text-ink">{last ? last.fixed : '—'}</b><span className="text-ink-4">avg {mean('fixed').toFixed(1)}</span></span>
+          <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full" style={{ background: FLOW }} />FlowState <b className="font-[650] text-ink">{last?.flow ?? '—'}</b><span className="text-ink-4">avg {mean('flow').toFixed(1)}</span></span>
+        </div>
+      </div>
+      <div className="h-[190px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={shown} margin={{ top: 6, right: 6, bottom: 0, left: -18 }}>
+            <defs>
+              <linearGradient id="lc-fixed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={FIXED} stopOpacity={0.22} /><stop offset="1" stopColor={FIXED} stopOpacity={0} /></linearGradient>
+              <linearGradient id="lc-flow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={FLOW} stopOpacity={0.22} /><stop offset="1" stopColor={FLOW} stopOpacity={0} /></linearGradient>
+            </defs>
+            <CartesianGrid stroke="rgb(12 19 34 / 0.06)" vertical={false} />
+            <XAxis dataKey="t" type="number" domain={[win[0], win[1]]} tickFormatter={(v: number) => `${Math.round(v - win[0])}s`} tick={{ fontSize: 11, fill: '#8a93a3' }} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, Math.ceil(ymax * 1.1)]} tick={{ fontSize: 11, fill: '#8a93a3' }} axisLine={false} tickLine={false} allowDecimals={false} />
+            <Tooltip formatter={(v, k) => [String(v ?? ''), k === 'fixed' ? 'Fixed-time' : 'FlowState']} labelFormatter={(v) => `${Math.round(Number(v) - win[0])} s`} />
+            <Area type="monotone" dataKey="fixed" stroke={FIXED} strokeWidth={2} fill="url(#lc-fixed)" isAnimationActive={false} dot={false} />
+            <Area type="monotone" dataKey="flow" stroke={FLOW} strokeWidth={2} fill="url(#lc-flow)" isAnimationActive={false} dot={false} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }
@@ -479,7 +548,6 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
 
   return (
     <div className="flex flex-col gap-7">
-      <Efficiency asset={asset} />
       <div className="grid gap-x-10 gap-y-12 py-2 min-[860px]:grid-cols-2">
         {sides.map((x) => (
           <div key={x.name} className="flex flex-col items-center gap-6">
@@ -499,6 +567,8 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
           </div>
         ))}
       </div>
+
+      <LiveChart asset={asset} t={t} win={win} />
 
       <div className={cn('flex items-center gap-4 !rounded-full px-4 py-2.5', panel)}>
         <button type="button" onClick={() => (clock.current >= win[1] ? restart() : setPlaying((p) => !p))} aria-label={playing ? 'Pause' : 'Play'} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-white transition-transform active:scale-95">
