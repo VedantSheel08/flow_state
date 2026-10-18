@@ -1,4 +1,4 @@
-import { Loader2, Minus, Pause, Play, Plus, RotateCcw } from 'lucide-react'
+import { ChevronDown, Loader2, Pause, Play, RotateCcw } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Camera } from '../map/camera'
 import { canopyCache, groundCache, render, type RenderState } from '../map/renderer'
@@ -13,7 +13,7 @@ import { card, signed } from '../lib/resultsTheme'
 import { Cap, H2 } from './resultsUi'
 
 type Loaded = { asset: DemoAsset; net: NetworkGeom; scene: Scene }
-const SPEEDS = [1, 2, 4]
+const SPEED = 1.5 // replay a little faster than real time
 const panel = 'rounded-[22px] bg-white/60 shadow-[0_10px_40px_-14px_rgb(12_19_34/0.2),inset_0_0_0_1px_rgb(255_255_255/0.75),0_0_0_1px_rgb(12_19_34/0.05)] backdrop-blur-2xl'
 // Map frame: dark, very transparent hairline, soft blue shadow. No backdrop blur here: blurring behind a live canvas is what made the page lag.
 const shell = 'rounded-[30px] bg-[rgb(12_19_34/0.04)] shadow-[0_34px_80px_-26px_rgb(37_99_235/0.30),0_12px_30px_-14px_rgb(12_19_34/0.18),inset_0_0_0_1px_rgb(12_19_34/0.12)]'
@@ -340,47 +340,34 @@ function Units({ units, example, onPick }: { units: DemoUnit[]; example: number 
   )
 }
 
-function Segmented<T extends string | number>({ value, onChange, options, label, size = 'sm' }: { value: T | null; onChange: (v: T) => void; options: { v: T; label: string }[]; label: string; size?: 'sm' | 'lg' }) {
-  return (
-    <div role="group" aria-label={label} className={cn('inline-flex rounded-full bg-muted p-0.5', size === 'lg' && 'bg-white/60 p-1 shadow-[0_0_0_1px_rgb(12_19_34/0.06)] backdrop-blur-xl')}>
-      {options.map((o) => (
-        <button key={o.v} type="button" aria-pressed={value === o.v} onClick={() => onChange(o.v)}
-          className={cn('rounded-full font-[550] transition-colors', size === 'lg' ? 'h-9 px-5 text-[14px]' : 'h-7 px-3 text-[12px]', value === o.v ? 'bg-white text-ink shadow-thumb' : 'text-ink-3 hover:text-ink')}>{o.label}</button>
-      ))}
-    </div>
-  )
-}
-
 // ---- section ---------------------------------------------------------------
-interface Tab { id: string; title: string; tagline: string; runs: number }
 interface CatalogScenario { id: string; title: string; tagline: string }
 
 export function SideBySide() {
   const [index, setIndex] = useState<DemoIndex | { error: string } | null>(null)
+  const [catalog, setCatalog] = useState<CatalogScenario[]>([])
   const [tab, setTab] = useState<string | null>(null)
   const [data, setData] = useState<Record<string, Loaded>>({})
-  const [mine, setMine] = useState<Tab[]>([])
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     let live = true
     loadIndex().then((ix) => { if (live) { setIndex(ix); setTab((s) => s ?? ix.scenarios[0]?.id ?? null) } }, (e: unknown) => { if (live) setIndex({ error: e instanceof Error ? e.message : String(e) }) })
+    fetch('/api/scenarios').then((r) => (r.ok ? r.json() : [])).then((list: CatalogScenario[]) => { if (live) setCatalog(Array.isArray(list) ? list : []) }, () => {})
     return () => { live = false }
   }, [])
   useEffect(() => {
-    if (!tab || tab.startsWith('run:') || !index || 'error' in index || data[tab]) return
+    if (!tab || !index || 'error' in index || data[tab]) return
     let live = true
-    Promise.all([loadScenario(tab), loadNetwork(index.network)]).then(
-      ([asset, net]) => { if (live) setData((d) => d[tab] ? d : { ...d, [tab]: { asset, net, scene: buildScene(net) } }) },
-      (e: unknown) => { if (live) setIndex({ error: e instanceof Error ? e.message : String(e) }) },
-    )
+    const recorded = index.scenarios.some((x) => x.id === tab)
+    setBusy(!recorded); setError(null)
+    const job = recorded ? loadScenario(tab) : runComparison(tab, null)
+    job.then(async (asset) => {
+      const net = await loadNetwork(asset.network ?? index.network)
+      if (live) setData((d) => ({ ...d, [tab]: { asset, net, scene: buildScene(net) } }))
+    }).catch((e: unknown) => { if (live) setError(e instanceof Error ? e.message : String(e)) }).finally(() => { if (live) setBusy(false) })
     return () => { live = false }
   }, [tab, index, data])
-
-  const addRun = (asset: DemoAsset, net: NetworkGeom) => {
-    const id = `run:${asset.scenario}:${asset.seed}`
-    setData((d) => ({ ...d, [id]: { asset, net, scene: buildScene(net) } }))
-    setMine((m) => (m.some((x) => x.id === id) ? m : [...m, { id, title: `${asset.scenarioTitle} · ${asset.seed}`, tagline: asset.tagline ?? '', runs: 1 }]))
-    setTab(id)
-  }
 
   if (index && 'error' in index) {
     return (
@@ -390,68 +377,31 @@ export function SideBySide() {
       </section>
     )
   }
-  const tabs: Tab[] = [...(index?.scenarios ?? []).map((s) => ({ id: s.id, title: s.title, tagline: s.tagline, runs: index?.seeds.length ?? 0 })), ...mine]
-  const current = tabs.find((x) => x.id === tab)
+  const recorded = index?.scenarios ?? []
+  const options = [...recorded.map((x) => ({ id: x.id, title: x.title })), ...catalog.filter((c) => !recorded.some((r) => r.id === c.id)).map((c) => ({ id: c.id, title: c.title }))]
   const loaded = tab ? data[tab] : undefined
+  const runs = loaded?.asset.aggregate.episodes ?? 0
   return (
     <section className="flex flex-col gap-7">
       {index && tab && (
-        <div className="flex flex-col items-center gap-3">
-          <div className="flex max-w-full flex-wrap justify-center gap-2">
-            <Segmented size="lg" label="Scenario" value={tab} onChange={setTab} options={tabs.map((s) => ({ v: s.id, label: s.title }))} />
+        <div className="flex flex-col items-center gap-2.5">
+          <div className="relative">
+            <select aria-label="Scenario" value={tab} onChange={(e) => setTab(e.target.value)}
+              className="h-11 cursor-pointer appearance-none rounded-full bg-white/70 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2346505f%22 stroke-width=%222.5%22><path d=%22m6 9 6 6 6-6%22/></svg>')] bg-[length:12px] bg-[right_18px_center] bg-no-repeat pl-6 pr-11 text-[15px] font-[550] text-ink shadow-[0_0_0_1px_rgb(12_19_34/0.08),0_6px_20px_-10px_rgb(12_19_34/0.25)] outline-none backdrop-blur-xl">
+              {options.map((o) => <option key={o.id} value={o.id}>{o.title}</option>)}
+            </select>
+            <ChevronDown size={15} strokeWidth={2.5} className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-ink-3" />
           </div>
-          {current && <Headline tagline={current.tagline} runs={current.runs} />}
-          <RunYourOwn network={index.network} onDone={addRun} />
+          <p className="m-0 text-center text-[13px] text-ink-3">
+            {busy ? 'Simulating both sides in SUMO…' : error ? <span className="text-bad">{error}</span> : loaded ? `${loaded.asset.tagline ?? ''}${loaded.asset.tagline ? ' · ' : ''}${runs === 1 ? 'one SUMO run per side' : `${runs} paired SUMO runs`}` : ''}
+          </p>
         </div>
       )}
-      {loaded ? <Replay key={tab} data={loaded} /> : <div className="flex h-[560px] items-center justify-center text-ink-3">Loading the recorded runs…</div>}
+      {loaded ? <Replay key={tab} data={loaded} /> : (
+        <div className="flex h-[560px] items-center justify-center gap-2 text-ink-3">{busy && <Loader2 size={16} className="animate-spin" />}{busy ? 'Running fixed-time and FlowState on the same traffic…' : 'Loading…'}</div>
+      )}
     </section>
   )
-}
-
-/** Pick any scenario from the Simulation page and run fixed-time vs FlowState on the backend (two real headless SUMO runs, same seed). */
-function RunYourOwn({ network, onDone }: { network: string; onDone: (a: DemoAsset, n: NetworkGeom) => void }) {
-  const [catalog, setCatalog] = useState<CatalogScenario[] | null>(null)
-  const [scenario, setScenario] = useState('ambulance')
-  const [seed, setSeed] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  useEffect(() => {
-    let live = true
-    fetch('/api/scenarios').then((r) => (r.ok ? r.json() : null)).then((list: CatalogScenario[] | null) => { if (live) setCatalog(list) }, () => { if (live) setCatalog(null) })
-    return () => { live = false }
-  }, [])
-  if (!catalog?.length) return null // static hosting without the simulation backend: only the recorded runs
-  const go = async () => {
-    setBusy(true); setError(null)
-    try {
-      const asset = await runComparison(scenario, seed.trim() ? Number(seed) : null)
-      onDone(asset, await loadNetwork(asset.network ?? network))
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
-    } finally {
-      setBusy(false)
-    }
-  }
-  return (
-    <div className={cn('flex flex-wrap items-center justify-center gap-3 !rounded-full px-4 py-2', panel)}>
-      <span className="text-[14px] font-[550] text-ink">Run your own comparison</span>
-      <select aria-label="Scenario" value={scenario} onChange={(e) => setScenario(e.target.value)} disabled={busy}
-        className="h-9 rounded-full bg-white/80 px-4 text-[13px] text-ink shadow-[0_0_0_1px_rgb(12_19_34/0.08)] outline-none">
-        {catalog.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
-      </select>
-      <input aria-label="Seed" inputMode="numeric" placeholder="Random seed" value={seed} onChange={(e) => setSeed(e.target.value.replace(/[^0-9]/g, ''))} disabled={busy}
-        className="tnum h-9 w-[130px] rounded-full bg-white/80 px-4 text-[13px] text-ink shadow-[0_0_0_1px_rgb(12_19_34/0.08)] outline-none placeholder:text-ink-4" />
-      <button type="button" onClick={go} disabled={busy} className="inline-flex h-9 items-center gap-2 rounded-full bg-ink px-5 text-[13px] font-[550] text-white disabled:opacity-70">
-        {busy && <Loader2 size={14} className="animate-spin" />}{busy ? 'Simulating both sides…' : 'Run in SUMO'}
-      </button>
-      {error && <span className="text-[12px] text-bad">{error}</span>}
-    </div>
-  )
-}
-
-function Headline({ tagline, runs }: { tagline: string; runs: number }) {
-  return <p className="m-0 text-center text-[15px] text-ink-3">{tagline}{tagline ? ' · ' : ''}{runs === 1 ? 'one SUMO run per side (your seed)' : `${runs} paired SUMO runs`}</p>
 }
 
 const EFFICIENCY: Record<string, string> = {
@@ -493,7 +443,6 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
   const { asset, net, scene } = data
   const units = asset.ambulances
   const [mode, setMode] = useState<ViewMode>('junction')
-  const [speed, setSpeed] = useState(units.length ? 1 : 2)
   const [playing, setPlaying] = useState(true)
   const view = useRef<SharedView>({ cx: 300, cy: 300, scale: 0 })
   const win = useMemo<[number, number]>(() => (example != null ? windowFor(asset, example) : [asset.left.frames[0].t, asset.left.frames[asset.left.frames.length - 1].t]), [asset, example])
@@ -507,18 +456,17 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
       raf = requestAnimationFrame(step)
       const dt = Math.min(0.25, (now - prev) / 1000)
       prev = now
-      clock.current = Math.min(win[1], clock.current + dt * speed)
+      clock.current = Math.min(win[1], clock.current + dt * SPEED)
       if (now - shown > 100) { shown = now; setT(clock.current) }
       if (clock.current >= win[1]) { setT(win[1]); setPlaying(false) }
     }
     raf = requestAnimationFrame(step)
     return () => cancelAnimationFrame(raf)
-  }, [playing, speed, win])
+  }, [playing, win])
 
   const unit = units.find((u) => u.id === example) ?? null
   const seek = (v: number) => { clock.current = v; setT(v) }
   const restart = () => { seek(win[0]); setPlaying(true) }
-  const zoom = (k: number) => { setMode('free'); view.current.scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, view.current.scale * k)) }
   const stops = (s: DemoUnit['left']) => s.stoppedRedS + s.stoppedQueueS
   const tlsIds = useMemo(() => asset.tlsIds ?? net.tls.map((x) => x.id), [asset, net])
   const district = asset.network === 'district'
@@ -552,19 +500,16 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
         ))}
       </div>
 
-      <div className={cn('flex flex-wrap items-center gap-x-4 gap-y-3 !rounded-full px-5 py-3', panel)}>
+      <div className={cn('flex items-center gap-4 !rounded-full px-4 py-2.5', panel)}>
         <button type="button" onClick={() => (clock.current >= win[1] ? restart() : setPlaying((p) => !p))} aria-label={playing ? 'Pause' : 'Play'} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-white transition-transform active:scale-95">
-          {playing ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="translate-x-px" />}
+          {playing ? <Pause size={16} fill="currentColor" /> : t >= win[1] ? <RotateCcw size={15} /> : <Play size={16} fill="currentColor" className="translate-x-px" />}
         </button>
-        <button type="button" onClick={restart} aria-label="Restart" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-ink-2 transition-colors hover:bg-white"><RotateCcw size={15} /></button>
-        <input type="range" aria-label="Replay position" min={win[0]} max={win[1]} step={0.1} value={t} onChange={(e) => seek(Number(e.target.value))} className="min-w-[140px] flex-1 accent-[#0c1322]" />
-        <span className="tnum w-[84px] text-right text-[12px] text-ink-3">{(t - win[0]).toFixed(0)} / {(win[1] - win[0]).toFixed(0)} s</span>
-        <Segmented label="Speed" value={speed} onChange={setSpeed} options={SPEEDS.map((s) => ({ v: s, label: `${s}×` }))} />
-        <Segmented label="Camera" value={mode} onChange={setMode} options={[{ v: 'junction' as ViewMode, label: 'Intersection' }, { v: 'follow' as ViewMode, label: 'Follow' }, { v: 'network' as ViewMode, label: 'Whole map' }, { v: 'free' as ViewMode, label: 'Free' }]} />
-        <div className="inline-flex rounded-full bg-muted/80 p-0.5">
-          <button type="button" aria-label="Zoom out" onClick={() => zoom(1 / 1.5)} className="inline-flex h-7 w-8 items-center justify-center rounded-full text-ink-2 hover:bg-white hover:shadow-thumb"><Minus size={14} /></button>
-          <button type="button" aria-label="Zoom in" onClick={() => zoom(1.5)} className="inline-flex h-7 w-8 items-center justify-center rounded-full text-ink-2 hover:bg-white hover:shadow-thumb"><Plus size={14} /></button>
-        </div>
+        <input type="range" aria-label="Replay position" min={win[0]} max={win[1]} step={0.1} value={t} onChange={(e) => seek(Number(e.target.value))} className="min-w-0 flex-1 accent-[#0c1322]" />
+        <span className="tnum w-[70px] shrink-0 text-right text-[12px] text-ink-3">{(t - win[0]).toFixed(0)} / {(win[1] - win[0]).toFixed(0)} s</span>
+        <button type="button" onClick={() => setMode((m) => (m === 'junction' ? 'network' : 'junction'))} aria-pressed={mode === 'network'}
+          className={cn('h-9 shrink-0 rounded-full px-4 text-[13px] font-[550] transition-colors', mode === 'network' ? 'bg-ink text-white' : 'bg-white/70 text-ink-2 hover:bg-white')}>
+          {mode === 'network' ? 'Back to intersection' : mode === 'free' ? 'Recentre' : 'Whole map'}
+        </button>
       </div>
 
       {unit && (
