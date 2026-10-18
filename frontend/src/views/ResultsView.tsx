@@ -3,6 +3,7 @@ import { METRICS, pairs, results, scale, type ControllerId, type DemandResults, 
 import { cn, num } from '../lib/format'
 import { BASE, COLOR, FS, HERO, card, signed } from '../lib/resultsTheme'
 import { Cap, Eyebrow, H2, Swatch } from './resultsUi'
+import { FlowBackdrop } from './FlowBackdrop'
 import { SideBySide } from './SideBySide'
 
 // Recorded SUMO evaluation, standard peak demand; over-saturated only confirms the headline.
@@ -302,8 +303,13 @@ export function ResultsView() {
   const patterns = Object.keys(D.perScenario).length
   return (
     <div className="scroll-y min-w-0 flex-1 bg-canvas">
-      <main className="mx-auto flex max-w-[1100px] flex-col gap-8 px-4 pb-[72px] pt-10 min-[720px]:px-8">
-        <div className="flex flex-col gap-2.5">
+      <div className="pointer-events-none sticky top-0 z-0 h-0" aria-hidden>
+        <div className="absolute inset-x-0 top-0 h-[calc(100vh-48px)] overflow-hidden">
+          <FlowBackdrop />
+        </div>
+      </div>
+      <main className="relative z-10 mx-auto flex max-w-[1100px] flex-col gap-8 px-4 pb-[72px] pt-10 min-[720px]:px-8">
+        <div className="flex w-fit max-w-full flex-col gap-2.5 rounded-[28px] bg-white/35 px-7 py-5 backdrop-blur-2xl">
           <Eyebrow>Results · Recorded SUMO evaluation · {runs} paired runs</Eyebrow>
           <h1 className="m-0 text-balance text-[32px] font-[650] leading-[1.19] tracking-[-0.02em]">FlowState vs fixed-time signals</h1>
         </div>
