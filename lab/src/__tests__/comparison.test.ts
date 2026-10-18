@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   chartValue,
+  countDifference,
+  delayedVehicles,
   displayPrecision,
   frameAt,
   framePair,
@@ -49,6 +51,30 @@ describe('chart measurement scopes', () => {
   it('excludes drain-period arrivals from demand-window throughput', () => {
     expect(chartValue(run, frames[3], 'throughput')).toBe(800)
     expect(chartValue(run, frames[0], 'throughput')).toBe(0)
+  })
+})
+describe('measured delayed vehicles', () => {
+  it('counts recorded positive-current-wait flags, not all vehicles or predictions', () => {
+    const frame: Frame = {
+      t: 1,
+      s: [],
+      k: [3, 99, 5],
+      v: [
+        [1, 0, 0, 0, 0, 0, 1],
+        [2, 0, 0, 0, 0, 0, 0],
+        [3, 0, 0, 0, 0, 20, 1],
+      ],
+    }
+    expect(delayedVehicles(frame)).toBe(2)
+    expect(delayedVehicles({ ...frame, v: [] })).toBe(0)
+    expect(delayedVehicles(undefined)).toBeUndefined()
+  })
+  it('does not turn missing measurements into zero improvement', () => {
+    expect(countDifference(undefined, 3)).toBeUndefined()
+    expect(countDifference(4, undefined)).toBeUndefined()
+    expect(countDifference(4, 6)?.diff).toBe(2)
+    expect(countDifference(4, 6)?.verdict).toBe('left better')
+    expect(countDifference(0, 0)?.verdict).toBe('same')
   })
 })
 describe('honest result wording', () => {

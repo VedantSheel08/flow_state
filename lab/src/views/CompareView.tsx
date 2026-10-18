@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Chart from '../components/Chart'
+import ApproachInspector from '../components/ApproachInspector'
 import MapCanvas, { type DrawData, type View } from '../components/MapCanvas'
 import { fmt, getJSON, postJSON } from '../lib/api'
 import {
   CHART_METRICS,
   chartValue,
+  countDifference,
+  delayedVehicles,
   displayPrecision,
   frameAt,
   framePair,
@@ -40,9 +44,14 @@ interface Props {
   mlAvailable: boolean
   onReplay: (id: string | null) => void
   pending?: Record<string, unknown> | null
+  active?: boolean
+  advancedTarget?: HTMLElement | null
+  onInspect?: () => void
 }
 const LCOL = '#8c9eab',
-  RCOL = '#39bca6'
+  RCOL = '#5486b8'
+const runColor = (controller: string, side: 'left' | 'right') =>
+  controller === 'ml_forecast' ? RCOL : side === 'left' ? LCOL : '#60727f'
 const sideName = (c: string) =>
   c === 'ml_forecast'
     ? 'With ML'
@@ -62,6 +71,9 @@ export default function CompareView({
   mlAvailable,
   onReplay,
   pending,
+  active = true,
+  advancedTarget,
+  onInspect,
 }: Props) {
   const [index, setIndex] = useState<ReplaySummary[]>([])
   const [rid, setRid] = useState<string | null>(null)
@@ -71,6 +83,14 @@ export default function CompareView({
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(8)
   const [chartMetric, setChartMetric] = useState<ChartMetric>('queue')
+  const [selected, setSelected] = useState<number | null>(null)
+  const inspect = useCallback(
+    (approach: number | null) => {
+      setSelected(approach)
+      if (approach !== null) onInspect?.()
+    },
+    [onInspect],
+  )
   const [t, setT] = useState(1)
   const [ev, setEv] = useState<EvalSummary | null>(null)
   const [form, setForm] = useState({
@@ -172,7 +192,7 @@ export default function CompareView({
     setT(tref.current)
   }
   useEffect(() => {
-    if (!playing || !rep) return
+    if (!playing || !rep || !active) return
     let raf = 0,
       prev = performance.now(),
       lastUi = 0
@@ -195,7 +215,7 @@ export default function CompareView({
     }
     raf = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(raf)
-  }, [playing, speed, rep, dur])
+  }, [playing, speed, rep, dur, active])
   const sources = useMemo(
     () =>
       (['left', 'right'] as const).map((side) => (): DrawData | null => {
@@ -209,12 +229,13 @@ export default function CompareView({
           vehicles: interpolate(frame, next, fraction),
           signals: frame.s,
           queue: o?.q,
+          selected,
           mlJunctions: (run.mlLog ?? [])
             .filter(([ts]) => ts <= tt && tt - ts < 6)
             .map(([, j]) => j),
         }
       }),
-    [rep],
+    [rep, selected],
   )
   const series = useMemo(
     () =>
@@ -222,7 +243,7 @@ export default function CompareView({
         ? {
             lines: (['left', 'right'] as const).map((side, i) => ({
               name: `${i ? 'Right' : 'Left'} · ${sideName(rep[side].controller)}`,
-              color: i ? RCOL : LCOL,
+              color: runColor(rep[side].controller, side),
               points: rep[side].frames
                 .filter((_, n, a) => n % 5 === 0 || n === a.length - 1)
                 .map(
@@ -233,10 +254,10 @@ export default function CompareView({
                     ],
                 ),
             })),
-            markers: (['left', 'right'] as const).flatMap((side, i) =>
+            markers: (['left', 'right'] as const).flatMap((side) =>
               (rep[side].mlLog ?? []).map(([ts, j, d]) => ({
                 x: ts,
-                color: i ? RCOL : LCOL,
+                color: runColor(rep[side].controller, side),
                 title: `${side === 'left' ? 'Left' : 'Right'} · ${geom.controlled[j]} · ${d > 0 ? 'requested earlier switch' : 'held green longer'} · ${ts}s`,
               })),
             ),
@@ -279,8 +300,10 @@ export default function CompareView({
     }
   }
   const ti = Math.floor(t)
-  const kl = rep && frameAt(rep.left.frames, t)?.k,
-    kr = rep && frameAt(rep.right.frames, t)?.k
+  const frameL = rep ? frameAt(rep.left.frames, t) : undefined
+  const frameR = rep ? frameAt(rep.right.frames, t) : undefined
+  const kl = frameL?.k,
+    kr = frameR?.k
   const pairKey = rep && `${rep.left.controller}|${rep.right.controller}`
   const block = pairKey
     ? ev?.summary[
@@ -480,7 +503,8 @@ export default function CompareView({
                     geom={geom}
                     source={sources[i]}
                     view={view}
-                    accent={i ? RCOL : LCOL}
+                    accent={runColor(rep[side].controller, side)}
+                    onPick={inspect}
                     label={`${sideName(rep[side].controller)} traffic simulation`}
                   />
                   <div className="map-overlay">
@@ -498,14 +522,17 @@ export default function CompareView({
                   <span>
                     <i
                       className="legend-line"
-                      style={{ background: i ? RCOL : LCOL }}
+                      style={{
+                        background: runColor(rep[side].controller, side),
+                      }}
                     />
-                    {fmt((i ? kr : kl)?.[KPI.inNetwork], 0)} vehicles in network
+                    {fmt((i ? kr : kl)?.[KPI.halting], 0)} total queued
                   </span>
                   <span>
+                    {ti}s
                     {rep[side].frames.at(-1)!.t < t
-                      ? 'Run complete'
-                      : `${ti}s simulated`}
+                      ? ' · run complete'
+                      : ' simulated'}
                   </span>
                 </div>
               </section>
@@ -589,9 +616,15 @@ export default function CompareView({
           <div className="outcomes">
             <Outcome
               row={rep.diff.find((d) => d.key === 'mean_wait_s')}
-              title="Average wait time"
+              title="Average waiting time"
               scope="Completed trips · Full run"
               unit="s"
+            />
+            <Outcome
+              row={rep.diff.find((d) => d.key === 'queue_total_mean_veh')}
+              title="Average queued vehicles"
+              scope="All approaches · Full run"
+              unit="veh"
             />
             <Outcome
               row={rep.diff.find((d) => d.key === 'throughput_vph')}
@@ -602,31 +635,14 @@ export default function CompareView({
               lower={false}
             />
             <Outcome
-              row={
-                kl && kr
-                  ? {
-                      key: 'queue',
-                      label: '',
-                      unit: 'veh',
-                      left: kl[KPI.halting],
-                      right: kr[KPI.halting],
-                      diff: kr[KPI.halting] - kl[KPI.halting],
-                      pct: null,
-                      verdict: '',
-                    }
-                  : undefined
-              }
-              title="Total queued vehicles"
-              scope={`On approaches · At ${ti}s`}
+              row={countDifference(
+                delayedVehicles(frameL),
+                delayedVehicles(frameR),
+              )}
+              title="Delayed vehicles"
+              scope={`Positive current wait · At ${ti}s`}
               unit="veh"
               digits={0}
-            />
-            <Outcome
-              row={rep.diff.find((d) => d.key === 'spillback_pct')}
-              title="Blocked road time"
-              scope="Spillback · Full run"
-              unit="%"
-              deltaUnit="pp"
             />
           </div>
           <div className="analysis-row">
@@ -645,7 +661,7 @@ export default function CompareView({
                     }
                   >
                     <option value="queue">Total queue</option>
-                    <option value="wait">Current wait</option>
+                    <option value="wait">Average delay</option>
                     <option value="throughput">Throughput</option>
                   </select>
                 </label>
@@ -671,116 +687,137 @@ export default function CompareView({
             <Explanation rep={rep} geom={geom} t={t} />
           </div>
           <Evidence block={block} />
-          <details className="disclosure">
-            <summary>
-              Technical details{' '}
-              <span>Full results, controls, provenance & safety events</span>
-            </summary>
-            <div className="disclosure-body">
-              <div className="provenance">
-                <div>
-                  <span className="eyebrow">Controlled comparison</span>
-                  <h3>One demand file. Two independent runs.</h3>
-                  <p>
-                    Same network, route file, SUMO seed {rep.seed}, demand{' '}
-                    {rep.intensity}×, and signal safety limits. Demand runs for
-                    900 seconds, followed by a drain period. Early finishes hold
-                    their last measured frame.
-                  </p>
-                  <p className="mono">Demand hash (SHA-256 prefix): {rep.demandSha}</p>
+          {advancedTarget &&
+            createPortal(
+              <section className="run-details">
+                <div className="section-heading">
+                  <h2>Run evidence & technical details</h2>
+                  <span>Measured results, provenance & safety events</span>
                 </div>
-                <div>
-                  <h3>How to read the metrics</h3>
-                  <p>
-                    Average wait covers completed trips. Throughput counts
-                    arrivals during the demand window. Queue is the total
-                    stopped vehicles on approaches at the playhead. Blocked road
-                    time is the percentage of block-seconds with a queue filling
-                    at least half a block.
-                  </p>
-                  <p>
-                    CO₂ is a SUMO HBEFA3 estimate with an assumed fleet.
-                    Teleports and collisions remain visible below.
-                  </p>
-                </div>
-              </div>
-              <div className="table-scroll">
-                <table className="tbl">
-                  <thead>
-                    <tr>
-                      <th>Full-run measurement</th>
-                      <th className="num">Left</th>
-                      <th className="num">Right</th>
-                      <th className="num">Δ right − left</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rep.diff.map((d) => (
-                      <tr key={d.key}>
-                        <td>
-                          {d.label} <span className="muted">{d.unit}</span>
-                        </td>
-                        <td className="num">{fmt(d.left, 2)}</td>
-                        <td className="num">{fmt(d.right, 2)}</td>
-                        <td className="num">
-                          {signed(d.diff, 2)}
-                          {d.pct !== null && (
-                            <small className="muted"> ({signed(d.pct)}%)</small>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {(['left', 'right'] as const).map(
-                (side) =>
-                  rep[side].ml && (
-                    <p className="small" key={side}>
-                      {side === 'left' ? 'Left' : 'Right'} ML controller changed{' '}
-                      {rep[side].ml!.changed} of {rep[side].ml!.decisions}{' '}
-                      eligible decisions: {rep[side].ml!.switchedEarlier}{' '}
-                      earlier switch requests, {rep[side].ml!.heldLonger} longer
-                      holds.
-                    </p>
-                  ),
-              )}
-              {block && (
-                <div className="table-scroll">
-                  <h3>Held-out paired evaluation</h3>
-                  <table className="tbl">
-                    <thead>
-                      <tr>
-                        <th>Metric</th>
-                        <th className="num">Left mean</th>
-                        <th className="num">Right mean</th>
-                        <th className="num">Mean Δ</th>
-                        <th className="num">95% bootstrap CI</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.entries(block)
-                        .filter(([, v]) => typeof v === 'object' && v.ci95)
-                        .map(([key, v]) => (
-                          <tr key={key}>
+                <div className="disclosure-body">
+                  <ApproachInspector
+                    geom={geom}
+                    left={obsAt(rep.left.obs, t)}
+                    right={obsAt(rep.right.obs, t)}
+                    selected={selected}
+                    onSelect={inspect}
+                  />
+                  <div className="provenance">
+                    <div>
+                      <span className="eyebrow">Controlled comparison</span>
+                      <h3>One demand file. Two independent runs.</h3>
+                      <p>
+                        Same network, route file, SUMO seed {rep.seed}, demand{' '}
+                        {rep.intensity}×, and signal safety limits. Demand runs
+                        for 900 seconds, followed by a drain period. Early
+                        finishes hold their last measured frame.
+                      </p>
+                      <p className="mono">
+                        Demand hash (SHA-256 prefix): {rep.demandSha}
+                      </p>
+                    </div>
+                    <div>
+                      <h3>How to read the metrics</h3>
+                      <p>
+                        Average wait covers completed trips. Throughput counts
+                        arrivals during the demand window. Average queued
+                        vehicles is the full-run mean of stopped vehicles on
+                        approaches. Delayed vehicles counts the recorded
+                        positive-current-wait flags at the playhead; total queue
+                        at that time remains in each map footer. Blocked road
+                        time is the percentage of block-seconds with a queue
+                        filling at least half a block.
+                      </p>
+                      <p>
+                        CO₂ is a SUMO HBEFA3 estimate with an assumed fleet.
+                        Teleports and collisions remain visible below.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="table-scroll">
+                    <table className="tbl">
+                      <thead>
+                        <tr>
+                          <th>Full-run measurement</th>
+                          <th className="num">Left</th>
+                          <th className="num">Right</th>
+                          <th className="num">Δ right − left</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rep.diff.map((d) => (
+                          <tr key={d.key}>
                             <td>
-                              {rep.diff.find((d) => d.key === key)?.label ??
-                                key}
+                              {d.label} <span className="muted">{d.unit}</span>
                             </td>
-                            <td className="num">{fmt(v.left_mean, 2)}</td>
-                            <td className="num">{fmt(v.right_mean, 2)}</td>
-                            <td className="num">{signed(v.mean_diff, 2)}</td>
+                            <td className="num">{fmt(d.left, 2)}</td>
+                            <td className="num">{fmt(d.right, 2)}</td>
                             <td className="num">
-                              {fmt(v.ci95[0], 2)} to {fmt(v.ci95[1], 2)}
+                              {signed(d.diff, 2)}
+                              {d.pct !== null && (
+                                <small className="muted">
+                                  {' '}
+                                  ({signed(d.pct)}%)
+                                </small>
+                              )}
                             </td>
                           </tr>
                         ))}
-                    </tbody>
-                  </table>
+                      </tbody>
+                    </table>
+                  </div>
+                  {(['left', 'right'] as const).map(
+                    (side) =>
+                      rep[side].ml && (
+                        <p className="small" key={side}>
+                          {side === 'left' ? 'Left' : 'Right'} ML controller
+                          changed {rep[side].ml!.changed} of{' '}
+                          {rep[side].ml!.decisions} eligible decisions:{' '}
+                          {rep[side].ml!.switchedEarlier} earlier switch
+                          requests, {rep[side].ml!.heldLonger} longer holds.
+                        </p>
+                      ),
+                  )}
+                  {block && (
+                    <div className="table-scroll">
+                      <h3>Held-out paired evaluation</h3>
+                      <table className="tbl">
+                        <thead>
+                          <tr>
+                            <th>Metric</th>
+                            <th className="num">Left mean</th>
+                            <th className="num">Right mean</th>
+                            <th className="num">Mean Δ</th>
+                            <th className="num">95% bootstrap CI</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.entries(block)
+                            .filter(([, v]) => typeof v === 'object' && v.ci95)
+                            .map(([key, v]) => (
+                              <tr key={key}>
+                                <td>
+                                  {rep.diff.find((d) => d.key === key)?.label ??
+                                    key}
+                                </td>
+                                <td className="num">{fmt(v.left_mean, 2)}</td>
+                                <td className="num">{fmt(v.right_mean, 2)}</td>
+                                <td className="num">
+                                  {signed(v.mean_diff, 2)}
+                                </td>
+                                <td className="num">
+                                  {fmt(v.ci95[0], 2)} to {fmt(v.ci95[1], 2)}
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </details>
+              </section>,
+              advancedTarget,
+            )}
         </>
       )}
     </div>

@@ -1,78 +1,79 @@
-# Intelligence Lab UI handoff
+# FlowState Intelligence Lab — verified UI v2
 
-UI branch: `task/intelligence-ui`. Worktree: `D:/flowstate-migration/intelligence-ui`.
-Base: `8a8d2a07b7aeb54fa0ad56bda3b07a583fdd8140` from `task/ml-intelligence`.
-
-The direct task requested this branch name. The later attached design brief was used as a visual reference; its alternate `task/intelligence-ui-v2` branch instruction was not substituted for the direct request.
+Primary branch: `task/intelligence-ui-v2`. Worktree: `D:/flowstate-migration/intelligence-ui-v2`.
+Created from the latest committed `task/ml-intelligence` at the start of this pass: `8a8d2a07b7aeb54fa0ad56bda3b07a583fdd8140`. The previously completed UI work was reused, then the remaining requirements from the attached brief were implemented. Claude's active, uncommitted ML changes were inspected for coordination and were not copied or edited.
 
 ## Preview and integration
 
-- UI: http://localhost:5177
-- Isolated local API: http://127.0.0.1:8016
-- Claude's original UI/API on 5176/8015 were left running.
-- No backend implementation, trained model, physics, controller, or recorded evaluation artifact was edited. No production website or Vultr operation was performed.
-- Existing ignored replay files were copied into this worktree for verification. A new balanced/light-demand pair, seed 3401, was recorded through the UI against this worktree's API, taking 13.6 seconds. Original replay files were not overwritten.
+- Preview: http://localhost:5177
+- Isolated API: http://127.0.0.1:8016, now served from the v2 worktree.
+- Original ML preview/API on 5176/8015 remain separate.
+- No production frontend, Vultr backend, simulation physics, controller logic, model, or experiment-evaluation result was changed. No model was trained or retrained. No merge or deployment was performed.
+- Existing ignored replay files were copied into this worktree. A new UI-requested comparison, balanced scenario / seed 3420 / 0.7× demand, completed in 58.4 seconds on the shared machine and was automatically selected.
 
-No API migration is required. The UI consumes the existing `/api/lab/{status,geometry,replays,comparison,forecast,perf,ask}`, replay-job endpoints, and `/ws/live` contracts. Additional uncommitted contract/benchmark work observed in the original ML worktree was inspected but not imported. Incorporate future ML API changes only from its reviewed committed version.
+The existing lab API contracts are unchanged: status, geometry, replay index, replay/job recording, comparison/forecast evaluation, runtime telemetry, grounded explanations, and the live WebSocket. No backend migration is required. Future uncommitted intelligence-contract work is deliberately not a dependency of this UI.
 
-To run against a different local lab API:
+Run the unchanged lab API from this worktree's backend directory with a Python environment containing the existing backend dependencies:
 
 ```powershell
-cd D:/flowstate-migration/intelligence-ui/lab
+python -m flowstate.lab.cli serve --port 8016
+```
+
+Run the UI:
+
+```powershell
+cd D:/flowstate-migration/intelligence-ui-v2/lab
 $env:FLOWSTATE_LAB_API = 'http://127.0.0.1:8016'
 node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5177 --strictPort
 ```
 
-The API is the unchanged `python -m flowstate.lab.cli serve --port 8016`, run from this worktree's `backend` directory using the existing ML Python environment. The existing launcher remains unchanged.
+Replay data remains git-ignored, as in the original lab. The tracked trained forecaster is used as supplied. No new credentials or infrastructure are required. Gemini is unavailable locally; its measured-answer fallback was verified, and no external Gemini-provider success is claimed.
 
-## Product changes
+## Requirements completed
 
-- Light neutral workspace with the supplied FlowState wordmark, restrained color, and two dominant linked traffic canvases.
-- Default pairing is the queue-responsive heuristic without ML versus the forecast-assisted controller. Alternate pairings receive accurate controller labels.
-- Four outcomes: completed-trip average wait, demand-window throughput, total stopped vehicles at the playhead, and blocked road time (spillback). Every scope is labeled. Deltas are right minus left; improvements and regressions are treated equally.
-- One overlaid chart switches between queue, current wait, and cumulative demand-window throughput. Intervention ticks come from `mlLog` on either side. No intervention is inferred from a forecast alone.
-- A compact explanation identifies a real 30-second prediction, the latest recorded decision change, and the full-run measured result. It explicitly avoids attributing the full-run difference to one decision.
-- The multi-seed confidence interval remains visible outside the technical disclosure. This controller's held-out result remains **no reliable improvement in average wait**.
-- Scenario recording, live controls, Gemini explanations, full metrics, safety events, model evaluation, and runtime diagnostics remain available. Advanced information is collapsed initially.
+- Supplied FlowState logo; light neutral SaaS workspace; deliberate typography/spacing; gray baseline and restrained blue ML visualization; no added gradients, glows, emoji, or decorative icon cards.
+- Two dominant synchronized SUMO maps, actual vehicle positions and signal states, measured queue overlays, total queued counts, and the same timestamp on both sides, including mobile.
+- Exactly four primary KPIs: average waiting time, average queued vehicles, throughput, and delayed vehicles. Whole-run and playhead scopes are labeled. Deltas are measured right-minus-left values with restrained red/green treatment.
+- One overlaid chart with total queue, average delay, and throughput options. Intervention ticks come only from recorded ML decision logs, including either controller side. Graph seeking and timeline seeking update both maps.
+- Contextual prediction/action/outcome panel backed by recorded observations, forecasts, decision logs, and measured full-run differences. It explicitly avoids attributing the whole-run result to one intervention.
+- Visible held-out evidence and confidence interval. The underlying conclusion remains **no reliable improvement in average wait**. Individual runs can improve or regress.
+- One collapsed **Advanced** view contains full run/provenance/safety data, all 16 approach observations, intersection filtering and map highlighting, forecasting diagnostics, runtime diagnostics, and grounded Gemini explanations.
+- Scenario, controller, seed, demand, playback, speed, new paired-run recording, and live simulation controls remain functional.
+- Replay timing follows actual SUMO frame timestamps, beginning at 1 second. Earlier-finishing runs hold their last observed frame and are labeled complete. Hidden comparison playback pauses while using the live view.
+- Missing measurements remain unavailable instead of becoming zero improvements. Small reported differences retain sufficient precision rather than being relabeled as equality.
 
-## Measurement details
+## Measurement definitions
 
-Replay frames begin at SUMO time 1. The previous view treated array indices as timestamps; the UI now selects/interpolates by recorded timestamp. Both views, the playhead, queue values, forecast lookup, and intervention lookup use the same time. A run that finishes earlier holds its last measured frame and is labeled complete.
+Average waiting time is the backend completed-trip mean. Average queued vehicles is the backend full-run mean of stopped vehicles across approaches. Throughput is the backend arrival rate over the 900-second demand window. **Delayed vehicles** counts the recorded per-vehicle flag where SUMO current waiting time is positive; it is an instantaneous count of vehicles with current waiting time, not a count of passengers or unique vehicles delayed at any earlier point.
 
-The throughput chart computes cumulative arrivals divided by elapsed demand time, multiplied by 3,600. At 900 seconds it freezes the numerator and denominator, excluding drain-period arrivals. Current wait is named separately from completed-trip average wait. Queue overlays use measured approach observations; forecasts are labeled separately in the explanation/live diagnostics.
+The chart's average-delay option explicitly means mean current waiting time across vehicles in the network. It does not claim to measure travel-time loss. The throughput chart uses cumulative measured arrivals divided by elapsed demand time × 3,600, freezes at 900 seconds, and excludes drain-period arrivals. Predictions remain labeled as future estimates; observed queues remain separate.
 
-Small nonzero reported changes retain extra decimal precision, so rounding cannot turn them into a claim of equality. No passenger or causal-benefit estimates were added.
+Source-data/browser cross-check at 751 seconds in rush-ramp seed 3100:
 
-## Verification
+| Measurement | Without ML | With ML |
+|---|---:|---:|
+| Total queued at playhead | 385 | 269 |
+| Positive-current-wait vehicles | 386 | 270 |
+| Full-run average queued | 187.43 | 172.96 |
+| Demand-window throughput (veh/h) | 2656 | 2808 |
+| Full-run average waiting time (s) | 217.85 | 200.86 |
 
-Real-browser checks against the unchanged local SUMO backend:
+The right-side peak 30-second forecast was 31.5 vehicles at A1:E, based on 28 observed vehicles at 750 seconds. The decision log contains 26 interventions through 751 seconds. These values were read from the actual replay and checked in the browser; they are not UI constants.
 
-- Replay pause/play, restart, Home/End/PageUp keyboard seeking, pointer seeking, and graph-to-map synchronization.
-- Linked canvas zoom and double-click fit; actual vehicle positions and live signal colors.
-- Queue/current-wait/throughput chart switching and logged intervention markers.
-- Scenario/replay selection, controller selection, seed/demand controls, same-controller validation, asynchronous paired-run recording and result selection.
-- Live ML simulation start, pause, resume, speed change from 16× to 4×, and stop; streamed vehicles, queues, forecasts, model-error checks, and final metrics.
-- The balanced seed-3102 replay correctly reports **more waiting** with ML (+1.67 seconds).
-- Gemini entry and the real measured-answer fallback; Gemini is unavailable locally because no key/client is configured. No live Gemini-provider call was claimed.
-- Full comparison/provenance and forecast diagnostics expand correctly. Runtime diagnostics displayed measured worker timings, WebSocket samples, and the stopped live session.
-- Desktop comparison layouts at 1440 and 1200 pixels, the direct medium-width preview, and a 390-pixel mobile viewport. Mobile body width and scroll width both measured 390 pixels; the paired maps measured 362 pixels with no horizontal overflow.
+## Verification results
 
-Numerical cross-check from the source replay at 751 seconds: left/right queues 385/269, in-network vehicles 450/453, forecast peak 31.5 vehicles (28 observed at that approach at 750 seconds), and 26 ML changes through the playhead. These were checked against the rendered UI and the stored replay, not entered as constants.
+- TypeScript noEmit and Vite production build: passed.
+- Frontend tests: **18 passed in 3 files**. Coverage includes timestamp alignment, interpolation, drain-window throughput, delayed-vehicle measurement, missing data, precision, regressions, exactly four primary KPIs, Advanced-only intersection evidence, selection, and unavailable replay handling.
+- Real-browser verification: replay pause/play/restart; keyboard and pointer seeking; graph synchronization; all chart options; scenario/controller/seed/demand selection; asynchronous SUMO recording; intersection filtering and highlighting; Advanced forecast/runtime/Gemini panels; live start/pause/resume/speed change/stop and final measurements.
+- Live ML simulation was paused and resumed from 16× to 4×, then stopped at 480 simulated seconds. The finished result and worker telemetry remained available in Advanced.
+- Desktop layouts checked at 1200 pixels and mobile at 390 pixels. Mobile body/scroll width and visible timestamps are checked separately from screenshot appearance.
+- Actual hundreds-of-vehicle replay rendering and controls were checked. No fixed FPS claim is made for this shared machine.
+- Final diff excludes backend code, production frontend code, trained artifacts, temporary viewport harness, dependencies, and build output.
 
-Frontend verification commands:
+Screenshots are direct browser captures of actual SUMO data:
 
-```powershell
-cd lab
-npm run build # TypeScript noEmit check plus Vite production bundle
-npm test      # timing, interpolation, measurement scopes, and honest result formatting
-```
+- [Finished desktop comparison](../artifacts/intelligence-ui/desktop-comparison.png)
+- [Measured outcomes and evidence](../artifacts/intelligence-ui/measured-evidence.png)
+- [Mobile layout](../artifacts/intelligence-ui/mobile.png)
 
-Final results: TypeScript/Vite build passed; **13 tests passed in 2 files**; `git diff --check` passed. Frontend dependency installation reported zero vulnerabilities. Browser interaction checks above are manual verification, separate from the automated tests.
-
-Screenshots are direct browser captures of actual SUMO replay data:
-
-- [Desktop traffic comparison](../artifacts/intelligence-ui/desktop-comparison.png)
-- [Measured outcomes and multi-seed evidence](../artifacts/intelligence-ui/measured-evidence.png)
-- [390-pixel mobile view](../artifacts/intelligence-ui/mobile.png)
-
-The screenshot viewport harness was temporary and is excluded from the shipped application. No merge or deployment is authorized by this UI handoff.
+Reproduce automated checks with `npm run build` and `npm test` from `lab/`.

@@ -1,5 +1,5 @@
 import { obsAt } from './interp'
-import { KPI, type Frame, type RunRec } from './types'
+import { KPI, type Frame, type RunRec, type DiffRow } from './types'
 
 export type ChartMetric = 'queue' | 'wait' | 'throughput'
 export const CHART_METRICS: Record<
@@ -13,14 +13,40 @@ export const CHART_METRICS: Record<
   },
   wait: {
     title: 'How waiting changes',
-    label: 'Mean current wait · seconds',
-    note: 'Current waiting time of vehicles in the network; distinct from completed-trip average wait.',
+    label: 'Mean current waiting time · seconds',
+    note: 'Average delay here means SUMO current waiting time across vehicles in the network. It is distinct from completed-trip waiting time and travel-time loss.',
   },
   throughput: {
     title: 'How traffic gets through',
     label: 'Arrivals per simulated hour',
     note: 'Cumulative arrivals ÷ elapsed demand time × 3,600. Stops updating after the 900-second demand window.',
   },
+}
+/** The recorded flag is 1 only when SUMO reports positive current waiting time. */
+export function delayedVehicles(frame: Frame | undefined): number | undefined {
+  return frame?.v.reduce((sum, vehicle) => sum + (vehicle[6] === 1 ? 1 : 0), 0)
+}
+export function countDifference(
+  left: number | undefined,
+  right: number | undefined,
+): DiffRow | undefined {
+  return left === undefined || right === undefined
+    ? undefined
+    : {
+        key: 'delayed_now',
+        label: 'Delayed vehicles',
+        unit: 'veh',
+        left,
+        right,
+        diff: right - left,
+        pct: null,
+        verdict:
+          right === left
+            ? 'same'
+            : right < left
+              ? 'right better'
+              : 'left better',
+      }
 }
 export function chartValue(
   run: Pick<RunRec, 'frames'>,
