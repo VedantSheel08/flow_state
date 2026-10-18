@@ -10,7 +10,7 @@ import {
 import { cn, num } from '../lib/format'
 import type { NetworkGeom } from '../lib/types'
 import { BASE, COLOR, FS, card, signed } from '../lib/resultsTheme'
-import { Cap, Eyebrow, H2, Pill, Swatch, Td, Th } from './resultsUi'
+import { Cap, Eyebrow, H2, Swatch } from './resultsUi'
 
 type Loaded = { asset: DemoAsset; net: NetworkGeom; scene: Scene }
 const SPEEDS = [1, 2, 4]
@@ -183,7 +183,7 @@ function Kpi({ label, left, right, unit = 's', digits = 0, lowerIsBetter = true 
   const good = lowerIsBetter ? right < left : right > left
   const same = Math.abs(right - left) < 0.05
   return (
-    <div className="flex min-w-0 flex-col gap-1.5">
+    <div className="flex min-w-0 flex-col gap-2 rounded-[18px] bg-subtle p-5 shadow-[0_0_0_1px_rgb(12_19_34/0.06)]">
       <span className="text-[12px] font-[550] text-ink-3">{label}</span>
       <div className="tnum flex flex-wrap items-baseline gap-x-2">
         <span className={cn('text-[30px] font-[650] leading-none tracking-[-0.03em]', same ? 'text-ink' : good ? 'text-good' : 'text-bad')}>{num(right, digits)}{unit}</span>
@@ -194,71 +194,68 @@ function Kpi({ label, left, right, unit = 's', digits = 0, lowerIsBetter = true 
 }
 
 const AGG_LABEL: Record<string, string> = {
-  ev_travel_mean_s: 'Ambulance travel time',
+  ev_travel_mean_s: 'Ambulance trip time',
   ev_stopped_red_s: 'Ambulance stopped at red',
   ev_stopped_queue_s: 'Ambulance stuck in queue',
   mean_wait_civilian_s: 'Other vehicles’ wait',
-  mean_travel_s: 'Other vehicles’ travel time',
-  queue_total_mean_veh: 'Vehicles queued (network mean)',
+  mean_travel_s: 'Other vehicles’ trip time',
+  queue_total_mean_veh: 'Vehicles queued',
   throughput_vph: 'Throughput (veh/h)',
 }
+const AGG_GROUPS: { title: string; keys: string[] }[] = [
+  { title: 'For ambulances', keys: ['ev_travel_mean_s', 'ev_stopped_red_s', 'ev_stopped_queue_s'] },
+  { title: 'For everyone else', keys: ['mean_wait_civilian_s', 'mean_travel_s', 'queue_total_mean_veh', 'throughput_vph'] },
+]
 
 function Aggregate({ asset }: { asset: DemoAsset }) {
-  const rows = Object.entries(asset.aggregate.metrics)
+  const runs = asset.aggregate.episodes
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-[13px]">
-        <thead>
-          <tr><Th left>Measure</Th><Th>Fixed-time</Th><Th>FlowState</Th><Th>Change</Th><Th>95% interval of change</Th><Th>Better / worse runs</Th></tr>
-        </thead>
-        <tbody>
-          {rows.map(([k, s]: [string, AggStat], i) => {
+    <div className="grid gap-4 min-[860px]:grid-cols-2">
+      {AGG_GROUPS.map((g) => (
+        <div key={g.title} className="rounded-[18px] bg-subtle p-5 shadow-[0_0_0_1px_rgb(12_19_34/0.06)]">
+          <div className="pb-2 text-[13px] font-semibold text-ink">{g.title}</div>
+          {g.keys.map((k, i) => {
+            const s: AggStat | undefined = asset.aggregate.metrics[k]
+            if (!s) return null
             const lower = LOWER_IS_BETTER.has(k)
             const good = lower ? s.mean_diff < 0 : s.mean_diff > 0 // mean_diff is FlowState − fixed-time
-            const last = i === rows.length - 1
+            const sure = s.ci95[0] > 0 || s.ci95[1] < 0 // the 95% interval excludes zero
             return (
-              <tr key={k}>
-                <Td left last={last}>{AGG_LABEL[k] ?? k}</Td>
-                <Td last={last} className="tnum">{num(s.left_mean, 1)}</Td>
-                <Td last={last} className="tnum">{num(s.right_mean, 1)}</Td>
-                <Td last={last} className={cn('tnum', s.pct != null && (s.ci95[0] > 0 || s.ci95[1] < 0) ? (good ? 'font-[550] text-good' : 'text-bad') : 'text-ink-3')}>{s.pct == null ? '—' : signed(s.pct)}</Td>
-                <Td last={last} className="tnum text-ink-3">{num(s.ci95[0], 1)} to {num(s.ci95[1], 1)}</Td>
-                <Td last={last} className="tnum text-ink-3">{s.better} / {s.worse}</Td>
-              </tr>
+              <div key={k} title={`95% interval of the change: ${num(s.ci95[0], 1)} to ${num(s.ci95[1], 1)}`} className={cn('flex items-center gap-3 py-3', i > 0 && 'border-t border-border')}>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[14px] font-[550] text-ink">{AGG_LABEL[k] ?? k}</div>
+                  <div className="tnum text-[12px] text-ink-3">{num(s.left_mean, 1)} → {num(s.right_mean, 1)} · better in {s.better} of {runs} runs</div>
+                </div>
+                <span className={cn('tnum shrink-0 rounded-full px-2.5 py-1 text-[13px] font-semibold', !sure || s.pct == null ? 'bg-muted text-ink-3' : good ? 'bg-good-soft text-good' : 'bg-bad-soft text-bad')}>
+                  {s.pct == null ? '—' : signed(s.pct)}
+                </span>
+              </div>
             )
           })}
-        </tbody>
-      </table>
+        </div>
+      ))}
     </div>
   )
 }
 
 function Units({ asset, example, onPick }: { asset: DemoAsset; example: number | null; onPick: (id: number) => void }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-[13px]">
-        <thead>
-          <tr><Th left>Ambulance</Th><Th>Fixed-time</Th><Th>FlowState</Th><Th>Time saved</Th><Th>Stopped (fixed → FlowState)</Th><Th>{''}</Th></tr>
-        </thead>
-        <tbody>
-          {asset.ambulances.map((u: DemoUnit, i) => {
-            const last = i === asset.ambulances.length - 1
-            const stops = (s: DemoUnit['left']) => s.stoppedRedS + s.stoppedQueueS
-            return (
-              <tr key={u.id} className={cn(u.id === example && 'bg-flow-soft')}>
-                <Td left last={last}>#{i + 1}{u.id === example ? ' · shown above' : ''}</Td>
-                <Td last={last} className="tnum">{secs(u.left.travelS)}</Td>
-                <Td last={last} className="tnum">{secs(u.right.travelS)}</Td>
-                <Td last={last} className={cn('tnum', u.savedS > 0 ? 'font-[550] text-good' : u.savedS < 0 ? 'text-bad' : 'text-ink-3')}>{u.savedS === 0 ? 'same' : `${Math.abs(u.savedS).toFixed(0)} s ${u.savedS > 0 ? 'faster' : 'slower'}`}</Td>
-                <Td last={last} className="tnum text-ink-3">{secs(stops(u.left))} → {secs(stops(u.right))}</Td>
-                <Td last={last}>
-                  <button type="button" onClick={() => onPick(u.id)} disabled={u.id === example} className="rounded-md px-2 py-1 text-[12px] font-[550] text-accent hover:bg-accent-soft disabled:cursor-default disabled:text-ink-disabled disabled:hover:bg-transparent">Watch</button>
-                </Td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+    <div className="grid gap-3 min-[720px]:grid-cols-3">
+      {asset.ambulances.map((u: DemoUnit, i) => {
+        const on = u.id === example
+        const stopped = (s: DemoUnit['left']) => s.stoppedRedS + s.stoppedQueueS
+        return (
+          <button key={u.id} type="button" onClick={() => onPick(u.id)} aria-pressed={on}
+            className={cn('flex flex-col gap-1.5 rounded-[18px] p-4 text-left transition-shadow', on ? 'bg-flow-soft shadow-[0_0_0_2px_var(--color-flow)]' : 'bg-subtle shadow-[0_0_0_1px_rgb(12_19_34/0.06)] hover:shadow-[0_0_0_1px_rgb(12_19_34/0.2)]')}>
+            <span className="flex items-center justify-between text-[13px] font-semibold text-ink">Ambulance {i + 1}{on && <span className="text-[11px] font-[550] text-flow-ink">Showing</span>}</span>
+            <span className="tnum text-[20px] font-[650] leading-none tracking-[-0.02em]">{secs(u.left.travelS)} → {secs(u.right.travelS)}</span>
+            <span className={cn('tnum text-[13px] font-[550]', u.savedS > 0 ? 'text-good' : u.savedS < 0 ? 'text-bad' : 'text-ink-3')}>
+              {u.savedS === 0 ? 'Same' : `${Math.abs(u.savedS).toFixed(0)} s ${u.savedS > 0 ? 'faster' : 'slower'}`}
+            </span>
+            <span className="tnum text-[12px] text-ink-3">Stopped {secs(stopped(u.left))} → {secs(stopped(u.right))}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -388,7 +385,7 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
       </div>
 
       {unit && (
-        <div className="grid grid-cols-2 gap-x-8 gap-y-5 border-t border-muted px-8 py-6 min-[860px]:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 px-4 pb-2 pt-1 min-[860px]:grid-cols-4 min-[860px]:px-6">
           <Kpi label="This ambulance · trip" left={unit.left.travelS} right={unit.right.travelS} />
           <Kpi label="This ambulance · stopped" left={stops(unit.left)} right={stops(unit.right)} />
           <Kpi label="All ambulances · mean trip" left={tot.left.ev_travel_mean_s} right={tot.right.ev_travel_mean_s} />
@@ -396,25 +393,27 @@ function Player({ data, example, setExample }: { data: Loaded; example: number |
         </div>
       )}
 
-      <div className="flex flex-col gap-3 border-t border-muted px-8 py-6">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="m-0 text-[17px] font-semibold tracking-[-0.01em]">All {asset.ambulances.length} ambulances in this run</h3>
-          <Pill tone="live">choose one to watch</Pill>
+      <div className="flex flex-col gap-4 px-8 pb-2 pt-8">
+        <div className="flex flex-col gap-1">
+          <h3 className="m-0 text-[20px] font-[650] tracking-[-0.02em]">Every ambulance in this run</h3>
+          <Cap>Tap one to watch it above.</Cap>
         </div>
         <Units asset={asset} example={example} onPick={setExample} />
         <Cap>
-          Shown first: the ambulance that sat in a queue for at least {asset.minQueueS} s on the fixed-time side and that FlowState held for at most {asset.bestCaseStopS} s, so it is a best case, not an average. The table lists every ambulance
-          in the run, including any that gained little.
+          Shown first: the ambulance that sat in a queue for at least {asset.minQueueS} s on the fixed-time side and that FlowState held for at most {asset.bestCaseStopS} s, so it is a best case, not an average. Every ambulance in the run is listed above,
+          including any that gained little.
         </Cap>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-muted px-8 py-6">
-        <h3 className="m-0 text-[17px] font-semibold tracking-[-0.01em]">The average, not just one run</h3>
-        <Cap>{asset.aggregate.episodes} held-out paired runs, seeds {asset.aggregate.seeds[0]}–{asset.aggregate.seeds[asset.aggregate.seeds.length - 1]}.</Cap>
+      <div className="flex flex-col gap-4 px-8 pb-8 pt-8">
+        <div className="flex flex-col gap-1">
+          <h3 className="m-0 text-[20px] font-[650] tracking-[-0.02em]">The average, not just one run</h3>
+          <Cap>{asset.aggregate.episodes} held-out paired runs (seeds {asset.aggregate.seeds[0]}–{asset.aggregate.seeds[asset.aggregate.seeds.length - 1]}). Green means FlowState is clearly better, red clearly worse, gray no clear difference.</Cap>
+        </div>
         <Aggregate asset={asset} />
         <Cap>
           Ambulances get through faster on average ({secs(avg?.left_mean)} → {secs(avg?.right_mean)}), but there is a cost: the corridor holds side streets red, so more vehicles are queued across the network and other vehicles’ wait and
-          throughput show no clear gain (intervals include zero). “Better / worse runs” counts the paired runs FlowState won or lost on that measure. Only the queue forecaster is a trained model; the controller and the corridor are hand-written rules.
+          throughput show no clear gain (the 95% intervals include zero; hover a row to see them). “Better in N of 60 runs” counts paired runs where FlowState did better on that measure. Only the queue forecaster is a trained model; the controller and the corridor are hand-written rules.
         </Cap>
         <p className="m-0 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] leading-[1.5] text-ink-3">
           <span className="flex items-center gap-1.5"><Swatch c={BASE} /> Fixed-time</span>
