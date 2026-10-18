@@ -160,32 +160,30 @@ function HeadToHead({ d }: { d: DemandResults }) {
   const step = hi - lo > 300 ? 100 : 50
   const ticks: number[] = []
   for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) ticks.push(t)
+  // same range on both axes, so the diagonal stays y = x; the plot is just wider than it is tall
   const S = 440
-  const px = (v: number) => ((v - lo) / (hi - lo)) * S
+  const W = 700
+  const px = (v: number) => ((v - lo) / (hi - lo)) * W
+  const py = (v: number) => ((v - lo) / (hi - lo)) * S
   const hp = hover != null ? pts[hover] : null
   return (
     <section className={cn(card, 'flex flex-col gap-4 p-6')}>
-      <div className="flex flex-col gap-1">
-        <H2>Every run, head to head</H2>
-        <Cap>
-          FlowState waited less in {wins} of {pts.length} runs. Orange is fixed-time, on the diagonal; blue is FlowState, directly above or below. Hover a dot to compare the pair.
-        </Cap>
-      </div>
+      <H2>Every run, head to head</H2>
       <div className="overflow-x-auto">
-        <div className="relative" style={{ width: 740, height: 500 }}>
-          <svg width={520} height={500} role="img" aria-label={`Paired mean waits: FlowState waited less in ${wins} of ${pts.length} runs`} onMouseLeave={() => setHover(null)}>
+        <div className="relative" style={{ width: 60 + W + 16 + 200, height: 500 }}>
+          <svg width={60 + W + 10} height={500} role="img" aria-label={`Paired mean waits: FlowState waited less in ${wins} of ${pts.length} runs`} onMouseLeave={() => setHover(null)}>
             <text x={14} y={4 + S / 2} transform={`rotate(-90 14 ${4 + S / 2})`} textAnchor="middle" fontSize={12} fontWeight={500} fill="#46505f">
               Mean wait (s)
             </text>
-            <text x={60 + S / 2} y={488} textAnchor="middle" fontSize={12} fontWeight={500} fill="#46505f">
+            <text x={60 + W / 2} y={488} textAnchor="middle" fontSize={12} fontWeight={500} fill="#46505f">
               Fixed-time wait (s)
             </text>
             <g transform="translate(60 4)">
               {ticks.map((t) => (
                 <g key={t}>
-                  <line x1={0} x2={S} y1={S - px(t)} y2={S - px(t)} stroke="#f1f3f6" />
+                  <line x1={0} x2={W} y1={S - py(t)} y2={S - py(t)} stroke="#f1f3f6" />
                   <line y1={0} y2={S} x1={px(t)} x2={px(t)} stroke="#f1f3f6" />
-                  <text x={-8} y={S - px(t) + 4} textAnchor="end" fontSize={11} fill="#687284" className="tnum">
+                  <text x={-8} y={S - py(t) + 4} textAnchor="end" fontSize={11} fill="#687284" className="tnum">
                     {t}
                   </text>
                   <text x={px(t)} y={S + 18} textAnchor="middle" fontSize={11} fill="#687284" className="tnum">
@@ -193,11 +191,11 @@ function HeadToHead({ d }: { d: DemandResults }) {
                   </text>
                 </g>
               ))}
-              <polygon points={`0,${S} ${S},${S} ${S},0`} fill="rgba(42,120,214,0.045)" />
-              <line x1={0} y1={S} x2={S} y2={0} stroke="#8a93a3" strokeWidth={1.5} strokeDasharray="5 5" />
+              <polygon points={`0,${S} ${W},${S} ${W},0`} fill="rgba(42,120,214,0.045)" />
+              <line x1={0} y1={S} x2={W} y2={0} stroke="#8a93a3" strokeWidth={1.5} strokeDasharray="5 5" />
               <line x1={0} y1={0} x2={0} y2={S} stroke="#d3d8df" />
-              <line x1={0} y1={S} x2={S} y2={S} stroke="#d3d8df" />
-              <text x={S - 12} y={S - 14} textAnchor="end" fontSize={12} fontWeight={600} fill="#46505f">
+              <line x1={0} y1={S} x2={W} y2={S} stroke="#d3d8df" />
+              <text x={W - 12} y={S - 14} textAnchor="end" fontSize={12} fontWeight={600} fill="#46505f">
                 FlowState waited less
               </text>
               <text x={12} y={22} fontSize={12} fontWeight={600} fill="#46505f">
@@ -206,7 +204,7 @@ function HeadToHead({ d }: { d: DemandResults }) {
               {([BASE, FS] as const).map((c) =>
                 pts.map((p, i) => {
                   const h = held.has(p.s)
-                  const cy = S - px(c === BASE ? p.x : p.y)
+                  const cy = S - py(c === BASE ? p.x : p.y)
                   return (
                     <g
                       key={`${c}/${p.s}/${p.seed}`}
@@ -222,9 +220,9 @@ function HeadToHead({ d }: { d: DemandResults }) {
               )}
               {hp && (
                 <g pointerEvents="none">
-                  <line x1={px(hp.x)} x2={px(hp.x)} y1={S - px(hp.x)} y2={S - px(hp.y)} stroke="#0c1322" strokeWidth={1.5} strokeDasharray="3 3" />
+                  <line x1={px(hp.x)} x2={px(hp.x)} y1={S - py(hp.x)} y2={S - py(hp.y)} stroke="#0c1322" strokeWidth={1.5} strokeDasharray="3 3" />
                   {([BASE, FS] as const).map((c) => {
-                    const cy = S - px(c === BASE ? hp.x : hp.y)
+                    const cy = S - py(c === BASE ? hp.x : hp.y)
                     return (
                       <g key={c}>
                         <circle cx={px(hp.x)} cy={cy} r={7} fill={held.has(hp.s) ? '#fff' : COLOR[c]} stroke="#0c1322" strokeWidth={2} />
@@ -239,7 +237,7 @@ function HeadToHead({ d }: { d: DemandResults }) {
           {hp && (
             <div
               className="tnum pointer-events-none absolute z-10 w-[200px] rounded-[10px] bg-ink/70 px-3 py-2.5 text-[12px] leading-[1.5] text-white shadow-[0_4px_16px_rgba(12,19,34,0.12)] backdrop-blur-sm"
-              style={{ left: 536, top: Math.min(Math.max(0, 4 + S - px(hp.y) - 40), 500 - 110) }}
+              style={{ left: 60 + W + 16, top: Math.min(Math.max(0, 4 + S - py(hp.y) - 40), 500 - 110) }}
             >
               <div className="font-semibold">
                 {titles[hp.s]} · seed {hp.seed}
