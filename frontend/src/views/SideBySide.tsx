@@ -102,7 +102,7 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label,
       cam.setViewport(w, h)
       const v = view.current, m = modeRef.current
       const ts = performance.now()
-      const ease = 1 - Math.exp(-Math.min(0.25, lastTs ? (ts - lastTs) / 1000 : 0.016) * 5) // frame-rate independent glide
+      const ease = 1 - Math.exp(-Math.min(0.25, lastTs ? (ts - lastTs) / 1000 : 0.016) * 8) // frame-rate independent glide
       lastTs = ts
       if (m === 'network') {
         v.scale = Math.min(w / (rx1 - rx0 + 60), h / (ry1 - ry0 + 60))
@@ -114,7 +114,7 @@ function SimMap({ scene, net, side, ambulance, clock, mode, view, onFree, label,
         const best = signalled.reduce((a, j) => (dist(j) < dist(a) ? j : a), signalled[0])
         if (best && (!current || dist(best) + 25 < dist(current))) current = best
         // centre the junction, but slide towards the ambulance once it is past 30% of the view from it so it never leaves the frame
-        const lim = Math.max(20, (0.3 * Math.min(w, h)) / Math.max(1, v.scale)) // let the ambulance drift 30% of the view from the junction, no further
+        const lim = Math.max(20, (0.2 * Math.min(w, h)) / Math.max(1, v.scale)) // let the ambulance drift 20% of the view from the junction, no further
         const slide = (d: number) => d - Math.max(-lim, Math.min(lim, d))
         const tx = (current?.x ?? (rx0 + rx1) / 2) + (current && held && me ? slide(held[0] - current.x) : 0)
         const ty = (current?.y ?? (ry0 + ry1) / 2) + (current && held && me ? slide(held[1] - current.y) : 0)
