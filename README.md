@@ -8,6 +8,12 @@ street geometry, every car, cyclist and pedestrian, signal heads, collisions, am
 Queen Street, a stadium letting out), press run, and watch it happen. Every run comes from a seed, so the same seed reproduces the
 same traffic, and two controllers can be handed the exact same vehicles and measured against each other.
 
+## Demo video
+
+[![Watch the FlowState demo](https://img.youtube.com/vi/HZDhzaPnSPs/hqdefault.jpg)](https://youtu.be/HZDhzaPnSPs)
+
+[Watch the FlowState project demo on YouTube](https://youtu.be/HZDhzaPnSPs)
+
 ![A moderate collision on John Street closes the lanes, police respond, and the queue spreads along Adelaide](docs/images/accident-network.png)
 
 *Road Accident, seed 7, at 16x. A collision closes John Street northbound, a police unit is on its way, and the queue is backing up
