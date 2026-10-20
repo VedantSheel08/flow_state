@@ -55,7 +55,7 @@ flowchart LR
 6. **Gemini.** Google's Gemini API powers the plain-language layer: it explains congestion patterns, interprets results and helps
    plan experiments. It never touches the signals. Its answers are checked against the measured simulation numbers, and there
    is an offline fallback when no key is available.
-7. **Backend.** The FastAPI service and the SUMO engine run on a Vultr server in Toronto and expose REST endpoints and a WebSocket, so
+7. **Backend.** The FastAPI service and the SUMO engine run on Render (free web service, Docker) and expose REST endpoints and a WebSocket, so
    simulations run remotely and stream traffic to the browser in real time.
 8. **Frontend.** The React dashboard is hosted on Vercel at flowstate.nyc. It shows the Toronto network, moving vehicles, signal
    states, congestion metrics and controller comparisons.
@@ -193,7 +193,7 @@ tests/        pytest suite          tools/  congestion audits, OSM fetch        
 ## Built with
 
 Python, FastAPI, Eclipse SUMO 1.28 (libsumo, netconvert, sumolib), Stable-Baselines3, Gymnasium, PPO, scikit-learn (gradient-boosted
-regressors), Google Gemini, React 19, TypeScript, Vite, Tailwind, Radix UI, Zustand, Recharts, Canvas 2D, pytest, Vitest, Vultr,
+regressors), Google Gemini, React 19, TypeScript, Vite, Tailwind, Radix UI, Zustand, Recharts, Canvas 2D, pytest, Vitest, Render,
 Vercel.
 
 Map data is © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) (ODbL). Traffic counts come from the City of

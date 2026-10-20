@@ -1,21 +1,18 @@
-# Render Blueprint for FlowState. Nothing is created on Render until this file is
-# applied from the dashboard (New > Blueprint). See docs/RENDER.md.
+# Render Blueprint for the FlowState API (free web service). Apply from the dashboard: New > Blueprint.
+# The Dockerfile is at the repo root, so the build is the same whether the service comes from this file
+# or was configured by hand. See docs/RENDER.md.
 services:
   - type: web
     name: flowstate
     runtime: docker
-    dockerfilePath: ./deployment/render/Dockerfile
+    dockerfilePath: ./Dockerfile
     dockerContext: .
-    branch: colton-updates
-    autoDeploy: false            # deploy manually until we're ready to go live
-    plan: pro                    # 4 GB / 2 CPU; `standard` (2 GB / 1 CPU) also works
-    region: virginia
+    branch: main
+    autoDeploy: false            # deploy manually: a redeploy restarts any live run
+    plan: free                   # 512 MB RAM, 0.1 CPU, no persistent disk, sleeps after 15 min idle
+    region: oregon
     numInstances: 1              # the live run is in process memory: never scale out
     healthCheckPath: /api/health
-    disk:
-      name: runs
-      mountPath: /var/lib/flowstate/runs
-      sizeGB: 1
     envVars:
       - key: FLOWSTATE_BACKEND
         value: traci

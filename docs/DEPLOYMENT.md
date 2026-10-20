@@ -1,5 +1,10 @@
 # FlowState deployment preparation — no deployment performed
 
+> **Historical.** This was written while the backend was planned for a self-managed Vultr server, which has since been
+> destroyed. The current hosting setup (Render free web service for the API, Vercel for the frontend) is in
+> [`RENDER.md`](RENDER.md). The connection notes below still describe how the frontend finds the API, which is now done
+> through `VITE_FLOWSTATE_API_URL` (`frontend/src/lib/endpoints.ts`).
+
 ## Vercel frontend
 
 Import `VedantSheel08/flowstate` only after publication approval. Project settings:
